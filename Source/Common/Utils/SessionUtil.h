@@ -21,22 +21,24 @@ struct FSessionSearchData
 	FOnFindSessionsCompleteDelegate OnFindSessionsCompleteDelegate;
 };
 
-class PROJECTR_API FSessionUtil
+class FSessionUtil
 {
 public:
 	static IOnlineSessionPtr OnlineSessionInterface;
-	
+
 	static void Init();
 	static void CreateSession(const FSessionCreateData& SessionCreateData);
 	static void SearchSession(FSessionSearchData& SessionSearchData);
-	static void JoinSession(const UWorld* World, FOnlineSessionSearchResult& Result,
-		const FOnJoinSessionCompleteDelegate& OnJoinSessionCompleteDelegate);
+	static void JoinSession(const UWorld* World,
+	                        FOnlineSessionSearchResult& Result,
+	                        const FOnJoinSessionCompleteDelegate&
+	                        OnJoinSessionCompleteDelegate);
 	static void DestroySession();
-	
+
 	static FNamedOnlineSession* GetCurrentSession();
 	static FString EncodeData(const FString& Str);
 	static FString DecodeData(const FString& Str);
-	
+
 private:
 	static FDelegateHandle OnFindSessionsCompleteDelegateHandle;
 	static FDelegateHandle OnCreateSessionCompleteDelegateHandle;

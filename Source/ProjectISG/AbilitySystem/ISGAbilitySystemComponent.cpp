@@ -2,7 +2,6 @@
 #include "ISGAbilitySystemInitializeData.h"
 #include "Ability/Utility/GA_BaseInputAbility.h"
 
-
 UISGAbilitySystemComponent::UISGAbilitySystemComponent()
 {
 	ReplicationMode = EGameplayEffectReplicationMode::Mixed;
