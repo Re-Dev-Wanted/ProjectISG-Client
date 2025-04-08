@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
 #include "Common/Utils/MacroUtil.h"
-#include "BaseInputAbility.generated.h"
+#include "GA_BaseInputAbility.generated.h"
 
 enum class EAbilityInputId : uint8
 {
@@ -13,12 +13,12 @@ enum class EAbilityInputId : uint8
 class UInputAction;
 
 UCLASS()
-class PROJECTISG_API UBaseInputAbility : public UGameplayAbility
+class PROJECTISG_API UGA_BaseInputAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
 
 public:
-	UBaseInputAbility(const FObjectInitializer& ObjectInitializer);
+	UGA_BaseInputAbility(const FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere
 		, Category = "Custom Gameplay Ability")

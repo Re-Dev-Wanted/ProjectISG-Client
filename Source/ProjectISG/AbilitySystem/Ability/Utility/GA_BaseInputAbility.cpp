@@ -1,16 +1,16 @@
-﻿#include "BaseInputAbility.h"
+﻿#include "GA_BaseInputAbility.h"
 #include "EnhancedInputComponent.h"
 #include "AbilitySystemComponent.h"
 #include "ProjectISG/Object/BasePawn.h"
 
-UBaseInputAbility::UBaseInputAbility(
+UGA_BaseInputAbility::UGA_BaseInputAbility(
 	const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
-void UBaseInputAbility::OnAvatarSet(
+void UGA_BaseInputAbility::OnAvatarSet(
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
 {
 	// AvatarSet이 해당 Ability가 처음 로드 될 때 동작한다.
@@ -18,7 +18,7 @@ void UBaseInputAbility::OnAvatarSet(
 	SetupEnhancedInputBindings(ActorInfo, Spec);
 }
 
-void UBaseInputAbility::SetupEnhancedInputBindings(
+void UGA_BaseInputAbility::SetupEnhancedInputBindings(
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
 {
 	// 우선 AvatarActor가 있어야 한다 보통 캐릭터가 이에 해당된다.
@@ -41,8 +41,8 @@ void UBaseInputAbility::SetupEnhancedInputBindings(
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<
 				UEnhancedInputComponent>(PawnController->InputComponent.Get()))
 		{
-			if (UBaseInputAbility* AbilityInstance = Cast<
-				UBaseInputAbility>(Spec.Ability))
+			if (UGA_BaseInputAbility* AbilityInstance = Cast<
+				UGA_BaseInputAbility>(Spec.Ability))
 			{
 				// Ability의 각각에 맞춘 Input Action이 존재하는 경우 트리거와 종료 시에 대한 설정을
 				// 바인딩 처리 해준다.
@@ -62,7 +62,7 @@ void UBaseInputAbility::SetupEnhancedInputBindings(
 }
 
 // Ability가 종료될 때에 대한 기본적인 처리다.
-void UBaseInputAbility::EndAbility(
+void UGA_BaseInputAbility::EndAbility(
 	const FGameplayAbilitySpecHandle Handle
 	, const FGameplayAbilityActorInfo* ActorInfo
 	, const FGameplayAbilityActivationInfo ActivationInfo
@@ -86,7 +86,7 @@ void UBaseInputAbility::EndAbility(
 }
 
 // Ability 자체가 제거될 때 기본적인 Binding된 정보를 제거해준다.
-void UBaseInputAbility::OnRemoveAbility(
+void UGA_BaseInputAbility::OnRemoveAbility(
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
 {
 	if (IsValid(ActorInfo->AvatarActor.Get()))
@@ -108,7 +108,7 @@ void UBaseInputAbility::OnRemoveAbility(
 }
 
 // Ability의 시작 시 동작하는 함수
-void UBaseInputAbility::OnAbilityInputPressed(
+void UGA_BaseInputAbility::OnAbilityInputPressed(
 	const FGameplayAbilityActorInfo* ActorInfo)
 {
 	if (const ABasePawn* Owner = Cast<
@@ -120,7 +120,7 @@ void UBaseInputAbility::OnAbilityInputPressed(
 }
 
 // 키에서 손을 땔 때 돌아가는 함수로 홀딩에 필요한 경우 주로 사용할 수 있다.
-void UBaseInputAbility::OnAbilityInputReleased(
+void UGA_BaseInputAbility::OnAbilityInputReleased(
 	const FGameplayAbilityActorInfo* ActorInfo)
 {
 	if (const ABasePawn* Owner = Cast<

@@ -1,6 +1,6 @@
 ﻿#include "ISGAbilitySystemComponent.h"
 #include "ISGAbilitySystemInitializeData.h"
-#include "Ability/Utility/BaseInputAbility.h"
+#include "Ability/Utility/GA_BaseInputAbility.h"
 
 
 UISGAbilitySystemComponent::UISGAbilitySystemComponent()
@@ -21,7 +21,7 @@ void UISGAbilitySystemComponent::Initialize(const UISGAbilitySystemInitializeDat
 	{
 		for (auto Ability : InitialData->GetDefaultGameplayAbilities())
 		{
-			const UBaseInputAbility* InputAbility = Ability->GetDefaultObject<UBaseInputAbility>();
+			const UGA_BaseInputAbility* InputAbility = Ability->GetDefaultObject<UGA_BaseInputAbility>();
 			const int32 InputId = InputAbility->GetInputId() == EAbilityInputId::Undefined
 				? INDEX_NONE : static_cast<int32>(InputAbility->GetInputId());
 			
