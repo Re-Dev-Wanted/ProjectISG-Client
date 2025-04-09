@@ -17,8 +17,7 @@ public class ProjectISG : ModuleRules
 		{
 			"Common", "UMG", "GameplayAbilities", "GameplayTags", "GameplayTasks",
 			"OnlineSubsystem", "OnlineSubsystemNull",
-			"OnlineSubsystemSteam", "OnlineSubsystemUtils",
-			"ProceduralMeshComponent"
+			"OnlineSubsystemSteam", "OnlineSubsystemUtils"
 		});
 	}
 }
