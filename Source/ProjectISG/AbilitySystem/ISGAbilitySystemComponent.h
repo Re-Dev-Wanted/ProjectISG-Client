@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
-#include "Common/Utils/MacroUtil.h"
+#include "Utils/MacroUtil.h"
 #include "ISGAbilitySystemComponent.generated.h"
 
 class UISGAbilitySystemInitializeData;
@@ -18,7 +18,7 @@ public:
 	void Initialize(const UISGAbilitySystemInitializeData* InitialData);
 
 	GETTER_SETTER(bool, IsInitialize)
-	
+
 private:
 	bool IsInitialize = false;
 };

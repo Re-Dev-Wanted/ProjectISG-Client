@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "GameplayTagContainer.h"
-#include "Common/Utils/MacroUtil.h"
+#include "Utils/MacroUtil.h"
 #include "ISGAbilitySystemInitializeData.generated.h"
 
 class UAttributeSet;
@@ -13,10 +13,14 @@ UCLASS()
 class PROJECTISG_API UISGAbilitySystemInitializeData : public UDataAsset
 {
 	GENERATED_BODY()
-	
+
 public:
 	GETTER(TArray<TSubclassOf<UGA_BaseInputAbility>>, DefaultGameplayAbilities)
-	GETTER(FGameplayTagContainer, DefaultGameplayTags)
+	GETTER
+	(FGameplayTagContainer
+	,
+	DefaultGameplayTags
+	)
 
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
