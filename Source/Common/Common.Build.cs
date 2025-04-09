@@ -18,7 +18,8 @@ public class Common : ModuleRules
             {
                 "CoreUObject", "Engine", "Slate", "SlateCore",
                 "OnlineSubsystem", "OnlineSubsystemNull",
-                "OnlineSubsystemSteam", "OnlineSubsystemUtils"
+                "OnlineSubsystemSteam", "OnlineSubsystemUtils",
+                "ProceduralMeshComponent"
             }
         );
     }
