@@ -1,13 +1,13 @@
 ﻿#include "ItemManager.h"
 
+#include "ProjectISG/Core/ISGGameInstance.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
 
-// TODO: 현재 추가 개발 필요한 태스크
 FItemInfoData FItemManager::GetItemInfoById(const UWorld* World,
                                             const uint16 Id)
 {
-	FItemInfoData NewItemInfoData;
-	return NewItemInfoData;
+	const UISGGameInstance* GI = World->GetGameInstance<UISGGameInstance>();
+	return GI->GetItemInfoList()[Id];
 }
 
 FItemMetaInfo FItemManager::GetInitialItemMetaDataById
