@@ -7,7 +7,7 @@
 
 #include "InventoryComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryUpdateNotified)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryUpdateNotified);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTISG_API UInventoryComponent : public UActorComponent
