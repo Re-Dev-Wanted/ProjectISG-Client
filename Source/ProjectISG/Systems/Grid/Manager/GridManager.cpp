@@ -55,6 +55,27 @@ FVector AGridManager::GetLocationInFront(AActor* Actor, int32 Distance)
 	return SnapToGrid(RawTarget);
 }
 
+FVector AGridManager::GetLocationInPointerDirection(APlayerController* PlayerController, int32 Distance)
+{
+	if (!PlayerController)
+	{
+		return FVector::ZeroVector;
+	}
+
+	// 마우스 위치 -> 월드 방향에서 Deproject
+	FVector WorldLocation;
+	FVector WorldDirection;
+
+	if (PlayerController->DeprojectMousePositionToWorld(WorldLocation, WorldDirection))
+	{
+		FVector Target = WorldLocation + WorldDirection * Distance * SnapSize;
+
+		return SnapToGrid(Target);
+	}
+
+	return FVector::ZeroVector;
+}
+
 void AGridManager::RemovePlacement(const FIntVector& GridAt)
 {
 	if (APlacement* Placement = PlacedMap.FindRef(GridAt))
@@ -62,6 +83,21 @@ void AGridManager::RemovePlacement(const FIntVector& GridAt)
 		Placement->Destroy();
 		PlacedMap.Remove(GridAt);
 	}
+}
+
+bool AGridManager::TryGetPlacement(const FVector& Location, FIntVector& OutGridAt, APlacement*& OutPlacement)
+{
+	FIntVector ToCoord = WorldToGridLocation(Location);
+
+	if (APlacement* Placement = PlacedMap.FindRef(ToCoord))
+	{
+		OutGridAt = ToCoord;
+		OutPlacement = Placement;
+
+		return true;
+	}
+
+	return false;
 }
 
 bool AGridManager::TryGetPlacementAt(AActor* Actor, FIntVector& OutGridAt, APlacement*& OutPlacement)
@@ -78,15 +114,7 @@ bool AGridManager::TryGetPlacementAt(AActor* Actor, FIntVector& OutGridAt, APlac
 	if (bHit)
 	{
 		FVector HitLocation = HitResult.ImpactPoint;
-		FIntVector Coord = WorldToGridLocation(HitLocation);
-
-		if (APlacement* Placement = PlacedMap.FindRef(Coord))
-		{
-			OutGridAt = Coord;
-			OutPlacement = Placement;
-
-			return true;
-		}
+		return TryGetPlacement(HitLocation, OutGridAt, OutPlacement);
 	}
 
 	return false;

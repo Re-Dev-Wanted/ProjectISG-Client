@@ -27,7 +27,7 @@ void APlacement::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void APlacement::Setup()
+void APlacement::Setup(float TileSize)
 {
 	// 오브젝트 크기가 제각각 다를 것이다.
 	// 적당히 가운데 정렬하고 tileSize에 맞추기

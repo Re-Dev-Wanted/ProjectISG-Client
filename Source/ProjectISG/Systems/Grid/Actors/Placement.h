@@ -34,5 +34,5 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UStaticMesh* StaticMesh;
 
-	virtual void Setup();
+	virtual void Setup(float TileSize);
 };
