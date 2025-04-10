@@ -6,6 +6,7 @@
 
 UInventoryComponent::UInventoryComponent()
 {
+	
 }
 
 bool UInventoryComponent::HasItemInInventory(const uint32 Id,

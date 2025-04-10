@@ -27,7 +27,7 @@ enum class EMetaDataKey : uint32
 
 // 아이템 데이터 전체에서 고유한 값을 저장할 때 사용된다.
 UENUM()
-enum class EOptionDataKey : uint32
+enum class EConstDataKey : uint32
 {
 	None,
 };
@@ -56,9 +56,9 @@ struct PROJECTISG_API FItemInfoData : public FTableRowBase
 		return MetaData;
 	}
 
-	FORCEINLINE TMap<EOptionDataKey, FString> GetOptionData() const
+	FORCEINLINE TMap<EConstDataKey, FString> GetOptionData() const
 	{
-		return OptionData;
+		return ConstData;
 	}
 
 private:
@@ -103,7 +103,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Data",
 		meta=(AllowPrivateAccess = true))
 	;
-	TMap<EOptionDataKey, FString> OptionData;
+	TMap<EConstDataKey, FString> ConstData;
 };
 
 // 실제 플레이어가 저장할 정보 값
