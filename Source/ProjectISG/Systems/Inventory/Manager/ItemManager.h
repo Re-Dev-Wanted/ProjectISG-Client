@@ -1,7 +1,6 @@
 ﻿#pragma once
 
-struct FItemMetaInfo;
-struct FItemInfoData;
+#include "ProjectISG/Systems/Inventory/ItemData.h"
 
 class FItemManager
 {
