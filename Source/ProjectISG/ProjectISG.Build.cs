@@ -7,18 +7,17 @@ public class ProjectISG : ModuleRules
 	public ProjectISG(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-	
-		PublicDependencyModuleNames.AddRange(new string[]
+
+		PublicDependencyModuleNames.AddRange(new[]
 		{
 			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput"
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[]
+		PrivateDependencyModuleNames.AddRange(new[]
 		{
-			"Common", "UMG", "GameplayAbilities", "GameplayTags", "GameplayTasks",
-			"OnlineSubsystem", "OnlineSubsystemNull",
-			"OnlineSubsystemSteam", "OnlineSubsystemUtils",
-			"ProceduralMeshComponent"
+			"UMG", "GameplayAbilities", "GameplayTags",
+			"GameplayTasks", "OnlineSubsystem", "OnlineSubsystemNull",
+			"OnlineSubsystemSteam", "OnlineSubsystemUtils"
 		});
 	}
 }

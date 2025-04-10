@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
-#include "Common/Utils/MacroUtil.h"
+#include "ProjectISG/Utils/MacroUtil.h"
 #include "GA_BaseInputAbility.generated.h"
 
 class UInputAction;
