@@ -39,7 +39,7 @@ public:
 	FVector GridToWorldLocation(const FIntVector& GridCoord);
 
 	FVector GetLocationInFront(AActor* Actor, int32 Distance = 1);
-
+	
 	FVector GetLocationInPointerDirection(APlayerController* PlayerController, int32 Distance = 1);
 
 	template <class T, std::enable_if_t<std::is_base_of_v<APlacement, T>, int>  = 0>
