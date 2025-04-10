@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "GameplayTagContainer.h"
-#include "Utils/MacroUtil.h"
+#include "ProjectISG/Utils/MacroUtil.h"
 #include "ISGAbilitySystemInitializeData.generated.h"
 
 class UAttributeSet;
@@ -18,8 +18,8 @@ public:
 	GETTER(TArray<TSubclassOf<UGA_BaseInputAbility>>, DefaultGameplayAbilities)
 	GETTER
 	(FGameplayTagContainer
-	,
-	DefaultGameplayTags
+	 ,
+	 DefaultGameplayTags
 	)
 
 private:
