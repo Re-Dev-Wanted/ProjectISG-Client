@@ -26,6 +26,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(VisibleAnywhere)
+	class USceneComponent* AnchorComp;
+
+	UPROPERTY(VisibleAnywhere)
 	class UBoxComponent* CollisionComp;
 
 	UPROPERTY(VisibleAnywhere)
@@ -34,5 +37,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UStaticMesh* StaticMesh;
 
+	UPROPERTY(EditAnywhere)
+	class UMaterialInstance* TempMaterial;
+
 	virtual void Setup(float TileSize);
+
+	void SetColor(bool bIsGhost, bool bIsBlock);
 };

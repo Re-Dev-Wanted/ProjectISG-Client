@@ -42,4 +42,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Remove();
+
+	UFUNCTION(BlueprintCallable)
+	void Rotate();
 };

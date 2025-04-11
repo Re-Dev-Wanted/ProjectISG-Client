@@ -37,10 +37,16 @@ void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 
 	FVector SnappedLocation = GridManager->GetLocationInPointerDirection(PlayerController);
 
+	FIntVector GridCoord;
+	APlacement* PlacedActor;
+
+	bool bIsBlock = GridManager->TryGetPlacement(SnappedLocation, GridCoord, PlacedActor);
+
 	if (GhostPlacement)
 	{
 		GhostPlacement->SetActorLocation(SnappedLocation);
 		GhostPlacement->SetActorEnableCollision(false);
+		GhostPlacement->SetColor(true, bIsBlock);
 	}
 }
 
@@ -49,7 +55,8 @@ void UPlacementIndicatorComponent::Build()
 	if (GridManager)
 	{
 		// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
-		GridManager->BuildPlacement(PlacementFactory, GhostPlacement->GetActorLocation());
+		GridManager->BuildPlacement(PlacementFactory, GhostPlacement->GetActorLocation(),
+		                            GhostPlacement->GetActorRotation());
 	}
 }
 
@@ -60,9 +67,16 @@ void UPlacementIndicatorComponent::Remove()
 		// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
 		FIntVector GridCoord;
 		APlacement* PlacedActor;
-		if (GridManager->TryGetPlacementAt(GetOwner(), GridCoord, PlacedActor))
+
+		if (GridManager->TryGetPlacement(GhostPlacement->GetActorLocation(), GridCoord, PlacedActor))
 		{
+			// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%s"), *GridCoord.ToString()));
 			GridManager->RemovePlacement(GridCoord);
 		}
 	}
+}
+
+void UPlacementIndicatorComponent::Rotate()
+{
+	GhostPlacement->AddActorLocalRotation(FRotator(0, 90, 0));
 }

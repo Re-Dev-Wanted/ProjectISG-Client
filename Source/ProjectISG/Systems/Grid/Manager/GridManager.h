@@ -21,6 +21,7 @@ protected:
 	TSubclassOf<APlacement> TestPlacementClass;
 
 public:
+	UPROPERTY(VisibleAnywhere)
 	TMap<FIntVector, APlacement*> PlacedMap; // 배치되어 있는 것들 정보
 
 	UPROPERTY(EditAnywhere, Category=BaseProperties)
@@ -39,15 +40,20 @@ public:
 	FVector GridToWorldLocation(const FIntVector& GridCoord);
 
 	FVector GetLocationInFront(AActor* Actor, int32 Distance = 1);
-	
+
 	FVector GetLocationInPointerDirection(APlayerController* PlayerController, int32 Distance = 1);
 
 	template <class T, std::enable_if_t<std::is_base_of_v<APlacement, T>, int>  = 0>
-	void BuildPlacement(TSubclassOf<T> PlacementClass, const FVector& Location)
+	void BuildPlacement(TSubclassOf<T> PlacementClass, const FVector& Location, const FRotator& Rotation)
 	{
+		if (PlacedMap.FindRef(WorldToGridLocation(Location)))
+		{
+			return;
+		}
+
 		FActorSpawnParameters Params;
 
-		T* SpawnedActor = GetWorld()->SpawnActor<T>(PlacementClass, SnapToGrid(Location), FRotator::ZeroRotator,
+		T* SpawnedActor = GetWorld()->SpawnActor<T>(PlacementClass, Location, Rotation,
 		                                            Params);
 		SpawnedActor->Setup(SnapSize);
 
@@ -56,10 +62,10 @@ public:
 	}
 
 	template <class T, std::enable_if_t<std::is_base_of_v<APlacement, T>, int>  = 0>
-	void BuildPlacementInFrontOfActor(TSubclassOf<T> PlacementClass, AActor* Actor)
+	void BuildPlacementInFrontOfActor(TSubclassOf<T> PlacementClass, AActor* Actor, const FRotator& Rotation)
 	{
 		FVector BuildLocation = GetLocationInFront(Actor, 1);
-		BuildPlacement<T>(PlacementClass, BuildLocation);
+		BuildPlacement<T>(PlacementClass, BuildLocation, Rotation);
 	}
 
 	void RemovePlacement(const FIntVector& GridAt);

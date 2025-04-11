@@ -1,18 +1,19 @@
 #include "Placement.h"
-
 #include "Components/BoxComponent.h"
-#include "ProjectISG/Systems/Grid/Manager/GridManager.h"
 
 
 APlacement::APlacement()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	AnchorComp = CreateDefaultSubobject<USceneComponent>(TEXT("AnchorComp"));
+	AnchorComp->SetupAttachment(RootComponent);
+
 	CollisionComp = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionComp"));
-	CollisionComp->SetupAttachment(RootComponent);
+	CollisionComp->SetupAttachment(AnchorComp);
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	MeshComp->SetupAttachment(CollisionComp);
+	MeshComp->SetupAttachment(AnchorComp);
 }
 
 void APlacement::BeginPlay()
@@ -34,8 +35,25 @@ void APlacement::Setup(float TileSize)
 
 	FVector BoxExtent = StaticMesh->GetBounds().BoxExtent;
 
-	CollisionComp->SetBoxExtent(BoxExtent);
-	// CollisionComp->SetRelativeLocation(BoxExtent);
+	FVector SnapExtent
+	(
+		FMath::CeilToInt(BoxExtent.X / TileSize) * TileSize,
+		FMath::CeilToInt(BoxExtent.Y / TileSize) * TileSize,
+		FMath::CeilToInt(BoxExtent.Z / TileSize) * TileSize
+	);
+
+	CollisionComp->SetBoxExtent(SnapExtent);
+	CollisionComp->SetRelativeLocation(FVector(0, 0, SnapExtent.Z));
 
 	MeshComp->SetStaticMesh(StaticMesh);
+}
+
+void APlacement::SetColor(bool bIsGhost, bool bIsBlock)
+{
+	if (bIsGhost && TempMaterial)
+	{
+		MeshComp->SetMaterial(0, TempMaterial);
+		UMaterialInstanceDynamic* MatDynamic = MeshComp->CreateAndSetMaterialInstanceDynamic(0);
+		MatDynamic->SetVectorParameterValue("HighlightColor", bIsBlock ? FLinearColor::Red : FLinearColor::Green);
+	}
 }

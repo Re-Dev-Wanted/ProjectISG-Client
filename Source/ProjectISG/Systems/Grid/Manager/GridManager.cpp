@@ -27,8 +27,8 @@ FVector AGridManager::SnapToGrid(const FVector& Location)
 	(
 		FMath::RoundToInt(Location.X / SnapSize) * SnapSize,
 		FMath::RoundToInt(Location.Y / SnapSize) * SnapSize,
-		// FMath::RoundToInt(Location.Z / SnapSize) * SnapSize
-		SnapSize * 0.5f
+		FMath::RoundToInt(Location.Z / SnapSize) * SnapSize
+		// FMath::RoundToInt(SnapSize * 0.5f)
 	);
 }
 
@@ -39,12 +39,14 @@ FIntVector AGridManager::WorldToGridLocation(const FVector& WorldLocation)
 		FMath::RoundToInt(WorldLocation.X / SnapSize),
 		FMath::RoundToInt(WorldLocation.Y / SnapSize),
 		FMath::RoundToInt(WorldLocation.Z / SnapSize)
+		// FMath::RoundToInt(SnapSize * 0.5f)
 	);
 }
 
 FVector AGridManager::GridToWorldLocation(const FIntVector& GridCoord)
 {
-	return FVector(GridCoord) * SnapSize;
+	// return FVector(GridCoord.X, GridCoord.Y, 0.5f) * SnapSize;
+	return FVector(GridCoord);
 }
 
 FVector AGridManager::GetLocationInFront(AActor* Actor, int32 Distance)
