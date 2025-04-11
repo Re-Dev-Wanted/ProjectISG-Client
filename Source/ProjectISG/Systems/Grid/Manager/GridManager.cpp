@@ -5,20 +5,20 @@
 AGridManager::AGridManager()
 {
 	//Test..
-	ConstructorHelpers::FClassFinder<APlacement> TestPlacement(
-		TEXT("/Script/Engine.Blueprint'/Game/BP_TestPlacement.BP_TestPlacement_C'"));
-
-	if (TestPlacement.Succeeded())
-	{
-		TestPlacementClass = TestPlacement.Class;
-	}
+	// ConstructorHelpers::FClassFinder<APlacement> TestPlacement(
+	// 	TEXT("/Script/Engine.Blueprint'/Game/BP_TestPlacement.BP_TestPlacement_C'"));
+	//
+	// if (TestPlacement.Succeeded())
+	// {
+	// 	TestPlacementClass = TestPlacement.Class;
+	// }
 }
 
 void AGridManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	BuildPlacement(TestPlacementClass, FVector::ZeroVector);
+	// BuildPlacement(TestPlacementClass, FVector::ZeroVector);
 }
 
 FVector AGridManager::SnapToGrid(const FVector& Location)
@@ -27,7 +27,8 @@ FVector AGridManager::SnapToGrid(const FVector& Location)
 	(
 		FMath::RoundToInt(Location.X / SnapSize) * SnapSize,
 		FMath::RoundToInt(Location.Y / SnapSize) * SnapSize,
-		FMath::RoundToInt(Location.Z / SnapSize) * SnapSize
+		// FMath::RoundToInt(Location.Z / SnapSize) * SnapSize
+		SnapSize * 0.5f
 	);
 }
 
@@ -62,15 +63,11 @@ FVector AGridManager::GetLocationInPointerDirection(APlayerController* PlayerCon
 		return FVector::ZeroVector;
 	}
 
-	// 마우스 위치 -> 월드 방향에서 Deproject
-	FVector WorldLocation;
-	FVector WorldDirection;
-
-	if (PlayerController->DeprojectMousePositionToWorld(WorldLocation, WorldDirection))
+	FHitResult HitResult;
+	if (PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, HitResult) && HitResult.
+		bBlockingHit)
 	{
-		FVector Target = WorldLocation + WorldDirection * Distance * SnapSize;
-
-		return SnapToGrid(Target);
+		return SnapToGrid(HitResult.ImpactPoint);
 	}
 
 	return FVector::ZeroVector;

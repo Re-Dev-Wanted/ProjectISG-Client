@@ -35,7 +35,7 @@ void APlacement::Setup(float TileSize)
 	FVector BoxExtent = StaticMesh->GetBounds().BoxExtent;
 
 	CollisionComp->SetBoxExtent(BoxExtent);
-	CollisionComp->SetRelativeLocation(BoxExtent);
+	// CollisionComp->SetRelativeLocation(BoxExtent);
 
 	MeshComp->SetStaticMesh(StaticMesh);
 }

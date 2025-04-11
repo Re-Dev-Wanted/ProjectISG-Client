@@ -26,6 +26,9 @@ public:
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY()
+	class APlayerController* PlayerController;
+
+	UPROPERTY()
 	class AGridManager* GridManager;
 
 	UPROPERTY()
@@ -33,4 +36,10 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<APlacement> PlacementFactory;
+
+	UFUNCTION(BlueprintCallable)
+	void Build();
+
+	UFUNCTION(BlueprintCallable)
+	void Remove();
 };
