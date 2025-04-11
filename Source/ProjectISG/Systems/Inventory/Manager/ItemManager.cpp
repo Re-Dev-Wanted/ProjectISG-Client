@@ -2,7 +2,9 @@
 
 #include "ProjectISG/Systems/Inventory/ItemData.h"
 
-void FItemManager::Initialize()
+TArray<FItemInfoData> UItemManager::ItemInfoList;
+
+void UItemManager::Initialize()
 {
 	const static ConstructorHelpers::FObjectFinder<UDataTable>
 		ItemInfoDataTable(TEXT(
@@ -21,12 +23,12 @@ void FItemManager::Initialize()
 	}
 }
 
-FItemInfoData FItemManager::GetItemInfoById(const uint16 Id)
+FItemInfoData UItemManager::GetItemInfoById(const uint16 Id)
 {
 	return ItemInfoList[Id];
 }
 
-FItemMetaInfo FItemManager::GetInitialItemMetaDataById(const uint16 Id)
+FItemMetaInfo UItemManager::GetInitialItemMetaDataById(const uint16 Id)
 {
 	const FItemInfoData InitialData = GetItemInfoById(Id);
 

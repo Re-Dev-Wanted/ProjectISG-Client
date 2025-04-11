@@ -1,9 +1,13 @@
 ﻿#pragma once
 
 #include "ProjectISG/Systems/Inventory/ItemData.h"
+#include "ItemManager.generated.h"
 
-class FItemManager
+UCLASS()
+class UItemManager : public UObject
 {
+	GENERATED_BODY()
+
 public:
 	static void Initialize();
 	static FItemInfoData GetItemInfoById(const uint16 Id);

@@ -6,7 +6,6 @@
 
 UInventoryComponent::UInventoryComponent()
 {
-	
 }
 
 bool UInventoryComponent::HasItemInInventory(const uint32 Id,
@@ -54,8 +53,8 @@ void UInventoryComponent::SwapItemInInventory(const uint16 Prev,
 uint32 UInventoryComponent::AddItemToInventory(const uint16 Index,
                                                const FItemMetaInfo& ItemInfo)
 {
-	const FItemInfoData& ItemInfoById = FItemManager::GetItemInfoById(
-		GetWorld(), ItemInfo.GetId());
+	const FItemInfoData& ItemInfoById = UItemManager::GetItemInfoById(
+		ItemInfo.GetId());
 
 	// CurrentItemCount는 우선은 총 합으로 가지고 있는 아이템 수를 의미한다.
 	const uint16 CurrentItemCount = InventoryList[Index].GetCurrentCount()
@@ -144,8 +143,8 @@ bool UInventoryComponent::DropItem(const uint16 Index, const uint32 Count)
 // 정해진 규칙에 의거해 아이템을 순서대로 넣어둔다.
 uint32 UInventoryComponent::AddItem(const FItemMetaInfo& ItemInfo)
 {
-	const FItemInfoData& ItemInfoById = FItemManager::GetItemInfoById(
-		GetWorld(), ItemInfo.GetId());
+	const FItemInfoData& ItemInfoById = UItemManager::GetItemInfoById(
+		ItemInfo.GetId());
 
 	// 핫바에서 먼저 검색함.
 	bool bHasInventory = false;

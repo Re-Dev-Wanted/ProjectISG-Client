@@ -4,5 +4,5 @@
 
 UISGGameInstance::UISGGameInstance()
 {
-	FItemManager::Initialize();
+	UItemManager::Initialize();
 }
