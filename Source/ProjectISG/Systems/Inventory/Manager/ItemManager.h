@@ -5,7 +5,10 @@
 class FItemManager
 {
 public:
-	static FItemInfoData GetItemInfoById(const UWorld* World, const uint16 Id);
-	static FItemMetaInfo GetInitialItemMetaDataById(
-		const UWorld* World, const uint16 Id);
+	static void Initialize();
+	static FItemInfoData GetItemInfoById(const uint16 Id);
+	static FItemMetaInfo GetInitialItemMetaDataById(const uint16 Id);
+
+private:
+	static TArray<FItemInfoData> ItemInfoList;
 };
