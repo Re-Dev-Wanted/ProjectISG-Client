@@ -13,7 +13,7 @@ APlacement::APlacement()
 	CollisionComp->SetupAttachment(AnchorComp);
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
-	MeshComp->SetupAttachment(AnchorComp);
+	MeshComp->SetupAttachment(CollisionComp);
 }
 
 void APlacement::BeginPlay()
@@ -35,17 +35,20 @@ void APlacement::Setup(float TileSize)
 
 	FVector BoxExtent = StaticMesh->GetBounds().BoxExtent;
 
+	float HalfSize = FMath::RoundToInt(TileSize * 0.5f);
+
 	FVector SnapExtent
 	(
-		FMath::CeilToInt(BoxExtent.X / TileSize) * TileSize,
-		FMath::CeilToInt(BoxExtent.Y / TileSize) * TileSize,
-		FMath::CeilToInt(BoxExtent.Z / TileSize) * TileSize
+		FMath::CeilToInt(BoxExtent.X / HalfSize) * HalfSize,
+		FMath::CeilToInt(BoxExtent.Y / HalfSize) * HalfSize,
+		FMath::CeilToInt(BoxExtent.Z / HalfSize) * HalfSize
 	);
 
 	CollisionComp->SetBoxExtent(SnapExtent);
-	CollisionComp->SetRelativeLocation(FVector(0, 0, SnapExtent.Z));
+	CollisionComp->SetRelativeLocation(SnapExtent);
 
 	MeshComp->SetStaticMesh(StaticMesh);
+	MeshComp->SetRelativeLocation(FVector::DownVector * SnapExtent.Z);
 }
 
 void APlacement::SetColor(bool bIsGhost, bool bIsBlock)
