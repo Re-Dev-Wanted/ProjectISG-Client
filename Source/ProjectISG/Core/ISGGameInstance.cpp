@@ -1,6 +1,6 @@
 ﻿#include "ISGGameInstance.h"
 
-#include "ProjectISG/Systems/Inventory/Manager/ItemManager.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 UISGGameInstance::UISGGameInstance()
 {
