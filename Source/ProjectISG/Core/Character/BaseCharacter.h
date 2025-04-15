@@ -1,22 +1,34 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+class UISGAbilitySystemInitializeData;
+class UISGAbilitySystemComponent;
+
 UCLASS()
-class PROJECTISG_API ABaseCharacter : public ACharacter
+class PROJECTISG_API ABaseCharacter : public ACharacter,
+                                      public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
 public:
 	ABaseCharacter();
 
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(EditDefaultsOnly, Category = "Options|GAS")
+	TObjectPtr<UISGAbilitySystemComponent> AbilitySystemComponent;
 
-	virtual void SetupPlayerInputComponent(
-		class UInputComponent* PlayerInputComponent) override;
+	UPROPERTY(EditDefaultsOnly, Category = "Options|GAS")
+	TObjectPtr<UISGAbilitySystemInitializeData> InitializeData;
+
+	virtual void InitializeAbilitySystem()
+	{
+	};
 };

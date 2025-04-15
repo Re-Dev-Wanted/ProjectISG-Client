@@ -3,6 +3,8 @@
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/GAS/Common/ISGAbilitySystemComponent.h"
 
 AMainPlayerCharacter::AMainPlayerCharacter()
 {
@@ -37,6 +39,35 @@ void AMainPlayerCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
+	}
+}
+
+void AMainPlayerCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	InitializeAbilitySystem();
+}
+
+void AMainPlayerCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	InitializeAbilitySystem();
+}
+
+void AMainPlayerCharacter::InitializeAbilitySystem()
+{
+	Super::InitializeAbilitySystem();
+
+	if (const AMainPlayerState* PS = GetPlayerState<AMainPlayerState>())
+	{
+		AbilitySystemComponent = Cast<UISGAbilitySystemComponent>(
+			PS->GetAbilitySystemComponent());
+
+		AbilitySystemComponent->Initialize(InitializeData);
+
+		// 이후 Ability 시스템 관련 Delegate 연동 처리를 진행한다.
 	}
 }
 
