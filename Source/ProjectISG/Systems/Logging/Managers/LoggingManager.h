@@ -10,19 +10,14 @@ struct PROJECTISG_API FLoggingData
 	GENERATED_BODY()
 
 	UPROPERTY()
-	uint8 Id;
+	uint16 Id;
 };
 
-USTRUCT()
-struct PROJECTISG_API FLoggingQueueInfo
+struct FLoggingQueueItem
 {
-	GENERATED_BODY()
-
-	UPROPERTY()
-	FLoggingData Data;
-
-	UPROPERTY()
-	uint8 RemainTime;
+	FString Url;
+	FString Payload;
+	int32 RetryCount = 3;
 };
 
 UCLASS()
@@ -43,18 +38,22 @@ public:
 		return Instance;
 	};
 
-	void LoggingToQueue(const FLoggingData& LoggingData);
-	void LoggingToImmediately(const FLoggingData& LoggingData);
+	void Init(const UWorld* World);
 
+	void SendLoggingNow(const FLoggingData& Payload);
+	void QueueLogging(const FLoggingData& Payload);
+
+	UFUNCTION()
 	void Flush();
 
 private:
+	void SendHttpRequest(FLoggingQueueItem& Item);
+
 	static ULoggingManager* Instance;
 
-	uint8 DefaultRemainTime = 3;
-	bool IsLoading = false;
-
-	TArray<FLoggingQueueInfo> LoggingDataQueue;
-
-	void CallLogApi(FLoggingQueueInfo& Data);
+	TArray<FLoggingQueueItem> BeaconQueue;
+	FTimerHandle FlushTimerHandle;
+	float FlushIntervalSeconds = 300.0f;
+	int32 MaxQueueSize = 50;
+	FString ApiPath = TEXT("http://localhost:3000/api/test");
 };

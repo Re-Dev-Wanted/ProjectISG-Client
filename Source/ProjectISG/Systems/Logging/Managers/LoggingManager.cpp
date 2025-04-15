@@ -1,84 +1,98 @@
 ﻿#include "LoggingManager.h"
 
+#include "HttpModule.h"
 #include "JsonObjectConverter.h"
 #include "Interfaces/IHttpRequest.h"
 #include "Interfaces/IHttpResponse.h"
 
-#include "ProjectISG/Utils/ApiUtil.h"
-
 ULoggingManager* ULoggingManager::Instance = nullptr;
 
-void ULoggingManager::LoggingToQueue(const FLoggingData& LoggingData)
+void ULoggingManager::Init(const UWorld* World)
 {
-	FLoggingQueueInfo NewLoggingQueueInfo;
-	NewLoggingQueueInfo.Data = LoggingData;
-	NewLoggingQueueInfo.RemainTime = DefaultRemainTime;
+	if (!World)
+	{
+		return;
+	}
 
-	LoggingDataQueue.Push(NewLoggingQueueInfo);
-}
-
-void ULoggingManager::LoggingToImmediately(const FLoggingData& LoggingData)
-{
-	FLoggingQueueInfo NewLoggingQueueInfo;
-	NewLoggingQueueInfo.Data = LoggingData;
-	NewLoggingQueueInfo.RemainTime = DefaultRemainTime;
-
-	CallLogApi(NewLoggingQueueInfo);
+	if (World)
+	{
+		World->GetTimerManager().SetTimer(
+			FlushTimerHandle,
+			this,
+			&ThisClass::Flush,
+			FlushIntervalSeconds,
+			true
+		);
+	}
 }
 
 void ULoggingManager::Flush()
 {
-	for (FLoggingQueueInfo DataQueue : LoggingDataQueue)
+	TArray<FLoggingQueueItem> ItemsToProcess = BeaconQueue;
+	BeaconQueue.Empty();
+
+	for (FLoggingQueueItem& Item : ItemsToProcess)
 	{
-		CallLogApi(DataQueue);
+		SendHttpRequest(Item);
 	}
+	FPlatformProcess::Sleep(0.01f);
 }
 
-void ULoggingManager::CallLogApi(FLoggingQueueInfo& Data)
+void ULoggingManager::QueueLogging(const FLoggingData& Payload)
 {
-	FApiRequest NewRequest;
-	FApiResponse NewResponse;
-
-	NewRequest.Path = TEXT("/api/test");
-
-	FString Params;
-	FJsonObjectConverter::UStructToJsonObjectString(Data.Data, Params);
-	NewRequest.Params = Params;
-
-	Data.RemainTime -= 1;
-	TWeakObjectPtr<ULoggingManager> WeakThis = this;
-	NewRequest.Callback = [WeakThis, &Data](const FHttpRequestPtr& Req,
-	                                        const FHttpResponsePtr& Res,
-	                                        const bool IsSuccess)
+	if (BeaconQueue.Num() >= MaxQueueSize)
 	{
-		if (!WeakThis.IsValid())
-		{
-			return;
-		}
+		// 오래된 내용을 보내고 제거하기
+		SendHttpRequest(BeaconQueue[0]);
+		BeaconQueue.RemoveAt(0);
+	}
 
-		if (!WeakThis.Get())
-		{
-			return;
-		}
+	FLoggingQueueItem Item;
+	Item.Url = ApiPath;
+	FJsonObjectConverter::UStructToJsonObjectString(Payload, Item.Payload);
+	Item.RetryCount = 3;
 
-		if (!IsSuccess)
+	BeaconQueue.Add(Item);
+}
+
+void ULoggingManager::SendLoggingNow(const FLoggingData& Payload)
+{
+	FLoggingQueueItem Item;
+	Item.Url = ApiPath;
+	FJsonObjectConverter::UStructToJsonObjectString(Payload, Item.Payload);
+	Item.RetryCount = 3;
+
+	SendHttpRequest(Item);
+}
+
+void ULoggingManager::SendHttpRequest(FLoggingQueueItem& Item)
+{
+	const TSharedRef<IHttpRequest, ESPMode::ThreadSafe> Request =
+		FHttpModule::Get().
+		CreateRequest();
+	Request->SetURL(TEXT("http://localhost:3000/api/test"));
+	Request->SetVerb(TEXT("POST"));
+	Request->SetHeader(
+		TEXT("Content-Type"), TEXT("application/x-www-form-urlencoded"));
+	Request->SetContentAsString(Item.Payload);
+
+	Request->OnProcessRequestComplete().BindLambda(
+		[this, Item](const FHttpRequestPtr& RequestPtr,
+		             const FHttpResponsePtr& Response,
+		             const bool bWasSuccessful) mutable
 		{
-			if (Data.RemainTime == 0)
+			const bool bValid = bWasSuccessful && Response.IsValid() &&
+				EHttpResponseCodes::IsOk(Response->GetResponseCode());
+			if (!bValid)
 			{
-				WeakThis.Get()->LoggingDataQueue.RemoveAtSwap(0);
-				WeakThis.Get()->IsLoading = false;
-				return;
+				Item.RetryCount--;
+
+				if (Item.RetryCount > 0)
+				{
+					BeaconQueue.Add(Item);
+				}
 			}
+		});
 
-			WeakThis.Get()->CallLogApi(Data);
-			return;
-		}
-
-		const FString JsonString = Res->GetContentAsString();
-		WeakThis.Get()->LoggingDataQueue.RemoveAtSwap(0);
-		WeakThis.Get()->IsLoading = false;
-	};
-
-	FApiUtil::GetMainAPI()->PostApi(
-		this, NewRequest, NewResponse);
+	Request->ProcessRequest();
 }
