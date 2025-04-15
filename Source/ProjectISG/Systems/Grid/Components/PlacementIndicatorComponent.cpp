@@ -35,17 +35,23 @@ void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 		return;
 	}
 
-	FVector SnappedLocation = GridManager->GetLocationInPointerDirection(PlayerController);
 
-	FIntVector GridCoord;
-	APlacement* PlacedActor;
-
-	bool bIsBlock = GridManager->TryGetPlacement(SnappedLocation, GridCoord, PlacedActor);
+	bool bIsBlock = false;
 
 	if (GhostPlacement)
 	{
-		GhostPlacement->SetActorLocation(SnappedLocation);
-		GhostPlacement->SetActorEnableCollision(false);
+		FVector SnappedLocation = GridManager->GetLocationInPointerDirectionPlacement(
+			PlayerController, GhostPlacement->GetMeshSize());
+
+		GhostPlacement->SetActorLocation(FMath::VInterpTo(GhostPlacement->GetActorLocation(), SnappedLocation, 0.1f,
+		                                                  InterpSpeed));
+		GhostPlacement->SetActorRotation(FMath::RInterpTo(GhostPlacement->GetActorRotation(),
+		                                                  FRotator(0, GetDegrees(RotateDirection), 0), 0.1f,
+		                                                  InterpSpeed));
+		FIntVector GridCoord;
+		APlacement* PlacedActor;
+		bIsBlock = GridManager->TryGetPlacement(GhostPlacement, GridCoord, PlacedActor);
+
 		GhostPlacement->SetColor(true, bIsBlock);
 	}
 }
@@ -68,7 +74,7 @@ void UPlacementIndicatorComponent::Remove()
 		FIntVector GridCoord;
 		APlacement* PlacedActor;
 
-		if (GridManager->TryGetPlacement(GhostPlacement->GetActorLocation(), GridCoord, PlacedActor))
+		if (GridManager->TryGetPlacement(GhostPlacement, GridCoord, PlacedActor))
 		{
 			// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%s"), *GridCoord.ToString()));
 			GridManager->RemovePlacement(GridCoord);
@@ -76,7 +82,12 @@ void UPlacementIndicatorComponent::Remove()
 	}
 }
 
-void UPlacementIndicatorComponent::Rotate()
+void UPlacementIndicatorComponent::Rotate(bool bClockwise)
 {
-	GhostPlacement->AddActorLocalRotation(FRotator(0, 90, 0));
+	if (bClockwise)
+	{
+		RotateDirection = RotateDirection << static_cast<uint8>(1);
+		return;
+	}
+	RotateDirection = RotateDirection >> static_cast<uint8>(1);
 }

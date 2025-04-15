@@ -1,24 +1,26 @@
 #include "GridManager.h"
 
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
+#include "ProjectISG/Systems/Grid/Components/GridComponent.h"
 
 AGridManager::AGridManager()
 {
-	//Test..
-	// ConstructorHelpers::FClassFinder<APlacement> TestPlacement(
-	// 	TEXT("/Script/Engine.Blueprint'/Game/BP_TestPlacement.BP_TestPlacement_C'"));
-	//
-	// if (TestPlacement.Succeeded())
-	// {
-	// 	TestPlacementClass = TestPlacement.Class;
-	// }
+	GridComp = CreateDefaultSubobject<UGridComponent>(TEXT("GridComp"));
 }
 
 void AGridManager::BeginPlay()
 {
 	Super::BeginPlay();
+}
 
-	// BuildPlacement(TestPlacementClass, FVector::ZeroVector);
+void AGridManager::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	if (GridComp)
+	{
+		GridComp->OnUpdatedProperties();
+	}
 }
 
 FVector AGridManager::SnapToGrid(const FVector& Location)
@@ -30,6 +32,20 @@ FVector AGridManager::SnapToGrid(const FVector& Location)
 		FMath::RoundToInt(Location.Z / SnapSize) * SnapSize
 		// FMath::RoundToInt(SnapSize * 0.5f)
 	);
+}
+
+FVector AGridManager::SnapToGridPlacement(const FVector& Location, FVector MeshSize)
+{
+	FVector SnappedLocation = SnapToGrid(Location);
+
+	FVector Offset = FVector
+	(
+		FMath::Fmod(MeshSize.X, SnapSize) == 0 ? 0 : -MeshSize.X * 0.5f,
+		FMath::Fmod(MeshSize.Y, SnapSize) == 0 ? 0 : -MeshSize.Y * 0.5f,
+		0
+	);
+
+	return SnappedLocation + Offset;
 }
 
 FIntVector AGridManager::WorldToGridLocation(const FVector& WorldLocation)
@@ -75,13 +91,59 @@ FVector AGridManager::GetLocationInPointerDirection(APlayerController* PlayerCon
 	return FVector::ZeroVector;
 }
 
+FVector AGridManager::GetLocationInPointerDirectionPlacement(APlayerController* PlayerController, FVector MeshSize,
+                                                             int32 Distance)
+{
+	if (!PlayerController)
+	{
+		return FVector::ZeroVector;
+	}
+
+	FHitResult HitResult;
+	if (PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, HitResult) && HitResult.
+		bBlockingHit)
+	{
+		return SnapToGridPlacement(HitResult.ImpactPoint, MeshSize);
+	}
+
+	return FVector::ZeroVector;
+}
+
 void AGridManager::RemovePlacement(const FIntVector& GridAt)
 {
 	if (APlacement* Placement = PlacedMap.FindRef(GridAt))
 	{
-		Placement->Destroy();
-		PlacedMap.Remove(GridAt);
+		if (ReverseMap.Contains(Placement))
+		{
+			TArray<FIntVector> Arr = ReverseMap.FindRef(Placement);
+			for (FIntVector Coord : Arr)
+			{
+				PlacedMap.Remove(Coord);
+			}
+			ReverseMap.Remove(Placement);
+			Placement->Destroy();
+		}
 	}
+}
+
+bool AGridManager::TryGetPlacement(APlacement* Placement, FIntVector& OutGridAt, APlacement*& OutPlacement)
+{
+	FIntVector ToCoord = WorldToGridLocation(Placement->GetActorLocation());
+
+	TArray<FIntVector> TargetCells = Placement->GetOccupiedGrid(SnapSize, ToCoord);
+
+	for (const FIntVector& Cell : TargetCells)
+	{
+		if (APlacement* Found = PlacedMap.FindRef(Cell))
+		{
+			OutGridAt = ToCoord;
+			OutPlacement = Found;
+
+			return true;
+		}
+	}
+
+	return false;
 }
 
 bool AGridManager::TryGetPlacement(const FVector& Location, FIntVector& OutGridAt, APlacement*& OutPlacement)

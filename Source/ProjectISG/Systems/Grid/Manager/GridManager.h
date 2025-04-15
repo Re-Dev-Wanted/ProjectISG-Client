@@ -17,23 +17,29 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY()
-	TSubclassOf<APlacement> TestPlacementClass;
+	virtual void OnConstruction(const FTransform& Transform) override;
+
+	UPROPERTY(VisibleAnywhere)
+	class UGridComponent* GridComp;
 
 public:
 	UPROPERTY(VisibleAnywhere)
 	TMap<FIntVector, APlacement*> PlacedMap; // 배치되어 있는 것들 정보
 
-	UPROPERTY(EditAnywhere, Category=BaseProperties)
+	TMap<APlacement*, TArray<FIntVector>> ReverseMap; // 삭제를 편하게 하기 위해
+
+	UPROPERTY(EditAnywhere, Category=Properties)
 	int32 Rows = 10;
 
-	UPROPERTY(EditAnywhere, Category=BaseProperties)
-	int32 Column = 10;
+	UPROPERTY(EditAnywhere, Category=Properties)
+	int32 Columns = 10;
 
-	UPROPERTY(EditAnywhere, Category=BaseProperties)
+	UPROPERTY(EditAnywhere, Category=Properties)
 	float SnapSize = 100;
 
 	FVector SnapToGrid(const FVector& Location);
+
+	FVector SnapToGridPlacement(const FVector& Location, FVector MeshSize);
 
 	FIntVector WorldToGridLocation(const FVector& WorldLocation);
 
@@ -43,10 +49,14 @@ public:
 
 	FVector GetLocationInPointerDirection(APlayerController* PlayerController, int32 Distance = 1);
 
+	FVector GetLocationInPointerDirectionPlacement(APlayerController* PlayerController, FVector MeshSize,
+	                                               int32 Distance = 1);
+
 	template <class T, std::enable_if_t<std::is_base_of_v<APlacement, T>, int>  = 0>
 	void BuildPlacement(TSubclassOf<T> PlacementClass, const FVector& Location, const FRotator& Rotation)
 	{
-		if (PlacedMap.FindRef(WorldToGridLocation(Location)))
+		FIntVector GridCoord = WorldToGridLocation(Location);
+		if (PlacedMap.FindRef(GridCoord))
 		{
 			return;
 		}
@@ -57,8 +67,16 @@ public:
 		                                            Params);
 		SpawnedActor->Setup(SnapSize);
 
-		// Map에 저장
-		PlacedMap.Add(WorldToGridLocation(Location), SpawnedActor);
+		TArray<FIntVector> OccupiedCells = SpawnedActor->GetOccupiedGrid(SnapSize, GridCoord);
+
+		ReverseMap.Add(SpawnedActor, TArray<FIntVector>());
+
+		for (const FIntVector& Coord : OccupiedCells)
+		{
+			// Map에 저장
+			PlacedMap.Add(Coord, SpawnedActor);
+			ReverseMap[SpawnedActor].Add(Coord);
+		}
 	}
 
 	template <class T, std::enable_if_t<std::is_base_of_v<APlacement, T>, int>  = 0>
@@ -69,6 +87,8 @@ public:
 	}
 
 	void RemovePlacement(const FIntVector& GridAt);
+
+	bool TryGetPlacement(APlacement* Placement, FIntVector& OutGridAt, APlacement*& OutPlacement);
 
 	bool TryGetPlacement(const FVector& Location, FIntVector& OutGridAt, APlacement*& OutPlacement);
 
@@ -81,6 +101,6 @@ public:
 
 	float GetGridHeight() const
 	{
-		return Column * SnapSize;
+		return Columns * SnapSize;
 	}
 };

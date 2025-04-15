@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "ProjectISG/Systems/Grid/PlacementData.h"
 #include "PlacementIndicatorComponent.generated.h"
-
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTISG_API UPlacementIndicatorComponent : public UActorComponent
@@ -24,6 +24,12 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=IndicatorProperties)
+	float InterpSpeed = 5.f;
+
+	UPROPERTY()
+	TEnumAsByte<ERotateDirection> RotateDirection = North;
 
 	UPROPERTY()
 	class APlayerController* PlayerController;
@@ -44,5 +50,5 @@ public:
 	void Remove();
 
 	UFUNCTION(BlueprintCallable)
-	void Rotate();
+	void Rotate(bool bClockwise);
 };

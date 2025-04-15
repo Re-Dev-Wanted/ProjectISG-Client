@@ -1,14 +1,15 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Grid.h"
+
+#include "GridComponent.h"
+
 #include "ProceduralMeshComponent.h"
 #include "Kismet/KismetMaterialLibrary.h"
+#include "ProjectISG/Systems/Grid/Manager/GridManager.h"
 
-// Sets default values
-AGrid::AGrid()
+UGridComponent::UGridComponent()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = true;
 
 	LineMeshComp = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Lines_ProceduralMesh"));
 	SquareMeshComp = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Squares_ProceduralMesh"));
@@ -21,9 +22,40 @@ AGrid::AGrid()
 	}
 }
 
-void AGrid::OnConstruction(const FTransform& Transform)
+
+// Called when the game starts
+void UGridComponent::BeginPlay()
 {
-	Super::OnConstruction(Transform);
+	Super::BeginPlay();
+
+	// ...
+}
+
+void UGridComponent::OnRegister()
+{
+	Super::OnRegister();
+
+	Manager = Cast<AGridManager>(GetOwner());
+
+	OnUpdatedProperties();
+}
+
+
+// Called every frame
+void UGridComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// ...
+}
+
+void UGridComponent::OnUpdatedProperties()
+{
+	if (!Manager)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[UGridComponent::OnRegister] AGridManager is Null"));
+		return;
+	}
 
 	UMaterialInstanceDynamic* LineMaterialInstance = CreateMaterialInstance(LineColor, LineOpacity);
 	UMaterialInstanceDynamic* SquereMaterialInstance = CreateMaterialInstance(SquareColor, SquareOpacity);
@@ -35,11 +67,15 @@ void AGrid::OnConstruction(const FTransform& Transform)
 	TArray<FVector> SquareVertices;
 	TArray<int32> SquareTriangles;
 
+	int32 Rows = Manager->Rows;
+	int32 Columns = Manager->Columns;
+	float TileSize = Manager->SnapSize;
+
 	// Horizontal Lines
 	for (int32 Row = 0; Row <= Rows; Row++)
 	{
 		LineStart = TileSize * Row;
-		LineEnd = LineWidth();
+		LineEnd = Manager->GetGridWidth();
 
 		DrawLine(FVector(LineStart, 0, 0), FVector(LineStart, LineEnd, 0), LineThickness, LineVertices, LineTriangles);
 	}
@@ -48,34 +84,23 @@ void AGrid::OnConstruction(const FTransform& Transform)
 	for (int32 Column = 0; Column <= Columns; Column++)
 	{
 		LineStart = TileSize * Column;
-		LineEnd = LineHeight();
+		LineEnd = Manager->GetGridHeight();
 
 		DrawLine(FVector(0, LineStart, 0), FVector(LineEnd, LineStart, 0), LineThickness, LineVertices, LineTriangles);
 	}
-	
+
 	TArray<FVector> EmptyVectorArray;
 	TArray<FVector2D> EmptyVector2DArray;
 	TArray<FColor> EmptyColorArray;
 	TArray<FProcMeshTangent> EmptyTangentArray;
 
-	LineMeshComp->CreateMeshSection(0, LineVertices, LineTriangles, EmptyVectorArray, EmptyVector2DArray, EmptyColorArray, EmptyTangentArray, false);
+	LineMeshComp->CreateMeshSection(0, LineVertices, LineTriangles, EmptyVectorArray, EmptyVector2DArray,
+	                                EmptyColorArray, EmptyTangentArray, false);
 	LineMeshComp->SetMaterial(0, LineMaterialInstance);
 }
 
-// Called when the game starts or when spawned
-void AGrid::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void AGrid::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-void AGrid::DrawLine(FVector Start, FVector End, float Thickness, TArray<FVector>& Vertices, TArray<int32>& Triangles)
+void UGridComponent::DrawLine(FVector Start, FVector End, float Thickness, TArray<FVector>& Vertices,
+                              TArray<int32>& Triangles)
 {
 	float HalfThickness = Thickness * 0.5f;
 	FVector Direction = (End - Start).GetSafeNormal().Cross(FVector::UpVector);
@@ -86,7 +111,7 @@ void AGrid::DrawLine(FVector Start, FVector End, float Thickness, TArray<FVector
 
 	int32 Num = Vertices.Num();
 
-	TArray<int32> Pins
+	TArray Pins
 	{
 		Num + 2,
 		Num + 1,
@@ -100,7 +125,7 @@ void AGrid::DrawLine(FVector Start, FVector End, float Thickness, TArray<FVector
 
 	FVector Offset = Direction * HalfThickness;
 
-	TArray<FVector> Corners
+	TArray Corners
 	{
 		Start + Offset, // Top-Left
 		End + Offset, // Top-Right
@@ -111,9 +136,10 @@ void AGrid::DrawLine(FVector Start, FVector End, float Thickness, TArray<FVector
 	Vertices.Append(Corners);
 }
 
-UMaterialInstanceDynamic* AGrid::CreateMaterialInstance(FLinearColor Color, float Opacity, float Power) const
+UMaterialInstanceDynamic* UGridComponent::CreateMaterialInstance(FLinearColor Color, float Opacity, float Power) const
 {
-	UMaterialInstanceDynamic* MaterialInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(GetWorld(), GridMaterialInstance);
+	UMaterialInstanceDynamic* MaterialInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(
+		GetWorld(), GridMaterialInstance);
 	MaterialInstance->SetVectorParameterValue("Color", Color);
 	MaterialInstance->SetScalarParameterValue("Opacity", Opacity);
 	MaterialInstance->SetScalarParameterValue("Power", Power);

@@ -21,6 +21,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	FVector MeshSize = FVector::ZeroVector;
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -34,8 +36,14 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	class UStaticMeshComponent* MeshComp;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	class UProceduralMeshComponent* ProceduralMeshComp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<int32, UStaticMesh*> MeshMap;
+
 	UPROPERTY(EditAnywhere)
-	class UStaticMesh* StaticMesh;
+	class UStaticMesh* BaseStaticMesh;
 
 	UPROPERTY(EditAnywhere)
 	class UMaterialInstance* TempMaterial;
@@ -43,4 +51,11 @@ public:
 	virtual void Setup(float TileSize);
 
 	void SetColor(bool bIsGhost, bool bIsBlock);
+
+	TArray<FIntVector> GetOccupiedGrid(float SnapSize, const FIntVector& Start);
+
+	FVector GetMeshSize() const
+	{
+		return MeshSize;
+	}
 };
