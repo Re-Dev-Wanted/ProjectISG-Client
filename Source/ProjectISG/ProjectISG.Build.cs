@@ -15,9 +15,10 @@ public class ProjectISG : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new[]
 		{
-			"UMG", "GameplayAbilities", "GameplayTags",
-			"GameplayTasks", "OnlineSubsystem", "OnlineSubsystemNull",
-			"OnlineSubsystemSteam", "OnlineSubsystemUtils"
+			"GameplayAbilities", "GameplayTags", "GameplayTasks",
+			"OnlineSubsystem", "OnlineSubsystemNull",
+			"OnlineSubsystemSteam", "OnlineSubsystemUtils",
+			"Json", "JsonUtilities", "HTTP", "UMG"
 		});
 	}
 }

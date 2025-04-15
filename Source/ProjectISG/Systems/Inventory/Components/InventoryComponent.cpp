@@ -2,7 +2,7 @@
 
 #include "Kismet/KismetMathLibrary.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
-#include "ProjectISG/Systems/Inventory/Manager/ItemManager.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 UInventoryComponent::UInventoryComponent()
 {
