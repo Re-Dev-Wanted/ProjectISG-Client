@@ -10,4 +10,7 @@ USTRUCT(BlueprintType)
 struct FPlacementInfo
 {
 	GENERATED_BODY()
+
+
+
 };
