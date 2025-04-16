@@ -50,7 +50,12 @@ void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 		                                                  InterpSpeed));
 		FIntVector GridCoord;
 		APlacement* PlacedActor;
-		bIsBlock = GridManager->TryGetPlacement(GhostPlacement, GridCoord, PlacedActor);
+
+		FHitResult HitResult;
+		bool bHit = PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, HitResult) && HitResult.
+			bBlockingHit;
+
+		bIsBlock = bHit && GridManager->TryGetPlacement(HitResult.ImpactPoint, GridCoord, PlacedActor);
 
 		GhostPlacement->SetColor(true, bIsBlock);
 	}
