@@ -1,0 +1,40 @@
+﻿#include "InventoryUI.h"
+
+#include "Components/GridPanel.h"
+#include "Module/InventorySlot.h"
+
+void UInventoryUI::NativePreConstruct()
+{
+	Super::NativePreConstruct();
+
+	if (!InventorySlotClass)
+	{
+		return;
+	}
+
+	InventoryList->ClearChildren();
+	for (int i = 0; i < ListRow * ListColumn; i++)
+	{
+		UInventorySlot* NewSlot = CreateWidget<UInventorySlot>(
+			this, InventorySlotClass);
+		NewSlot->SetPadding(4);
+
+		InventoryList->AddChildToGrid(NewSlot, i / ListColumn, i % ListColumn);
+	}
+}
+
+void UInventoryUI::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	InventoryList->ClearChildren();
+
+	for (int i = 0; i < ListRow * ListColumn; i++)
+	{
+		UInventorySlot* NewSlot = CreateWidget<UInventorySlot>(
+			this, InventorySlotClass);
+		NewSlot->SetPadding(4);
+
+		InventoryList->AddChildToGrid(NewSlot, i / ListColumn, i % ListColumn);
+	}
+}

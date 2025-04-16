@@ -1,0 +1,129 @@
+﻿#include "InventorySlot.h"
+
+#include "InventorySlotDragDropOperation.h"
+#include "Blueprint/SlateBlueprintLibrary.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Components/Overlay.h"
+#include "Kismet/KismetInputLibrary.h"
+
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+
+void UInventorySlot::RemoveDragDropSlot() const
+{
+}
+
+FReply UInventorySlot::NativeOnMouseButtonDown(const FGeometry& InGeometry,
+                                               const FPointerEvent&
+                                               InMouseEvent)
+{
+	if (IsDragUi)
+	{
+		Super::NativeOnMouseButtonDown(InGeometry, InMouseEvent);
+	}
+
+	DragStartOffset = USlateBlueprintLibrary::AbsoluteToLocal(InGeometry,
+		UKismetInputLibrary::PointerEvent_GetScreenSpacePosition(InMouseEvent));
+
+	return UWidgetBlueprintLibrary::DetectDragIfPressed(
+		InMouseEvent,
+		this,
+		EKeys::LeftMouseButton
+	).NativeReply;
+}
+
+void UInventorySlot::NativeOnDragDetected(const FGeometry& InGeometry,
+                                          const FPointerEvent& InMouseEvent,
+                                          UDragDropOperation*& OutOperation)
+{
+	if (IsDragUi)
+	{
+		return;
+	}
+
+	if (SlotItemId == 0)
+	{
+		return;
+	}
+
+	Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
+
+	// 드래그를 위한 위젯 설정
+	DragItemWidget = CreateWidget<UInventorySlot>(this, StaticClass());
+	// DragItemWidget->SetThumbnail(ItemThumbnail->GetBrush().GetResourceObject());
+	// DragItemWidget->SetItemCountText(ItemCount->GetText());
+	DragItemWidget->SetIsDragged(true);
+
+	// 드래그 드롭 관련 오퍼레이션 설정
+	OutOperation = UWidgetBlueprintLibrary::CreateDragDropOperation(
+		StaticClass());
+	OutOperation->Pivot = EDragPivot::MouseDown;
+	OutOperation->DefaultDragVisual = DragItemWidget;
+
+	if (OutOperation->IsA(UInventorySlotDragDropOperation::StaticClass()))
+	{
+		UInventorySlotDragDropOperation* DragDropOperation = Cast<
+			UInventorySlotDragDropOperation>(OutOperation);
+
+		DragDropOperation->SetOriginWidget(this);
+		DragDropOperation->SetItemIndex(Index);
+	}
+}
+
+bool UInventorySlot::NativeOnDrop(const FGeometry& InGeometry,
+                                  const FDragDropEvent& InDragDropEvent,
+                                  UDragDropOperation* InOperation)
+{
+	if (IsDragUi)
+	{
+		return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+	}
+	// 드래그 필요한 UI인 경우 여기에 접근하는 순간부터 우선은 true로 교체해준다.
+	IsExecuteDrop = true;
+
+	// 이 경우가 애초부터 인벤토리 칸과 인벤토리 칸과의 교차임을 의미한다.
+	// 근데 이후 불안한 경우 내부에서 Operation의 Widget이 InvenSlot인지 확인
+	if (!InOperation->IsA(UInventorySlotDragDropOperation::StaticClass()))
+	{
+		return false;
+	}
+
+	UInventorySlotDragDropOperation* DropOperation
+		= static_cast<UInventorySlotDragDropOperation*>(InOperation);
+
+	if (!DropOperation->GetOriginWidget().IsA(StaticClass()))
+	{
+		return false;
+	}
+
+	UInventorySlot* PrevInvSlot = Cast<UInventorySlot>(DropOperation->
+		GetOriginWidget());
+
+	const AMainPlayerState* PS = Cast<AMainPlayerState>(
+		GetOwningPlayerPawn()->GetPlayerState());
+
+	TArray<FItemMetaInfo> InventoryList = PS->GetInventoryComponent()->
+	                                          GetInventoryList();
+	SetSlotInfo(InventoryList[DropOperation->GetItemIndex()]);
+	PrevInvSlot->SetSlotInfo(InventoryList[Index]);
+
+	PS->GetInventoryComponent()->SwapItemInInventory(
+		DropOperation->GetItemIndex(), Index);
+
+	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+}
+
+void UInventorySlot::NativeOnDragCancelled(
+	const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
+{
+	Super::NativeOnDragCancelled(InDragDropEvent, InOperation);
+}
+
+void UInventorySlot::SetSlotInfo(const FItemMetaInfo& ItemMetaInfo)
+{
+}
+
+void UInventorySlot::SetIsDragged(const bool IsDragged)
+{
+	ItemOverlay->SetRenderOpacity(IsDragged ? 0.5 : 1);
+}
