@@ -94,6 +94,8 @@ public:
 
 	bool TryGetPlacementAt(AActor* Actor, FIntVector& OutGridAt, APlacement*& OutPlacement);
 
+	bool IsOverlapped(APlacement* Ghost);
+
 	float GetGridWidth() const
 	{
 		return Rows * SnapSize;

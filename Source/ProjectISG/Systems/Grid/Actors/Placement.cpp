@@ -21,6 +21,8 @@ APlacement::APlacement()
 	ProceduralMeshComp->SetupAttachment(CollisionComp);
 	ProceduralMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ProceduralMeshComp->SetGenerateOverlapEvents(false);
+
+	bReplicates = true;
 }
 
 void APlacement::BeginPlay()
@@ -28,6 +30,11 @@ void APlacement::BeginPlay()
 	Super::BeginPlay();
 
 	// Setup();
+}
+
+void APlacement::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
 void APlacement::Tick(float DeltaTime)

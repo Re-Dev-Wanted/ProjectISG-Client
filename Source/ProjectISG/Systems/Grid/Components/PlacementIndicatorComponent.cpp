@@ -35,7 +35,6 @@ void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 		return;
 	}
 
-
 	bool bIsBlock = false;
 
 	if (GhostPlacement)
@@ -55,7 +54,7 @@ void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 		bool bHit = PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, HitResult) && HitResult.
 			bBlockingHit;
 
-		bIsBlock = bHit && GridManager->TryGetPlacement(HitResult.ImpactPoint, GridCoord, PlacedActor);
+		bIsBlock = !bHit || GridManager->TryGetPlacement(GhostPlacement, GridCoord, PlacedActor);
 
 		GhostPlacement->SetColor(true, bIsBlock);
 	}

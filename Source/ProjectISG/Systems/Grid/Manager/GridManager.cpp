@@ -62,7 +62,7 @@ FIntVector AGridManager::WorldToGridLocation(const FVector& WorldLocation)
 FVector AGridManager::GridToWorldLocation(const FIntVector& GridCoord)
 {
 	// return FVector(GridCoord.X, GridCoord.Y, 0.5f) * SnapSize;
-	return FVector(GridCoord);
+	return FVector(GridCoord) * SnapSize;
 }
 
 FVector AGridManager::GetLocationInFront(AActor* Actor, int32 Distance)
