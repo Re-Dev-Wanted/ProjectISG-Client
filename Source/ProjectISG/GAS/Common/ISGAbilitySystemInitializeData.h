@@ -6,7 +6,6 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "ISGAbilitySystemInitializeData.generated.h"
 
-class UAttributeSet;
 class UGA_BaseInputAbility;
 
 UCLASS()
