@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Core/Character/BaseCharacter.h"
+#include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerCharacter.generated.h"
 
 struct FInputActionValue;
@@ -35,6 +36,10 @@ protected:
 
 	virtual void InitializeAbilitySystem() override;
 
+public:
+	GETTER_SETTER(bool, bIsSleep);
+	GETTER_SETTER(bool, bLieOnBed);
+
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USpringArmComponent> SpringArm;
@@ -59,4 +64,12 @@ private:
 
 	UFUNCTION()
 	void Look(const FInputActionValue& Value);
+
+	// 장진혁
+	UPROPERTY(EditAnywhere, Category = "Sleep",
+		meta = (AllowPrivateAccess = true))
+	bool bIsSleep = false;
+	UPROPERTY(EditAnywhere, Category = "Sleep",
+		meta = (AllowPrivateAccess = true))
+	bool bLieOnBed = false;
 };
