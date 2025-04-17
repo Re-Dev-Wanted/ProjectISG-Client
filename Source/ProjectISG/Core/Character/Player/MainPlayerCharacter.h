@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Core/Character/BaseCharacter.h"
+#include "ProjectISG/Systems/Grid/Components/PlacementIndicatorComponent.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerCharacter.generated.h"
 
@@ -47,10 +48,18 @@ protected:
 public:
 	GETTER_SETTER(bool, bIsSleep);
 	GETTER_SETTER(bool, bLieOnBed);
+	GETTER_SETTER(TObjectPtr<AActor>, MainHandItem)
+	GETTER(TObjectPtr<UPlacementIndicatorComponent>, PlacementIndicatorComponent)
 
 private:
+	UPROPERTY()
+	TObjectPtr<AActor> MainHandItem;
+
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UPlacementIndicatorComponent> PlacementIndicatorComponent;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USpringArmComponent> SpringArm;

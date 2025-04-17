@@ -28,13 +28,13 @@ public:
 
 	TMap<APlacement*, TArray<FIntVector>> ReverseMap; // 삭제를 편하게 하기 위해
 
-	UPROPERTY(EditAnywhere, Category=Properties)
+	UPROPERTY(EditAnywhere, Category = Properties)
 	int32 Rows = 10;
 
-	UPROPERTY(EditAnywhere, Category=Properties)
+	UPROPERTY(EditAnywhere, Category = Properties)
 	int32 Columns = 10;
 
-	UPROPERTY(EditAnywhere, Category=Properties)
+	UPROPERTY(EditAnywhere, Category = Properties)
 	float SnapSize = 100;
 
 	FVector SnapToGrid(const FVector& Location);

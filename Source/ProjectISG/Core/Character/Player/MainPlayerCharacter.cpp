@@ -28,6 +28,9 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 
 	PlayerInventoryComponent = CreateDefaultSubobject<
 		UPlayerInventoryComponent>("Player Inventory Component");
+
+	PlacementIndicatorComponent = CreateDefaultSubobject<UPlacementIndicatorComponent>("Placement Indicator Component");
+	PlacementIndicatorComponent->Deactivate();
 }
 
 void AMainPlayerCharacter::BeginPlay()

@@ -10,7 +10,6 @@ UPlacementIndicatorComponent::UPlacementIndicatorComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-
 // Called when the game starts
 void UPlacementIndicatorComponent::BeginPlay()
 {
@@ -18,9 +17,6 @@ void UPlacementIndicatorComponent::BeginPlay()
 
 	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	GridManager = Cast<AGridManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGridManager::StaticClass()));
-
-	GhostPlacement = GetWorld()->SpawnActor<APlacement>(PlacementFactory);
-	GhostPlacement->Setup(GridManager->SnapSize);
 }
 
 
@@ -58,10 +54,36 @@ void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 	}
 }
 
+void UPlacementIndicatorComponent::OnActivate(const TSubclassOf<AActor>& Factory)
+{
+	SetActive(true);
+
+	if (GhostPlacement)
+	{
+		GhostPlacement->Destroy();
+	}
+
+	AActor* Actor = GetWorld()->SpawnActor<AActor>(Factory);
+
+	GhostPlacement = Cast<APlacement>(Actor);
+	GhostPlacement->Setup(GridManager->SnapSize);
+}
+
+void UPlacementIndicatorComponent::OnDeactivate()
+{
+	if (GhostPlacement)
+	{
+		GhostPlacement->Destroy();
+	}
+
+	SetActive(false);
+}
+
 void UPlacementIndicatorComponent::Build()
 {
 	if (GridManager)
 	{
+		const TSubclassOf<APlacement> PlacementFactory = GhostPlacement->GetClass();
 		// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
 		GridManager->BuildPlacementAtGhost(PlacementFactory, GhostPlacement);
 	}

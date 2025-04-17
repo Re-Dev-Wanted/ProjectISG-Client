@@ -3,8 +3,11 @@
 #include "EnhancedInputComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/HUD/MainHUD.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
+#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 
 UPlayerInventoryComponent::UPlayerInventoryComponent()
@@ -77,6 +80,28 @@ void UPlayerInventoryComponent::MoveHotSlot(const FInputActionValue& Value)
 
 void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 {
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
+
+	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
+
+	const uint16 ItemId = PS->GetInventoryComponent()->GetInventoryList()[NewIndex].GetId();
+
+	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
+
+	const bool bAvailable = UItemManager::IsItemCanHousing(ItemId);
+
+	if (bAvailable)
+	{
+		Player->GetPlacementIndicatorComponent()->OnActivate(ItemInfoData.GetShowItemActor());
+		Player->SetMainHandItem(nullptr);
+	}
+	else
+	{
+		Player->GetPlacementIndicatorComponent()->OnDeactivate();
+		AActor* SpawnActor = GetWorld()->SpawnActor(ItemInfoData.GetShowItemActor());
+		Player->SetMainHandItem(SpawnActor);
+	}
+
 	const AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetOwner()->GetInstigatorController());
 

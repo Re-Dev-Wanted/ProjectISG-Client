@@ -8,6 +8,9 @@ APlacement::APlacement()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	SetRootComponent(Root);
+
 	AnchorComp = CreateDefaultSubobject<USceneComponent>(TEXT("AnchorComp"));
 	AnchorComp->SetupAttachment(RootComponent);
 
@@ -46,6 +49,8 @@ void APlacement::Setup(float TileSize)
 {
 	// 오브젝트 크기가 제각각 다를 것이다.
 	// 적당히 가운데 정렬하고 tileSize에 맞추기
+
+	UE_LOG(LogTemp, Warning, TEXT("야야"));
 
 	FVector BoxExtent = BaseStaticMesh->GetBounds().BoxExtent;
 
