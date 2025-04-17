@@ -39,6 +39,7 @@ void UInventoryList::NativeConstruct()
 
 		InventoryList->AddChildToGrid(NewSlot, (i - StartIndex) / ListColumn,
 		                              (i - StartIndex) % ListColumn);
+
 		FItemMetaInfo ItemMetaInfo = GetOwningPlayerState<AMainPlayerState>()->
 		                             GetInventoryComponent()->GetInventoryList()
 			[i];

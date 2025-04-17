@@ -42,6 +42,8 @@ public:
 
 	FOnInventoryUpdateNotified OnInventoryUpdateNotified;
 
+	void InitializeItemData();
+
 protected:
 	virtual void BeginPlay() override;
 

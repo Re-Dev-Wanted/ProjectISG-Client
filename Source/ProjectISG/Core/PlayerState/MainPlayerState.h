@@ -29,6 +29,8 @@ protected:
 	TObjectPtr<UISGAbilitySystemComponent> AbilitySystemComponent;
 
 private:
+	void InitializeData();
+
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInventoryComponent> InventoryComponent;
 };

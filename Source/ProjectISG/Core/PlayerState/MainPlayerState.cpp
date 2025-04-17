@@ -1,4 +1,6 @@
 ﻿#include "MainPlayerState.h"
+
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/GAS/Common/ISGAbilitySystemComponent.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 
@@ -19,4 +21,12 @@ UAbilitySystemComponent* AMainPlayerState::GetAbilitySystemComponent() const
 void AMainPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
+
+	InitializeData();
+}
+
+void AMainPlayerState::InitializeData()
+{
+	GetInventoryComponent()->InitializeItemData();
+	Cast<AMainPlayerController>(GetPlayerController())->InitializeHUD();
 }
