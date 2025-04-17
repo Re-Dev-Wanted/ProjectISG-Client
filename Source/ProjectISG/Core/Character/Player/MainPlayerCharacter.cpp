@@ -2,6 +2,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Component/PlayerInventoryComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/ISGAbilitySystemComponent.h"
@@ -24,6 +25,9 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 
 	CameraComponent->SetRelativeLocation({0, 0, 80});
 	CameraComponent->SetRelativeRotation({0, -18, 0});
+
+	PlayerInventoryComponent = CreateDefaultSubobject<
+		UPlayerInventoryComponent>("Player Inventory Component");
 }
 
 void AMainPlayerCharacter::BeginPlay()
@@ -85,6 +89,8 @@ void AMainPlayerCharacter::SetupPlayerInputComponent(
 		EnhancedInputComponent->BindAction(LookInputAction,
 		                                   ETriggerEvent::Triggered
 		                                   , this, &ThisClass::Look);
+
+		OnInputBindingNotified.Broadcast(EnhancedInputComponent);
 	}
 }
 
