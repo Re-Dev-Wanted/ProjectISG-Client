@@ -2,6 +2,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/ISGAbilitySystemComponent.h"
@@ -24,6 +25,8 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 
 	CameraComponent->SetRelativeLocation({0, 0, 80});
 	CameraComponent->SetRelativeRotation({0, -18, 0});
+
+	GetCapsuleComponent()->SetGenerateOverlapEvents(true);
 }
 
 void AMainPlayerCharacter::BeginPlay()
