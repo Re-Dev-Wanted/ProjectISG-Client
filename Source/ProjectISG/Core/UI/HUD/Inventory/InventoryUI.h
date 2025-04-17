@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "InventoryUI.generated.h"
 
+class UItemInfo;
 class UInventoryList;
 
 UCLASS()
@@ -16,4 +17,7 @@ class PROJECTISG_API UInventoryUI : public UUserWidget
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInventoryList> MainSlotList;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UItemInfo> SelectedItemInfo;
 };
