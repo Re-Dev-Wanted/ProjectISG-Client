@@ -50,14 +50,19 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UMaterialInstance* TempMaterial;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<FIntVector> Occupied;
+
 	virtual void Setup(float TileSize);
 
 	void SetColor(bool bIsGhost, bool bIsBlock);
 
-	TArray<FIntVector> GetOccupiedGrid(float SnapSize, const FIntVector& Start);
+	TArray<FIntVector> GetOccupiedGrid(float SnapSize, const FIntVector& Current);
 
 	FVector GetMeshSize() const
 	{
 		return MeshSize;
 	}
+
+	FVector GetActorPivotLocation() const;
 };

@@ -39,7 +39,7 @@ public:
 
 	FVector SnapToGrid(const FVector& Location);
 
-	FVector SnapToGridPlacement(const FVector& Location, FVector MeshSize);
+	FVector SnapToGridPlacement(const FVector& Location);
 
 	FIntVector WorldToGridLocation(const FVector& WorldLocation);
 
@@ -53,9 +53,19 @@ public:
 	                                               int32 Distance = 1);
 
 	template <class T, std::enable_if_t<std::is_base_of_v<APlacement, T>, int>  = 0>
-	void BuildPlacement(TSubclassOf<T> PlacementClass, const FVector& Location, const FRotator& Rotation)
+	void BuildPlacement(TSubclassOf<T> PlacementClass, const FVector& Pivot, const FVector& Location,
+	                    const FRotator& Rotation)
 	{
-		FIntVector GridCoord = WorldToGridLocation(Location);
+		FIntVector GridCoord = FIntVector
+		(
+			FMath::FloorToInt(Pivot.X / SnapSize),
+			FMath::FloorToInt(Pivot.Y / SnapSize),
+			FMath::RoundToInt(Pivot.Z / SnapSize)
+		);
+
+		UE_LOG(LogTemp, Warning, TEXT("Pivot %s"), *Pivot.ToString());
+		UE_LOG(LogTemp, Warning, TEXT("Coord %s"), *GridCoord.ToString());
+
 		if (PlacedMap.FindRef(GridCoord))
 		{
 			return;
@@ -77,6 +87,13 @@ public:
 			PlacedMap.Add(Coord, SpawnedActor);
 			ReverseMap[SpawnedActor].Add(Coord);
 		}
+	}
+
+	template <class T, std::enable_if_t<std::is_base_of_v<APlacement, T>, int>  = 0>
+	void BuildPlacementAtGhost(TSubclassOf<T> PlacementClass, T* Ghost)
+	{
+		BuildPlacement<T>(PlacementClass, Ghost->GetActorPivotLocation(), Ghost->GetActorLocation(),
+		                  Ghost->GetActorRotation());
 	}
 
 	template <class T, std::enable_if_t<std::is_base_of_v<APlacement, T>, int>  = 0>

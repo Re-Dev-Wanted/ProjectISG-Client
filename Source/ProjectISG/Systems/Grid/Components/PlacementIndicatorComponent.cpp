@@ -42,7 +42,9 @@ void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 		FVector SnappedLocation = GridManager->GetLocationInPointerDirectionPlacement(
 			PlayerController, GhostPlacement->GetMeshSize());
 
-		GhostPlacement->SetActorLocation(FMath::VInterpTo(GhostPlacement->GetActorLocation(), SnappedLocation, 0.1f,
+
+		GhostPlacement->SetActorLocation(FMath::VInterpTo(GhostPlacement->GetActorLocation(), SnappedLocation,
+		                                                  0.1f,
 		                                                  InterpSpeed));
 		GhostPlacement->SetActorRotation(FMath::RInterpTo(GhostPlacement->GetActorRotation(),
 		                                                  FRotator(0, GetDegrees(RotateDirection), 0), 0.1f,
@@ -50,11 +52,7 @@ void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 		FIntVector GridCoord;
 		APlacement* PlacedActor;
 
-		FHitResult HitResult;
-		bool bHit = PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, HitResult) && HitResult.
-			bBlockingHit;
-
-		bIsBlock = !bHit || GridManager->TryGetPlacement(GhostPlacement, GridCoord, PlacedActor);
+		bIsBlock = GridManager->TryGetPlacement(SnappedLocation, GridCoord, PlacedActor);
 
 		GhostPlacement->SetColor(true, bIsBlock);
 	}
@@ -65,8 +63,7 @@ void UPlacementIndicatorComponent::Build()
 	if (GridManager)
 	{
 		// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
-		GridManager->BuildPlacement(PlacementFactory, GhostPlacement->GetActorLocation(),
-		                            GhostPlacement->GetActorRotation());
+		GridManager->BuildPlacementAtGhost(PlacementFactory, GhostPlacement);
 	}
 }
 

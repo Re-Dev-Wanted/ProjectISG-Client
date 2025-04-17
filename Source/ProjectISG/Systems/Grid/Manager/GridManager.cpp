@@ -27,21 +27,21 @@ FVector AGridManager::SnapToGrid(const FVector& Location)
 {
 	return FVector
 	(
-		FMath::RoundToInt(Location.X / SnapSize) * SnapSize,
-		FMath::RoundToInt(Location.Y / SnapSize) * SnapSize,
+		FMath::FloorToInt(Location.X / SnapSize) * SnapSize,
+		FMath::FloorToInt(Location.Y / SnapSize) * SnapSize,
 		FMath::RoundToInt(Location.Z / SnapSize) * SnapSize
 		// FMath::RoundToInt(SnapSize * 0.5f)
 	);
 }
 
-FVector AGridManager::SnapToGridPlacement(const FVector& Location, FVector MeshSize)
+FVector AGridManager::SnapToGridPlacement(const FVector& Location)
 {
 	FVector SnappedLocation = SnapToGrid(Location);
 
 	FVector Offset = FVector
 	(
-		FMath::Fmod(MeshSize.X, SnapSize) == 0 ? 0 : -MeshSize.X * 0.5f,
-		FMath::Fmod(MeshSize.Y, SnapSize) == 0 ? 0 : -MeshSize.Y * 0.5f,
+		-SnapSize * 0.5f,
+		-SnapSize * 0.5f,
 		0
 	);
 
@@ -52,8 +52,8 @@ FIntVector AGridManager::WorldToGridLocation(const FVector& WorldLocation)
 {
 	return FIntVector
 	(
-		FMath::RoundToInt(WorldLocation.X / SnapSize),
-		FMath::RoundToInt(WorldLocation.Y / SnapSize),
+		FMath::FloorToInt(WorldLocation.X / SnapSize),
+		FMath::FloorToInt(WorldLocation.Y / SnapSize),
 		FMath::RoundToInt(WorldLocation.Z / SnapSize)
 		// FMath::RoundToInt(SnapSize * 0.5f)
 	);
@@ -103,7 +103,7 @@ FVector AGridManager::GetLocationInPointerDirectionPlacement(APlayerController* 
 	if (PlayerController->GetHitResultUnderCursor(ECC_Visibility, false, HitResult) && HitResult.
 		bBlockingHit)
 	{
-		return SnapToGridPlacement(HitResult.ImpactPoint, MeshSize);
+		return SnapToGridPlacement(HitResult.ImpactPoint);
 	}
 
 	return FVector::ZeroVector;
@@ -128,22 +128,7 @@ void AGridManager::RemovePlacement(const FIntVector& GridAt)
 
 bool AGridManager::TryGetPlacement(APlacement* Placement, FIntVector& OutGridAt, APlacement*& OutPlacement)
 {
-	FIntVector ToCoord = WorldToGridLocation(Placement->GetActorLocation());
-
-	TArray<FIntVector> TargetCells = Placement->GetOccupiedGrid(SnapSize, ToCoord);
-
-	for (const FIntVector& Cell : TargetCells)
-	{
-		if (APlacement* Found = PlacedMap.FindRef(Cell))
-		{
-			OutGridAt = ToCoord;
-			OutPlacement = Found;
-
-			return true;
-		}
-	}
-
-	return false;
+	return TryGetPlacement(Placement->GetActorPivotLocation(), OutGridAt, OutPlacement);
 }
 
 bool AGridManager::TryGetPlacement(const FVector& Location, FIntVector& OutGridAt, APlacement*& OutPlacement)
