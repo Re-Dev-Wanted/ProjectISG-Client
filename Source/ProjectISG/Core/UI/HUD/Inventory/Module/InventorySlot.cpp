@@ -8,14 +8,11 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Kismet/KismetInputLibrary.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
-
-void UInventorySlot::RemoveDragDropSlot() const
-{
-}
 
 FReply UInventorySlot::NativeOnMouseButtonDown(const FGeometry& InGeometry,
                                                const FPointerEvent&
@@ -161,4 +158,19 @@ void UInventorySlot::SetSelected(const bool IsSelected) const
 	SelectedBorder->SetVisibility(IsSelected
 		                              ? ESlateVisibility::Visible
 		                              : ESlateVisibility::Hidden);
+}
+
+void UInventorySlot::NativeOnMouseEnter(const FGeometry& InGeometry,
+                                        const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
+
+	GetOwningPlayer<AMainPlayerController>()->ShowItemInfo(Index);
+}
+
+void UInventorySlot::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseLeave(InMouseEvent);
+
+	GetOwningPlayer<AMainPlayerController>()->RemoveItemInfo();
 }

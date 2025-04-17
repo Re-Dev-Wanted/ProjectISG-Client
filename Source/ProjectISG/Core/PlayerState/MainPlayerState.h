@@ -18,6 +18,7 @@ class PROJECTISG_API AMainPlayerState : public APlayerState,
 
 public:
 	AMainPlayerState();
+	void InitializeData();
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
@@ -34,8 +35,6 @@ protected:
 	TObjectPtr<UISGAttributeSet> AttributeSet;
 
 private:
-	void InitializeData();
-
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInventoryComponent> InventoryComponent;
 };
