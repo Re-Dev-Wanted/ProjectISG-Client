@@ -39,3 +39,21 @@ FItemMetaInfo UItemManager::GetInitialItemMetaDataById(const uint16 Id)
 
 	return NewMetaInfo;
 }
+
+bool UItemManager::IsItemCanHousing(const uint16 Id)
+{
+	const FString* FindData = GetItemInfoById(Id).GetConstData().
+	                                              Find(
+		                                              EConstDataKey::ItemUseType);
+	if (!FindData)
+	{
+		return false;
+	}
+
+	if (!FindData->Equals(TEXT("Housing")))
+	{
+		return false;
+	}
+
+	return true;
+}
