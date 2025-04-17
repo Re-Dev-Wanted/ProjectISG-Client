@@ -100,7 +100,7 @@ uint32 UInventoryComponent::AddItemToInventory(const uint16 Index,
 	{
 		// 이미 꽉 찬 경우여도 여분의 칸 검색을 위해
 		// 처음부터 다시 탐색해서 남은 값 들을 순차적으로 넣어준다.
-		for (int i = 0; i < GetTotalSlotCount(); i++)
+		for (int i = 0; i < GetInventorySlotCount(); i++)
 		{
 			if (RemainCount == 0)
 			{
@@ -170,7 +170,7 @@ uint32 UInventoryComponent::AddItem(const FItemMetaInfo& ItemInfo)
 	// 맨 처음 값은 현재 주운 아이템의 갯수로 지정한다.
 	uint32 RemainResult = ItemInfo.GetCurrentCount();
 
-	for (int i = 0; i < GetTotalSlotCount(); i++)
+	for (int i = 0; i < GetInventorySlotCount(); i++)
 	{
 		if (InventoryList[i].GetId() == ItemInfo.GetId()
 			&& InventoryList[i].GetCurrentCount() < ItemInfoById.
@@ -184,7 +184,7 @@ uint32 UInventoryComponent::AddItem(const FItemMetaInfo& ItemInfo)
 
 	if (!bHasInventory && RemainResult > 0)
 	{
-		for (int i = 0; i < GetTotalSlotCount(); i++)
+		for (int i = 0; i < GetInventorySlotCount(); i++)
 		{
 			if (InventoryList[i].GetId() == 0)
 			{
@@ -209,7 +209,7 @@ bool UInventoryComponent::RemoveItem(const uint16 Id, const uint32 Count)
 	uint32 RemainNum = Count;
 	TArray<uint32> CanRemoveIndexList;
 
-	for (int i = 0; i < GetTotalSlotCount(); i++)
+	for (int i = 0; i < GetInventorySlotCount(); i++)
 	{
 		if (InventoryList[i].GetId() == Id)
 		{
