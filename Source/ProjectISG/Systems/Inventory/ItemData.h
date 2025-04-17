@@ -30,6 +30,8 @@ UENUM()
 enum class EConstDataKey : uint32
 {
 	None,
+	MaxDurability,
+	ItemUseType
 };
 
 // 아이템 정보를 담아 추후 아이템을 구성할 때 사용할 요소
@@ -56,7 +58,7 @@ struct PROJECTISG_API FItemInfoData : public FTableRowBase
 		return MetaData;
 	}
 
-	FORCEINLINE TMap<EConstDataKey, FString> GetOptionData() const
+	FORCEINLINE TMap<EConstDataKey, FString> GetConstData() const
 	{
 		return ConstData;
 	}

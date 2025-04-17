@@ -17,14 +17,8 @@ class PROJECTISG_API UInventoryComponent : public UActorComponent
 public:
 	UInventoryComponent();
 
-	GETTER(uint8, MainSlotCount)
 	GETTER(uint8, InventorySlotCount)
 	GETTER(TArray<FItemMetaInfo>, InventoryList)
-
-	FORCEINLINE uint8 GetTotalSlotCount() const
-	{
-		return MainSlotCount + InventorySlotCount;
-	}
 
 	uint32 AddItem(const FItemMetaInfo& ItemInfo);
 
@@ -48,6 +42,11 @@ public:
 
 	FOnInventoryUpdateNotified OnInventoryUpdateNotified;
 
+	void InitializeItemData();
+
+protected:
+	virtual void BeginPlay() override;
+
 private:
 	void OnUpdateInventory();
 
@@ -55,11 +54,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Options",
 		meta = (AllowPrivateAccess = true))
-	uint8 MainSlotCount = 0;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Options",
-		meta = (AllowPrivateAccess = true))
-	uint8 InventorySlotCount = 0;
+	uint8 InventorySlotCount = 54;
 
 	UPROPERTY()
 	TArray<FItemMetaInfo> InventoryList;
