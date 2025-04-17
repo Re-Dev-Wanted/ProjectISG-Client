@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ProjectISG/Utils/MacroUtil.h"
 #include "TimeManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSleep);
@@ -33,12 +32,13 @@ private:
 
 	void RotateSun();
 
+	UFUNCTION(BlueprintCallable)
 	void StopTime(bool value);
 
 	// 나중에 sleep class를 따로 만들어서 옮길 예정
 #pragma region SleepFunc
 	void Sleep();
-	
+
 	void ForceSleep();
 
 	void SleepCinematic(float DeltaTime);
@@ -48,36 +48,21 @@ private:
 	void ChangeAllPlayerSleepValue(bool value);
 
 	bool CheckAllPlayerIsLieOnBed();
-#pragma endregion 
+#pragma endregion
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void ChangeTimeToSleepTime();
+	void ChangeTimeToForceSleepTime();
 	UFUNCTION(BlueprintCallable)
 	void ChangeTimeToCanSleepTime();
 
 private:
-#pragma region Settings
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,
-		meta = (AllowPrivateAccess = true), Category = Settings)
-	class AMainPlayerCharacter* Player;
-
-#pragma endregion
-
 #pragma region Sky
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = "true"), Category = "Sky")
 	class USceneComponent* Root = nullptr;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,
-		meta = (AllowPrivateAccess = "true"), Category = "Sky")
-	class UDirectionalLightComponent* Sun = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,
-		meta = (AllowPrivateAccess = "true"), Category = "Sky")
-	class UDirectionalLightComponent* Moon = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = "true"), Category = "Sky")
 	FRotator SunRotation;
 

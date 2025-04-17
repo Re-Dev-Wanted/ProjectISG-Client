@@ -4,13 +4,11 @@
 #include "TimeManager.h"
 
 #include "Bed.h"
-#include "Components/DirectionalLightComponent.h"
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
-#include "ProjectISG/Utils/EnumUtil.h"
 
 
 ATimeManager::ATimeManager()
@@ -22,22 +20,6 @@ ATimeManager::ATimeManager()
 
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	SetRootComponent(Root);
-
-	Sun = CreateDefaultSubobject<UDirectionalLightComponent>(TEXT("Sun"));
-	if (Sun)
-	{
-		Sun->SetupAttachment(Root);
-		Sun->SetIntensity(3.0f);
-		Sun->SetLightColor(FLinearColor(255, 255, 255, 255));
-	}
-	
-	Moon = CreateDefaultSubobject<UDirectionalLightComponent>(TEXT("Moon"));
-	if (Moon)
-	{
-		Moon->SetupAttachment(Root);
-		Moon->SetIntensity(1.0f);
-		Moon->SetLightColor(FLinearColor(0, 0, 0, 255));
-	}
 }
 
 void ATimeManager::GetLifetimeReplicatedProps(
@@ -52,6 +34,7 @@ void ATimeManager::GetLifetimeReplicatedProps(
 	DOREPLIFETIME(ATimeManager, Month);
 	DOREPLIFETIME(ATimeManager, Year);
 	DOREPLIFETIME(ATimeManager, TimeStop);
+	DOREPLIFETIME(ATimeManager, SunRotation);
 }
 
 void ATimeManager::BeginPlay()
@@ -74,17 +57,11 @@ void ATimeManager::BeginPlay()
 			DaysInMonths.Add(28);
 		}
 	}
-
-	Player = Cast<AMainPlayerCharacter>(
-		GetWorld()->GetFirstPlayerController()->GetPawn());
 }
 
 void ATimeManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	// 잘 때 해당 코드를 실행하라
-
 
 	if (HasAuthority() == false)
 	{
@@ -272,14 +249,16 @@ bool ATimeManager::CheckAllPlayerIsLieOnBed()
 		if (player)
 		{
 			if (player->GetbLieOnBed() == false)
+			{
 				return false;
+			}
 		}
 	}
 
 	return true;
 }
 
-void ATimeManager::ChangeTimeToSleepTime()
+void ATimeManager::ChangeTimeToForceSleepTime()
 {
 	Hour = 23;
 }
