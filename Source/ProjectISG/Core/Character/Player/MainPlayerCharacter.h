@@ -83,4 +83,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Sleep",
 		meta = (AllowPrivateAccess = true))
 	bool bLieOnBed = false;
+
+	UPROPERTY(EditAnywhere, Category = "GAS_Test",
+		meta = (AllowPrivateAccess = true))
+	int32 Gold = 0;
 };

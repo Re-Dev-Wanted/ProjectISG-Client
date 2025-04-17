@@ -6,6 +6,7 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerState.generated.h"
 
+class UISGAttributeSet;
 class UInventoryComponent;
 class UISGAbilitySystemComponent;
 
@@ -20,6 +21,7 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	UISGAttributeSet* GetAttributeSet() const { return AttributeSet; }
 	GETTER(TObjectPtr<UInventoryComponent>, InventoryComponent)
 
 protected:
@@ -27,6 +29,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UISGAbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY()
+	TObjectPtr<UISGAttributeSet> AttributeSet;
 
 private:
 	void InitializeData();
