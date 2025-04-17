@@ -4,10 +4,13 @@
 #include "Blueprint/SlateBlueprintLibrary.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/Overlay.h"
+#include "Components/Image.h"
+#include "Components/TextBlock.h"
 #include "Kismet/KismetInputLibrary.h"
 
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 void UInventorySlot::RemoveDragDropSlot() const
 {
@@ -49,14 +52,14 @@ void UInventorySlot::NativeOnDragDetected(const FGeometry& InGeometry,
 	Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
 
 	// 드래그를 위한 위젯 설정
-	DragItemWidget = CreateWidget<UInventorySlot>(this, StaticClass());
-	// DragItemWidget->SetThumbnail(ItemThumbnail->GetBrush().GetResourceObject());
-	// DragItemWidget->SetItemCountText(ItemCount->GetText());
+	DragItemWidget = CreateWidget<UInventorySlot>(this, DragItemWidgetClass);
+	DragItemWidget->SetThumbnail(ItemThumbnail->GetBrush().GetResourceObject());
+	DragItemWidget->ItemCount->SetText(ItemCount->GetText());
 	DragItemWidget->SetIsDragged(true);
 
 	// 드래그 드롭 관련 오퍼레이션 설정
 	OutOperation = UWidgetBlueprintLibrary::CreateDragDropOperation(
-		StaticClass());
+		UInventorySlotDragDropOperation::StaticClass());
 	OutOperation->Pivot = EDragPivot::MouseDown;
 	OutOperation->DefaultDragVisual = DragItemWidget;
 
@@ -88,8 +91,8 @@ bool UInventorySlot::NativeOnDrop(const FGeometry& InGeometry,
 		return false;
 	}
 
-	UInventorySlotDragDropOperation* DropOperation
-		= static_cast<UInventorySlotDragDropOperation*>(InOperation);
+	const UInventorySlotDragDropOperation* DropOperation
+		= Cast<UInventorySlotDragDropOperation>(InOperation);
 
 	if (!DropOperation->GetOriginWidget().IsA(StaticClass()))
 	{
@@ -121,9 +124,33 @@ void UInventorySlot::NativeOnDragCancelled(
 
 void UInventorySlot::SetSlotInfo(const FItemMetaInfo& ItemMetaInfo)
 {
+	SetSlotItemId(ItemMetaInfo.GetId());
+	SetThumbnail(
+		UItemManager::GetItemInfoById(ItemMetaInfo.GetId()).GetThumbnail());
+	SetItemCount(ItemMetaInfo.GetCurrentCount());
 }
 
 void UInventorySlot::SetIsDragged(const bool IsDragged)
 {
 	ItemOverlay->SetRenderOpacity(IsDragged ? 0.5 : 1);
+}
+
+void UInventorySlot::SetThumbnail(
+	const TSoftObjectPtr<UTexture2D>& Thumbnail) const
+{
+	// 처음 로딩 시 반드시 동기적으로 로딩을 해줘야 한다.
+	UTexture2D* LoadedTexture = Thumbnail.LoadSynchronous();
+	ItemThumbnail.Get()->SetBrushFromTexture(LoadedTexture);
+}
+
+void UInventorySlot::SetItemCount(const uint16 NewCount) const
+{
+	if (NewCount > 1)
+	{
+		ItemCount->SetText(FText::AsNumber(NewCount));
+	}
+	else
+	{
+		ItemCount->SetText(FText::GetEmpty());
+	}
 }

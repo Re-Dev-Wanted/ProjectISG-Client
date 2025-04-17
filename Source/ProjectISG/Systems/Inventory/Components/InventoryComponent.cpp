@@ -8,6 +8,25 @@ UInventoryComponent::UInventoryComponent()
 {
 }
 
+void UInventoryComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	InventoryList.SetNum(48);
+
+	FItemMetaInfo NewItemMetaInfo;
+	NewItemMetaInfo.SetId(1);
+	NewItemMetaInfo.SetCurrentCount(1);
+
+	AddItemToInventory(0, NewItemMetaInfo);
+
+	FItemMetaInfo NewItemMetaInfo2;
+	NewItemMetaInfo.SetId(1);
+	NewItemMetaInfo.SetCurrentCount(2);
+
+	AddItemToInventory(1, NewItemMetaInfo);
+}
+
 bool UInventoryComponent::HasItemInInventory(const uint32 Id,
                                              const uint32 Count)
 {

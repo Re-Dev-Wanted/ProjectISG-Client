@@ -6,8 +6,23 @@
 void AMainPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+}
 
-	InventoryUI = CreateWidget<UInventoryUI>(this, InventoryUIClass);
-	InventoryUI->AddToViewport();
-	SetShowMouseCursor(true);
+void AMainPlayerController::ToggleInventoryUI(const bool IsShow)
+{
+	if (!InventoryUI)
+	{
+		InventoryUI = CreateWidget<UInventoryUI>(this, InventoryUIClass);
+		InventoryUI->AddToViewport();
+	}
+
+	if (IsShow)
+	{
+		InventoryUI->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+		SetShowMouseCursor(true);
+		return;
+	}
+
+	InventoryUI->SetVisibility(ESlateVisibility::Hidden);
+	SetShowMouseCursor(false);
 }

@@ -11,6 +11,9 @@ class PROJECTISG_API AMainPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
+public:
+	void ToggleInventoryUI(const bool IsShow);
+
 protected:
 	virtual void BeginPlay() override;
 

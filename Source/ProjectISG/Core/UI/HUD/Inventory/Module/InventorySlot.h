@@ -17,6 +17,8 @@ class PROJECTISG_API UInventorySlot : public UUserWidget
 
 public:
 	void RemoveDragDropSlot() const;
+	SETTER(uint16, Index);
+	void SetSlotInfo(const FItemMetaInfo& ItemMetaInfo);
 
 protected:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry,
@@ -43,6 +45,7 @@ private:
 	uint16 Index;
 	// 해당 슬롯이 표현하는 아이템의 아이디
 	uint16 SlotItemId;
+	SETTER(uint16, SlotItemId)
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TSubclassOf<UInventorySlot> DragItemWidgetClass;
@@ -64,7 +67,9 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UBorder> SelectedBorder;
 
-	void SetSlotInfo(const FItemMetaInfo& ItemMetaInfo);
-
 	void SetIsDragged(const bool IsDragged);
+
+	void SetThumbnail(const TSoftObjectPtr<UTexture2D>& Thumbnail) const;
+
+	void SetItemCount(const uint16 NewCount) const;
 };

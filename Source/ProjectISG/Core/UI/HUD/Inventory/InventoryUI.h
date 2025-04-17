@@ -32,4 +32,6 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UGridPanel> InventoryList;
+
+	void InitializeItemData();
 };
