@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ProjectISG/Utils/MacroUtil.h"
 #include "TimeManager.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSleep);
 
 UCLASS()
 class PROJECTISG_API ATimeManager : public AActor
@@ -20,8 +23,9 @@ protected:
 
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
-	
+	virtual void GetLifetimeReplicatedProps(
+		TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
 private:
 	void UpdateCycleTime(float DeltaTime);
 
@@ -29,49 +33,125 @@ private:
 
 	void RotateSun();
 
-	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_RotateSun(FRotator newRot);
+	void StopTime(bool value);
+
+	// 나중에 sleep class를 따로 만들어서 옮길 예정
+#pragma region SleepFunc
+	void Sleep();
+	
+	void ForceSleep();
+
+	void SleepCinematic(float DeltaTime);
+
+	void AssignBedEachPlayer();
+
+	void ChangeAllPlayerSleepValue(bool value);
+
+	bool CheckAllPlayerIsLieOnBed();
+#pragma endregion 
 
 public:
+	UFUNCTION(BlueprintCallable)
+	void ChangeTimeToSleepTime();
+	UFUNCTION(BlueprintCallable)
+	void ChangeTimeToCanSleepTime();
 
 private:
-#pragma region Sun
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Sun")
+#pragma region Settings
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = true), Category = Settings)
+	class AMainPlayerCharacter* Player;
+
+#pragma endregion
+
+#pragma region Sky
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Sky")
+	class USceneComponent* Root = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Sky")
 	class UDirectionalLightComponent* Sun = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Sun")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Sky")
+	class UDirectionalLightComponent* Moon = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Sky")
+	FRotator SunRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Sky")
 	int32 SunriseTime = 5;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Sun")
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Sky")
 	int32 SunsetTime = 20;
-#pragma endregion 
-	
+#pragma endregion
+
 #pragma region Time
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Time")
-	float Seconds = 0;
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Time")
+	float Second = 0;
 
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Time")
-	int32 Minutes = 0;
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Time")
+	int32 Minute = 0;
 
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Time")
-	int32 Hours = 0;
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Time")
+	int32 Hour = 0;
 
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Time")
-	int32 Days = 1;
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Time")
+	int32 Day = 1;
 
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Time")
-	int32 Months = 1;
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Time")
+	int32 Month = 1;
 
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Time")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Time")
 	int32 Year = 1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Time")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Time")
 	TArray<int32> DaysInMonths;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Time")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Time")
 	int32 SpeedOfTime = 1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"), Category = "Time")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Time")
 	bool TimeStop = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Time")
+	int32 WakeUpTime = 6;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Time")
+	int32 CanSleepTime = 9;
 #pragma endregion
+
+#pragma region Sleep
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = true), Category = Sleep)
+	bool bSleepCinematicStart = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = true), Category = Sleep)
+	float CinematicElapsedTime = 0.f;
+
+	// 임시 변수
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = true), Category = Sleep)
+	float CinematicEndTime = 3.f;
+#pragma endregion
+
+public:
+	UPROPERTY()
+	FSleep SleepDelegate;
 };
