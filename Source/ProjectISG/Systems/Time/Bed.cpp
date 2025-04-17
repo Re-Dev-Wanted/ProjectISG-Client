@@ -74,6 +74,7 @@ void ABed::OnBedBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 		UE_LOG(LogTemp, Warning, TEXT("Bed : Player begin overlap"));
 		player->SetbLieOnBed(true);
 		MainPlayer = player;
+		MovePlayerToBed();
 	}
 }
 
@@ -92,5 +93,8 @@ void ABed::OnBedEndOverlap(UPrimitiveComponent* OverlappedComponent,
 
 void ABed::MovePlayerToBed()
 {
-	MainPlayer->SetActorLocation(GetActorLocation());
+	if (MainPlayer)
+	{
+		MainPlayer->SetActorLocation(GetActorLocation());
+	}
 }
