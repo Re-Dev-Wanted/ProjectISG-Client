@@ -21,8 +21,6 @@ UAbilitySystemComponent* AMainPlayerState::GetAbilitySystemComponent() const
 void AMainPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
-
-	InitializeData();
 }
 
 void AMainPlayerState::InitializeData()

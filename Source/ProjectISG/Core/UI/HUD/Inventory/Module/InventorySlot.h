@@ -16,7 +16,6 @@ class PROJECTISG_API UInventorySlot : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void RemoveDragDropSlot() const;
 	SETTER(uint16, Index);
 	void SetSlotInfo(const FItemMetaInfo& ItemMetaInfo);
 	void SetSelected(const bool IsSelected) const;
@@ -38,6 +37,11 @@ protected:
 	virtual void NativeOnDragCancelled(const FDragDropEvent& InDragDropEvent,
 	                                   UDragDropOperation*
 	                                   InOperation) override;
+
+	virtual void NativeOnMouseEnter(const FGeometry& InGeometry,
+	                                const FPointerEvent& InMouseEvent) override;
+
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
 
 private:
 	bool IsDragUi;
