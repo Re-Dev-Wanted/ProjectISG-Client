@@ -3,6 +3,7 @@
 #include "InventorySlotDragDropOperation.h"
 #include "Blueprint/SlateBlueprintLibrary.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Components/Border.h"
 #include "Components/Overlay.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
@@ -153,4 +154,11 @@ void UInventorySlot::SetItemCount(const uint16 NewCount) const
 	{
 		ItemCount->SetText(FText::GetEmpty());
 	}
+}
+
+void UInventorySlot::SetSelected(const bool IsSelected) const
+{
+	SelectedBorder->SetVisibility(IsSelected
+		                              ? ESlateVisibility::Visible
+		                              : ESlateVisibility::Hidden);
 }

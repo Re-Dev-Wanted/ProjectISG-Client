@@ -12,6 +12,10 @@ class PROJECTISG_API UInventoryList : public UUserWidget
 {
 	GENERATED_BODY()
 
+public:
+	void UpdateItemData();
+	void SelectSlot(const uint16 Prev, const uint16 Next);
+
 protected:
 	virtual void NativePreConstruct() override;
 

@@ -3,6 +3,8 @@
 #include "EnhancedInputComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/UI/HUD/MainHUD.h"
+#include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
 
 
 UPlayerInventoryComponent::UPlayerInventoryComponent()
@@ -30,6 +32,12 @@ void UPlayerInventoryComponent::BindingInputActions(
 	EnhancedInputComponent->BindAction(ToggleInventoryInputAction,
 	                                   ETriggerEvent::Triggered, this,
 	                                   &ThisClass::ToggleInventory);
+	EnhancedInputComponent->BindAction(SelectHotSlotInputAction,
+	                                   ETriggerEvent::Triggered, this,
+	                                   &ThisClass::SelectHotSlot);
+	EnhancedInputComponent->BindAction(MoveToHotSlotInputAction,
+	                                   ETriggerEvent::Triggered, this,
+	                                   &ThisClass::MoveHotSlot);
 }
 
 void UPlayerInventoryComponent::ToggleInventory()
@@ -39,4 +47,46 @@ void UPlayerInventoryComponent::ToggleInventory()
 
 	IsOpenedInventory = !IsOpenedInventory;
 	PC->ToggleInventoryUI(IsOpenedInventory);
+}
+
+void UPlayerInventoryComponent::SelectHotSlot(const FInputActionValue& Value)
+{
+	const float HotSlotKey = Value.Get<float>() - 1;
+	ChangeCurrentSlotIndex(static_cast<uint8>(HotSlotKey));
+}
+
+void UPlayerInventoryComponent::MoveHotSlot(const FInputActionValue& Value)
+{
+	const int MoveToSlot = CurrentSlotIndex + static_cast<int>(Value.Get<
+		float>());
+
+	if (MoveToSlot < 0)
+	{
+		ChangeCurrentSlotIndex(MoveToSlot + MaxMainSlotIndex);
+		return;
+	}
+
+	if (MoveToSlot > MaxMainSlotIndex)
+	{
+		ChangeCurrentSlotIndex(MoveToSlot - MaxMainSlotIndex);
+		return;
+	}
+
+	ChangeCurrentSlotIndex(MoveToSlot);
+}
+
+void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
+{
+	const AMainPlayerController* PC = Cast<AMainPlayerController>(
+		GetOwner()->GetInstigatorController());
+
+	if (!PC)
+	{
+		return;
+	}
+
+	PC->GetMainHUD()->GetMainSlotList()->SelectSlot(
+		CurrentSlotIndex, NewIndex);
+
+	CurrentSlotIndex = NewIndex;
 }

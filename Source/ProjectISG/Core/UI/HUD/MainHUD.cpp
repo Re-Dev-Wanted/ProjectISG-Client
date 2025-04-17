@@ -1,4 +1,8 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿#include "MainHUD.h"
 
+#include "Inventory/InventoryList.h"
 
-#include "MainHUD.h"
+void UMainHUD::InitializeHUD()
+{
+	MainSlotList->SelectSlot(0, 0);
+}

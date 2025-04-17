@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerController.generated.h"
 
 class UMainHUD;
@@ -15,6 +16,8 @@ class PROJECTISG_API AMainPlayerController : public APlayerController
 public:
 	void InitializeHUD();
 	void ToggleInventoryUI(const bool IsShow);
+
+	GETTER(TObjectPtr<UMainHUD>, MainHUD)
 
 protected:
 	virtual void BeginPlay() override;

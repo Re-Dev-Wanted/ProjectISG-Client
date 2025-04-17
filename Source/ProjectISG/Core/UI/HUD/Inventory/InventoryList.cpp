@@ -30,6 +30,11 @@ void UInventoryList::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	UpdateItemData();
+}
+
+void UInventoryList::UpdateItemData()
+{
 	InventoryList->ClearChildren();
 	for (int i = StartIndex; i < ListRow * ListColumn + StartIndex; i++)
 	{
@@ -46,4 +51,15 @@ void UInventoryList::NativeConstruct()
 		NewSlot->SetIndex(i);
 		NewSlot->SetSlotInfo(ItemMetaInfo);
 	}
+}
+
+void UInventoryList::SelectSlot(const uint16 Prev, const uint16 Next)
+{
+	const UInventorySlot* PrevSelectedSlot = Cast<UInventorySlot>(
+		InventoryList->GetChildAt(Prev));
+	PrevSelectedSlot->SetSelected(false);
+
+	const UInventorySlot* NextSelectedSlot = Cast<UInventorySlot>(
+		InventoryList->GetChildAt(Next));
+	NextSelectedSlot->SetSelected(true);
 }

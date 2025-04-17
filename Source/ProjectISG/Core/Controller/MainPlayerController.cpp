@@ -2,6 +2,7 @@
 
 #include "Blueprint/UserWidget.h"
 #include "ProjectISG/Core/UI/HUD/MainHUD.h"
+#include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryUI.h"
 
 void AMainPlayerController::BeginPlay()
@@ -31,7 +32,9 @@ void AMainPlayerController::ToggleInventoryUI(const bool IsShow)
 	}
 
 	InventoryUI->SetVisibility(ESlateVisibility::Hidden);
+	MainHUD->GetMainSlotList()->UpdateItemData();
 	MainHUD->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
 	SetShowMouseCursor(false);
 }
 
@@ -44,4 +47,5 @@ void AMainPlayerController::InitializeHUD()
 
 	MainHUD = CreateWidget<UMainHUD>(this, MainHUDClass);
 	MainHUD->AddToViewport();
+	MainHUD->InitializeHUD();
 }

@@ -19,6 +19,7 @@ public:
 	void RemoveDragDropSlot() const;
 	SETTER(uint16, Index);
 	void SetSlotInfo(const FItemMetaInfo& ItemMetaInfo);
+	void SetSelected(const bool IsSelected) const;
 
 protected:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry,
