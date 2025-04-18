@@ -7,6 +7,7 @@
 #include "MainPlayerCharacter.generated.h"
 
 
+class UScreenShotComponent;
 class UPlayerInventoryComponent;
 struct FInputActionValue;
 
@@ -57,9 +58,13 @@ public:
 private:
 	UPROPERTY()
 	TObjectPtr<AActor> MainHandItem;
+	uint32 TestValue = 0;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UScreenShotComponent> ScreenShotComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlacementIndicatorComponent> PlacementIndicatorComponent;
