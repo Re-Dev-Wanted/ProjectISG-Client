@@ -50,6 +50,7 @@ public:
 	GETTER_SETTER(bool, bLieOnBed);
 	GETTER_SETTER(TObjectPtr<AActor>, MainHandItem)
 	GETTER(TObjectPtr<UPlacementIndicatorComponent>, PlacementIndicatorComponent)
+	GETTER(TObjectPtr<UPlayerInventoryComponent>, PlayerInventoryComponent)
 
 private:
 	UPROPERTY()

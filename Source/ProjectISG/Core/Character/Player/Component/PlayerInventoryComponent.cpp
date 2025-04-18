@@ -5,6 +5,7 @@
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/HUD/MainHUD.h"
+#include "ProjectISG/Core/UI/HUD/Inventory/InventoryUI.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
@@ -18,6 +19,11 @@ UPlayerInventoryComponent::UPlayerInventoryComponent()
 void UPlayerInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(GetOwner());
+	OwnerPlayer->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
+	             OnInventoryUpdateNotified.AddDynamic(
+		             this, &ThisClass::UpdatePlayerInventoryUI);
 }
 
 void UPlayerInventoryComponent::InitializeComponent()
@@ -84,7 +90,8 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 
 	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 
-	const uint16 ItemId = PS->GetInventoryComponent()->GetInventoryList()[NewIndex].GetId();
+	const uint16 ItemId = PS->GetInventoryComponent()->GetInventoryList()[
+		NewIndex].GetId();
 
 	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
 
@@ -92,13 +99,15 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 
 	if (bAvailable)
 	{
-		Player->GetPlacementIndicatorComponent()->OnActivate(ItemInfoData.GetShowItemActor());
+		Player->GetPlacementIndicatorComponent()->OnActivate(
+			ItemInfoData.GetShowItemActor());
 		Player->SetMainHandItem(nullptr);
 	}
 	else
 	{
 		Player->GetPlacementIndicatorComponent()->OnDeactivate();
-		AActor* SpawnActor = GetWorld()->SpawnActor(ItemInfoData.GetShowItemActor());
+		AActor* SpawnActor = GetWorld()->SpawnActor(
+			ItemInfoData.GetShowItemActor());
 		Player->SetMainHandItem(SpawnActor);
 	}
 
@@ -114,4 +123,31 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 		CurrentSlotIndex, NewIndex);
 
 	CurrentSlotIndex = NewIndex;
+}
+
+bool UPlayerInventoryComponent::RemoveItemCurrentSlotIndex(const int32 Count)
+{
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
+
+	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
+
+	const TObjectPtr<UInventoryComponent> InventoryComponent = PS->
+		GetInventoryComponent();
+
+	return InventoryComponent->DropItem(CurrentSlotIndex, Count);
+}
+
+void UPlayerInventoryComponent::UpdatePlayerInventoryUI()
+{
+	AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(GetOwner());
+	OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD()->
+	             GetMainSlotList()->UpdateItemData();
+
+	if (OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI())
+	{
+		OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI()->
+		             GetMainSlotList()->UpdateItemData();
+		OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI()->
+		             GetInventoryList()->UpdateItemData();
+	}
 }

@@ -1,9 +1,14 @@
 #include "PlacementIndicatorComponent.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Manager/GridManager.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
+
+class AMainPlayerCharacter;
 
 UPlacementIndicatorComponent::UPlacementIndicatorComponent()
 {
@@ -81,12 +86,20 @@ void UPlacementIndicatorComponent::OnDeactivate()
 
 void UPlacementIndicatorComponent::Build()
 {
-	if (GridManager)
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
+
+	const TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent = Player->GetPlayerInventoryComponent();
+	
+	if (PlayerInventoryComponent->RemoveItemCurrentSlotIndex(1))
 	{
-		const TSubclassOf<APlacement> PlacementFactory = GhostPlacement->GetClass();
-		// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
-		GridManager->BuildPlacementAtGhost(PlacementFactory, GhostPlacement);
+		if (GridManager)
+		{
+			const TSubclassOf<APlacement> PlacementFactory = GhostPlacement->GetClass();
+			// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
+			GridManager->BuildPlacementAtGhost(PlacementFactory, GhostPlacement);
+		}
 	}
+	
 }
 
 void UPlacementIndicatorComponent::Remove()
