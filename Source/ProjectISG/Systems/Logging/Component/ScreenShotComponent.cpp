@@ -71,6 +71,6 @@ void UScreenShotComponent::SaveCaptureFrameImage(
 			                             FDateTime::Now().ToString() +
 			                             TEXT("-screenshot.png")));
 
-		OnCaptureFrameNotified.Execute();
+		OnCaptureFrameNotified.Execute(CompressedData);
 	});
 }

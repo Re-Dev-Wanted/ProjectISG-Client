@@ -6,7 +6,8 @@
 
 struct FDiaryLogData;
 
-DECLARE_DELEGATE(FOnCaptureFrameNotified);
+DECLARE_DELEGATE_OneParam(FOnCaptureFrameNotified,
+                          TArray64<uint8> ImageBinaryData);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTISG_API UScreenShotComponent : public UActorComponent
