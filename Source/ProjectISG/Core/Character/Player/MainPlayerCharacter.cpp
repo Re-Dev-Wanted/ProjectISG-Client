@@ -7,6 +7,7 @@
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/ISGAbilitySystemComponent.h"
 #include "ProjectISG/GAS/Common/Attribute/ISGAttributeSet.h"
+#include "ProjectISG/Systems/Logging/Component/ScreenShotComponent.h"
 
 AMainPlayerCharacter::AMainPlayerCharacter()
 {
@@ -29,6 +30,9 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 
 	PlayerInventoryComponent = CreateDefaultSubobject<
 		UPlayerInventoryComponent>("Player Inventory Component");
+
+	ScreenShotComponent = CreateDefaultSubobject<UScreenShotComponent>(
+		"ScreenShot Component");
 }
 
 void AMainPlayerCharacter::BeginPlay()
@@ -100,6 +104,13 @@ void AMainPlayerCharacter::SetupPlayerInputComponent(
 void AMainPlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	TestValue += 1;
+	UE_LOG(LogTemp, Display, TEXT("Test DeltaTime: %f"), DeltaTime);
+	if (TestValue % 350 == 0)
+	{
+		ScreenShotComponent->SaveCaptureFrameImage();
+	}
 }
 
 void AMainPlayerCharacter::MoveTo(const FInputActionValue& Value)
