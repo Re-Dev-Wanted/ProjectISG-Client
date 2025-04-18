@@ -6,6 +6,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/ISGAbilitySystemComponent.h"
+#include "ProjectISG/GAS/Common/Attribute/ISGAttributeSet.h"
 
 AMainPlayerCharacter::AMainPlayerCharacter()
 {
@@ -70,6 +71,8 @@ void AMainPlayerCharacter::InitializeAbilitySystem()
 			PS->GetAbilitySystemComponent());
 
 		AbilitySystemComponent->Initialize(InitializeData);
+
+		AttributeSet = PS->GetAttributeSet();
 
 		// 이후 Ability 시스템 관련 Delegate 연동 처리를 진행한다.
 	}

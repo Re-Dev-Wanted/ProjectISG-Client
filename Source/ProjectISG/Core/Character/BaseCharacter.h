@@ -5,6 +5,8 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+
+class UISGAttributeSet;
 class UISGAbilitySystemInitializeData;
 class UISGAbilitySystemComponent;
 
@@ -19,6 +21,7 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -27,6 +30,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Options|GAS")
 	TObjectPtr<UISGAbilitySystemInitializeData> InitializeData;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "Options|GAS")
+	TObjectPtr<UISGAttributeSet> AttributeSet;
 
 	virtual void InitializeAbilitySystem()
 	{
