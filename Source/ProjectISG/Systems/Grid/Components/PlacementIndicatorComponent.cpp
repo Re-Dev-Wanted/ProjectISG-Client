@@ -91,7 +91,7 @@ void UPlacementIndicatorComponent::Build()
 
 void UPlacementIndicatorComponent::Remove()
 {
-	if (GridManager)
+	if (GridManager && GhostPlacement)
 	{
 		// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
 		FIntVector GridCoord;
