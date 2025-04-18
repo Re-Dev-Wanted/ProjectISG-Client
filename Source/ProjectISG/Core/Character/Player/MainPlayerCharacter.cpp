@@ -11,8 +11,6 @@
 
 AMainPlayerCharacter::AMainPlayerCharacter()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>("Spring Arm");
 	SpringArm->SetupAttachment(GetMesh());
 	SpringArm->SetRelativeRotation({0, 90, 0});
@@ -107,18 +105,6 @@ void AMainPlayerCharacter::SetupPlayerInputComponent(
 		                                   , this, &ThisClass::Look);
 
 		OnInputBindingNotified.Broadcast(EnhancedInputComponent);
-	}
-}
-
-void AMainPlayerCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	TestValue += 1;
-	UE_LOG(LogTemp, Display, TEXT("Test DeltaTime: %f"), DeltaTime);
-	if (TestValue % 350 == 0)
-	{
-		ScreenShotComponent->SaveCaptureFrameImage();
 	}
 }
 
