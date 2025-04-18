@@ -5,6 +5,7 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerController.generated.h"
 
+class UItemInfo;
 class UMainHUD;
 class UInventoryUI;
 
@@ -16,11 +17,18 @@ class PROJECTISG_API AMainPlayerController : public APlayerController
 public:
 	void InitializeHUD();
 	void ToggleInventoryUI(const bool IsShow);
+	void ShowItemInfo(const uint16 InventoryIndex) const;
+	void RemoveItemInfo() const;
 
 	GETTER(TObjectPtr<UMainHUD>, MainHUD)
+	GETTER(TObjectPtr<UInventoryUI>, InventoryUI)
 
 protected:
 	virtual void BeginPlay() override;
+
+	virtual void OnRep_PlayerState() override;
+
+	virtual void OnPossess(APawn* InPawn) override;
 
 private:
 #pragma region UI
@@ -37,5 +45,12 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UInventoryUI> InventoryUI;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Options|UI",
+		meta = (AllowPrivateAccess = true))
+	TSubclassOf<UItemInfo> ItemInfoWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UItemInfo> ItemInfoWidget;
 #pragma endregion
 };
