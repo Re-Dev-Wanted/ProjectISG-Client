@@ -34,8 +34,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void Tick(float DeltaTime) override;
-
 	virtual void SetupPlayerInputComponent(
 		UInputComponent* PlayerInputComponent) override;
 
@@ -50,8 +48,6 @@ public:
 	GETTER_SETTER(bool, bLieOnBed);
 
 private:
-	uint32 TestValue = 0;
-
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent;
 

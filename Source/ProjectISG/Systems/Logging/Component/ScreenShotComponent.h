@@ -4,6 +4,10 @@
 #include "Components/ActorComponent.h"
 #include "ScreenShotComponent.generated.h"
 
+struct FDiaryLogData;
+
+DECLARE_DELEGATE(FOnCaptureFrameNotified);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTISG_API UScreenShotComponent : public UActorComponent
 {
@@ -12,10 +16,9 @@ class PROJECTISG_API UScreenShotComponent : public UActorComponent
 public:
 	UScreenShotComponent();
 
-	TArray64<uint8> CaptureAndGetFile();
-
-	void SaveCaptureFrameImage();
-	void SaveCaptureFrameImageSync();
+	void SaveCaptureFrameImage(
+		const FOnCaptureFrameNotified& OnCaptureFrameNotified =
+			FOnCaptureFrameNotified());
 
 protected:
 	virtual void BeginPlay() override;

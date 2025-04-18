@@ -2,23 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+#include "LoggingStruct.h"
 #include "LoggingSubSystem.generated.h"
-
-USTRUCT()
-struct PROJECTISG_API FDiaryLogData
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	uint16 Id;
-};
-
-struct FApiCallData
-{
-	FString Url;
-	FString Payload;
-	int32 RetryCount = 3;
-};
 
 UCLASS()
 class PROJECTISG_API ULoggingSubSystem : public UGameInstanceSubsystem

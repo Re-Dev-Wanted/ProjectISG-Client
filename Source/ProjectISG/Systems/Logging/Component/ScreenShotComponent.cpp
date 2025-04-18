@@ -1,12 +1,11 @@
 ﻿#include "ScreenShotComponent.h"
 
-#include "ImageUtils.h"
 #include "IImageWrapperModule.h"
 #include "IImageWrapper.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Kismet/KismetRenderingLibrary.h"
-
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 
 UScreenShotComponent::UScreenShotComponent()
 {
@@ -23,9 +22,9 @@ void UScreenShotComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UScreenShotComponent::SaveCaptureFrameImage()
+void UScreenShotComponent::SaveCaptureFrameImage(
+	const FOnCaptureFrameNotified& OnCaptureFrameNotified)
 {
-	FDateTime TestDate = FDateTime::Now();
 	SceneCapture->TextureTarget =
 		UKismetRenderingLibrary::CreateRenderTarget2D(
 			GetWorld(),
@@ -39,13 +38,16 @@ void UScreenShotComponent::SaveCaptureFrameImage()
 	SceneCapture->CaptureScene();
 	SceneCapture->bCaptureEveryFrame = false;
 	// RenderTarget에서 리소스 얻기
+	// GameThread_GetRenderTargetResource 는 이름 그대로 메인 스레드인
+	// 게임 Thread에서 진행되기 때문에 다른 스레드에서 실행시키려고 한다면
+	// 에러가 발생하기 때문에 무조건 메인 스레드에서만 실행시킬 수 있다.
 	FTextureRenderTargetResource* RTResource = SceneCapture->TextureTarget->
 		GameThread_GetRenderTargetResource();
 	// 픽셀 읽기
 	TArray<FColor> RawPixels;
 	RTResource->ReadPixels(RawPixels);
 
-	Async(EAsyncExecution::Thread, [this, RawPixels, TestDate]()
+	Async(EAsyncExecution::Thread, [this, RawPixels, OnCaptureFrameNotified]()
 	{
 		// 이미지 래퍼 모듈
 		IImageWrapperModule& ImageWrapperModule =
@@ -65,72 +67,10 @@ void UScreenShotComponent::SaveCaptureFrameImage()
 		// 저장
 		FFileHelper::SaveArrayToFile(CompressedData,
 		                             *(FPaths::ProjectSavedDir() +
-			                             TEXT("/test.png")));
+			                             TEXT("/screenshot/") +
+			                             FDateTime::Now().ToString() +
+			                             TEXT("-screenshot.png")));
 
-		UE_LOG(LogTemp, Display, TEXT("Async Test Result: %s"),
-		       *(FDateTime::Now() - TestDate).ToString());
+		OnCaptureFrameNotified.Execute();
 	});
-}
-
-void UScreenShotComponent::SaveCaptureFrameImageSync()
-{
-	FDateTime TestDate = FDateTime::Now();
-	SceneCapture->TextureTarget =
-		UKismetRenderingLibrary::CreateRenderTarget2D(
-			GetWorld(),
-			1920,
-			1080,
-			RTF_RGBA16f,
-			FLinearColor::White,
-			false,
-			false
-		);
-	SceneCapture->CaptureScene();
-	SceneCapture->bCaptureEveryFrame = false;
-	// RenderTarget에서 리소스 얻기
-	FTextureRenderTargetResource* RTResource = SceneCapture->TextureTarget->
-		GameThread_GetRenderTargetResource();
-	// 픽셀 읽기
-	TArray<FColor> RawPixels;
-	RTResource->ReadPixels(RawPixels);
-
-	// 이미지 래퍼 모듈
-	IImageWrapperModule& ImageWrapperModule =
-		FModuleManager::LoadModuleChecked<
-			IImageWrapperModule>(FName("ImageWrapper"));
-	TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule.
-		CreateImageWrapper(EImageFormat::PNG);
-
-	// 압축
-	ImageWrapper->SetRaw(RawPixels.GetData(),
-	                     RawPixels.Num() * sizeof(FColor),
-	                     SceneCapture->TextureTarget->SizeX,
-	                     SceneCapture->TextureTarget->SizeY,
-	                     ERGBFormat::BGRA, 8);
-	const TArray64<uint8>& CompressedData = ImageWrapper->GetCompressed();
-
-	// 저장
-	FFileHelper::SaveArrayToFile(CompressedData,
-	                             *(FPaths::ProjectSavedDir() +
-		                             TEXT("/test.png")));
-
-	UE_LOG(LogTemp, Display, TEXT("Sync Test Result: %s"),
-	       *(FDateTime::Now() - TestDate).ToString());
-}
-
-TArray64<uint8> UScreenShotComponent::CaptureAndGetFile()
-{
-	// RenderTarget이 애초부터 없으면 장애 상황이다.
-	FRenderTarget* RenderTargetResource = SceneCapture->TextureTarget->
-		GameThread_GetRenderTargetResource();
-
-	TArray<FColor> OutBMP;
-	RenderTargetResource->ReadPixels(OutBMP);
-
-	TArray64<uint8> PNGData;
-	FImageUtils::PNGCompressImageArray(SceneCapture->TextureTarget->SizeX,
-	                                   SceneCapture->TextureTarget->SizeY,
-	                                   OutBMP, PNGData);
-
-	return PNGData;
 }
