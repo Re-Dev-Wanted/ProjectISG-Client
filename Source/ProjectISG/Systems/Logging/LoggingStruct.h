@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "LoggingStruct.generated.h"
 
 enum class ELoggingActionName : uint8;
 enum class ELoggingActionType : uint8;
@@ -47,12 +48,12 @@ struct PROJECTISG_API FDiaryLogData
 
 	// 이미지 파일
 	UPROPERTY()
-	TArray64<uint8> file;
+	TArray<uint8> file;
 };
 
 struct FApiCallData
 {
 	FString Url;
-	FString Payload;
+	FDiaryLogData Payload;
 	int32 RetryCount = 3;
 };

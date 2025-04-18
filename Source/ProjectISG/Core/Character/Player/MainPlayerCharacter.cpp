@@ -7,6 +7,8 @@
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/ISGAbilitySystemComponent.h"
 #include "ProjectISG/GAS/Common/Attribute/ISGAttributeSet.h"
+#include "ProjectISG/Systems/Logging/LoggingEnum.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 #include "ProjectISG/Systems/Logging/Component/ScreenShotComponent.h"
 
 AMainPlayerCharacter::AMainPlayerCharacter()
@@ -49,6 +51,19 @@ void AMainPlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	FOnCaptureFrameNotified NewCaptureFrameNotified;
+	NewCaptureFrameNotified.BindLambda([this](const TArray64<uint8>& FileBinary)
+	{
+		FDiaryLogData PayloadData;
+		PayloadData.action_name = ELoggingActionName::evening;
+		PayloadData.file = FileBinary;
+
+		GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+		            SendLoggingNow(PayloadData);
+	});
+
+	ScreenShotComponent->SaveCaptureFrameImage(NewCaptureFrameNotified);
 }
 
 void AMainPlayerCharacter::OnRep_PlayerState()
