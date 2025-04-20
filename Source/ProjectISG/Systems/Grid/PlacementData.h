@@ -71,4 +71,13 @@ USTRUCT(BlueprintType)
 struct FPlacementInfo
 {
 	GENERATED_BODY()
+
+	UPROPERTY()
+	UStaticMesh* BaseMesh = nullptr;
+
+	UPROPERTY()
+	float TileSize;
+
+	UPROPERTY()
+	FRotator Rotation;
 };

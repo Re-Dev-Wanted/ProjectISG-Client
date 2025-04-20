@@ -75,6 +75,18 @@ public:
 
 		T* SpawnedActor = GetWorld()->SpawnActor<T>(PlacementClass, Location, Rotation,
 		                                            Params);
+		
+		if (!SpawnedActor)
+		{
+			return;
+		}
+
+		FPlacementInfo PlacementInfo;
+		PlacementInfo.BaseMesh = SpawnedActor->BaseStaticMesh;
+		PlacementInfo.TileSize = SnapSize;
+		PlacementInfo.Rotation = Rotation;
+
+		SpawnedActor->PlacementInfo = PlacementInfo;
 		SpawnedActor->Setup(SnapSize);
 
 		TArray<FIntVector> OccupiedCells = SpawnedActor->GetOccupiedGrid(SnapSize, GridCoord);

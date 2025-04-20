@@ -49,6 +49,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Build();
 
+	UFUNCTION(Server, Reliable)
+	void Server_Build(FVector Pivot, FVector Location, FRotator Rotation, TSubclassOf<APlacement> PlacementClass);
+
 	UFUNCTION(BlueprintCallable)
 	void Remove();
 

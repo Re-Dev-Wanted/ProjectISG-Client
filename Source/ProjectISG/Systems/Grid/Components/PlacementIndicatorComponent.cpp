@@ -1,12 +1,11 @@
 #include "PlacementIndicatorComponent.h"
 
 #include "Kismet/GameplayStatics.h"
+
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Manager/GridManager.h"
-#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
-
 
 class AMainPlayerCharacter;
 
@@ -23,7 +22,6 @@ void UPlacementIndicatorComponent::BeginPlay()
 	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	GridManager = Cast<AGridManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGridManager::StaticClass()));
 }
-
 
 // Called every frame
 void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
@@ -61,27 +59,37 @@ void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 
 void UPlacementIndicatorComponent::OnActivate(const TSubclassOf<AActor>& Factory)
 {
-	SetActive(true);
-
-	if (GhostPlacement)
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
+	
+	if (Player && Player->IsLocallyControlled())
 	{
-		GhostPlacement->Destroy();
+		SetActive(true);
+
+		if (GhostPlacement)
+		{
+			GhostPlacement->Destroy();
+		}
+	
+		AActor* Actor = GetWorld()->SpawnActor<AActor>(Factory);
+
+		GhostPlacement = Cast<APlacement>(Actor);
+		GhostPlacement->Setup(GridManager->SnapSize);
 	}
-
-	AActor* Actor = GetWorld()->SpawnActor<AActor>(Factory);
-
-	GhostPlacement = Cast<APlacement>(Actor);
-	GhostPlacement->Setup(GridManager->SnapSize);
 }
 
 void UPlacementIndicatorComponent::OnDeactivate()
 {
-	if (GhostPlacement)
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
+	
+	if (Player && Player->IsLocallyControlled())
 	{
-		GhostPlacement->Destroy();
-	}
+		if (GhostPlacement)
+		{
+			GhostPlacement->Destroy();
+		}
 
-	SetActive(false);
+		SetActive(false);
+	}
 }
 
 void UPlacementIndicatorComponent::Build()
@@ -97,16 +105,34 @@ void UPlacementIndicatorComponent::Build()
 	
 	if (PlayerInventoryComponent->RemoveItemCurrentSlotIndex(1))
 	{
-		if (GridManager)
+		if (GetOwner()->GetNetMode() == NM_Standalone)
 		{
-			const TSubclassOf<APlacement> PlacementFactory = GhostPlacement->GetClass();
-			// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
-			GridManager->BuildPlacementAtGhost(PlacementFactory, GhostPlacement);
+			if (GridManager)
+			{
+				const TSubclassOf<APlacement> PlacementFactory = GhostPlacement->GetClass();
+				// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
+				GridManager->BuildPlacementAtGhost(PlacementFactory, GhostPlacement);
+			}
 		}
-
+		else
+		{
+			Server_Build(GhostPlacement->GetActorPivotLocation(), GhostPlacement->GetActorLocation(), GhostPlacement->GetActorRotation(), GhostPlacement->GetClass());
+		}
 		OnDeactivate();
 	}
 	
+}
+
+void UPlacementIndicatorComponent::Server_Build_Implementation(FVector Pivot, FVector Location, FRotator Rotation,
+	TSubclassOf<APlacement> PlacementClass)
+{
+	if (const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner()))
+	{
+		if (GridManager)
+		{
+			GridManager->BuildPlacement(PlacementClass, Pivot, Location, Rotation);
+		}
+	}
 }
 
 void UPlacementIndicatorComponent::Remove()

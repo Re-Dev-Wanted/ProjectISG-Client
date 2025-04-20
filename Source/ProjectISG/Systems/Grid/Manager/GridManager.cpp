@@ -5,12 +5,19 @@
 
 AGridManager::AGridManager()
 {
+	bReplicates = false;
+	
 	GridComp = CreateDefaultSubobject<UGridComponent>(TEXT("GridComp"));
 }
 
 void AGridManager::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (!HasAuthority())
+	{
+		Destroy();
+	}
 }
 
 void AGridManager::OnConstruction(const FTransform& Transform)

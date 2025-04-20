@@ -2,7 +2,7 @@
 
 #include "ProceduralMeshComponent.h"
 #include "Components/BoxComponent.h"
-
+#include "Net/UnrealNetwork.h"
 
 APlacement::APlacement()
 {
@@ -26,6 +26,8 @@ APlacement::APlacement()
 	ProceduralMeshComp->SetGenerateOverlapEvents(false);
 
 	bReplicates = true;
+	bAlwaysRelevant = true;
+	SetReplicatingMovement(true);
 }
 
 void APlacement::BeginPlay()
@@ -38,6 +40,8 @@ void APlacement::BeginPlay()
 void APlacement::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APlacement, PlacementInfo);
 }
 
 void APlacement::Tick(float DeltaTime)
@@ -49,8 +53,6 @@ void APlacement::Setup(float TileSize)
 {
 	// 오브젝트 크기가 제각각 다를 것이다.
 	// 적당히 가운데 정렬하고 tileSize에 맞추기
-
-	UE_LOG(LogTemp, Warning, TEXT("야야"));
 
 	FVector BoxExtent = BaseStaticMesh->GetBounds().BoxExtent;
 
@@ -200,4 +202,11 @@ FVector APlacement::GetActorPivotLocation() const
 {
 	FVector PivotLocation = AnchorComp->GetComponentLocation();
 	return FVector(PivotLocation.X, PivotLocation.Y, 0);
+}
+
+void APlacement::OnRep_SetPlacementInfo()
+{
+	BaseStaticMesh = PlacementInfo.BaseMesh;
+	SetActorRotation(PlacementInfo.Rotation);
+	Setup(PlacementInfo.TileSize);
 }
