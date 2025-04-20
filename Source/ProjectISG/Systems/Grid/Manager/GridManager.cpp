@@ -1,11 +1,15 @@
 #include "GridManager.h"
 
+#include "Kismet/KismetSystemLibrary.h"
+#include "Net/UnrealNetwork.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Components/GridComponent.h"
 
 AGridManager::AGridManager()
 {
-	bReplicates = false;
+	bReplicates = true;
+	bAlwaysRelevant = true;
+	bNetLoadOnClient = true;
 	
 	GridComp = CreateDefaultSubobject<UGridComponent>(TEXT("GridComp"));
 }
@@ -30,6 +34,28 @@ void AGridManager::OnConstruction(const FTransform& Transform)
 	}
 }
 
+void AGridManager::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AGridManager, PlacementRepInfos);
+}
+
+void AGridManager::OnRep_AddPlacement()
+{
+	PlacedMap.Empty();
+
+	for (const FPlacementGridInfo& Info : PlacementRepInfos)
+	{
+		if (IsValid(Info.Placement))
+		{
+			PlacedMap.Add(Info.GridCoord, Info.Placement);
+		}
+	}
+
+	UKismetSystemLibrary::PrintString(GetWorld(),FString::Printf(TEXT("OnRep_PlacementGrid() called on %d"), PlacedMap.Num()));
+}
+
 FVector AGridManager::SnapToGrid(const FVector& Location)
 {
 	return FVector
@@ -43,16 +69,8 @@ FVector AGridManager::SnapToGrid(const FVector& Location)
 
 FVector AGridManager::SnapToGridPlacement(const FVector& Location)
 {
-	FVector SnappedLocation = SnapToGrid(Location);
-
-	FVector Offset = FVector
-	(
-		-SnapSize * 0.5f,
-		-SnapSize * 0.5f,
-		0
-	);
-
-	return SnappedLocation + Offset;
+	FIntVector Grid = WorldToGridLocation(Location);
+	return GridToWorldLocation(Grid);
 }
 
 FIntVector AGridManager::WorldToGridLocation(const FVector& WorldLocation)
@@ -68,8 +86,13 @@ FIntVector AGridManager::WorldToGridLocation(const FVector& WorldLocation)
 
 FVector AGridManager::GridToWorldLocation(const FIntVector& GridCoord)
 {
-	// return FVector(GridCoord.X, GridCoord.Y, 0.5f) * SnapSize;
-	return FVector(GridCoord) * SnapSize;
+	return FVector(
+		GridCoord.X * SnapSize + SnapSize * 0.5f,
+		GridCoord.Y * SnapSize + SnapSize * 0.5f,
+		GridCoord.Z * SnapSize                    // 보통 Z는 그대로
+	);
+	
+	// return FVector(GridCoord) * SnapSize;
 }
 
 FVector AGridManager::GetLocationInFront(AActor* Actor, int32 Distance)

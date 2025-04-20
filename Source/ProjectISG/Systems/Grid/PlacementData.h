@@ -81,3 +81,15 @@ struct FPlacementInfo
 	UPROPERTY()
 	FRotator Rotation;
 };
+
+USTRUCT()
+struct FPlacementGridInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FIntVector GridCoord;
+
+	UPROPERTY()
+	class APlacement* Placement;
+};

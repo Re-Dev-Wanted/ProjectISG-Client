@@ -19,6 +19,8 @@ protected:
 
 	virtual void OnConstruction(const FTransform& Transform) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
 	UPROPERTY(VisibleAnywhere)
 	class UGridComponent* GridComp;
 
@@ -26,7 +28,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	TMap<FIntVector, APlacement*> PlacedMap; // 배치되어 있는 것들 정보
 
-	TMap<APlacement*, TArray<FIntVector>> ReverseMap; // 삭제를 편하게 하기 위해
+	TMap<TWeakObjectPtr<APlacement>, TArray<FIntVector>> ReverseMap; // 삭제를 편하게 하기 위해
 
 	UPROPERTY(EditAnywhere, Category = Properties)
 	int32 Rows = 10;
@@ -36,6 +38,16 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Properties)
 	float SnapSize = 100;
+
+	UPROPERTY(EditAnywhere, Category = Properties)
+	float Tolerance = 1.f;
+
+	//서버 복제용
+	UPROPERTY(ReplicatedUsing = OnRep_AddPlacement)
+	TArray<FPlacementGridInfo> PlacementRepInfos;
+
+	UFUNCTION()
+	void OnRep_AddPlacement();
 
 	FVector SnapToGrid(const FVector& Location);
 
@@ -98,6 +110,15 @@ public:
 			// Map에 저장
 			PlacedMap.Add(Coord, SpawnedActor);
 			ReverseMap[SpawnedActor].Add(Coord);
+
+			if (GetNetMode() != NM_Standalone)
+			{
+				// 복제용 데이터에도 추가
+				FPlacementGridInfo PlacementGridInfo;
+				PlacementGridInfo.GridCoord = Coord;
+				PlacementGridInfo.Placement = SpawnedActor;
+				PlacementRepInfos.Add(PlacementGridInfo);
+			}
 		}
 	}
 
@@ -122,8 +143,6 @@ public:
 	bool TryGetPlacement(const FVector& Location, FIntVector& OutGridAt, APlacement*& OutPlacement);
 
 	bool TryGetPlacementAt(AActor* Actor, FIntVector& OutGridAt, APlacement*& OutPlacement);
-
-	// bool IsOverlapped(APlacement* Ghost);
 
 	float GetGridWidth() const
 	{

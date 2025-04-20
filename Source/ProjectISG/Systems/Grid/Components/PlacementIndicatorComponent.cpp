@@ -34,10 +34,10 @@ void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 		return;
 	}
 
-	bool bIsBlock = false;
-
-	if (GhostPlacement)
+	if (GhostPlacement && PlayerController->IsLocalController())
 	{
+		bool bIsBlock = false;
+		
 		FVector SnappedLocation = GridManager->GetLocationInPointerDirectionPlacement(
 			PlayerController, GhostPlacement->GetMeshSize());
 
