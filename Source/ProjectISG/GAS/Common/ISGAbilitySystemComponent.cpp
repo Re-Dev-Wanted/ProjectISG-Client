@@ -42,3 +42,20 @@ void UISGAbilitySystemComponent::Initialize(
 
 	SetIsInitialize(true);
 }
+
+void UISGAbilitySystemComponent::AbilityActorInfoSet()
+{
+	OnGameplayEffectAppliedDelegateToSelf.AddUObject(
+		this, &UISGAbilitySystemComponent::EffectApplied);
+}
+
+void UISGAbilitySystemComponent::EffectApplied(
+	UAbilitySystemComponent* AbilitySystemComponent,
+	const FGameplayEffectSpec& EffectSpec,
+	FActiveGameplayEffectHandle ActiveGameplayEffectHandle)
+{
+	FGameplayTagContainer TagContainer;
+	EffectSpec.GetAllAssetTags(TagContainer);
+
+	EffectAssetTags.Broadcast(TagContainer);
+}

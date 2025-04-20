@@ -6,6 +6,7 @@
 #include "BaseCharacter.generated.h"
 
 
+class UGameplayEffect;
 class UISGAttributeSet;
 class UISGAbilitySystemInitializeData;
 class UISGAbilitySystemComponent;
@@ -33,6 +34,12 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Options|GAS")
 	TObjectPtr<UISGAttributeSet> AttributeSet;
+
+	// attribute를 초기화 하기위한 GameplayEffect
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Options|GAS")
+	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
+
+	void InitializePrimaryAttributes();
 
 	virtual void InitializeAbilitySystem()
 	{

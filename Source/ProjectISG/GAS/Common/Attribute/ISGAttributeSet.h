@@ -13,6 +13,43 @@
 	GAMEPLAYATTRIBUTE_VALUE_SETTER(PropertyName) \
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
+USTRUCT()
+struct FEffectProperties
+{
+	GENERATED_BODY()
+
+	FEffectProperties()
+	{
+	}
+
+	FGameplayEffectContextHandle EffectContextHandle;
+
+	UPROPERTY()
+	UAbilitySystemComponent* SourceASC = nullptr;
+
+	UPROPERTY()
+	AActor* SourceAvatarActor = nullptr;
+
+	UPROPERTY()
+	AController* SourceController = nullptr;
+
+	UPROPERTY()
+	ACharacter* SourceCharacter = nullptr;
+
+	UPROPERTY()
+	UAbilitySystemComponent* TargetASC = nullptr;
+
+	UPROPERTY()
+	AActor* TargetAvatarActor = nullptr;
+
+	UPROPERTY()
+	AController* TargetController = nullptr;
+
+	UPROPERTY()
+	ACharacter* TargetCharacter = nullptr;
+};
+
+
 /**
  * 
  */
@@ -24,23 +61,37 @@ class PROJECTISG_API UISGAttributeSet : public UAttributeSet
 public:
 	UISGAttributeSet();
 
-	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void GetLifetimeReplicatedProps(
+		TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
-	
-	
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health, Category = "Attribute")
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute,
+	                                float& NewValue) override;
+
+	virtual void PostGameplayEffectExecute(
+		const struct FGameplayEffectModCallbackData& Data) override;
+
+
+	/*
+	 * Vital Attributes
+	 */
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health,
+		Category = "Vital")
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UISGAttributeSet, Health);
+
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth,
+		Category = "Vital")
+	FGameplayAttributeData MaxHealth;
+	ATTRIBUTE_ACCESSORS(UISGAttributeSet, MaxHealth);
 
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData OldHealth) const;
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth, Category = "Attribute")
-	FGameplayAttributeData MaxHealth;
-	ATTRIBUTE_ACCESSORS(UISGAttributeSet, MaxHealth);
-
-
 	UFUNCTION()
 	void OnRep_MaxHealth(const FGameplayAttributeData OldMaxHealth) const;
-	
+
+private:
+	void SetEffectProperties(const struct FGameplayEffectModCallbackData& Data,
+	                         FEffectProperties& Props) const;
 };

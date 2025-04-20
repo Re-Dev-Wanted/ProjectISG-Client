@@ -7,6 +7,9 @@
 
 class UISGAbilitySystemInitializeData;
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags,
+                                    const FGameplayTagContainer& /*AssetTags*/);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTISG_API UISGAbilitySystemComponent : public UAbilitySystemComponent
 {
@@ -18,6 +21,15 @@ public:
 	void Initialize(const UISGAbilitySystemInitializeData* InitialData);
 
 	GETTER_SETTER(bool, IsInitialize)
+
+	void AbilityActorInfoSet();
+
+	FEffectAssetTags EffectAssetTags;
+
+protected:
+	void EffectApplied(UAbilitySystemComponent* AbilitySystemComponent,
+	                   const FGameplayEffectSpec& EffectSpec,
+	                   FActiveGameplayEffectHandle ActiveGameplayEffectHandle);
 
 private:
 	bool IsInitialize = false;
