@@ -10,6 +10,7 @@ AGridManager::AGridManager()
 	bReplicates = true;
 	bAlwaysRelevant = true;
 	bNetLoadOnClient = true;
+	SetReplicates(true);
 	
 	GridComp = CreateDefaultSubobject<UGridComponent>(TEXT("GridComp"));
 }
@@ -38,22 +39,22 @@ void AGridManager::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& O
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AGridManager, PlacementRepInfos);
+	DOREPLIFETIME(AGridManager, PlacementGridContainer);
 }
 
 void AGridManager::OnRep_AddPlacement()
 {
-	PlacedMap.Empty();
-
-	for (const FPlacementGridInfo& Info : PlacementRepInfos)
-	{
-		if (IsValid(Info.Placement))
-		{
-			PlacedMap.Add(Info.GridCoord, Info.Placement);
-		}
-	}
-
-	UKismetSystemLibrary::PrintString(GetWorld(),FString::Printf(TEXT("OnRep_PlacementGrid() called on %d"), PlacedMap.Num()));
+	// PlacedMap.Empty();
+	//
+	// for (const FPlacementGridEntry& Info : PlacementRepInfos)
+	// {
+	// 	if (Info.IsValid())
+	// 	{
+	// 		PlacedMap.Add(Info.GridCoord, Info.Placement.Get());
+	// 	}
+	// }
+	//
+	// UKismetSystemLibrary::PrintString(GetWorld(),FString::Printf(TEXT("OnRep_PlacementGrid() called on %d"), PlacedMap.Num()));
 }
 
 FVector AGridManager::SnapToGrid(const FVector& Location)
@@ -141,18 +142,40 @@ FVector AGridManager::GetLocationInPointerDirectionPlacement(APlayerController* 
 
 void AGridManager::RemovePlacement(const FIntVector& GridAt)
 {
-	if (APlacement* Placement = PlacedMap.FindRef(GridAt))
+	TWeakObjectPtr<APlacement> Placement = PlacementGridContainer.PlacedMap.FindRef(GridAt);
+	if (Placement.IsValid())
 	{
-		if (ReverseMap.Contains(Placement))
+		// 모든 관련 좌표 제거
+		TArray<int32> IndicesToRemove;
+
+		for (int32 i = 0; i < PlacementGridContainer.Items.Num(); ++i)
 		{
-			TArray<FIntVector> Arr = ReverseMap.FindRef(Placement);
-			for (FIntVector Coord : Arr)
+			const FPlacementGridEntry& Entry = PlacementGridContainer.Items[i];
+
+			if (Entry.Placement == Placement)
 			{
-				PlacedMap.Remove(Coord);
+				IndicesToRemove.Add(i);
 			}
-			ReverseMap.Remove(Placement);
-			Placement->Destroy();
 		}
+
+		// 실제 배열에서 제거
+		for (int32 Index : IndicesToRemove)
+		{
+			PlacementGridContainer.Items.RemoveAt(Index);
+			PlacementGridContainer.MarkArrayDirty();
+		}
+
+		// 캐시 Map도 정리
+		for (auto It = PlacementGridContainer.PlacedMap.CreateIterator(); It; ++It)
+		{
+			if (It.Value() == Placement)
+			{
+				It.RemoveCurrent();
+			}
+		}
+
+		// 가구 제거
+		Placement->Destroy();
 	}
 }
 
@@ -165,13 +188,25 @@ bool AGridManager::TryGetPlacement(const FVector& Location, FIntVector& OutGridA
 {
 	FIntVector ToCoord = WorldToGridLocation(Location);
 
-	if (APlacement* Placement = PlacedMap.FindRef(ToCoord))
+	if (PlacementGridContainer.PlacedMap.Contains(ToCoord))
 	{
-		OutGridAt = ToCoord;
-		OutPlacement = Placement;
+		TWeakObjectPtr<APlacement> Placement = PlacementGridContainer.PlacedMap[ToCoord];
+		if (Placement.IsValid())
+		{
+			OutGridAt = ToCoord;
+			OutPlacement = Placement.Get();
 
-		return true;
+			return true;
+		}
 	}
+
+	// if (APlacement* Placement = PlacedMap.FindRef(ToCoord))
+	// {
+	// 	OutGridAt = ToCoord;
+	// 	OutPlacement = Placement;
+	//
+	// 	return true;
+	// }
 
 	return false;
 }
@@ -194,4 +229,10 @@ bool AGridManager::TryGetPlacementAt(AActor* Actor, FIntVector& OutGridAt, APlac
 	}
 
 	return false;
+}
+
+void AGridManager::Server_BuildPlacement_Implementation(TSubclassOf<APlacement> PlacementClass, FVector Pivot,
+	FVector Location, FRotator Rotation)
+{
+	BuildPlacement(PlacementClass, Pivot, Location, Rotation);
 }

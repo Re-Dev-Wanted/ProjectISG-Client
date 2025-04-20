@@ -1,9 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
 #include "PlacementData.generated.h"
 
 UENUM(BlueprintType)
@@ -80,16 +77,4 @@ struct FPlacementInfo
 
 	UPROPERTY()
 	FRotator Rotation;
-};
-
-USTRUCT()
-struct FPlacementGridInfo
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	FIntVector GridCoord;
-
-	UPROPERTY()
-	class APlacement* Placement;
 };

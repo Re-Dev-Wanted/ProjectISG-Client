@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ProjectISG/Systems/Grid/PlacementData.h"
+#include "ProjectISG/Utils/MacroUtil.h"
 #include "Placement.generated.h"
 
 // 그리드에 place할 모든 것들은 이것을 상속 받아야함
@@ -14,6 +15,10 @@ class PROJECTISG_API APlacement : public AActor
 
 public:
 	APlacement();
+	
+	GETTER_SETTER(TSoftObjectPtr<UStaticMesh>, MeshAssetPath)
+	GETTER(FVector, MeshSize)
+	SETTER(float, CachedSnapSize)
 
 protected:
 	virtual void BeginPlay() override;
@@ -21,6 +26,9 @@ protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	FVector MeshSize = FVector::ZeroVector;
+
+	UPROPERTY(Replicated)
+	float CachedSnapSize;
 
 public:
 	virtual void Tick(float DeltaTime) override;
@@ -43,8 +51,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<int32, UStaticMesh*> MeshMap;
 
-	UPROPERTY(EditAnywhere)
-	class UStaticMesh* BaseStaticMesh;
+	UPROPERTY(EditAnywhere, Replicated, ReplicatedUsing = OnRep_LoadMeshAsset)
+	TSoftObjectPtr<UStaticMesh> MeshAssetPath;
 
 	UPROPERTY(EditAnywhere)
 	class UMaterialInstance* TempMaterial;
@@ -52,22 +60,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FIntVector> Occupied;
 
-	UPROPERTY(ReplicatedUsing = OnRep_SetPlacementInfo)
-	FPlacementInfo PlacementInfo;
-
 	virtual void Setup(float TileSize);
 
 	void SetColor(bool bIsGhost, bool bIsBlock);
 
 	TArray<FIntVector> GetOccupiedGrid(float SnapSize, const FIntVector& Current);
 
-	FVector GetMeshSize() const
-	{
-		return MeshSize;
-	}
-
 	FVector GetActorPivotLocation() const;
 
 	UFUNCTION()
-	void OnRep_SetPlacementInfo();
+	void OnRep_LoadMeshAsset();
 };

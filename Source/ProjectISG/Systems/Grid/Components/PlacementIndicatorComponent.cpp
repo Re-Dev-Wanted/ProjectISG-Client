@@ -71,9 +71,16 @@ void UPlacementIndicatorComponent::OnActivate(const TSubclassOf<AActor>& Factory
 		}
 	
 		AActor* Actor = GetWorld()->SpawnActor<AActor>(Factory);
-
 		GhostPlacement = Cast<APlacement>(Actor);
-		GhostPlacement->Setup(GridManager->SnapSize);
+
+		if (GhostPlacement)
+		{
+			GhostPlacement->SetReplicates(false); // 복제 금지
+			GhostPlacement->SetActorEnableCollision(false); // 충돌 제거
+			GhostPlacement->SetActorTickEnabled(false);
+			GhostPlacement->SetActorHiddenInGame(false); // 자기 화면에선 보이게
+			GhostPlacement->Setup(GridManager->SnapSize);
+		}
 	}
 }
 
@@ -116,7 +123,19 @@ void UPlacementIndicatorComponent::Build()
 		}
 		else
 		{
-			Server_Build(GhostPlacement->GetActorPivotLocation(), GhostPlacement->GetActorLocation(), GhostPlacement->GetActorRotation(), GhostPlacement->GetClass());
+			if (GetOwner()->HasAuthority())
+			{
+				if (GridManager)
+				{
+					const TSubclassOf<APlacement> PlacementFactory = GhostPlacement->GetClass();
+					// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
+					GridManager->BuildPlacementAtGhost(PlacementFactory, GhostPlacement);
+				}
+			}
+			else
+			{
+				Server_Build(GhostPlacement->GetActorPivotLocation(), GhostPlacement->GetActorLocation(), GhostPlacement->GetActorRotation(), GhostPlacement->GetClass());
+			}
 		}
 		OnDeactivate();
 	}
@@ -126,12 +145,9 @@ void UPlacementIndicatorComponent::Build()
 void UPlacementIndicatorComponent::Server_Build_Implementation(FVector Pivot, FVector Location, FRotator Rotation,
 	TSubclassOf<APlacement> PlacementClass)
 {
-	if (const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner()))
+	if (GridManager)
 	{
-		if (GridManager)
-		{
-			GridManager->BuildPlacement(PlacementClass, Pivot, Location, Rotation);
-		}
+		GridManager->Server_BuildPlacement(PlacementClass, Pivot, Location, Rotation);
 	}
 }
 
