@@ -1,6 +1,5 @@
 #include "GridManager.h"
 
-#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Components/GridComponent.h"
@@ -18,6 +17,8 @@ AGridManager::AGridManager()
 void AGridManager::BeginPlay()
 {
 	Super::BeginPlay();
+
+	PlacementGridContainer.SetOwner(this);
 
 	if (!HasAuthority())
 	{
@@ -40,21 +41,6 @@ void AGridManager::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& O
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AGridManager, PlacementGridContainer);
-}
-
-void AGridManager::OnRep_AddPlacement()
-{
-	// PlacedMap.Empty();
-	//
-	// for (const FPlacementGridEntry& Info : PlacementRepInfos)
-	// {
-	// 	if (Info.IsValid())
-	// 	{
-	// 		PlacedMap.Add(Info.GridCoord, Info.Placement.Get());
-	// 	}
-	// }
-	//
-	// UKismetSystemLibrary::PrintString(GetWorld(),FString::Printf(TEXT("OnRep_PlacementGrid() called on %d"), PlacedMap.Num()));
 }
 
 FVector AGridManager::SnapToGrid(const FVector& Location)
@@ -142,15 +128,15 @@ FVector AGridManager::GetLocationInPointerDirectionPlacement(APlayerController* 
 
 void AGridManager::RemovePlacement(const FIntVector& GridAt)
 {
-	TWeakObjectPtr<APlacement> Placement = PlacementGridContainer.PlacedMap.FindRef(GridAt);
+	TWeakObjectPtr<APlacement> Placement = PlacementGridContainer.GetPlacedMap().FindRef(GridAt);
 	if (Placement.IsValid())
 	{
 		// 모든 관련 좌표 제거
 		TArray<int32> IndicesToRemove;
 
-		for (int32 i = 0; i < PlacementGridContainer.Items.Num(); ++i)
+		for (int32 i = 0; i < PlacementGridContainer.GetItems().Num(); ++i)
 		{
-			const FPlacementGridEntry& Entry = PlacementGridContainer.Items[i];
+			const FPlacementGridEntry& Entry = PlacementGridContainer.GetItems()[i];
 
 			if (Entry.Placement == Placement)
 			{
@@ -161,12 +147,12 @@ void AGridManager::RemovePlacement(const FIntVector& GridAt)
 		// 실제 배열에서 제거
 		for (int32 Index : IndicesToRemove)
 		{
-			PlacementGridContainer.Items.RemoveAt(Index);
+			PlacementGridContainer.GetItems().RemoveAt(Index);
 			PlacementGridContainer.MarkArrayDirty();
 		}
 
 		// 캐시 Map도 정리
-		for (auto It = PlacementGridContainer.PlacedMap.CreateIterator(); It; ++It)
+		for (auto It = PlacementGridContainer.GetPlacedMap().CreateIterator(); It; ++It)
 		{
 			if (It.Value() == Placement)
 			{
@@ -188,9 +174,9 @@ bool AGridManager::TryGetPlacement(const FVector& Location, FIntVector& OutGridA
 {
 	FIntVector ToCoord = WorldToGridLocation(Location);
 
-	if (PlacementGridContainer.PlacedMap.Contains(ToCoord))
+	if (PlacementGridContainer.GetPlacedMap().Contains(ToCoord))
 	{
-		TWeakObjectPtr<APlacement> Placement = PlacementGridContainer.PlacedMap[ToCoord];
+		TWeakObjectPtr<APlacement> Placement = PlacementGridContainer.GetPlacedMap()[ToCoord];
 		if (Placement.IsValid())
 		{
 			OutGridAt = ToCoord;
@@ -199,14 +185,6 @@ bool AGridManager::TryGetPlacement(const FVector& Location, FIntVector& OutGridA
 			return true;
 		}
 	}
-
-	// if (APlacement* Placement = PlacedMap.FindRef(ToCoord))
-	// {
-	// 	OutGridAt = ToCoord;
-	// 	OutPlacement = Placement;
-	//
-	// 	return true;
-	// }
 
 	return false;
 }

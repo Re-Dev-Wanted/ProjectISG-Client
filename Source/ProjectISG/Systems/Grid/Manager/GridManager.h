@@ -40,9 +40,6 @@ public:
 	UPROPERTY(Replicated)
 	FPlacementGridContainer PlacementGridContainer;
 
-	UFUNCTION()
-	void OnRep_AddPlacement();
-
 	FVector SnapToGrid(const FVector& Location);
 
 	FVector SnapToGridPlacement(const FVector& Location);
@@ -100,8 +97,7 @@ public:
 		SpawnedActor->SetCachedSnapSize(SnapSize);
 		SpawnedActor->ForceNetUpdate();
 		SpawnedActor->Setup(SnapSize);
-
-		PlacementGridContainer.Owner = this;
+		
 		PlacementGridContainer.Add(GridCoord, SpawnedActor);
 	}
 
