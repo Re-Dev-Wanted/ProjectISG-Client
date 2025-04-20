@@ -63,18 +63,3 @@ FORCEINLINE float GetDegrees(ERotateDirection Direction)
 		return 0.f;
 	}
 }
-
-USTRUCT(BlueprintType)
-struct FPlacementInfo
-{
-	GENERATED_BODY()
-
-	UPROPERTY()
-	UStaticMesh* BaseMesh = nullptr;
-
-	UPROPERTY()
-	float TileSize;
-
-	UPROPERTY()
-	FRotator Rotation;
-};

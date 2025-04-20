@@ -4,15 +4,6 @@
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Components/GridComponent.h"
 
-template<>
-struct TStructOpsTypeTraits<FPlacementGridContainer> : TStructOpsTypeTraitsBase2<FPlacementGridContainer>
-{
-	enum
-	{
-		WithNetDeltaSerializer = true
-	};
-};
-
 AGridManager::AGridManager()
 {
 	bReplicates = true;
@@ -59,7 +50,6 @@ FVector AGridManager::SnapToGrid(const FVector& Location)
 		FMath::FloorToInt(Location.X / SnapSize) * SnapSize,
 		FMath::FloorToInt(Location.Y / SnapSize) * SnapSize,
 		FMath::RoundToInt(Location.Z / SnapSize) * SnapSize
-		// FMath::RoundToInt(SnapSize * 0.5f)
 	);
 }
 
@@ -76,19 +66,17 @@ FIntVector AGridManager::WorldToGridLocation(const FVector& WorldLocation)
 		FMath::FloorToInt(WorldLocation.X / SnapSize),
 		FMath::FloorToInt(WorldLocation.Y / SnapSize),
 		FMath::RoundToInt(WorldLocation.Z / SnapSize)
-		// FMath::RoundToInt(SnapSize * 0.5f)
 	);
 }
 
 FVector AGridManager::GridToWorldLocation(const FIntVector& GridCoord)
 {
-	return FVector(
+	return FVector
+	(
 		GridCoord.X * SnapSize + SnapSize * 0.5f,
 		GridCoord.Y * SnapSize + SnapSize * 0.5f,
 		GridCoord.Z * SnapSize                    // 보통 Z는 그대로
 	);
-	
-	// return FVector(GridCoord) * SnapSize;
 }
 
 FVector AGridManager::GetLocationInFront(AActor* Actor, int32 Distance)

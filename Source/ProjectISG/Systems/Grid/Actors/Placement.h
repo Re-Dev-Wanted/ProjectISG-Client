@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ProjectISG/Systems/Grid/PlacementData.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "Placement.generated.h"
 
