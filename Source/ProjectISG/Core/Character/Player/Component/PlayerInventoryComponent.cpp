@@ -16,14 +16,23 @@ UPlayerInventoryComponent::UPlayerInventoryComponent()
 	bWantsInitializeComponent = true;
 }
 
+void UPlayerInventoryComponent::Initialize()
+{
+	AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(GetOwner());
+
+	OwnerPlayer->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
+				 OnInventoryUpdateNotified.AddDynamic(
+					 this, &ThisClass::UpdatePlayerInventoryUI);
+}
+
 void UPlayerInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(GetOwner());
-	OwnerPlayer->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
-	             OnInventoryUpdateNotified.AddDynamic(
-		             this, &ThisClass::UpdatePlayerInventoryUI);
+	if (GetNetMode() == NM_Standalone)
+	{
+		Initialize();
+	}
 }
 
 void UPlayerInventoryComponent::InitializeComponent()
@@ -31,6 +40,7 @@ void UPlayerInventoryComponent::InitializeComponent()
 	Super::InitializeComponent();
 
 	AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(GetOwner());
+
 	OwnerPlayer->OnInputBindingNotified.AddDynamic(
 		this, &ThisClass::BindingInputActions);
 }

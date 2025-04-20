@@ -45,6 +45,8 @@ protected:
 
 	virtual void InitializeAbilitySystem() override;
 
+	void InitializeInventorySystem();
+
 public:
 	GETTER_SETTER(bool, bIsSleep);
 	GETTER_SETTER(bool, bLieOnBed);

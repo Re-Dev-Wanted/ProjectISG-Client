@@ -86,6 +86,11 @@ void UPlacementIndicatorComponent::OnDeactivate()
 
 void UPlacementIndicatorComponent::Build()
 {
+	if (!GhostPlacement)
+	{
+		return;
+	}
+	
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
 
 	const TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent = Player->GetPlayerInventoryComponent();
@@ -98,6 +103,8 @@ void UPlacementIndicatorComponent::Build()
 			// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
 			GridManager->BuildPlacementAtGhost(PlacementFactory, GhostPlacement);
 		}
+
+		OnDeactivate();
 	}
 	
 }
