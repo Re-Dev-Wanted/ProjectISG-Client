@@ -55,9 +55,10 @@ void AMainPlayerCharacter::BeginPlay()
 	FOnCaptureFrameNotified NewCaptureFrameNotified;
 	NewCaptureFrameNotified.BindLambda([this](const TArray64<uint8>& FileBinary)
 	{
-		FDiaryLogData PayloadData;
-		PayloadData.action_name = ELoggingActionName::evening;
-		PayloadData.file = FileBinary;
+		FDiaryLogParams PayloadData;
+		PayloadData.ActionType = ELoggingActionType::DAY_CYCLE;
+		PayloadData.ActionName = ELoggingActionName::evening;
+		PayloadData.File = FileBinary;
 
 		GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
 		            SendLoggingNow(PayloadData);

@@ -11,8 +11,8 @@ class PROJECTISG_API ULoggingSubSystem : public UGameInstanceSubsystem
 	GENERATED_BODY()
 
 public:
-	void SendLoggingNow(const FDiaryLogData& Payload);
-	void QueueLogging(const FDiaryLogData& Payload);
+	void SendLoggingNow(const FDiaryLogParams& Payload);
+	void QueueLogging(const FDiaryLogParams& Payload);
 
 	UFUNCTION()
 	void Flush();
@@ -26,12 +26,12 @@ private:
 
 	void SendHttpRequest(FApiCallData& CallData);
 
-	void CreateLogDataStringForMultipart(const FDiaryLogData& LogData,
+	void CreateLogDataStringForMultipart(const FDiaryLogParams& LogData,
 	                                     TArray<uint8>& Payload);
 
 	FString Boundary;
 
-	TArray<FDiaryLogData> BeaconQueue;
+	TArray<FDiaryLogParams> BeaconQueue;
 
 	FTimerHandle FlushTimerHandle;
 

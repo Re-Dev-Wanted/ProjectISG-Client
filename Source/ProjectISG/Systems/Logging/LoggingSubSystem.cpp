@@ -1,10 +1,9 @@
 ﻿#include "LoggingSubSystem.h"
 
 #include "HttpModule.h"
-#include "JsonObjectConverter.h"
 #include "Interfaces/IHttpRequest.h"
-#include "Interfaces/IHttpResponse.h"
 #include "ProjectISG/Utils/EnumUtil.h"
+#include "ProjectISG/Utils/SessionUtil.h"
 
 void ULoggingSubSystem::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -12,6 +11,7 @@ void ULoggingSubSystem::Initialize(FSubsystemCollectionBase& Collection)
 
 	Boundary = "----Boundary" + FGuid::NewGuid().ToString(
 		EGuidFormats::Digits);
+	
 	if (const UWorld* World = GetWorld())
 	{
 		World->GetTimerManager().SetTimer(
@@ -34,7 +34,7 @@ void ULoggingSubSystem::Deinitialize()
 	Super::Deinitialize();
 }
 
-void ULoggingSubSystem::SendLoggingNow(const FDiaryLogData& Payload)
+void ULoggingSubSystem::SendLoggingNow(const FDiaryLogParams& Payload)
 {
 	FApiCallData NewApiCallData;
 
@@ -45,7 +45,7 @@ void ULoggingSubSystem::SendLoggingNow(const FDiaryLogData& Payload)
 	SendHttpRequest(NewApiCallData);
 }
 
-void ULoggingSubSystem::QueueLogging(const FDiaryLogData& Payload)
+void ULoggingSubSystem::QueueLogging(const FDiaryLogParams& Payload)
 {
 	if (BeaconQueue.Num() >= MaxQueueSize)
 	{
@@ -59,10 +59,10 @@ void ULoggingSubSystem::Flush()
 {
 	FApiCallData NewApiCallData;
 
-	TArray<FDiaryLogData> DataList = BeaconQueue;
+	TArray<FDiaryLogParams> DataList = BeaconQueue;
 	BeaconQueue.Empty();
 
-	for (const FDiaryLogData& DiaryLogData : DataList)
+	for (const FDiaryLogParams& DiaryLogData : DataList)
 	{
 		NewApiCallData.Url = TEXT("/upload_with_screenshot");
 		NewApiCallData.Payload = DiaryLogData;
@@ -72,62 +72,64 @@ void ULoggingSubSystem::Flush()
 }
 
 void ULoggingSubSystem::CreateLogDataStringForMultipart(
-	const FDiaryLogData& LogData, TArray<uint8>& Payload)
+	const FDiaryLogParams& LogData, TArray<uint8>& Payload)
 {
-	FString LineBreak = "\r\n";
+	// 첫 번째 경계선에는 앞에 \r\n이 없어야 함
+	const FString FirstBoundary = TEXT("--") + Boundary + TEXT("\r\n");
+	// 이후 경계선에는 앞에 \r\n이 있어야 함
+	const FString MiddleBoundary = TEXT("\r\n--") + Boundary + TEXT("\r\n");
+	// 마지막 경계선
+	const FString EndBoundary = TEXT("\r\n--") + Boundary + TEXT("--\r\n");
+    
+	// RequestContent 초기화 - 비워두기
+	Payload.Empty();
+    
+	// 함수 형식 텍스트 필드 추가
+	auto AddTextField = [&Payload, &FirstBoundary, &MiddleBoundary](const FString& FieldName, const FString& Value, const bool IsFirstField)
+	{
+		const FString BoundaryStr = IsFirstField ? FirstBoundary : MiddleBoundary;
+        
+		const FString FieldHeader = BoundaryStr + TEXT("Content-Disposition: form-data; name=\"") + FieldName + TEXT("\"\r\n\r\n");
+		const FString FieldContent = FieldHeader + Value;
+        
+		const FTCHARToUTF8 Converter(*FieldContent);
+		Payload.Append((uint8*)Converter.Get(), Converter.Length());
+	};
+	
+    // 필수 필드 추가
+    AddTextField(TEXT("session_id"), TEXT("Test_Sessions"), true);
+    AddTextField(TEXT("user_id"), FSessionUtil::GetCurrentId(GetWorld()), false);
+    AddTextField(TEXT("timestamp"), FDateTime::Now().ToString(), false);
+    AddTextField(TEXT("ingame_datetime"), FDateTime::Now().ToString(), false);
+    AddTextField(TEXT("location"), TEXT("농장"), false);
+    AddTextField(TEXT("action_type"), FEnumUtil::GetClassEnumKeyAsString(LogData.ActionType), false);
+    AddTextField(TEXT("action_name"), FEnumUtil::GetClassEnumKeyAsString(LogData.ActionName), false);
+    AddTextField(TEXT("detail"), TEXT("Test"), false);
 
-	// JSON 객체 구성
-	TSharedPtr<FJsonObject> Obj = MakeShared<FJsonObject>();
-	Obj->SetStringField("session_id", LogData.session_id);
-	Obj->SetStringField("user_id", LogData.user_id);
-	Obj->SetStringField("timestamp", LogData.timestamp);
-	Obj->SetStringField("ingame_datetime", LogData.ingame_datetime);
-	Obj->SetStringField("location", LogData.location);
-	Obj->SetStringField("action_type",
-	                    StaticEnum<ELoggingActionType>()->GetNameStringByValue(
-		                    static_cast<int64>(LogData.action_type)));
-	Obj->SetStringField("action_name",
-	                    StaticEnum<ELoggingActionName>()->GetNameStringByValue(
-		                    static_cast<int64>(LogData.action_name)));
-	Obj->SetStringField("detail", LogData.detail);
-	Obj->SetStringField("with", LogData.with);
-	Obj->SetStringField("file", "file"); // 파일 키
+	UE_LOG(LogTemp, Display, TEXT("테스트: %s"), *FEnumUtil::GetClassEnumKeyAsString(LogData.ActionType));
+    // 선택적 필드 추가
+    if (!LogData.With.IsEmpty())
+    {
+        AddTextField(TEXT("with_"), LogData.With, false);
+    }
 
-	FString JsonPayload;
-	TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(
-		&JsonPayload);
-	FJsonSerializer::Serialize(Obj.ToSharedRef(), Writer);
+    // 스크린샷 파일 추가
+    if (LogData.File.Num() > 0)
+    {
+        const FString MimeType = TEXT("image/png");
+        
+        FString FileHeader = MiddleBoundary +
+            TEXT("Content-Disposition: form-data; name=\"file\"; filename=\"") + TEXT("log_screenshot") + TEXT("\"\r\n") +
+            TEXT("Content-Type: ") + MimeType + TEXT("\r\n\r\n");
+        
+        FTCHARToUTF8 HeaderConverter(*FileHeader);
+        Payload.Append((uint8*)HeaderConverter.Get(), HeaderConverter.Length());
+        Payload.Append(LogData.File);
+    }
 
-	// JSON part
-	FString JsonPart =
-		"--" + Boundary + LineBreak +
-		"Content-Disposition: form-data; name=\"log\"" + LineBreak +
-		"Content-Type: application/json" + LineBreak + LineBreak +
-		JsonPayload + LineBreak;
-
-	FTCHARToUTF8 JsonConv(*JsonPart);
-	Payload.Append((uint8*)(JsonConv.Get()), JsonConv.Length());
-
-
-	// File part
-	FString FileHeader =
-		"--" + Boundary + LineBreak +
-		"Content-Disposition: form-data; name=\"file\"; filename=\"log_image.png\""
-		+ LineBreak +
-		"Content-Type: application/octet-stream" + LineBreak + LineBreak;
-
-	FTCHARToUTF8 HeaderConv(*FileHeader);
-	Payload.Append((uint8*)(HeaderConv.Get()), HeaderConv.Length());
-
-	Payload.Append(LogData.file);
-
-	FTCHARToUTF8 BreakConv(*LineBreak);
-	Payload.Append((uint8*)BreakConv.Get(), BreakConv.Length());
-
-	FString Closing = "--" + Boundary + "--" + LineBreak;
-	FTCHARToUTF8 ClosingConv(*Closing);
-	Payload.Append((uint8*)(ClosingConv.Get()),
-	               ClosingConv.Length());
+    // 마지막 경계선 추가
+    FTCHARToUTF8 EndBoundaryConverter(*EndBoundary);
+    Payload.Append((uint8*)EndBoundaryConverter.Get(), EndBoundaryConverter.Length());
 }
 
 void ULoggingSubSystem::SendHttpRequest(FApiCallData& CallData)
@@ -137,26 +139,22 @@ void ULoggingSubSystem::SendHttpRequest(FApiCallData& CallData)
 		CreateRequest();
 
 	TArray<uint8> Payload;
-
+	const FString ContentType = "multipart/form-data; boundary=" + Boundary;
+	CreateLogDataStringForMultipart(CallData.Payload, Payload);
+	
 	Request->SetURL(ApiPath + CallData.Url);
 	Request->SetVerb(TEXT("POST"));
-
-	FString ContentType = "multipart/form-data; boundary=" + Boundary;
-
-	CreateLogDataStringForMultipart(CallData.Payload, Payload);
+	Request->SetHeader(TEXT("Content-type"), ContentType);
 	Request->SetContent(Payload);
 
 	Request->OnProcessRequestComplete().BindLambda([this, CallData]
 	(const FHttpRequestPtr& Req, const FHttpResponsePtr& Res,
 	 const bool bSuccess) mutable
 		{
-			const bool bValid = bSuccess &&
-				EHttpResponseCodes::IsOk(Res->GetResponseCode());
+			// const bool bValid = bSuccess &&
+			// 	EHttpResponseCodes::IsOk(Res->GetResponseCode());
 
-			UE_LOG(LogTemp, Display, TEXT("데이터 성공 여부: %d"),
-			       Res->GetResponseCode())
-
-			if (bValid)
+			if (bSuccess)
 			{
 				return;
 			}

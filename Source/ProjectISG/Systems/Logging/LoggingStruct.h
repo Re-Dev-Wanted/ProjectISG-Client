@@ -5,6 +5,41 @@ enum class ELoggingActionName : uint8;
 enum class ELoggingActionType : uint8;
 
 USTRUCT()
+struct PROJECTISG_API FDiaryLogParams
+{
+	GENERATED_BODY()
+
+	// 인게임 시간 정보
+	UPROPERTY()
+	FString CurrentDate;
+
+	// 현재 위치
+	// TODO: Enum화 대비
+	UPROPERTY()
+	FString Location;
+
+	// 액션 타입
+	UPROPERTY()
+	ELoggingActionType ActionType;
+
+	// 액션 이름
+	UPROPERTY()
+	ELoggingActionName ActionName;
+
+	// 별도의 사설 데이터 구조체를 String화 시킨 값을 넣어줘야 함.
+	UPROPERTY()
+	FString Detail;
+
+	// 상호작용한 사람 닉네임
+	UPROPERTY()
+	FString With;
+
+	// 이미지 파일
+	UPROPERTY()
+	TArray<uint8> File;
+};
+
+USTRUCT()
 struct PROJECTISG_API FDiaryLogData
 {
 	GENERATED_BODY()
@@ -54,6 +89,6 @@ struct PROJECTISG_API FDiaryLogData
 struct FApiCallData
 {
 	FString Url;
-	FDiaryLogData Payload;
+	FDiaryLogParams Payload;
 	int32 RetryCount = 3;
 };
