@@ -6,6 +6,7 @@
 #include "BaseCharacter.generated.h"
 
 
+class UGameplayAbility;
 class UGameplayEffect;
 class UISGAttributeSet;
 class UISGAbilitySystemInitializeData;
@@ -44,4 +45,11 @@ protected:
 	virtual void InitializeAbilitySystem()
 	{
 	};
+
+
+	void AddCharacterAbilities();
+
+private:
+	UPROPERTY(EditAnywhere, Category = "Options|GAS", meta = (AllowPrivateAccess = true))
+	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
 };

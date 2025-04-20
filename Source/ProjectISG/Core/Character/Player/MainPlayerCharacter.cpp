@@ -71,7 +71,8 @@ void AMainPlayerCharacter::InitializeAbilitySystem()
 			PS->GetAbilitySystemComponent());
 
 		AbilitySystemComponent->Initialize(InitializeData);
-
+		AddCharacterAbilities();
+		
 		AttributeSet = PS->GetAttributeSet();
 		InitializePrimaryAttributes();
 
