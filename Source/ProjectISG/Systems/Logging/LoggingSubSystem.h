@@ -11,6 +11,7 @@ class PROJECTISG_API ULoggingSubSystem : public UGameInstanceSubsystem
 	GENERATED_BODY()
 
 public:
+	void LoggingData(const FDiaryLogParams& Payload);
 	void SendLoggingNow(const FDiaryLogParams& Payload);
 	void QueueLogging(const FDiaryLogParams& Payload);
 
@@ -22,6 +23,9 @@ protected:
 	virtual void Deinitialize() override;
 
 private:
+	uint8 MaxScreenShotLogCount = 10;
+	uint8 CurrentScreenShotLogCount = 1;
+	
 	FString ApiPath = TEXT("http://192.168.10.70:8016/log");
 
 	void SendHttpRequest(FApiCallData& CallData);

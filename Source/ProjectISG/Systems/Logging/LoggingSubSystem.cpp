@@ -34,6 +34,18 @@ void ULoggingSubSystem::Deinitialize()
 	Super::Deinitialize();
 }
 
+void ULoggingSubSystem::LoggingData(const FDiaryLogParams& Payload)
+{
+	if (FMath::RandRange(0, 1) > static_cast<double>(CurrentScreenShotLogCount) / MaxScreenShotLogCount)
+	{
+		CurrentScreenShotLogCount = 1;
+		SendLoggingNow(Payload);
+	}
+
+	CurrentScreenShotLogCount += 1;
+	QueueLogging(Payload);
+}
+
 void ULoggingSubSystem::SendLoggingNow(const FDiaryLogParams& Payload)
 {
 	FApiCallData NewApiCallData;
