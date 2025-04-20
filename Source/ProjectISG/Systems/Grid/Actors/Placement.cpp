@@ -17,8 +17,7 @@ APlacement::APlacement()
 
 	CollisionComp = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionComp"));
 	CollisionComp->SetupAttachment(AnchorComp);
-	CollisionComp->SetIsReplicated(false);
-	CollisionComp->SetMobility(EComponentMobility::Type::Movable);
+	CollisionComp->SetIsReplicated(true);
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(CollisionComp);
@@ -87,9 +86,7 @@ void APlacement::Setup(float TileSize)
 	// 적당히 가운데 정렬하고 tileSize에 맞추기
 
 	FVector BoxExtent = Mesh->GetBounds().BoxExtent;
-
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("에셋 로딩! : %s"), *BoxExtent.ToString()));
-
+	
 	float HalfSize = FMath::FloorToInt(TileSize * 0.5f);
 
 	FVector SnapExtent
@@ -100,6 +97,11 @@ void APlacement::Setup(float TileSize)
 	);
 
 	FVector FixedLocation = FVector::UpVector * SnapExtent.Z;
+
+	if (!CollisionComp->IsRegistered())
+	{
+		CollisionComp->RegisterComponent(); // 강제 등록
+	}
 
 	CollisionComp->SetBoxExtent(SnapExtent);
 
@@ -160,6 +162,11 @@ void APlacement::Setup(float TileSize)
 
 	if (ProceduralMeshComp && ProceduralVertices.Num() > 0 && ProceduralTriangles.Num() > 0)
 	{
+		if (!ProceduralMeshComp->IsRegistered())
+		{
+			ProceduralMeshComp->RegisterComponent(); // 강제 등록
+		}
+		
 		ProceduralMeshComp->CreateMeshSection(0, ProceduralVertices, ProceduralTriangles, EmptyVectorArray,
 											  EmptyVector2DArray, EmptyColorArray,
 											  EmptyTangentArray, false);

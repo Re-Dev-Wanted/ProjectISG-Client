@@ -2,7 +2,6 @@
 #include "Actors/Placement.h"
 #include "Manager/GridManager.h"
 
-// FastArraySerializer 등록 매크로
 template<>
 struct TStructOpsTypeTraits<FPlacementGridContainer> : public TStructOpsTypeTraitsBase2<FPlacementGridContainer>
 {
