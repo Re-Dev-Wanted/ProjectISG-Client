@@ -24,9 +24,9 @@ struct FPlacementGridEntry : public FFastArraySerializerItem
 USTRUCT()
 struct FPlacementGridContainer : public FFastArraySerializer
 {
-	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms);
-
 	GENERATED_BODY()
+
+	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms);
 
 	UPROPERTY()
 	TArray<FPlacementGridEntry> Items;
