@@ -50,6 +50,7 @@ void APlacement::BeginPlay()
 	if (Mesh)
 	{
 		MeshComp->SetStaticMesh(Mesh);
+		Setup(CachedSnapSize);
 		// UE_LOG(LogTemp, Warning, TEXT("BeginPlay에서 Mesh 로딩 완료: %s"), *Mesh->GetName());
 	}
 	// else

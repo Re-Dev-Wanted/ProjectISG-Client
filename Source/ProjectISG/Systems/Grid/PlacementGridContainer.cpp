@@ -2,18 +2,9 @@
 #include "Actors/Placement.h"
 #include "Manager/GridManager.h"
 
-template<>
-struct TStructOpsTypeTraits<FPlacementGridContainer> : public TStructOpsTypeTraitsBase2<FPlacementGridContainer>
-{
-	enum
-	{
-		WithNetDeltaSerializer = true
-	};
-};
-
 bool FPlacementGridContainer::NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms)
 {
-	return FFastArraySerializer::FastArrayDeltaSerialize<FPlacementGridEntry, FPlacementGridContainer>(Items, DeltaParms, *this);
+	return FastArrayDeltaSerialize<FPlacementGridEntry, FPlacementGridContainer>(Items, DeltaParms, *this);
 }
 
 void FPlacementGridContainer::Add(const FIntVector& GridCoord, APlacement* Placement)

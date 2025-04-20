@@ -4,6 +4,15 @@
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Components/GridComponent.h"
 
+template<>
+struct TStructOpsTypeTraits<FPlacementGridContainer> : TStructOpsTypeTraitsBase2<FPlacementGridContainer>
+{
+	enum
+	{
+		WithNetDeltaSerializer = true
+	};
+};
+
 AGridManager::AGridManager()
 {
 	bReplicates = true;
