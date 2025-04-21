@@ -14,7 +14,7 @@ UGridComponent::UGridComponent()
 	LineMeshComp = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Lines_ProceduralMesh"));
 	SquareMeshComp = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Squares_ProceduralMesh"));
 
-	ConstructorHelpers::FObjectFinder<UMaterialInstance> GridMat(TEXT("/Game/Systems/Grid/M_Grid_Inst.M_Grid_Inst"));
+	ConstructorHelpers::FObjectFinder<UMaterialInstance> GridMat(TEXT("/Game/Systems/Grid/Materials/M_Grid_Inst.M_Grid_Inst"));
 
 	if (GridMat.Succeeded())
 	{

@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ProjectISG/Systems/Grid/Actors/Placement.h"
+#include "ProjectISG/Systems/Grid/PlacementGridContainer.h"
 #include "GridManager.generated.h"
 
 UCLASS()
@@ -19,27 +19,30 @@ protected:
 
 	virtual void OnConstruction(const FTransform& Transform) override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
 	UPROPERTY(VisibleAnywhere)
 	class UGridComponent* GridComp;
 
 public:
-	UPROPERTY(VisibleAnywhere)
-	TMap<FIntVector, APlacement*> PlacedMap; // 배치되어 있는 것들 정보
-
-	TMap<APlacement*, TArray<FIntVector>> ReverseMap; // 삭제를 편하게 하기 위해
-
-	UPROPERTY(EditAnywhere, Category=Properties)
+	UPROPERTY(EditAnywhere, Category = Properties)
 	int32 Rows = 10;
 
-	UPROPERTY(EditAnywhere, Category=Properties)
+	UPROPERTY(EditAnywhere, Category = Properties)
 	int32 Columns = 10;
 
-	UPROPERTY(EditAnywhere, Category=Properties)
+	UPROPERTY(EditAnywhere, Category = Properties)
 	float SnapSize = 100;
+
+	UPROPERTY(EditAnywhere, Category = Properties)
+	float Tolerance = 1.f;
+
+	UPROPERTY(Replicated)
+	FPlacementGridContainer PlacementGridContainer;
 
 	FVector SnapToGrid(const FVector& Location);
 
-	FVector SnapToGridPlacement(const FVector& Location, FVector MeshSize);
+	FVector SnapToGridPlacement(const FVector& Location);
 
 	FIntVector WorldToGridLocation(const FVector& WorldLocation);
 
@@ -52,39 +55,68 @@ public:
 	FVector GetLocationInPointerDirectionPlacement(APlayerController* PlayerController, FVector MeshSize,
 	                                               int32 Distance = 1);
 
-	template <class T, std::enable_if_t<std::is_base_of_v<APlacement, T>, int>  = 0>
-	void BuildPlacement(TSubclassOf<T> PlacementClass, const FVector& Location, const FRotator& Rotation)
+	template <class T, std::enable_if_t<std::is_base_of_v<APlacement, T>, int> = 0>
+	void BuildPlacement(TSubclassOf<T> PlacementClass, const FVector& Pivot, const FVector& Location,
+	                    const FRotator& Rotation)
 	{
-		FIntVector GridCoord = WorldToGridLocation(Location);
-		if (PlacedMap.FindRef(GridCoord))
+		FIntVector GridCoord = FIntVector
+		(
+			FMath::FloorToInt(Pivot.X / SnapSize),
+			FMath::FloorToInt(Pivot.Y / SnapSize),
+			FMath::RoundToInt(Pivot.Z / SnapSize)
+		);
+
+		UE_LOG(LogTemp, Warning, TEXT("Pivot %s"), *Pivot.ToString());
+		UE_LOG(LogTemp, Warning, TEXT("Coord %s"), *GridCoord.ToString());
+
+		FActorSpawnParameters Params;
+		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		Params.bNoFail = true;
+		Params.Owner = this;
+
+		T* SpawnedActor = GetWorld()->SpawnActor<T>(PlacementClass, Location, Rotation,
+		                                            Params);
+		
+		if (!SpawnedActor)
 		{
 			return;
 		}
 
-		FActorSpawnParameters Params;
+		SpawnedActor->SetReplicates(true);
+		SpawnedActor->SetReplicatingMovement(true);
 
-		T* SpawnedActor = GetWorld()->SpawnActor<T>(PlacementClass, Location, Rotation,
-		                                            Params);
-		SpawnedActor->Setup(SnapSize);
-
-		TArray<FIntVector> OccupiedCells = SpawnedActor->GetOccupiedGrid(SnapSize, GridCoord);
-
-		ReverseMap.Add(SpawnedActor, TArray<FIntVector>());
-
-		for (const FIntVector& Coord : OccupiedCells)
+		if (T* ClassCDO = PlacementClass->template GetDefaultObject<T>())
 		{
-			// Map에 저장
-			PlacedMap.Add(Coord, SpawnedActor);
-			ReverseMap[SpawnedActor].Add(Coord);
+			if (ClassCDO->GetMeshAssetPath().IsValid())
+			{
+				SpawnedActor->SetMeshAssetPath(ClassCDO->GetMeshAssetPath());
+				SpawnedActor->OnRep_LoadMeshAsset();  // 서버 즉시 적용
+			}
 		}
+
+		SpawnedActor->SetCachedSnapSize(SnapSize);
+		SpawnedActor->ForceNetUpdate();
+		SpawnedActor->Setup(SnapSize);
+		
+		PlacementGridContainer.Add(GridCoord, SpawnedActor);
 	}
 
-	template <class T, std::enable_if_t<std::is_base_of_v<APlacement, T>, int>  = 0>
+	template <class T, std::enable_if_t<std::is_base_of_v<APlacement, T>, int> = 0>
+	void BuildPlacementAtGhost(TSubclassOf<T> PlacementClass, T* Ghost)
+	{
+		BuildPlacement<T>(PlacementClass, Ghost->GetActorPivotLocation(), Ghost->GetActorLocation(),
+		                  Ghost->GetActorRotation());
+	}
+
+	template <class T, std::enable_if_t<std::is_base_of_v<APlacement, T>, int> = 0>
 	void BuildPlacementInFrontOfActor(TSubclassOf<T> PlacementClass, AActor* Actor, const FRotator& Rotation)
 	{
 		FVector BuildLocation = GetLocationInFront(Actor, 1);
 		BuildPlacement<T>(PlacementClass, BuildLocation, Rotation);
 	}
+
+	UFUNCTION(Server, Reliable)
+	void Server_BuildPlacement(TSubclassOf<APlacement> PlacementClass, FVector Pivot, FVector Location, FRotator Rotation);
 
 	void RemovePlacement(const FIntVector& GridAt);
 
@@ -93,8 +125,6 @@ public:
 	bool TryGetPlacement(const FVector& Location, FIntVector& OutGridAt, APlacement*& OutPlacement);
 
 	bool TryGetPlacementAt(AActor* Actor, FIntVector& OutGridAt, APlacement*& OutPlacement);
-
-	// bool IsOverlapped(APlacement* Ghost);
 
 	float GetGridWidth() const
 	{

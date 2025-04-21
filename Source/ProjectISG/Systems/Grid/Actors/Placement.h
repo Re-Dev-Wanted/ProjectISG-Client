@@ -1,9 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ProjectISG/Utils/MacroUtil.h"
 #include "Placement.generated.h"
 
 // 그리드에 place할 모든 것들은 이것을 상속 받아야함
@@ -14,20 +13,27 @@ class PROJECTISG_API APlacement : public AActor
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	APlacement();
+	
+	GETTER_SETTER(TSoftObjectPtr<UStaticMesh>, MeshAssetPath)
+	GETTER(FVector, MeshSize)
+	SETTER(float, CachedSnapSize)
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	FVector MeshSize = FVector::ZeroVector;
 
+	UPROPERTY(Replicated)
+	float CachedSnapSize;
+
 public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UPROPERTY(VisibleAnywhere)
+	class USceneComponent* Root;
 
 	UPROPERTY(VisibleAnywhere)
 	class USceneComponent* AnchorComp;
@@ -44,20 +50,23 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<int32, UStaticMesh*> MeshMap;
 
-	UPROPERTY(EditAnywhere)
-	class UStaticMesh* BaseStaticMesh;
+	UPROPERTY(EditAnywhere, Replicated, ReplicatedUsing = OnRep_LoadMeshAsset)
+	TSoftObjectPtr<UStaticMesh> MeshAssetPath;
 
 	UPROPERTY(EditAnywhere)
 	class UMaterialInstance* TempMaterial;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<FIntVector> Occupied;
 
 	virtual void Setup(float TileSize);
 
 	void SetColor(bool bIsGhost, bool bIsBlock);
 
-	TArray<FIntVector> GetOccupiedGrid(float SnapSize, const FIntVector& Start);
+	TArray<FIntVector> GetOccupiedGrid(float SnapSize, const FIntVector& Current);
 
-	FVector GetMeshSize() const
-	{
-		return MeshSize;
-	}
+	FVector GetActorPivotLocation() const;
+
+	UFUNCTION()
+	void OnRep_LoadMeshAsset();
 };

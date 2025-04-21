@@ -3,8 +3,12 @@
 #include "EnhancedInputComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/HUD/MainHUD.h"
+#include "ProjectISG/Core/UI/HUD/Inventory/InventoryUI.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
+#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 
 UPlayerInventoryComponent::UPlayerInventoryComponent()
@@ -12,9 +16,23 @@ UPlayerInventoryComponent::UPlayerInventoryComponent()
 	bWantsInitializeComponent = true;
 }
 
+void UPlayerInventoryComponent::Initialize()
+{
+	AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(GetOwner());
+
+	OwnerPlayer->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
+				 OnInventoryUpdateNotified.AddDynamic(
+					 this, &ThisClass::UpdatePlayerInventoryUI);
+}
+
 void UPlayerInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (GetNetMode() == NM_Standalone)
+	{
+		Initialize();
+	}
 }
 
 void UPlayerInventoryComponent::InitializeComponent()
@@ -22,6 +40,7 @@ void UPlayerInventoryComponent::InitializeComponent()
 	Super::InitializeComponent();
 
 	AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(GetOwner());
+
 	OwnerPlayer->OnInputBindingNotified.AddDynamic(
 		this, &ThisClass::BindingInputActions);
 }
@@ -77,6 +96,31 @@ void UPlayerInventoryComponent::MoveHotSlot(const FInputActionValue& Value)
 
 void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 {
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
+
+	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
+
+	const uint16 ItemId = PS->GetInventoryComponent()->GetInventoryList()[
+		NewIndex].GetId();
+
+	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
+
+	const bool bAvailable = UItemManager::IsItemCanHousing(ItemId);
+
+	if (bAvailable)
+	{
+		Player->GetPlacementIndicatorComponent()->OnActivate(
+			ItemInfoData.GetShowItemActor());
+		Player->SetMainHandItem(nullptr);
+	}
+	else
+	{
+		Player->GetPlacementIndicatorComponent()->OnDeactivate();
+		AActor* SpawnActor = GetWorld()->SpawnActor(
+			ItemInfoData.GetShowItemActor());
+		Player->SetMainHandItem(SpawnActor);
+	}
+
 	const AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetOwner()->GetInstigatorController());
 
@@ -89,4 +133,34 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 		CurrentSlotIndex, NewIndex);
 
 	CurrentSlotIndex = NewIndex;
+}
+
+bool UPlayerInventoryComponent::RemoveItemCurrentSlotIndex(const int32 Count)
+{
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
+
+	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
+
+	const TObjectPtr<UInventoryComponent> InventoryComponent = PS->
+		GetInventoryComponent();
+
+	return InventoryComponent->DropItem(CurrentSlotIndex, Count);
+}
+
+void UPlayerInventoryComponent::UpdatePlayerInventoryUI()
+{
+	AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(GetOwner());
+	if (OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD())
+	{
+		OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD()->
+					 GetMainSlotList()->UpdateItemData();
+	}
+
+	if (OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI())
+	{
+		OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI()->
+		             GetMainSlotList()->UpdateItemData();
+		OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI()->
+		             GetInventoryList()->UpdateItemData();
+	}
 }

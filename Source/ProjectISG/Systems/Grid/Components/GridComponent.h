@@ -41,19 +41,19 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UMaterialInstance* GridMaterialInstance;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Properties)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Properties)
 	float LineThickness = 10.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Properties)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Properties)
 	FLinearColor LineColor = FLinearColor::White;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Properties)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Properties)
 	FLinearColor SquareColor = FLinearColor::White;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Properties)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Properties)
 	float LineOpacity = 1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Properties)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Properties)
 	float SquareOpacity = 0.25f;
 
 private:
