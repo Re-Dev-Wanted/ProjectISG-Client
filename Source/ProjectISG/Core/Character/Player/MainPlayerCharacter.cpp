@@ -92,11 +92,12 @@ void AMainPlayerCharacter::InitializeAbilitySystem()
 {
 	Super::InitializeAbilitySystem();
 
-	if (const AMainPlayerState* PS = GetPlayerState<AMainPlayerState>())
+	if (AMainPlayerState* PS = GetPlayerState<AMainPlayerState>())
 	{
 		AbilitySystemComponent = Cast<UISGAbilitySystemComponent>(
 			PS->GetAbilitySystemComponent());
 
+		AbilitySystemComponent->InitAbilityActorInfo(PS, this);
 		AbilitySystemComponent->Initialize(InitializeData);
 
 		AttributeSet = PS->GetAttributeSet();

@@ -1,12 +1,14 @@
 ﻿#include "GA_BaseInputAbility.h"
 #include "EnhancedInputComponent.h"
 #include "AbilitySystemComponent.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Object/BasePawn.h"
 
 UGA_BaseInputAbility::UGA_BaseInputAbility(
 	const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	IsPassive = false;
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }
 
@@ -25,7 +27,7 @@ void UGA_BaseInputAbility::SetupEnhancedInputBindings(
 	if (IsValid(ActorInfo->AvatarActor.Get()))
 	{
 		// AvatarActor가 기본 캐릭터 형태여야만 해당 시스템을 활용할 수 있다.
-		const ABasePawn* AvatarPawn = Cast<ABasePawn>(ActorInfo->AvatarActor.Get());
+		const AMainPlayerCharacter* AvatarPawn = Cast<AMainPlayerCharacter>(ActorInfo->AvatarActor.Get());
 		if (!AvatarPawn)
 		{
 			return;
@@ -111,8 +113,8 @@ void UGA_BaseInputAbility::OnRemoveAbility(
 void UGA_BaseInputAbility::OnAbilityInputPressed(
 	const FGameplayAbilityActorInfo* ActorInfo)
 {
-	if (const ABasePawn* Owner = Cast<
-		ABasePawn>(ActorInfo->AvatarActor))
+	if (const AMainPlayerCharacter* Owner = Cast<
+		AMainPlayerCharacter>(ActorInfo->AvatarActor))
 	{
 		Owner->GetAbilitySystemComponent()->AbilityLocalInputPressed(
 			static_cast<uint8>(InputId));
@@ -123,8 +125,8 @@ void UGA_BaseInputAbility::OnAbilityInputPressed(
 void UGA_BaseInputAbility::OnAbilityInputReleased(
 	const FGameplayAbilityActorInfo* ActorInfo)
 {
-	if (const ABasePawn* Owner = Cast<
-		ABasePawn>(ActorInfo->AvatarActor))
+	if (const AMainPlayerCharacter* Owner = Cast<
+		AMainPlayerCharacter>(ActorInfo->AvatarActor))
 	{
 		Owner->GetAbilitySystemComponent()->AbilityLocalInputReleased(
 			static_cast<uint8>(InputId));
