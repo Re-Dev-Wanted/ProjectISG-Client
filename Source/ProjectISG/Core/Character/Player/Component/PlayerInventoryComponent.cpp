@@ -21,8 +21,8 @@ void UPlayerInventoryComponent::Initialize()
 	AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(GetOwner());
 
 	OwnerPlayer->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
-				 OnInventoryUpdateNotified.AddDynamic(
-					 this, &ThisClass::UpdatePlayerInventoryUI);
+	             OnInventoryUpdateNotified.AddDynamic(
+		             this, &ThisClass::UpdatePlayerInventoryUI);
 }
 
 void UPlayerInventoryComponent::BeginPlay()
@@ -33,16 +33,6 @@ void UPlayerInventoryComponent::BeginPlay()
 	{
 		Initialize();
 	}
-}
-
-void UPlayerInventoryComponent::InitializeComponent()
-{
-	Super::InitializeComponent();
-
-	AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(GetOwner());
-
-	OwnerPlayer->OnInputBindingNotified.AddDynamic(
-		this, &ThisClass::BindingInputActions);
 }
 
 void UPlayerInventoryComponent::BindingInputActions(
@@ -153,7 +143,7 @@ void UPlayerInventoryComponent::UpdatePlayerInventoryUI()
 	if (OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD())
 	{
 		OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD()->
-					 GetMainSlotList()->UpdateItemData();
+		             GetMainSlotList()->UpdateItemData();
 	}
 
 	if (OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI())

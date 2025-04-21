@@ -7,6 +7,7 @@
 #include "MainPlayerCharacter.generated.h"
 
 
+class UInteractionComponent;
 class UScreenShotComponent;
 class UPlayerInventoryComponent;
 struct FInputActionValue;
@@ -32,6 +33,8 @@ public:
 
 	FOnInputBindingNotified OnInputBindingNotified;
 
+	GETTER(TObjectPtr<UCameraComponent>, CameraComponent);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -53,11 +56,13 @@ public:
 	GETTER(TObjectPtr<UPlacementIndicatorComponent>,
 	       PlacementIndicatorComponent)
 	GETTER(TObjectPtr<UPlayerInventoryComponent>, PlayerInventoryComponent)
+	GETTER(TObjectPtr<UInteractionComponent>, InteractionComponent)
 
 private:
 	UPROPERTY()
 	TObjectPtr<AActor> MainHandItem;
 
+#pragma region ActorComponent
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent;
 
@@ -67,6 +72,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
 		meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlacementIndicatorComponent> PlacementIndicatorComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<UInteractionComponent> InteractionComponent;
+#pragma endregion
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USpringArmComponent> SpringArm;
