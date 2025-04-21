@@ -1,5 +1,4 @@
 ﻿#include "PlayerInventoryComponent.h"
-
 #include "EnhancedInputComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
@@ -10,29 +9,33 @@
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
-
 UPlayerInventoryComponent::UPlayerInventoryComponent()
 {
 	bWantsInitializeComponent = true;
 }
 
-void UPlayerInventoryComponent::Initialize()
+void UPlayerInventoryComponent::InitializeComponent()
 {
 	AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(GetOwner());
 
-	OwnerPlayer->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
-	             OnInventoryUpdateNotified.AddDynamic(
-		             this, &ThisClass::UpdatePlayerInventoryUI);
+	OwnerPlayer->OnInputBindingNotified.AddDynamic(
+		this, &ThisClass::BindingInputActions);
 }
 
 void UPlayerInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
+}
 
-	if (GetNetMode() == NM_Standalone)
-	{
-		Initialize();
-	}
+void UPlayerInventoryComponent::InitializePlayerInventory()
+{
+	const AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(
+		GetOwner());
+
+	OwnerPlayer->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()
+	           ->
+	           OnInventoryUpdateNotified.AddDynamic(
+		           this, &ThisClass::UpdatePlayerInventoryUI);
 }
 
 void UPlayerInventoryComponent::BindingInputActions(
@@ -139,7 +142,9 @@ bool UPlayerInventoryComponent::RemoveItemCurrentSlotIndex(const int32 Count)
 
 void UPlayerInventoryComponent::UpdatePlayerInventoryUI()
 {
-	AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(GetOwner());
+	const AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(
+		GetOwner());
+
 	if (OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD())
 	{
 		OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD()->
