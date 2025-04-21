@@ -50,13 +50,13 @@ public:
 	GETTER_SETTER(bool, bIsSleep);
 	GETTER_SETTER(bool, bLieOnBed);
 	GETTER_SETTER(TObjectPtr<AActor>, MainHandItem)
-	GETTER(TObjectPtr<UPlacementIndicatorComponent>, PlacementIndicatorComponent)
+	GETTER(TObjectPtr<UPlacementIndicatorComponent>,
+	       PlacementIndicatorComponent)
 	GETTER(TObjectPtr<UPlayerInventoryComponent>, PlayerInventoryComponent)
 
 private:
 	UPROPERTY()
 	TObjectPtr<AActor> MainHandItem;
-	uint32 TestValue = 0;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent;
@@ -64,7 +64,8 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UScreenShotComponent> ScreenShotComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
+		meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlacementIndicatorComponent> PlacementIndicatorComponent;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
