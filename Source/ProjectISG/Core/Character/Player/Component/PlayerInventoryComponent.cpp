@@ -1,6 +1,7 @@
 ﻿#include "PlayerInventoryComponent.h"
 
 #include "EnhancedInputComponent.h"
+#include "EntitySystem/MovieSceneEntitySystemRunner.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
@@ -21,8 +22,8 @@ void UPlayerInventoryComponent::Initialize()
 	AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(GetOwner());
 
 	OwnerPlayer->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
-				 OnInventoryUpdateNotified.AddDynamic(
-					 this, &ThisClass::UpdatePlayerInventoryUI);
+	             OnInventoryUpdateNotified.AddDynamic(
+		             this, &ThisClass::UpdatePlayerInventoryUI);
 }
 
 void UPlayerInventoryComponent::BeginPlay()
@@ -118,7 +119,14 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 		Player->GetPlacementIndicatorComponent()->OnDeactivate();
 		AActor* SpawnActor = GetWorld()->SpawnActor(
 			ItemInfoData.GetShowItemActor());
-		Player->SetMainHandItem(SpawnActor);
+		if (SpawnActor)
+		{
+			Player->SetMainHandItem(SpawnActor);
+			Player->SetMainHandItemId(ItemId);
+			SpawnActor->AttachToComponent(Player->GetMesh(),
+			                              FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+			                              TEXT("ItemSocket"));
+		}
 	}
 
 	const AMainPlayerController* PC = Cast<AMainPlayerController>(
@@ -153,7 +161,7 @@ void UPlayerInventoryComponent::UpdatePlayerInventoryUI()
 	if (OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD())
 	{
 		OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD()->
-					 GetMainSlotList()->UpdateItemData();
+		             GetMainSlotList()->UpdateItemData();
 	}
 
 	if (OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI())

@@ -63,3 +63,17 @@ bool UItemManager::IsItemCanHousing(const uint16 Id)
 
 	return true;
 }
+
+bool UItemManager::IsItemCanInteraction(const uint16 Id)
+{
+	const FItemInfoData ItemInfoData = GetItemInfoById(Id);
+
+	const EItemType itemType = ItemInfoData.GetItemType();
+
+	if (itemType != EItemType::Interactive)
+	{
+		return false;
+	}
+	
+	return true;
+}

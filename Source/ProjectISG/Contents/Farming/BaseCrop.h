@@ -12,14 +12,23 @@ class PROJECTISG_API ABaseCrop : public AActor
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	ABaseCrop();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
+		meta = (AllowPrivateAccess = true))
+	class UBoxComponent* Root;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
+		meta = (AllowPrivateAccess = true))
+	class UStaticMeshComponent* Mesh;
+
+	UPROPERTY(EditAnywhere, Category = Settings,
+		meta = (AllowPrivateAccess = true))
+	uint16 CropId;
 };

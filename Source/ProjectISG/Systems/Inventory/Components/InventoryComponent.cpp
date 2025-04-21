@@ -29,6 +29,12 @@ void UInventoryComponent::InitializeItemData()
 	BuildItemMetaInfo.SetCurrentCount(1);
 
 	AddItemToInventory(2, BuildItemMetaInfo);
+
+	FItemMetaInfo CropItemMetaInfo;
+	CropItemMetaInfo.SetId(3);
+	CropItemMetaInfo.SetCurrentCount(2);
+
+	AddItemToInventory(3, CropItemMetaInfo);
 }
 
 void UInventoryComponent::BeginPlay()

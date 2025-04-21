@@ -52,6 +52,11 @@ struct PROJECTISG_API FItemInfoData : public FTableRowBase
 		return ShowItemActor;
 	}
 
+	FORCEINLINE TSubclassOf<AActor> GetPlaceItemActor() const
+	{
+		return PlaceItemActor;
+	}
+
 	FORCEINLINE int GetMaxItemCount() const { return MaxItemCount; }
 	FORCEINLINE TMap<EMetaDataKey, FString> GetMetaData() const
 	{
@@ -90,6 +95,11 @@ private:
 		meta=(AllowPrivateAccess = true))
 	;
 	TSubclassOf<AActor> DroppedItemActor;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Data",
+		meta=(AllowPrivateAccess = true))
+	;
+	TSubclassOf<AActor> PlaceItemActor;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Data",
 		meta = (AllowPrivateAccess = true,
