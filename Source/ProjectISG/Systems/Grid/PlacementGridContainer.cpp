@@ -52,3 +52,12 @@ void FPlacementGridContainer::Remove(APlacement* Placement)
 	
 	MarkArrayDirty();
 }
+
+template<>
+struct TStructOpsTypeTraits<FPlacementGridContainer> : TStructOpsTypeTraitsBase2<FPlacementGridContainer>
+{
+	enum
+	{
+		WithNetDeltaSerializer = true
+	};
+};

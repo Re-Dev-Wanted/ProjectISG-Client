@@ -150,8 +150,11 @@ bool UPlayerInventoryComponent::RemoveItemCurrentSlotIndex(const int32 Count)
 void UPlayerInventoryComponent::UpdatePlayerInventoryUI()
 {
 	AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(GetOwner());
-	OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD()->
-	             GetMainSlotList()->UpdateItemData();
+	if (OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD())
+	{
+		OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD()->
+					 GetMainSlotList()->UpdateItemData();
+	}
 
 	if (OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI())
 	{
