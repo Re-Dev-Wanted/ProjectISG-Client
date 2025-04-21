@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "Base/MainPlayerComponent.h"
+#include "Components/ActorComponent.h"
 #include "InteractionComponent.generated.h"
 
 
@@ -9,7 +9,7 @@ class AMainPlayerCharacter;
 class UInputAction;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class PROJECTISG_API UInteractionComponent : public UMainPlayerComponent
+class PROJECTISG_API UInteractionComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -18,6 +18,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+	virtual void InitializeComponent() override;
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType,
 	                           FActorComponentTickFunction*
@@ -33,8 +35,9 @@ private:
 		meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInputAction> TouchAction;
 
-	virtual void BindingInputActions(
-		UEnhancedInputComponent* EnhancedInputComponent) override;
+	UFUNCTION()
+	void BindingInputActions(
+		UEnhancedInputComponent* EnhancedInputComponent);
 
 	UFUNCTION()
 	void OnInteractive();

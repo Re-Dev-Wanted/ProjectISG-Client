@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "Base/MainPlayerComponent.h"
+#include "Components/ActorComponent.h"
 #include "PlayerInventoryComponent.generated.h"
 
 struct FInputActionValue;
@@ -10,27 +10,30 @@ class UInputAction;
 class UEnhancedInputComponent;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class PROJECTISG_API UPlayerInventoryComponent : public UMainPlayerComponent
+class PROJECTISG_API UPlayerInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
 	UPlayerInventoryComponent();
 
-	void Initialize();
-
 	bool RemoveItemCurrentSlotIndex(const int32 Count);
+
+	void InitializePlayerInventory();
 
 protected:
 	virtual void BeginPlay() override;
+
+	virtual void InitializeComponent() override;
 
 private:
 	bool IsOpenedInventory = false;
 	int CurrentSlotIndex = 0;
 	uint8 MaxMainSlotIndex = 8;
 
-	virtual void BindingInputActions(
-		UEnhancedInputComponent* EnhancedInputComponent) override;
+	UFUNCTION()
+	void BindingInputActions(
+		UEnhancedInputComponent* EnhancedInputComponent);
 
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",
 		meta = (AllowPrivateAccess = true))

@@ -6,10 +6,10 @@
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Systems/Input/Interface/InteractionInterface.h"
 
-
 UInteractionComponent::UInteractionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	bWantsInitializeComponent = true;
 }
 
 void UInteractionComponent::BeginPlay()
@@ -19,11 +19,19 @@ void UInteractionComponent::BeginPlay()
 	PlayerCharacter = Cast<AMainPlayerCharacter>(GetOwner());
 }
 
+void UInteractionComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+
+	AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(GetOwner());
+
+	OwnerPlayer->OnInputBindingNotified.AddDynamic(
+		this, &ThisClass::BindingInputActions);
+}
+
 void UInteractionComponent::BindingInputActions(
 	UEnhancedInputComponent* EnhancedInputComponent)
 {
-	Super::BindingInputActions(EnhancedInputComponent);
-
 	EnhancedInputComponent->BindAction(InteractionAction,
 	                                   ETriggerEvent::Triggered, this,
 	                                   &ThisClass::OnInteractive);
