@@ -7,6 +7,7 @@
 #include "MainPlayerCharacter.generated.h"
 
 
+class UScreenShotComponent;
 class UPlayerInventoryComponent;
 struct FInputActionValue;
 
@@ -34,8 +35,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void Tick(float DeltaTime) override;
-
 	virtual void SetupPlayerInputComponent(
 		UInputComponent* PlayerInputComponent) override;
 
@@ -51,7 +50,8 @@ public:
 	GETTER_SETTER(bool, bIsSleep);
 	GETTER_SETTER(bool, bLieOnBed);
 	GETTER_SETTER(TObjectPtr<AActor>, MainHandItem)
-	GETTER(TObjectPtr<UPlacementIndicatorComponent>, PlacementIndicatorComponent)
+	GETTER(TObjectPtr<UPlacementIndicatorComponent>,
+	       PlacementIndicatorComponent)
 	GETTER(TObjectPtr<UPlayerInventoryComponent>, PlayerInventoryComponent)
 
 private:
@@ -61,7 +61,11 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UScreenShotComponent> ScreenShotComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
+		meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlacementIndicatorComponent> PlacementIndicatorComponent;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))

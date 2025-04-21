@@ -142,6 +142,27 @@ FNamedOnlineSession* FSessionUtil::GetCurrentSession()
 	return OnlineSessionInterface->GetNamedSession(NAME_GameSession);
 }
 
+FString FSessionUtil::GetCurrentId(const UWorld* World)
+{
+	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
+	if (OnlineSub)
+	{
+		const IOnlineIdentityPtr IdentityInterface = OnlineSub->GetIdentityInterface();
+		if (IdentityInterface.IsValid())
+		{
+			const FUniqueNetIdRepl NetId =
+				World->GetFirstLocalPlayerFromController()->GetPreferredUniqueNetId();
+			if (NetId.IsValid())
+			{
+				return NetId->ToString(); // Steam ID
+			}
+		}
+	}
+
+	// Fallback: 임시 ID
+	return FString("0");
+}
+
 FString FSessionUtil::EncodeData(const FString& Str)
 {
 	std::string RoomNameString = TCHAR_TO_UTF8(*Str);
