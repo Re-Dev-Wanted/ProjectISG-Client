@@ -2,6 +2,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Component/InteractionComponent.h"
 #include "Component/PlayerInventoryComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
@@ -32,8 +33,11 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	PlacementIndicatorComponent = CreateDefaultSubobject<
 		UPlacementIndicatorComponent>("Placement Indicator Component");
 	PlacementIndicatorComponent->Deactivate();
+
 	ScreenShotComponent = CreateDefaultSubobject<UScreenShotComponent>(
 		"ScreenShot Component");
+	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(
+		"Interaction Component");
 }
 
 void AMainPlayerCharacter::BeginPlay()
