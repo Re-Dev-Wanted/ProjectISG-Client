@@ -36,6 +36,7 @@ public:
 	static void DestroySession();
 
 	static FNamedOnlineSession* GetCurrentSession();
+	static FString GetCurrentId(const UWorld* World);
 	static FString EncodeData(const FString& Str);
 	static FString DecodeData(const FString& Str);
 
