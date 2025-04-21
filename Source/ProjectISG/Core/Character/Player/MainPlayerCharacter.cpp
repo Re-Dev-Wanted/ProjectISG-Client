@@ -7,11 +7,10 @@
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/ISGAbilitySystemComponent.h"
 #include "ProjectISG/GAS/Common/Attribute/ISGAttributeSet.h"
+#include "ProjectISG/Systems/Logging/Component/ScreenShotComponent.h"
 
 AMainPlayerCharacter::AMainPlayerCharacter()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>("Spring Arm");
 	SpringArm->SetupAttachment(GetMesh());
 	SpringArm->SetRelativeRotation({0, 90, 0});
@@ -30,8 +29,11 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	PlayerInventoryComponent = CreateDefaultSubobject<
 		UPlayerInventoryComponent>("Player Inventory Component");
 
-	PlacementIndicatorComponent = CreateDefaultSubobject<UPlacementIndicatorComponent>("Placement Indicator Component");
+	PlacementIndicatorComponent = CreateDefaultSubobject<
+		UPlacementIndicatorComponent>("Placement Indicator Component");
 	PlacementIndicatorComponent->Deactivate();
+	ScreenShotComponent = CreateDefaultSubobject<UScreenShotComponent>(
+		"ScreenShot Component");
 }
 
 void AMainPlayerCharacter::BeginPlay()
@@ -48,6 +50,20 @@ void AMainPlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	// FOnCaptureFrameNotified NewCaptureFrameNotified;
+	// NewCaptureFrameNotified.BindLambda([this](const TArray64<uint8>& FileBinary)
+	// {
+	// 	FDiaryLogParams PayloadData;
+	// 	PayloadData.ActionType = ELoggingActionType::DAY_CYCLE;
+	// 	PayloadData.ActionName = ELoggingActionName::evening;
+	// 	PayloadData.File = FileBinary;
+	//
+	// 	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+	// 	            SendLoggingNow(PayloadData);
+	// });
+	//
+	// ScreenShotComponent->SaveCaptureFrameImage(NewCaptureFrameNotified);
 }
 
 void AMainPlayerCharacter::OnRep_PlayerState()
@@ -109,11 +125,6 @@ void AMainPlayerCharacter::SetupPlayerInputComponent(
 
 		OnInputBindingNotified.Broadcast(EnhancedInputComponent);
 	}
-}
-
-void AMainPlayerCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 
 void AMainPlayerCharacter::MoveTo(const FInputActionValue& Value)
