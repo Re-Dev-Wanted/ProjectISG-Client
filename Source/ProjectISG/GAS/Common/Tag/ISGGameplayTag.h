@@ -17,4 +17,5 @@ namespace ISGGameplayTags
 		const bool IsForceActive = false, const bool IsReplicated = false);
 	
 	PROJECTISG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Test_Tag)
+
 }

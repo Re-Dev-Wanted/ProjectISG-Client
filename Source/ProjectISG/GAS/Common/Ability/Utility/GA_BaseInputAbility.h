@@ -46,6 +46,8 @@ protected:
 	                        , bool bReplicateEndAbility
 	                        , bool bWasCancelled) override;
 
+	
+
 	UPROPERTY(EditDefaultsOnly, Category = "Option",
 		meta = (AllowPrivateAccess = true))
 	bool IsPassive;

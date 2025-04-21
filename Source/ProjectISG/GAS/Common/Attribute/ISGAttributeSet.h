@@ -69,27 +69,18 @@ public:
 
 	virtual void PostGameplayEffectExecute(
 		const struct FGameplayEffectModCallbackData& Data) override;
-
-
+	
 	/*
-	 * Vital Attributes
+	 * Primary Attributes
 	 */
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Health,
-		Category = "Vital")
-	FGameplayAttributeData Health;
-	ATTRIBUTE_ACCESSORS(UISGAttributeSet, Health);
-
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth,
-		Category = "Vital")
-	FGameplayAttributeData MaxHealth;
-	ATTRIBUTE_ACCESSORS(UISGAttributeSet, MaxHealth);
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Gold,
+		Category = "Primary")
+	FGameplayAttributeData Gold;
+	ATTRIBUTE_ACCESSORS(UISGAttributeSet, Gold);
 
 	UFUNCTION()
-	void OnRep_Health(const FGameplayAttributeData OldHealth) const;
-
-	UFUNCTION()
-	void OnRep_MaxHealth(const FGameplayAttributeData OldMaxHealth) const;
+	void OnRep_Gold(const FGameplayAttributeData OldGold) const;
 
 private:
 	void SetEffectProperties(const struct FGameplayEffectModCallbackData& Data,

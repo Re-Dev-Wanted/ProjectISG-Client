@@ -17,9 +17,7 @@ void UISGAttributeSet::GetLifetimeReplicatedProps(
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION_NOTIFY(UISGAttributeSet, Health, COND_None,
-	                               REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UISGAttributeSet, MaxHealth, COND_None,
+	DOREPLIFETIME_CONDITION_NOTIFY(UISGAttributeSet, Gold, COND_None,
 	                               REPNOTIFY_Always);
 }
 
@@ -28,12 +26,6 @@ void UISGAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute,
 {
 	Super::PreAttributeChange(Attribute, NewValue);
 
-	// attribute 값을 변경하기 직전에 실행되는 함수
-	if (Attribute == GetHealthAttribute())
-	{
-		// 값을 바꾸기 전에 clamp로 최대와 최소를 넘지 않도록 설정해준다.
-		NewValue = FMath::Clamp(NewValue, 0.f, GetMaxHealth());
-	}
 }
 
 void UISGAttributeSet::PostGameplayEffectExecute(
@@ -44,9 +36,9 @@ void UISGAttributeSet::PostGameplayEffectExecute(
 	FEffectProperties Props;
 	SetEffectProperties(Data, Props);
 
-	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	if (Data.EvaluatedData.Attribute == GetGoldAttribute())
 	{
-		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+		//SetGold(FMath::Clamp(GetGold(), 0.f, 100.f));
 	}
 }
 
@@ -98,14 +90,8 @@ void UISGAttributeSet::SetEffectProperties(
 	}
 }
 
-void UISGAttributeSet::OnRep_Health(
-	const FGameplayAttributeData OldHealth) const
+void UISGAttributeSet::OnRep_Gold(
+	const FGameplayAttributeData OldGold) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UISGAttributeSet, Health, OldHealth);
-}
-
-void UISGAttributeSet::OnRep_MaxHealth(
-	const FGameplayAttributeData OldMaxHealth) const
-{
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UISGAttributeSet, MaxHealth, OldMaxHealth);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UISGAttributeSet, Gold, OldGold);
 }

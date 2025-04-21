@@ -5,13 +5,6 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
-
-class UGameplayAbility;
-class UGameplayEffect;
-class UISGAttributeSet;
-class UISGAbilitySystemInitializeData;
-class UISGAbilitySystemComponent;
-
 UCLASS()
 class PROJECTISG_API ABaseCharacter : public ACharacter,
                                       public IAbilitySystemInterface
@@ -23,33 +16,32 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-	
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Options|GAS")
-	TObjectPtr<UISGAbilitySystemComponent> AbilitySystemComponent;
+	TObjectPtr<class UISGAbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Options|GAS")
-	TObjectPtr<UISGAbilitySystemInitializeData> InitializeData;
-	
+	TObjectPtr<class UISGAbilitySystemInitializeData> InitializeData;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Options|GAS")
-	TObjectPtr<UISGAttributeSet> AttributeSet;
+	TObjectPtr<class UISGAttributeSet> AttributeSet;
 
 	// attribute를 초기화 하기위한 GameplayEffect
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Options|GAS")
-	TSubclassOf<UGameplayEffect> DefaultPrimaryAttributes;
+	TSubclassOf<class UGameplayEffect> DefaultPrimaryAttributes;
 
 	void InitializePrimaryAttributes();
+
+	void AddCharacterAbilities();
 
 	virtual void InitializeAbilitySystem()
 	{
 	};
 
-
-	void AddCharacterAbilities();
-
 private:
-	UPROPERTY(EditAnywhere, Category = "Options|GAS", meta = (AllowPrivateAccess = true))
-	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
+		Category = "Options|GAS")
+	TArray<TSubclassOf<class UGameplayAbility>> StartupAbilities;
 };
