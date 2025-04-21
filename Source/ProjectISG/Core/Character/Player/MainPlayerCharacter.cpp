@@ -29,6 +29,9 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 
 	PlayerInventoryComponent = CreateDefaultSubobject<
 		UPlayerInventoryComponent>("Player Inventory Component");
+
+	PlacementIndicatorComponent = CreateDefaultSubobject<UPlacementIndicatorComponent>("Placement Indicator Component");
+	PlacementIndicatorComponent->Deactivate();
 }
 
 void AMainPlayerCharacter::BeginPlay()
@@ -52,6 +55,8 @@ void AMainPlayerCharacter::OnRep_PlayerState()
 	Super::OnRep_PlayerState();
 
 	InitializeAbilitySystem();
+
+	InitializeInventorySystem();
 }
 
 void AMainPlayerCharacter::PossessedBy(AController* NewController)
@@ -80,6 +85,11 @@ void AMainPlayerCharacter::InitializeAbilitySystem()
 		// 이후 Ability 시스템 관련 Delegate 연동 처리를 진행한다.
 		AbilitySystemComponent->AbilityActorInfoSet();
 	}
+}
+
+void AMainPlayerCharacter::InitializeInventorySystem()
+{
+	PlayerInventoryComponent->Initialize();
 }
 
 void AMainPlayerCharacter::SetupPlayerInputComponent(

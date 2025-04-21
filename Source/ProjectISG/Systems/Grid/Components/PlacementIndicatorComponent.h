@@ -25,7 +25,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=IndicatorProperties)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = IndicatorProperties)
 	float InterpSpeed = 5.f;
 
 	UPROPERTY()
@@ -40,11 +40,17 @@ public:
 	UPROPERTY()
 	class APlacement* GhostPlacement;
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<APlacement> PlacementFactory;
+	UFUNCTION()
+	void OnActivate(const TSubclassOf<AActor>& Factory);
+
+	UFUNCTION()
+	void OnDeactivate();
 
 	UFUNCTION(BlueprintCallable)
 	void Build();
+
+	UFUNCTION(Server, Reliable)
+	void Server_Build(FVector Pivot, FVector Location, FRotator Rotation, TSubclassOf<APlacement> PlacementClass);
 
 	UFUNCTION(BlueprintCallable)
 	void Remove();

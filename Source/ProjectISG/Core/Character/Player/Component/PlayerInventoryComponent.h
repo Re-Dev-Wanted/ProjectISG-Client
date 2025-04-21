@@ -17,8 +17,13 @@ class PROJECTISG_API UPlayerInventoryComponent : public UActorComponent
 public:
 	UPlayerInventoryComponent();
 
+	void Initialize();
+
+	bool RemoveItemCurrentSlotIndex(const int32 Count);
+
 protected:
 	virtual void BeginPlay() override;
+	
 	virtual void InitializeComponent() override;
 
 private:
@@ -47,4 +52,7 @@ private:
 	void MoveHotSlot(const FInputActionValue& Value);
 
 	void ChangeCurrentSlotIndex(const uint8 NewIndex);
+
+	UFUNCTION()
+	void UpdatePlayerInventoryUI();
 };

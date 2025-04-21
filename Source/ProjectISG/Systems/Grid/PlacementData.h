@@ -1,9 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
 #include "PlacementData.generated.h"
 
 UENUM(BlueprintType)
@@ -66,9 +63,3 @@ FORCEINLINE float GetDegrees(ERotateDirection Direction)
 		return 0.f;
 	}
 }
-
-USTRUCT(BlueprintType)
-struct FPlacementInfo
-{
-	GENERATED_BODY()
-};

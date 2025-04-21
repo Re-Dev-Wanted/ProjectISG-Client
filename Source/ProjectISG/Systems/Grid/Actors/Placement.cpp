@@ -2,17 +2,22 @@
 
 #include "ProceduralMeshComponent.h"
 #include "Components/BoxComponent.h"
-
+#include "Kismet/KismetSystemLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 APlacement::APlacement()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	SetRootComponent(Root);
 
 	AnchorComp = CreateDefaultSubobject<USceneComponent>(TEXT("AnchorComp"));
 	AnchorComp->SetupAttachment(RootComponent);
 
 	CollisionComp = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionComp"));
 	CollisionComp->SetupAttachment(AnchorComp);
+	CollisionComp->SetIsReplicated(true);
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(CollisionComp);
@@ -23,18 +28,43 @@ APlacement::APlacement()
 	ProceduralMeshComp->SetGenerateOverlapEvents(false);
 
 	bReplicates = true;
+	bAlwaysRelevant = true;
+	SetReplicatingMovement(true);
 }
 
 void APlacement::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Setup();
+	
+	// 서버, 클라 구분 없이 강제 Mesh 세팅
+	UStaticMesh* Mesh = nullptr;
+	if (MeshAssetPath.IsValid())
+	{
+		Mesh = MeshAssetPath.Get();
+	}
+	else
+	{
+		Mesh = MeshAssetPath.LoadSynchronous();
+	}
+	
+	if (Mesh)
+	{
+		MeshComp->SetStaticMesh(Mesh);
+		Setup(CachedSnapSize);
+		// UE_LOG(LogTemp, Warning, TEXT("BeginPlay에서 Mesh 로딩 완료: %s"), *Mesh->GetName());
+	}
+	// else
+	// {
+	// 	UE_LOG(LogTemp, Error, TEXT("BeginPlay: MeshAssetPath 로딩 실패: %s"), *MeshAssetPath.ToString());
+	// }
 }
 
 void APlacement::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APlacement, CachedSnapSize);
+	DOREPLIFETIME(APlacement, MeshAssetPath);
 }
 
 void APlacement::Tick(float DeltaTime)
@@ -44,12 +74,21 @@ void APlacement::Tick(float DeltaTime)
 
 void APlacement::Setup(float TileSize)
 {
+	UStaticMesh* Mesh = MeshAssetPath.IsValid() ? MeshAssetPath.Get() : MeshAssetPath.LoadSynchronous();
+	if (!Mesh)
+	{
+		UE_LOG(LogTemp, Error, TEXT("MeshAssetPath not loaded in Setup"));
+		return;
+	}
+
+	MeshComp->SetStaticMesh(Mesh);
+	
 	// 오브젝트 크기가 제각각 다를 것이다.
 	// 적당히 가운데 정렬하고 tileSize에 맞추기
 
-	FVector BoxExtent = BaseStaticMesh->GetBounds().BoxExtent;
-
-	float HalfSize = FMath::RoundToInt(TileSize * 0.5f);
+	FVector BoxExtent = Mesh->GetBounds().BoxExtent;
+	
+	float HalfSize = FMath::FloorToInt(TileSize * 0.5f);
 
 	FVector SnapExtent
 	(
@@ -60,11 +99,24 @@ void APlacement::Setup(float TileSize)
 
 	FVector FixedLocation = FVector::UpVector * SnapExtent.Z;
 
-	CollisionComp->SetBoxExtent(SnapExtent);
-	CollisionComp->SetRelativeLocation(SnapExtent);
+	if (!CollisionComp->IsRegistered())
+	{
+		CollisionComp->RegisterComponent(); // 강제 등록
+	}
 
-	MeshComp->SetStaticMesh(BaseStaticMesh);
+	CollisionComp->SetBoxExtent(SnapExtent);
+
+	FVector PivotLocation = FVector
+	(
+		FMath::Max(0, FMath::FloorToInt(SnapExtent.X / HalfSize) - 1) * HalfSize,
+		FMath::Max(0, FMath::FloorToInt(SnapExtent.Y / HalfSize) - 1) * HalfSize,
+		SnapExtent.Z
+	);
+
+	CollisionComp->SetRelativeLocation(PivotLocation);
 	MeshComp->SetRelativeLocation(-FixedLocation);
+
+	CollisionComp->RecreatePhysicsState();
 
 	MeshSize = SnapExtent * 2.f;
 
@@ -76,9 +128,12 @@ void APlacement::Setup(float TileSize)
 	TArray<FVector> ProceduralVertices;
 	TArray<int32> ProceduralTriangles;
 
-	for (int32 y = 0; y < FMath::CeilToInt(BoxExtent.Y / HalfSize); y++)
+	const int32 Rows = FMath::CeilToInt(BoxExtent.Y / HalfSize);
+	const int32 Columns = FMath::CeilToInt(BoxExtent.X / HalfSize);
+
+	for (int32 y = 0; y < Rows; y++)
 	{
-		for (int32 x = 0; x < FMath::CeilToInt(BoxExtent.X / HalfSize); x++)
+		for (int32 x = 0; x < Columns; x++)
 		{
 			int32 Num = ProceduralVertices.Num();
 
@@ -106,11 +161,21 @@ void APlacement::Setup(float TileSize)
 		}
 	}
 
-	ProceduralMeshComp->CreateMeshSection(0, ProceduralVertices, ProceduralTriangles, EmptyVectorArray,
-	                                      EmptyVector2DArray, EmptyColorArray,
-	                                      EmptyTangentArray, false);
+	if (ProceduralMeshComp && ProceduralVertices.Num() > 0 && ProceduralTriangles.Num() > 0)
+	{
+		if (!ProceduralMeshComp->IsRegistered())
+		{
+			ProceduralMeshComp->RegisterComponent(); // 강제 등록
+		}
+		
+		ProceduralMeshComp->CreateMeshSection(0, ProceduralVertices, ProceduralTriangles, EmptyVectorArray,
+											  EmptyVector2DArray, EmptyColorArray,
+											  EmptyTangentArray, false);
 
-	ProceduralMeshComp->SetRelativeLocation(-SnapExtent);
+		ProceduralMeshComp->SetRelativeLocation(-SnapExtent);
+		ProceduralMeshComp->SetVisibility(true);
+		ProceduralMeshComp->SetCastShadow(false);
+	}
 }
 
 void APlacement::SetColor(bool bIsGhost, bool bIsBlock)
@@ -128,20 +193,22 @@ void APlacement::SetColor(bool bIsGhost, bool bIsBlock)
 	}
 }
 
-TArray<FIntVector> APlacement::GetOccupiedGrid(float SnapSize, const FIntVector& Start)
+TArray<FIntVector> APlacement::GetOccupiedGrid(float SnapSize, const FIntVector& Current)
 {
 	TArray<FIntVector> Array;
+	Occupied.Empty();
 
-	// DrawDebugBox(GetWorld(), FVector(Start) * SnapSize, FVector(5, 5, 50), FColor::Red, false, 5.f);
 
 	FVector BoxExtent = CollisionComp->Bounds.BoxExtent;
 
-	float HalfSize = FMath::RoundToInt(SnapSize * 0.5f);
+	float HalfSize = SnapSize * 0.5f;
 
-	int32 Rows = FMath::RoundToInt(BoxExtent.Y / HalfSize);
-	int32 Columns = FMath::RoundToInt(BoxExtent.X / HalfSize);
+	int32 Rows = FMath::FloorToInt(BoxExtent.Y / HalfSize);
+	int32 Columns = FMath::FloorToInt(BoxExtent.X / HalfSize);
 
 	int32 Yaw = FMath::FloorToInt(GetActorRotation().Yaw);
+
+	// DrawDebugBox(GetWorld(), CollisionComp->Bounds.Origin, BoxExtent, FColor::Red, false, 1.f);
 
 	// Normalize yaw to 0, 90, 180, 270
 	int32 NormalizedYaw = ((Yaw % 360) + 360) % 360;
@@ -171,18 +238,39 @@ TArray<FIntVector> APlacement::GetOccupiedGrid(float SnapSize, const FIntVector&
 				break;
 			}
 
-			Array.Add(Start + Offset);
+			Array.Add(Current + Offset);
 		}
 	}
 
-
-	for (int32 y = 0; y < Rows; y++)
-	{
-		for (int32 x = 0; x < Columns; x++)
-		{
-			Array.Add(FIntVector(Start.X + x, Start.Y + y, Start.Z));
-		}
-	}
+	Occupied.Append(Array);
 
 	return Array;
+}
+
+FVector APlacement::GetActorPivotLocation() const
+{
+	FVector PivotLocation = AnchorComp->GetComponentLocation();
+	return FVector(PivotLocation.X, PivotLocation.Y, 0);
+}
+
+void APlacement::OnRep_LoadMeshAsset()
+{
+	if (MeshAssetPath.IsValid())
+	{
+		MeshComp->SetStaticMesh(MeshAssetPath.Get());
+	}
+	else
+	{
+		// 동기 로딩... 흠...
+		UStaticMesh* LoadedMesh = MeshAssetPath.LoadSynchronous();
+		if (LoadedMesh)
+		{
+			MeshComp->SetStaticMesh(LoadedMesh);
+			Setup(CachedSnapSize);
+		}
+		else
+		{
+			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("MeshAssetPath is invalid or not loaded"));
+		}
+	}
 }

@@ -10,7 +10,7 @@ public class ProjectISG : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new[]
 		{
-			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput"
+			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "NetCore"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new[]

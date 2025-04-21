@@ -23,6 +23,12 @@ void UInventoryComponent::InitializeItemData()
 	NewItemMetaInfo.SetCurrentCount(2);
 
 	AddItemToInventory(1, NewItemMetaInfo);
+
+	FItemMetaInfo BuildItemMetaInfo;
+	BuildItemMetaInfo.SetId(2);
+	BuildItemMetaInfo.SetCurrentCount(1);
+
+	AddItemToInventory(2, BuildItemMetaInfo);
 }
 
 void UInventoryComponent::BeginPlay()
