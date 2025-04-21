@@ -2,6 +2,8 @@
 
 #include "Kismet/KismetSystemLibrary.h"
 #include "EnhancedInputComponent.h"
+#include "Camera/CameraComponent.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Systems/Input/Interface/InteractionInterface.h"
 
 
@@ -13,6 +15,8 @@ UInteractionComponent::UInteractionComponent()
 void UInteractionComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	PlayerCharacter = Cast<AMainPlayerCharacter>(GetOwner());
 }
 
 void UInteractionComponent::BindingInputActions(
@@ -77,14 +81,14 @@ void UInteractionComponent::TickComponent(float DeltaTime,
 void UInteractionComponent::LineTraceToFindTarget()
 {
 	const TArray<AActor*> IgnoreActors;
-	const FVector OwnerStartLocation = GetOwner()->GetActorLocation();
-	const FVector OwnerEndLocation = OwnerStartLocation + GetOwner()->
-		GetActorForwardVector() * TargetRange;
+	const FVector OwnerStartLocation = PlayerCharacter->GetActorLocation();
+	const FVector OwnerEndLocation = OwnerStartLocation + PlayerCharacter->
+		GetCameraComponent()->GetForwardVector() * TargetRange;
 
 	UKismetSystemLibrary::CapsuleTraceSingle(GetWorld(),
 	                                         OwnerStartLocation,
 	                                         OwnerEndLocation, TargetRadius,
-	                                         TargetHeight, TraceTypeQuery1,
+	                                         TargetRadius, TraceTypeQuery1,
 	                                         false, IgnoreActors,
 	                                         EDrawDebugTrace::ForOneFrame,
 	                                         TargetTraceResult, true);

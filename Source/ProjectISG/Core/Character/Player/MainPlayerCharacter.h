@@ -33,6 +33,8 @@ public:
 
 	FOnInputBindingNotified OnInputBindingNotified;
 
+	GETTER(TObjectPtr<UCameraComponent>, CameraComponent);
+
 protected:
 	virtual void BeginPlay() override;
 

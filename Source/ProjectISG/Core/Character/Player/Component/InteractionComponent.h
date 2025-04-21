@@ -5,6 +5,7 @@
 #include "InteractionComponent.generated.h"
 
 
+class AMainPlayerCharacter;
 class UInputAction;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -43,17 +44,16 @@ private:
 #pragma endregion
 
 #pragma region Target
+	UPROPERTY()
+	TObjectPtr<AMainPlayerCharacter> PlayerCharacter;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Targeting",
 		meta = (AllowPrivateAccess = true))
 	uint16 TargetRange = 300;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Targeting",
-		meta = (AllowPrivateAccess = true))
-	uint16 TargetRadius = 36;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Options|Targeting",
 		meta = (AllowPrivateAccess = true, ClampMin = "0", ClampMax = "100"))
-	uint8 TargetHeight = 8;
+	uint8 TargetRadius = 36;
 
 	UPROPERTY()
 	FHitResult TargetTraceResult;
