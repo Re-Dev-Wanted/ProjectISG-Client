@@ -7,8 +7,6 @@
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/ISGAbilitySystemComponent.h"
 #include "ProjectISG/GAS/Common/Attribute/ISGAttributeSet.h"
-#include "ProjectISG/Systems/Logging/LoggingEnum.h"
-#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 #include "ProjectISG/Systems/Logging/Component/ScreenShotComponent.h"
 
 AMainPlayerCharacter::AMainPlayerCharacter()
@@ -31,7 +29,8 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	PlayerInventoryComponent = CreateDefaultSubobject<
 		UPlayerInventoryComponent>("Player Inventory Component");
 
-	PlacementIndicatorComponent = CreateDefaultSubobject<UPlacementIndicatorComponent>("Placement Indicator Component");
+	PlacementIndicatorComponent = CreateDefaultSubobject<
+		UPlacementIndicatorComponent>("Placement Indicator Component");
 	PlacementIndicatorComponent->Deactivate();
 	ScreenShotComponent = CreateDefaultSubobject<UScreenShotComponent>(
 		"ScreenShot Component");
@@ -52,19 +51,19 @@ void AMainPlayerCharacter::BeginPlay()
 		}
 	}
 
-	FOnCaptureFrameNotified NewCaptureFrameNotified;
-	NewCaptureFrameNotified.BindLambda([this](const TArray64<uint8>& FileBinary)
-	{
-		FDiaryLogParams PayloadData;
-		PayloadData.ActionType = ELoggingActionType::DAY_CYCLE;
-		PayloadData.ActionName = ELoggingActionName::evening;
-		PayloadData.File = FileBinary;
-
-		GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-		            SendLoggingNow(PayloadData);
-	});
-
-	ScreenShotComponent->SaveCaptureFrameImage(NewCaptureFrameNotified);
+	// FOnCaptureFrameNotified NewCaptureFrameNotified;
+	// NewCaptureFrameNotified.BindLambda([this](const TArray64<uint8>& FileBinary)
+	// {
+	// 	FDiaryLogParams PayloadData;
+	// 	PayloadData.ActionType = ELoggingActionType::DAY_CYCLE;
+	// 	PayloadData.ActionName = ELoggingActionName::evening;
+	// 	PayloadData.File = FileBinary;
+	//
+	// 	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+	// 	            SendLoggingNow(PayloadData);
+	// });
+	//
+	// ScreenShotComponent->SaveCaptureFrameImage(NewCaptureFrameNotified);
 }
 
 void AMainPlayerCharacter::OnRep_PlayerState()
