@@ -10,7 +10,8 @@ class UInputAction;
 UENUM()
 enum class EAbilityInputId : uint8
 {
-	Undefined
+	Undefined,
+	Test
 };
 
 UCLASS()
