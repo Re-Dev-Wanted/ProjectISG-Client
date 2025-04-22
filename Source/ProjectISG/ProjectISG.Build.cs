@@ -10,7 +10,8 @@ public class ProjectISG : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new[]
 		{
-			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "NetCore"
+			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
+			"NetCore"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new[]
@@ -19,7 +20,8 @@ public class ProjectISG : ModuleRules
 			"OnlineSubsystem", "OnlineSubsystemNull",
 			"OnlineSubsystemSteam", "OnlineSubsystemUtils",
 			"Json", "JsonUtilities", "HTTP", "UMG",
-			"ProceduralMeshComponent"
+			"ProceduralMeshComponent", "MovieScene", "LevelSequence",
+			"MovieSceneTracks"
 		});
 	}
 }
