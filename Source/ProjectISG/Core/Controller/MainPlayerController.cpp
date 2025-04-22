@@ -2,6 +2,8 @@
 
 #include "Blueprint/UserWidget.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/Base/RootHUD.h"
+#include "ProjectISG/Core/UI/Base/UIManager.h"
 #include "ProjectISG/Core/UI/HUD/MainHUD.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryUI.h"
@@ -15,11 +17,14 @@ void AMainPlayerController::BeginPlay()
 
 	ConsoleCommand(TEXT("showdebug abilitysystem"));
 
+	UIManager = NewObject<UUIManager>();
+
 	if (IsLocalController())
 	{
-		ItemInfoWidget = CreateWidget<UItemInfo>(this, ItemInfoWidgetClass);
-		ItemInfoWidget->RemoveItemWidget();
-		ItemInfoWidget->AddToViewport(9999);
+		URootHUD* RootHUDInstance = CreateWidget<URootHUD>(this, RootHUDClass);
+		RootHUDInstance->AddToViewport();
+
+		UIManager->Initialize(this, RootHUDInstance);
 	}
 }
 
@@ -99,10 +104,10 @@ void AMainPlayerController::ShowItemInfo(const uint16 InventoryIndex) const
 	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(
 		ItemMetaInfo.GetId());
 
-	ItemInfoWidget->ShowItemData(ItemMetaInfo, ItemInfoData);
+	// ItemInfoWidget->ShowItemData(ItemMetaInfo, ItemInfoData);
 }
 
 void AMainPlayerController::RemoveItemInfo() const
 {
-	ItemInfoWidget->RemoveItemWidget();
+	// ItemInfoWidget->RemoveItemWidget();
 }

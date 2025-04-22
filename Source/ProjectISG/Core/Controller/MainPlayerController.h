@@ -5,6 +5,8 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerController.generated.h"
 
+class UUIManager;
+class URootHUD;
 class UItemInfo;
 class UMainHUD;
 class UInventoryUI;
@@ -34,6 +36,13 @@ private:
 #pragma region UI
 	UPROPERTY(EditDefaultsOnly, Category = "Options|UI",
 		meta = (AllowPrivateAccess = true))
+	TSubclassOf<URootHUD> RootHUDClass;
+
+	UPROPERTY()
+	TObjectPtr<UUIManager> UIManager;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Options|UI",
+		meta = (AllowPrivateAccess = true))
 	TSubclassOf<UMainHUD> MainHUDClass;
 
 	UPROPERTY()
@@ -45,12 +54,5 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UInventoryUI> InventoryUI;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Options|UI",
-		meta = (AllowPrivateAccess = true))
-	TSubclassOf<UItemInfo> ItemInfoWidgetClass;
-
-	UPROPERTY()
-	TObjectPtr<UItemInfo> ItemInfoWidget;
 #pragma endregion
 };
