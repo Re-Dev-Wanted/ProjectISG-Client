@@ -28,6 +28,10 @@ protected:
 	void CropBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	                      int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+public:
+	GETTER_SETTER(int32, CropTotalGrowDay);
+	GETTER_SETTER(bool, bIsGetWater);
+	
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
 		meta = (AllowPrivateAccess = true))
@@ -48,17 +52,18 @@ private:
 	UPROPERTY()
 	class ATimeManager* TimeManager = nullptr;
 
-public:
-	UPROPERTY(EditAnywhere, Category = Grow)
-	float CropTotalGrowTime = 1.f;
-
 	UPROPERTY(EditAnywhere, Category = Grow)
 	float CropStartGrowTime;
 
 	UPROPERTY(EditAnywhere, Category = Grow)
 	int32 CropStartGrowDay;	
+	
+	UPROPERTY(EditAnywhere, Category = Grow)
+	int32 CropTotalGrowDay = 0;
 
 	UPROPERTY(Replicated, EditAnywhere, Category = Grow)
 	bool bIsMature = false;
 
+	UPROPERTY(Replicated, EditAnywhere, Category = Grow)
+	bool bIsGetWater = false;	
 };

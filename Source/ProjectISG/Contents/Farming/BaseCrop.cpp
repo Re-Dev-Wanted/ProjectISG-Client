@@ -61,6 +61,7 @@ void ABaseCrop::GetLifetimeReplicatedProps(
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ABaseCrop, bIsMature);
+	DOREPLIFETIME(ABaseCrop, bIsGetWater);
 }
 
 // Called every frame
@@ -79,10 +80,11 @@ void ABaseCrop::CheckGrowTime()
 	float CropGrowTime = CropCurrentGrowTime - CropStartGrowTime;
 
 	// 농작물의 성장 시간 변수와 비교한다
-	if (CropGrowTime >= CropTotalGrowTime)
+	if (CropGrowTime >= CropTotalGrowDay * 24.f)
 	{
 		bIsMature = true;
 		UE_LOG(LogTemp, Warning, TEXT("다 자랐다"));
+		SetActorScale3D(FVector(2.0f));
 		GetWorld()->GetTimerManager().ClearTimer(GrowTimerHandle);
 	}
 }
