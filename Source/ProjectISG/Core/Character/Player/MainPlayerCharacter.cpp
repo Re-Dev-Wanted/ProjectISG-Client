@@ -15,7 +15,7 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>("Spring Arm");
 	SpringArm->SetupAttachment(GetMesh());
 	SpringArm->SetRelativeRotation({0, 90, 0});
-	SpringArm->bUsePawnControlRotation = true;
+	SpringArm->bUsePawnControlRotation = false;
 
 	SpringArm->SetRelativeLocation({0, 0, 130});
 	SpringArm->SetRelativeRotation({0, 0, 90});
@@ -36,6 +36,7 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 
 	ScreenShotComponent = CreateDefaultSubobject<UScreenShotComponent>(
 		"ScreenShot Component");
+
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(
 		"Interaction Component");
 }

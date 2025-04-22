@@ -2,7 +2,6 @@
 #include "EnhancedInputComponent.h"
 #include "AbilitySystemComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
-#include "ProjectISG/Object/BasePawn.h"
 
 UGA_BaseInputAbility::UGA_BaseInputAbility(
 	const FObjectInitializer& ObjectInitializer)
@@ -13,7 +12,8 @@ UGA_BaseInputAbility::UGA_BaseInputAbility(
 }
 
 void UGA_BaseInputAbility::OnAvatarSet(
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilitySpec& Spec)
 {
 	// AvatarSet이 해당 Ability가 처음 로드 될 때 동작한다.
 	Super::OnAvatarSet(ActorInfo, Spec);
@@ -21,18 +21,20 @@ void UGA_BaseInputAbility::OnAvatarSet(
 }
 
 void UGA_BaseInputAbility::SetupEnhancedInputBindings(
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilitySpec& Spec)
 {
 	// 우선 AvatarActor가 있어야 한다 보통 캐릭터가 이에 해당된다.
 	if (IsValid(ActorInfo->AvatarActor.Get()))
 	{
 		// AvatarActor가 기본 캐릭터 형태여야만 해당 시스템을 활용할 수 있다.
-		const AMainPlayerCharacter* AvatarPawn = Cast<AMainPlayerCharacter>(ActorInfo->AvatarActor.Get());
+		const AMainPlayerCharacter* AvatarPawn = Cast<AMainPlayerCharacter>(
+			ActorInfo->AvatarActor.Get());
 		if (!AvatarPawn)
 		{
 			return;
 		}
-		
+
 		const AController* PawnController = AvatarPawn->GetController();
 		if (!PawnController)
 		{
@@ -41,7 +43,7 @@ void UGA_BaseInputAbility::SetupEnhancedInputBindings(
 
 		// EnhancedInput을 가져온다.
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<
-				UEnhancedInputComponent>(PawnController->InputComponent.Get()))
+			UEnhancedInputComponent>(PawnController->InputComponent.Get()))
 		{
 			if (UGA_BaseInputAbility* AbilityInstance = Cast<
 				UGA_BaseInputAbility>(Spec.Ability))
@@ -51,11 +53,13 @@ void UGA_BaseInputAbility::SetupEnhancedInputBindings(
 				if (IsValid(AbilityInstance->ActivationInputAction))
 				{
 					EnhancedInputComponent->BindAction(
-						ActivationInputAction, ETriggerEvent::Triggered, AbilityInstance
+						ActivationInputAction, ETriggerEvent::Triggered,
+						AbilityInstance
 						, &ThisClass::OnAbilityInputPressed, ActorInfo);
 
 					EnhancedInputComponent->BindAction(
-						ActivationInputAction, ETriggerEvent::Completed, AbilityInstance
+						ActivationInputAction, ETriggerEvent::Completed,
+						AbilityInstance
 						, &ThisClass::OnAbilityInputReleased, ActorInfo);
 				}
 			}
@@ -71,7 +75,7 @@ void UGA_BaseInputAbility::EndAbility(
 	, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility
-										, bWasCancelled);
+	                  , bWasCancelled);
 	if (const APawn* AvatarPawn = Cast<APawn>(ActorInfo->AvatarActor.Get()))
 	{
 		if (const AController* PawnController = AvatarPawn->GetController())
@@ -80,7 +84,8 @@ void UGA_BaseInputAbility::EndAbility(
 				UEnhancedInputComponent>(PawnController->InputComponent.Get()))
 			{
 				// ID 정보만 없애준다. 사용 이후에는 Id를 비워줌으로써 나중에 다른 스킬로 토글될 때에 대한 대응이 가능해진다.
-				EnhancedInputComponent->RemoveBindingByHandle(TriggeredEventHandle);
+				EnhancedInputComponent->RemoveBindingByHandle(
+					TriggeredEventHandle);
 			}
 		}
 		TriggeredEventHandle = -1;
@@ -89,7 +94,8 @@ void UGA_BaseInputAbility::EndAbility(
 
 // Ability 자체가 제거될 때 기본적인 Binding된 정보를 제거해준다.
 void UGA_BaseInputAbility::OnRemoveAbility(
-	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilitySpec& Spec)
 {
 	if (IsValid(ActorInfo->AvatarActor.Get()))
 	{
@@ -100,7 +106,8 @@ void UGA_BaseInputAbility::OnRemoveAbility(
 				if (UEnhancedInputComponent* EnhancedInputComponent = Cast<
 					UEnhancedInputComponent>(PawnController->InputComponent))
 				{
-					EnhancedInputComponent->ClearBindingsForObject(Spec.Ability.Get());
+					EnhancedInputComponent->ClearBindingsForObject(
+						Spec.Ability.Get());
 				}
 			}
 		}
