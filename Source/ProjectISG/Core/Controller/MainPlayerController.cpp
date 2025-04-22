@@ -13,6 +13,8 @@ void AMainPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	ConsoleCommand(TEXT("showdebug abilitysystem"));
+
 	if (IsLocalController())
 	{
 		ItemInfoWidget = CreateWidget<UItemInfo>(this, ItemInfoWidgetClass);

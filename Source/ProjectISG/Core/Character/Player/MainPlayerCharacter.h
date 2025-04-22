@@ -56,6 +56,9 @@ public:
 	GETTER(TObjectPtr<UPlayerInventoryComponent>, PlayerInventoryComponent)
 	GETTER(TObjectPtr<UInteractionComponent>, InteractionComponent)
 
+	UFUNCTION(Server, Reliable)
+	void Server_SetActorTransformReplicated(const FTransform& Transform);
+
 private:
 	UPROPERTY()
 	TObjectPtr<AActor> MainHandItem;

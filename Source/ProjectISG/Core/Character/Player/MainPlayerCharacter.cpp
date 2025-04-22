@@ -15,7 +15,7 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>("Spring Arm");
 	SpringArm->SetupAttachment(GetMesh());
 	SpringArm->SetRelativeRotation({0, 90, 0});
-	SpringArm->bUsePawnControlRotation = false;
+	SpringArm->bUsePawnControlRotation = true;
 
 	SpringArm->SetRelativeLocation({0, 0, 130});
 	SpringArm->SetRelativeRotation({0, 0, 90});
@@ -148,4 +148,10 @@ void AMainPlayerCharacter::Look(const FInputActionValue& Value)
 	const FVector2d LookToValue = Value.Get<FVector2d>();
 	AddControllerYawInput(LookToValue.X);
 	AddControllerPitchInput(LookToValue.Y);
+}
+
+void AMainPlayerCharacter::Server_SetActorTransformReplicated_Implementation(
+	const FTransform& Transform)
+{
+	SetActorTransform(Transform);
 }

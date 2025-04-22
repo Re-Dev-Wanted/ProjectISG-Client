@@ -4,6 +4,7 @@
 #include "ProjectISG/GAS/Common/Ability/Utility/GA_BaseInputAbility.h"
 #include "GA_StartCookingMode.generated.h"
 
+class UAT_StartCookingModeCinematic;
 class ULevelSequence;
 
 UCLASS()
@@ -23,4 +24,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Cinematic",
 		meta = (AllowPrivateAccess = true))
 	TObjectPtr<ULevelSequence> StartCookingCinematic;
+
+	UPROPERTY()
+	TObjectPtr<UAT_StartCookingModeCinematic> AT_StartCookingModeCinematic;
+
+	UFUNCTION()
+	void OnEndCinematic();
 };

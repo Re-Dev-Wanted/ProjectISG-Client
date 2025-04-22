@@ -19,6 +19,8 @@ public:
 
 	virtual void OnInteractive(AActor* Causer) override;
 
+	GETTER(TObjectPtr<UCameraComponent>, KitchenCameraComponent)
+
 protected:
 	virtual void BeginPlay() override;
 
