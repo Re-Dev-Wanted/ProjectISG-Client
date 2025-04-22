@@ -1,28 +1,28 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
-#include "UIManager.generated.h"
+#include "Components/ActorComponent.h"
+#include "UIManageComponent.generated.h"
 
 class URootHUD;
 enum class EUILayer : uint8;
 enum class EUIName : uint32;
 
-UCLASS()
-class PROJECTISG_API UUIManager : public UObject
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+class PROJECTISG_API UUIManageComponent : public UActorComponent
 {
 public:
 	GENERATED_BODY()
 
-	void Initialize(APlayerController* PC, URootHUD* NewRootHUD);
+	void Initialize(URootHUD* NewRootHUD);
 
 	void PushWidget(const EUIName Key);
 	void PopWidget();
 
-private:
 	UPROPERTY()
 	TMap<EUIName, TObjectPtr<UUserWidget>> WidgetInstances;
 
+private:
 	UPROPERTY(EditDefaultsOnly, Category = "Options|UI",
 		meta = (AllowPrivateAccess = true))
 	TMap<EUIName, TSubclassOf<UUserWidget>> WidgetClasses;
@@ -35,9 +35,6 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<URootHUD> RootHUD;
-
-	UPROPERTY()
-	TObjectPtr<APlayerController> OwnerController;
 
 	bool IsPlayerInLocalControlled() const;
 };

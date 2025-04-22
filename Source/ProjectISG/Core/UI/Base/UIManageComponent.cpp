@@ -1,11 +1,11 @@
-﻿#include "UIManager.h"
+﻿#include "UIManageComponent.h"
 
 #include "RootHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 
-void UUIManager::Initialize(APlayerController* PC, URootHUD* NewRootHUD)
+void UUIManageComponent::Initialize(URootHUD* NewRootHUD)
 {
 	if (!IsPlayerInLocalControlled())
 	{
@@ -13,9 +13,8 @@ void UUIManager::Initialize(APlayerController* PC, URootHUD* NewRootHUD)
 	}
 
 	RootHUD = NewRootHUD;
-	OwnerController = PC;
 
-	for (TTuple<EUIName, TSubclassOf<UUserWidget>> WidgetClass : WidgetClasses)
+	for (auto WidgetClass : WidgetClasses)
 	{
 		if (FEnumUtil::GetClassEnumKeyAsString(WidgetClass.Key).StartsWith(
 			TEXT("Gameplay_")))
@@ -43,7 +42,7 @@ void UUIManager::Initialize(APlayerController* PC, URootHUD* NewRootHUD)
 	}
 }
 
-void UUIManager::PushWidget(const EUIName Key)
+void UUIManageComponent::PushWidget(const EUIName Key)
 {
 	if (!IsPlayerInLocalControlled())
 	{
@@ -55,8 +54,8 @@ void UUIManager::PushWidget(const EUIName Key)
 
 	if (!NewWidget)
 	{
-		NewWidget = CreateWidget<UUserWidget>(
-			OwnerController, WidgetClasses.FindRef(Key));
+		APlayerController* PC = Cast<APlayerController>(GetOwner());
+		NewWidget = CreateWidget(PC, WidgetClasses.FindRef(Key));
 		WidgetInstances.Add(Key, NewWidget);
 		RootHUD->AddWidgetToLayer(NewWidget, WidgetLayers[Key]);
 	}
@@ -64,7 +63,7 @@ void UUIManager::PushWidget(const EUIName Key)
 	NewWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 
-void UUIManager::PopWidget()
+void UUIManageComponent::PopWidget()
 {
 	if (!IsPlayerInLocalControlled())
 	{
@@ -82,12 +81,18 @@ void UUIManager::PopWidget()
 	WidgetStack.Pop();
 }
 
-bool UUIManager::IsPlayerInLocalControlled() const
+bool UUIManageComponent::IsPlayerInLocalControlled() const
 {
-	if (!OwnerController)
+	if (!GetOwner())
 	{
 		return false;
 	}
 
-	return OwnerController->IsLocalController();
+	const APlayerController* PC = Cast<APlayerController>(GetOwner());
+	if (!PC)
+	{
+		return false;
+	}
+
+	return PC->IsLocalController();
 }

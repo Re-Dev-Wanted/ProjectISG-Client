@@ -5,7 +5,7 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerController.generated.h"
 
-class UUIManager;
+class UUIManageComponent;
 class URootHUD;
 class UItemInfo;
 class UMainHUD;
@@ -17,12 +17,13 @@ class PROJECTISG_API AMainPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
-	void InitializeHUD();
+	AMainPlayerController();
+
 	void ToggleInventoryUI(const bool IsShow);
 	void ShowItemInfo(const uint16 InventoryIndex) const;
 	void RemoveItemInfo() const;
 
-	GETTER(TObjectPtr<UMainHUD>, MainHUD)
+	TObjectPtr<UMainHUD> GetMainHUD() const;
 	GETTER(TObjectPtr<UInventoryUI>, InventoryUI)
 
 protected:
@@ -33,20 +34,14 @@ protected:
 	virtual void OnPossess(APawn* InPawn) override;
 
 private:
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UUIManageComponent> UIManageComponent;
+
 #pragma region UI
 	UPROPERTY(EditDefaultsOnly, Category = "Options|UI",
 		meta = (AllowPrivateAccess = true))
 	TSubclassOf<URootHUD> RootHUDClass;
 
-	UPROPERTY()
-	TObjectPtr<UUIManager> UIManager;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Options|UI",
-		meta = (AllowPrivateAccess = true))
-	TSubclassOf<UMainHUD> MainHUDClass;
-
-	UPROPERTY()
-	TObjectPtr<UMainHUD> MainHUD;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Options|UI",
 		meta = (AllowPrivateAccess = true))

@@ -145,17 +145,17 @@ void UPlayerInventoryComponent::UpdatePlayerInventoryUI()
 	const AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(
 		GetOwner());
 
-	if (OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD())
-	{
-		OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD()->
-		             GetMainSlotList()->UpdateItemData();
-	}
-
-	if (OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI())
-	{
-		OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI()->
-		             GetMainSlotList()->UpdateItemData();
-		OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI()->
-		             GetInventoryList()->UpdateItemData();
-	}
+	// if (OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD())
+	// {
+	// 	OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD()->
+	// 	             GetMainSlotList()->UpdateItemData();
+	// }
+	//
+	// if (OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI())
+	// {
+	// 	OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI()->
+	// 	             GetMainSlotList()->UpdateItemData();
+	// 	OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI()->
+	// 	             GetInventoryList()->UpdateItemData();
+	// }
 }

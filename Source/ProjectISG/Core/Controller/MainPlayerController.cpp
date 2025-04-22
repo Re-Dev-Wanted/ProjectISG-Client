@@ -2,14 +2,20 @@
 
 #include "Blueprint/UserWidget.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/UIEnum.h"
 #include "ProjectISG/Core/UI/Base/RootHUD.h"
-#include "ProjectISG/Core/UI/Base/UIManager.h"
+#include "ProjectISG/Core/UI/Base/UIManageComponent.h"
 #include "ProjectISG/Core/UI/HUD/MainHUD.h"
-#include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
+// #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryUI.h"
-#include "ProjectISG/Core/UI/HUD/Inventory/Module/ItemInfo.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
+
+AMainPlayerController::AMainPlayerController()
+{
+	UIManageComponent = CreateDefaultSubobject<UUIManageComponent>(
+		"UI Manage Component");
+}
 
 void AMainPlayerController::BeginPlay()
 {
@@ -17,14 +23,12 @@ void AMainPlayerController::BeginPlay()
 
 	ConsoleCommand(TEXT("showdebug abilitysystem"));
 
-	UIManager = NewObject<UUIManager>();
-
 	if (IsLocalController())
 	{
 		URootHUD* RootHUDInstance = CreateWidget<URootHUD>(this, RootHUDClass);
 		RootHUDInstance->AddToViewport();
 
-		UIManager->Initialize(this, RootHUDInstance);
+		UIManageComponent->Initialize(RootHUDInstance);
 	}
 }
 
@@ -61,7 +65,7 @@ void AMainPlayerController::ToggleInventoryUI(const bool IsShow)
 	if (IsShow)
 	{
 		InventoryUI->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		MainHUD->SetVisibility(ESlateVisibility::Hidden);
+		// MainHUD->SetVisibility(ESlateVisibility::Hidden);
 
 		SetShowMouseCursor(true);
 		DisableInput(this);
@@ -70,23 +74,22 @@ void AMainPlayerController::ToggleInventoryUI(const bool IsShow)
 	}
 
 	InventoryUI->SetVisibility(ESlateVisibility::Hidden);
-	MainHUD->GetMainSlotList()->UpdateItemData();
-	MainHUD->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	// MainHUD->GetMainSlotList()->UpdateItemData();
+	// MainHUD->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 
 	SetShowMouseCursor(false);
 	EnableInput(this);
 }
 
-void AMainPlayerController::InitializeHUD()
+TObjectPtr<UMainHUD> AMainPlayerController::GetMainHUD() const
 {
-	if (!IsLocalController())
+	if (!UIManageComponent->WidgetInstances.FindRef(EUIName::Gameplay_MainHUD))
 	{
-		return;
+		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
 	}
 
-	MainHUD = CreateWidget<UMainHUD>(this, MainHUDClass);
-	MainHUD->AddToViewport();
-	MainHUD->InitializeHUD();
+	return Cast<UMainHUD>(
+		UIManageComponent->WidgetInstances.FindRef(EUIName::Gameplay_MainHUD));
 }
 
 void AMainPlayerController::ShowItemInfo(const uint16 InventoryIndex) const
