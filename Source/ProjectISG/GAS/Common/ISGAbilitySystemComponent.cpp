@@ -28,7 +28,7 @@ void UISGAbilitySystemComponent::Initialize(
 				                      ? INDEX_NONE
 				                      : static_cast<int32>(InputAbility->
 					                      GetInputId());
-			
+
 			GiveAbility(FGameplayAbilitySpec(
 				Ability, InputAbility->GetAbilityLevel()
 				, InputId, this));
@@ -42,31 +42,3 @@ void UISGAbilitySystemComponent::Initialize(
 
 	SetIsInitialize(true);
 }
-
-// void UISGAbilitySystemComponent::AbilityActorInfoSet()
-// {
-// 	OnGameplayEffectAppliedDelegateToSelf.AddUObject(
-// 		this, &UISGAbilitySystemComponent::EffectApplied);
-// }
-
-// void UISGAbilitySystemComponent::AddCharacterAbilities(
-// 	const TArray<TSubclassOf<UGameplayAbility>>& StartupAbilities)
-// {
-// 	for (TSubclassOf<UGameplayAbility> AbilityClass : StartupAbilities)
-// 	{
-// 		FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, 1);
-// 		//GiveAbility(AbilitySpec);
-// 		GiveAbilityAndActivateOnce(AbilitySpec);
-// 	}
-// }
-//
-// void UISGAbilitySystemComponent::EffectApplied(
-// 	UAbilitySystemComponent* AbilitySystemComponent,
-// 	const FGameplayEffectSpec& EffectSpec,
-// 	FActiveGameplayEffectHandle ActiveGameplayEffectHandle)
-// {
-// 	FGameplayTagContainer TagContainer;
-// 	EffectSpec.GetAllAssetTags(TagContainer);
-//
-// 	EffectAssetTags.Broadcast(TagContainer);
-// }

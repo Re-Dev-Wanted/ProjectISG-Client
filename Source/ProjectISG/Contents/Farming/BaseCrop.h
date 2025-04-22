@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ProjectISG/Utils/MacroUtil.h"
 #include "BaseCrop.generated.h"
 
 UCLASS()
@@ -17,7 +18,15 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void CheckGrowTime();
+	
+	UFUNCTION()
+	void CropBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	                      int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
@@ -31,4 +40,22 @@ private:
 	UPROPERTY(EditAnywhere, Category = Settings,
 		meta = (AllowPrivateAccess = true))
 	uint16 CropId;
+	
+	UPROPERTY(EditAnywhere, Category = Grow,
+		meta = (AllowPrivateAccess = true))
+	FTimerHandle GrowTimerHandle;
+
+	UPROPERTY()
+	class ATimeManager* TimeManager = nullptr;
+
+public:
+	UPROPERTY(EditAnywhere, Category = Grow)
+	int32 CropTotalGrowTime;
+
+	UPROPERTY(EditAnywhere, Category = Grow)
+	float CropStartGrowTime;
+
+	UPROPERTY(Replicated, EditAnywhere, Category = Grow)
+	bool bIsMature = false;
+
 };

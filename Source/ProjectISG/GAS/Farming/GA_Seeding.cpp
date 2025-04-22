@@ -3,7 +3,10 @@
 
 #include "GA_Seeding.h"
 
+#include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -13,24 +16,33 @@ void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                   const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	UE_LOG(LogTemp, Warning, TEXT("log"));
 
 	const AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(
 		GetWorld()->GetFirstPlayerController()->GetCharacter());
-	if (player)
+	const AMainPlayerState* ps = player->GetPlayerState<AMainPlayerState>();
+	if (player && ps)
 	{
-		if (UItemManager::IsItemCanInteraction(player->GetMainHandItemId()))
+		const bool isInteraction = UItemManager::IsItemCanInteraction(
+			player->GetMainHandItemId());
+		if (isInteraction)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("work"));
 			FItemInfoData itemData = UItemManager::GetItemInfoById(
 				player->GetMainHandItemId());
-			GetWorld()->SpawnActor(itemData.GetPlaceItemActor());
+			FVector SpawnLocation = player->GetActorLocation();
+			FRotator SpawnRotation = FRotator::ZeroRotator;
+			GetWorld()->SpawnActor<ABaseCrop>(itemData.GetPlaceItemActor(),
+			                                  SpawnLocation, SpawnRotation);
+			ps->GetInventoryComponent()->RemoveItem(
+				player->GetMainHandItemId(), 1);
 		}
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("doesn't work"));
 	}
+
+
+	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
 
 void UGA_Seeding::EndAbility(const FGameplayAbilitySpecHandle Handle,

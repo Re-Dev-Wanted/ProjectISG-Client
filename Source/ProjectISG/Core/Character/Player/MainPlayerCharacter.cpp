@@ -54,20 +54,6 @@ void AMainPlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-
-	// FOnCaptureFrameNotified NewCaptureFrameNotified;
-	// NewCaptureFrameNotified.BindLambda([this](const TArray64<uint8>& FileBinary)
-	// {
-	// 	FDiaryLogParams PayloadData;
-	// 	PayloadData.ActionType = ELoggingActionType::DAY_CYCLE;
-	// 	PayloadData.ActionName = ELoggingActionName::evening;
-	// 	PayloadData.File = FileBinary;
-	//
-	// 	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-	// 	            SendLoggingNow(PayloadData);
-	// });
-	//
-	// ScreenShotComponent->SaveCaptureFrameImage(NewCaptureFrameNotified);
 }
 
 void AMainPlayerCharacter::OnRep_PlayerState()
@@ -99,14 +85,12 @@ void AMainPlayerCharacter::InitializeAbilitySystem()
 
 		AbilitySystemComponent->InitAbilityActorInfo(PS, this);
 		AbilitySystemComponent->Initialize(InitializeData);
-		//AddCharacterAbilities();
 
 		AttributeSet = PS->GetAttributeSet();
 		InitializePrimaryAttributes();
 
 
 		// 이후 Ability 시스템 관련 Delegate 연동 처리를 진행한다.
-		//AbilitySystemComponent->AbilityActorInfoSet();
 	}
 }
 

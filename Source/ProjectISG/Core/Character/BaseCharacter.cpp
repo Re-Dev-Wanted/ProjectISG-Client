@@ -23,14 +23,6 @@ void ABaseCharacter::InitializePrimaryAttributes()
 		*SpecHandle.Data.Get(), GetAbilitySystemComponent());
 }
 
-// void ABaseCharacter::AddCharacterAbilities()
-// {
-// 	UISGAbilitySystemComponent* ISGASC = CastChecked<UISGAbilitySystemComponent>(AbilitySystemComponent);
-// 	if (HasAuthority() == false) return;
-//
-// 	ISGASC->AddCharacterAbilities(StartupAbilities);
-// }
-
 UAbilitySystemComponent* ABaseCharacter::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;

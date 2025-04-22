@@ -1,6 +1,7 @@
 ﻿#include "InventoryComponent.h"
 
 #include "Kismet/KismetMathLibrary.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ProjectISG/Utils/MacroUtil.h"
 #include "TimeManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSleep);
@@ -55,6 +56,10 @@ public:
 	void ChangeTimeToForceSleepTime();
 	UFUNCTION(BlueprintCallable)
 	void ChangeTimeToCanSleepTime();
+
+	GETTER(int32, Hour);
+	GETTER(int32, Minute);
+	GETTER(float, Second);
 
 private:
 #pragma region Sky
