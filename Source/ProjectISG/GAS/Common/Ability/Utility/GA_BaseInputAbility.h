@@ -11,7 +11,7 @@ UENUM()
 enum class EAbilityInputId : uint8
 {
 	Undefined,
-	Interaction,
+	Test
 };
 
 UCLASS()
@@ -46,7 +46,6 @@ protected:
 	                        ActivationInfo
 	                        , bool bReplicateEndAbility
 	                        , bool bWasCancelled) override;
-
 
 	UPROPERTY(EditDefaultsOnly, Category = "Option",
 		meta = (AllowPrivateAccess = true))

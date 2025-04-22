@@ -25,7 +25,7 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	CameraComponent->SetupAttachment(SpringArm);
 
 	CameraComponent->SetRelativeLocation({0, 0, 80});
-	CameraComponent->SetRelativeRotation({0, -18, 0});
+	CameraComponent->SetRelativeRotation({0, 0, -18});
 
 	PlayerInventoryComponent = CreateDefaultSubobject<
 		UPlayerInventoryComponent>("Player Inventory Component");
@@ -76,7 +76,7 @@ void AMainPlayerCharacter::OnRep_PlayerState()
 
 	InitializeAbilitySystem();
 
-	InitializeInventorySystem();
+	PlayerInventoryComponent->InitializePlayerInventory();
 }
 
 void AMainPlayerCharacter::PossessedBy(AController* NewController)
@@ -84,17 +84,20 @@ void AMainPlayerCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	InitializeAbilitySystem();
+
+	PlayerInventoryComponent->InitializePlayerInventory();
 }
 
 void AMainPlayerCharacter::InitializeAbilitySystem()
 {
 	Super::InitializeAbilitySystem();
 
-	if (const AMainPlayerState* PS = GetPlayerState<AMainPlayerState>())
+	if (AMainPlayerState* PS = GetPlayerState<AMainPlayerState>())
 	{
 		AbilitySystemComponent = Cast<UISGAbilitySystemComponent>(
 			PS->GetAbilitySystemComponent());
 
+		AbilitySystemComponent->InitAbilityActorInfo(PS, this);
 		AbilitySystemComponent->Initialize(InitializeData);
 		//AddCharacterAbilities();
 
@@ -105,11 +108,6 @@ void AMainPlayerCharacter::InitializeAbilitySystem()
 		// 이후 Ability 시스템 관련 Delegate 연동 처리를 진행한다.
 		//AbilitySystemComponent->AbilityActorInfoSet();
 	}
-}
-
-void AMainPlayerCharacter::InitializeInventorySystem()
-{
-	PlayerInventoryComponent->Initialize();
 }
 
 void AMainPlayerCharacter::SetupPlayerInputComponent(
