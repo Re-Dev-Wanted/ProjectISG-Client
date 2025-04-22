@@ -96,14 +96,14 @@ void AMainPlayerCharacter::InitializeAbilitySystem()
 			PS->GetAbilitySystemComponent());
 
 		AbilitySystemComponent->Initialize(InitializeData);
-		AddCharacterAbilities();
-		
+		//AddCharacterAbilities();
+
 		AttributeSet = PS->GetAttributeSet();
 		InitializePrimaryAttributes();
 
 
 		// 이후 Ability 시스템 관련 Delegate 연동 처리를 진행한다.
-		AbilitySystemComponent->AbilityActorInfoSet();
+		//AbilitySystemComponent->AbilityActorInfoSet();
 	}
 }
 

@@ -5,8 +5,7 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "ISGAbilitySystemComponent.generated.h"
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags,
-                                    const FGameplayTagContainer& /*AssetTags*/);
+//DECLARE_MULTICAST_DELEGATE_OneParam(FEffectAssetTags, const FGameplayTagContainer& /*AssetTags*/);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTISG_API UISGAbilitySystemComponent : public UAbilitySystemComponent
@@ -20,17 +19,17 @@ public:
 
 	GETTER_SETTER(bool, IsInitialize)
 
-	void AbilityActorInfoSet();
+	//void AbilityActorInfoSet();
 
-	FEffectAssetTags EffectAssetTags;
+	//FEffectAssetTags EffectAssetTags;
 
-	void AddCharacterAbilities(
-		const TArray<TSubclassOf<class UGameplayAbility>>& StartupAbilities);
-
-protected:
-	void EffectApplied(class UAbilitySystemComponent* AbilitySystemComponent,
-	                   const FGameplayEffectSpec& EffectSpec,
-	                   FActiveGameplayEffectHandle ActiveGameplayEffectHandle);
+// 	void AddCharacterAbilities(
+// 		const TArray<TSubclassOf<class UGameplayAbility>>& StartupAbilities);
+//
+// protected:
+// 	void EffectApplied(class UAbilitySystemComponent* AbilitySystemComponent,
+// 	                   const FGameplayEffectSpec& EffectSpec,
+// 	                   FActiveGameplayEffectHandle ActiveGameplayEffectHandle);
 
 private:
 	bool IsInitialize = false;

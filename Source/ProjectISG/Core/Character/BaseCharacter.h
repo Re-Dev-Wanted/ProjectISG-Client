@@ -25,7 +25,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Options|GAS")
 	TObjectPtr<class UISGAbilitySystemInitializeData> InitializeData;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Options|GAS")
+	UPROPERTY()
 	TObjectPtr<class UISGAttributeSet> AttributeSet;
 
 	// attribute를 초기화 하기위한 GameplayEffect
@@ -34,14 +34,13 @@ protected:
 
 	void InitializePrimaryAttributes();
 
-	void AddCharacterAbilities();
+	//void AddCharacterAbilities();
 
 	virtual void InitializeAbilitySystem()
 	{
 	};
 
-private:
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
-		Category = "Options|GAS")
-	TArray<TSubclassOf<class UGameplayAbility>> StartupAbilities;
+	// UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
+	// 	Category = "Options|GAS")
+	// TArray<TSubclassOf<class UGameplayAbility>> StartupAbilities;
 };
