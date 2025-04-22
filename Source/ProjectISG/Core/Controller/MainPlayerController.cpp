@@ -56,29 +56,14 @@ void AMainPlayerController::ToggleInventoryUI(const bool IsShow)
 		return;
 	}
 
-	if (!InventoryUI)
-	{
-		InventoryUI = CreateWidget<UInventoryUI>(this, InventoryUIClass);
-		InventoryUI->AddToViewport();
-	}
-
 	if (IsShow)
 	{
-		InventoryUI->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		// MainHUD->SetVisibility(ESlateVisibility::Hidden);
-
-		SetShowMouseCursor(true);
-		DisableInput(this);
-
-		return;
+		UIManageComponent->PushWidget(EUIName::Popup_InventoryUI);
 	}
-
-	InventoryUI->SetVisibility(ESlateVisibility::Hidden);
-	// MainHUD->GetMainSlotList()->UpdateItemData();
-	// MainHUD->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-
-	SetShowMouseCursor(false);
-	EnableInput(this);
+	else
+	{
+		UIManageComponent->PopWidget();
+	}
 }
 
 TObjectPtr<UMainHUD> AMainPlayerController::GetMainHUD() const
@@ -90,6 +75,22 @@ TObjectPtr<UMainHUD> AMainPlayerController::GetMainHUD() const
 
 	return Cast<UMainHUD>(
 		UIManageComponent->WidgetInstances.FindRef(EUIName::Gameplay_MainHUD));
+}
+
+TObjectPtr<UInventoryUI> AMainPlayerController::GetInventoryUI() const
+{
+	if (!UIManageComponent->WidgetInstances.FindRef(EUIName::Popup_InventoryUI))
+	{
+		UIManageComponent->PushWidget(EUIName::Popup_InventoryUI);
+	}
+
+	return Cast<UInventoryUI>(
+		UIManageComponent->WidgetInstances.FindRef(EUIName::Popup_InventoryUI));
+}
+
+void AMainPlayerController::PopUI()
+{
+	UIManageComponent->PopWidget();
 }
 
 void AMainPlayerController::ShowItemInfo(const uint16 InventoryIndex) const

@@ -49,12 +49,19 @@ void UUIManageComponent::PushWidget(const EUIName Key)
 		return;
 	}
 
+	APlayerController* PC = Cast<APlayerController>(GetOwner());
+
+	if (WidgetLayers[Key] != EUILayer::Gameplay)
+	{
+		PC->SetShowMouseCursor(true);
+		PC->DisableInput(PC);
+	}
+
 	WidgetStack.Add(Key);
 	UUserWidget* NewWidget = WidgetInstances.FindRef(Key);
 
 	if (!NewWidget)
 	{
-		APlayerController* PC = Cast<APlayerController>(GetOwner());
 		NewWidget = CreateWidget(PC, WidgetClasses.FindRef(Key));
 		WidgetInstances.Add(Key, NewWidget);
 		RootHUD->AddWidgetToLayer(NewWidget, WidgetLayers[Key]);
@@ -78,7 +85,15 @@ void UUIManageComponent::PopWidget()
 	const EUIName LastWidgetName = WidgetStack.Last();
 	WidgetInstances[LastWidgetName]->SetVisibility(ESlateVisibility::Hidden);
 
+	APlayerController* PC = Cast<APlayerController>(GetOwner());
 	WidgetStack.Pop();
+
+	if (WidgetLayers[LastWidgetName] != EUILayer::Gameplay && WidgetLayers[
+		WidgetStack.Last()] == EUILayer::Gameplay)
+	{
+		PC->SetShowMouseCursor(false);
+		PC->EnableInput(PC);
+	}
 }
 
 bool UUIManageComponent::IsPlayerInLocalControlled() const

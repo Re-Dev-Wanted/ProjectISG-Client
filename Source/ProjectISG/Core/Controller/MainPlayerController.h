@@ -22,9 +22,11 @@ public:
 	void ToggleInventoryUI(const bool IsShow);
 	void ShowItemInfo(const uint16 InventoryIndex) const;
 	void RemoveItemInfo() const;
+	void PopUI();
 
 	TObjectPtr<UMainHUD> GetMainHUD() const;
-	GETTER(TObjectPtr<UInventoryUI>, InventoryUI)
+	TObjectPtr<UInventoryUI> GetInventoryUI() const;
+	GETTER(TObjectPtr<UUIManageComponent>, UIManageComponent)
 
 protected:
 	virtual void BeginPlay() override;
@@ -41,13 +43,5 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Options|UI",
 		meta = (AllowPrivateAccess = true))
 	TSubclassOf<URootHUD> RootHUDClass;
-
-
-	UPROPERTY(EditDefaultsOnly, Category = "Options|UI",
-		meta = (AllowPrivateAccess = true))
-	TSubclassOf<UInventoryUI> InventoryUIClass;
-
-	UPROPERTY()
-	TObjectPtr<UInventoryUI> InventoryUI;
 #pragma endregion
 };

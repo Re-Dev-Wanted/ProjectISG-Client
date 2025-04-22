@@ -4,7 +4,6 @@
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/HUD/MainHUD.h"
-#include "ProjectISG/Core/UI/HUD/Inventory/InventoryUI.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"

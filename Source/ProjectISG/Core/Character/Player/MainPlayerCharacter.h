@@ -6,7 +6,6 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerCharacter.generated.h"
 
-
 class UInteractionComponent;
 class UScreenShotComponent;
 class UPlayerInventoryComponent;
