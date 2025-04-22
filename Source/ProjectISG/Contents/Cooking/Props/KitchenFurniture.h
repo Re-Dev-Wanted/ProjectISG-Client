@@ -5,6 +5,7 @@
 #include "ProjectISG/Systems/Input/Interface/InteractionInterface.h"
 #include "KitchenFurniture.generated.h"
 
+class UCameraComponent;
 class UCookingComponent;
 
 UCLASS()
@@ -27,4 +28,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USceneComponent> KitchenStandPosition;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UCameraComponent> KitchenCameraComponent;
 };
