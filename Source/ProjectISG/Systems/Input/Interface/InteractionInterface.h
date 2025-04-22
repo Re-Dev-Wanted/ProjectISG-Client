@@ -17,11 +17,11 @@ class PROJECTISG_API IInteractionInterface
 public:
 	FORCEINLINE virtual FString GetDisplayText() const { return DisplayText; }
 
-	virtual void OnInteractive()
+	virtual void OnInteractive(AActor* Causer)
 	{
 	};
 
-	virtual void OnTouch()
+	virtual void OnTouch(AActor* Causer)
 	{
 	};
 

@@ -55,7 +55,7 @@ void UInteractionComponent::OnInteractive()
 		return;
 	}
 
-	Interaction->OnInteractive();
+	Interaction->OnInteractive(GetOwner());
 }
 
 void UInteractionComponent::OnTouch()
@@ -73,7 +73,7 @@ void UInteractionComponent::OnTouch()
 		return;
 	}
 
-	Interaction->OnTouch();
+	Interaction->OnTouch(GetOwner());
 }
 
 void UInteractionComponent::TickComponent(float DeltaTime,
