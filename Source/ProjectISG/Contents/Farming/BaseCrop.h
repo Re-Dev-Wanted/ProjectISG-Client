@@ -50,10 +50,13 @@ private:
 
 public:
 	UPROPERTY(EditAnywhere, Category = Grow)
-	int32 CropTotalGrowTime;
+	float CropTotalGrowTime = 1.f;
 
 	UPROPERTY(EditAnywhere, Category = Grow)
 	float CropStartGrowTime;
+
+	UPROPERTY(EditAnywhere, Category = Grow)
+	int32 CropStartGrowDay;	
 
 	UPROPERTY(Replicated, EditAnywhere, Category = Grow)
 	bool bIsMature = false;

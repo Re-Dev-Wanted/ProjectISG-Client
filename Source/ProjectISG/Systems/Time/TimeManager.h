@@ -57,6 +57,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ChangeTimeToCanSleepTime();
 
+	GETTER(int32, Day);
 	GETTER(int32, Hour);
 	GETTER(int32, Minute);
 	GETTER(float, Second);

@@ -38,8 +38,9 @@ void ABaseCrop::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("타임 매니저가 없습니다"));
 		return;
 	}
-	
-	CropStartGrowTime = (TimeManager->GetHour() * 3600 + TimeManager->GetMinute() * 60 + TimeManager->GetSecond());
+
+	CropStartGrowDay = TimeManager->GetDay();
+	CropStartGrowTime = (TimeManager->GetHour()) + (TimeManager->GetMinute() / 60) + (TimeManager->GetSecond() / 3600);
 
 	// 2초에 한번씩 다 자랐는지 체크
 	TWeakObjectPtr<ABaseCrop> weakThis = this;
@@ -70,18 +71,20 @@ void ABaseCrop::Tick(float DeltaTime)
 
 void ABaseCrop::CheckGrowTime()
 {
-	// 초단위
-	float CropCurrentGrowTime = TimeManager->GetHour() * 3600 + TimeManager->GetMinute() * 60 + TimeManager->GetSecond(); 
+	// 시간단위로 바꿔서 현재 월드의 시간을 구한다.
+	float CropCurrentGrowDay = TimeManager->GetDay() - CropStartGrowDay;
+	float CropCurrentGrowTime = (CropCurrentGrowDay * 24) + (TimeManager->GetHour()) + (TimeManager->GetMinute() / 60) + (TimeManager->GetSecond() / 3600);
+
+	// 현재 시간과 씨앗을 심은 시간을 빼서 현재 지난 시간을 구한다.
 	float CropGrowTime = CropCurrentGrowTime - CropStartGrowTime;
 
-	// 초단위를 3600으로 나누어 시간단위로 계산
-	if (CropGrowTime / 3600 >= CropTotalGrowTime)
+	// 농작물의 성장 시간 변수와 비교한다
+	if (CropGrowTime >= CropTotalGrowTime)
 	{
 		bIsMature = true;
 		UE_LOG(LogTemp, Warning, TEXT("다 자랐다"));
 		GetWorld()->GetTimerManager().ClearTimer(GrowTimerHandle);
 	}
-	
 }
 
 void ABaseCrop::CropBeginOverlap(UPrimitiveComponent* OverlappedComponent,
