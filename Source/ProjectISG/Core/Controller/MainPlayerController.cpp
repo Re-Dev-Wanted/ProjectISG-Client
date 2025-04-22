@@ -6,10 +6,9 @@
 #include "ProjectISG/Core/UI/Base/RootHUD.h"
 #include "ProjectISG/Core/UI/Base/UIManageComponent.h"
 #include "ProjectISG/Core/UI/HUD/MainHUD.h"
-// #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryUI.h"
+#include "ProjectISG/Core/UI/HUD/Inventory/Module/ItemInfo.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
-#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 AMainPlayerController::AMainPlayerController()
 {
@@ -20,14 +19,12 @@ AMainPlayerController::AMainPlayerController()
 void AMainPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-
 	ConsoleCommand(TEXT("showdebug abilitysystem"));
 
 	if (IsLocalController())
 	{
 		URootHUD* RootHUDInstance = CreateWidget<URootHUD>(this, RootHUDClass);
 		RootHUDInstance->AddToViewport();
-
 		UIManageComponent->Initialize(RootHUDInstance);
 	}
 }
@@ -36,7 +33,11 @@ void AMainPlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
-	GetPlayerState<AMainPlayerState>()->InitializeData();
+	if (IsLocalController())
+	{
+		GetPlayerState<AMainPlayerState>()->InitializeData();
+		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
+	}
 }
 
 void AMainPlayerController::OnPossess(APawn* InPawn)
@@ -46,6 +47,7 @@ void AMainPlayerController::OnPossess(APawn* InPawn)
 	if (HasAuthority())
 	{
 		GetPlayerState<AMainPlayerState>()->InitializeData();
+		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
 	}
 }
 
@@ -62,7 +64,10 @@ void AMainPlayerController::ToggleInventoryUI(const bool IsShow)
 	}
 	else
 	{
-		UIManageComponent->PopWidget();
+		if (UIManageComponent->GetLastStackUI() == EUIName::Popup_InventoryUI)
+		{
+			UIManageComponent->PopWidget();
+		}
 	}
 }
 
@@ -105,13 +110,17 @@ void AMainPlayerController::ShowItemInfo(const uint16 InventoryIndex) const
 		return;
 	}
 
-	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(
-		ItemMetaInfo.GetId());
+	UIManageComponent->PushWidget(EUIName::Modal_ItemInfo);
 
-	// ItemInfoWidget->ShowItemData(ItemMetaInfo, ItemInfoData);
+	UItemInfo* ItemInfoWidget = Cast<UItemInfo>(
+		UIManageComponent->WidgetInstances[EUIName::Modal_ItemInfo]);
+	ItemInfoWidget->ShowItemData(ItemMetaInfo);
 }
 
 void AMainPlayerController::RemoveItemInfo() const
 {
-	// ItemInfoWidget->RemoveItemWidget();
+	if (UIManageComponent->GetLastStackUI() == EUIName::Modal_ItemInfo)
+	{
+		UIManageComponent->PopWidget();
+	}
 }

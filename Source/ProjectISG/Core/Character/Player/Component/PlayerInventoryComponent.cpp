@@ -5,6 +5,7 @@
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/HUD/MainHUD.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
+#include "ProjectISG/Core/UI/HUD/Inventory/InventoryUI.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
@@ -144,17 +145,22 @@ void UPlayerInventoryComponent::UpdatePlayerInventoryUI()
 	const AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(
 		GetOwner());
 
-	// if (OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD())
-	// {
-	// 	OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD()->
-	// 	             GetMainSlotList()->UpdateItemData();
-	// }
-	//
-	// if (OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI())
-	// {
-	// 	OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI()->
-	// 	             GetMainSlotList()->UpdateItemData();
-	// 	OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI()->
-	// 	             GetInventoryList()->UpdateItemData();
-	// }
+	if (!OwnerPlayer->GetController<AMainPlayerController>())
+	{
+		return;
+	}
+
+	if (OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD())
+	{
+		OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD()->
+		             GetMainSlotList()->UpdateItemData();
+	}
+
+	if (OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI())
+	{
+		OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI()->
+		             GetMainSlotList()->UpdateItemData();
+		OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI()->
+		             GetInventoryList()->UpdateItemData();
+	}
 }

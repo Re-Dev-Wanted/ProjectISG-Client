@@ -18,6 +18,7 @@ public:
 
 	void PushWidget(const EUIName Key);
 	void PopWidget();
+	EUIName GetLastStackUI() const;
 
 	UPROPERTY()
 	TMap<EUIName, TObjectPtr<UUserWidget>> WidgetInstances;

@@ -49,6 +49,11 @@ void UUIManageComponent::PushWidget(const EUIName Key)
 		return;
 	}
 
+	if (!WidgetLayers.Find(Key))
+	{
+		return;
+	}
+
 	APlayerController* PC = Cast<APlayerController>(GetOwner());
 
 	if (WidgetLayers[Key] != EUILayer::Gameplay)
@@ -110,4 +115,9 @@ bool UUIManageComponent::IsPlayerInLocalControlled() const
 	}
 
 	return PC->IsLocalController();
+}
+
+EUIName UUIManageComponent::GetLastStackUI() const
+{
+	return WidgetStack.Last();
 }

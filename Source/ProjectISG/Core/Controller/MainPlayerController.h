@@ -5,6 +5,7 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerController.generated.h"
 
+enum class EUIName : uint32;
 class UUIManageComponent;
 class URootHUD;
 class UItemInfo;
