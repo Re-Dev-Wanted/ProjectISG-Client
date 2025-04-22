@@ -3,12 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "ProjectISG/GAS/Common/Object/BaseActor.h"
+#include "ProjectISG/Systems/Input/Interface/InteractionInterface.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "BaseCrop.generated.h"
 
 UCLASS()
-class PROJECTISG_API ABaseCrop : public AActor
+class PROJECTISG_API ABaseCrop : public ABaseActor, public IInteractionInterface
+
 {
 	GENERATED_BODY()
 
@@ -18,21 +20,23 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void GetLifetimeReplicatedProps(
+		TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void CheckGrowTime();
-	
-	UFUNCTION()
-	void CropBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	                      int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	virtual void OnInteractive(AActor* Causer) override;
 
 public:
 	GETTER_SETTER(int32, CropTotalGrowDay);
-	GETTER_SETTER(bool, bIsGetWater);
-	
+	GETTER_SETTER(int32, WaterDuration);
+	GETTER_SETTER(uint16, CropId);
+
 private:
+	void CheckGrowTime();
+
+	void CheckWaterDurationTime();
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
 		meta = (AllowPrivateAccess = true))
 	class UBoxComponent* Root;
@@ -44,10 +48,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = Settings,
 		meta = (AllowPrivateAccess = true))
 	uint16 CropId;
-	
-	UPROPERTY(EditAnywhere, Category = Grow,
-		meta = (AllowPrivateAccess = true))
+
+	UPROPERTY()
 	FTimerHandle GrowTimerHandle;
+
+	UPROPERTY()
+	FTimerHandle WaterTimerHandle;
 
 	UPROPERTY()
 	class ATimeManager* TimeManager = nullptr;
@@ -56,14 +62,23 @@ private:
 	float CropStartGrowTime;
 
 	UPROPERTY(EditAnywhere, Category = Grow)
-	int32 CropStartGrowDay;	
-	
+	int32 CropStartGrowDay;
+
+	UPROPERTY(EditAnywhere, Category = Grow)
+	int32 CropGrowTime = 0;
+
+	UPROPERTY(EditAnywhere, Category = Grow)
+	int32 CropRemainGrowTime = 0;
+
 	UPROPERTY(EditAnywhere, Category = Grow)
 	int32 CropTotalGrowDay = 0;
+
+	UPROPERTY(EditAnywhere, Category = Grow)
+	int32 WaterDuration = 0;
 
 	UPROPERTY(Replicated, EditAnywhere, Category = Grow)
 	bool bIsMature = false;
 
 	UPROPERTY(Replicated, EditAnywhere, Category = Grow)
-	bool bIsGetWater = false;	
+	bool bIsGetWater = false;
 };

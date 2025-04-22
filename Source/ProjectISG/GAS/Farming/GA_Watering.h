@@ -15,14 +15,16 @@ class PROJECTISG_API UGA_Watering : public UGA_BaseInputAbility
 	GENERATED_BODY()
 
 protected:
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+	                             const FGameplayAbilityActorInfo* ActorInfo,
+	                             const FGameplayAbilityActivationInfo
+	                             ActivationInfo,
+	                             const FGameplayEventData*
+	                             TriggerEventData) override;
 
-	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
-
-	UFUNCTION()
-	void FindSeedEndNotified();
-private:
-	UPROPERTY()
-	TObjectPtr<class UAT_Watering> AT_Watering;
-	
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle,
+	                        const FGameplayAbilityActorInfo* ActorInfo,
+	                        const FGameplayAbilityActivationInfo ActivationInfo,
+	                        bool bReplicateEndAbility,
+	                        bool bWasCancelled) override;
 };

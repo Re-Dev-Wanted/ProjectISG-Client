@@ -59,10 +59,10 @@ public:
 	GETTER(TObjectPtr<UInteractionComponent>, InteractionComponent)
 
 private:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	TObjectPtr<AActor> MainHandItem;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	uint16 MainHandItemId;
 
 #pragma region ActorComponent

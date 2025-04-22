@@ -30,8 +30,12 @@ void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				player->GetMainHandItemId());
 			FVector SpawnLocation = player->GetActorLocation();
 			FRotator SpawnRotation = FRotator::ZeroRotator;
-			GetWorld()->SpawnActor<ABaseCrop>(itemData.GetPlaceItemActor(),
+			ABaseCrop* Crop = GetWorld()->SpawnActor<ABaseCrop>(itemData.GetPlaceItemActor(),
 			                                  SpawnLocation, SpawnRotation);
+			if (Crop)
+			{
+				Crop->SetCropId(player->GetMainHandItemId());
+			}
 			ps->GetInventoryComponent()->RemoveItem(
 				player->GetMainHandItemId(), 1);
 		}
@@ -40,7 +44,6 @@ void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		UE_LOG(LogTemp, Warning, TEXT("doesn't work"));
 	}
-
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }

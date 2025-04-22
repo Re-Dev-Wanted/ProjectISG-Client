@@ -3,10 +3,16 @@
 
 #include "BaseCrop.h"
 
+#include "AbilitySystemComponent.h"
+#include "GameplayTagContainer.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
+#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/Time/TimeManager.h"
 
 
@@ -21,10 +27,11 @@ ABaseCrop::ABaseCrop()
 
 	Root = CreateDefaultSubobject<UBoxComponent>(TEXT("Root"));
 	SetRootComponent(Root);
-	Root->SetGenerateOverlapEvents(true);
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
+
+	CanInteractive = true;
 }
 
 // Called when the game starts or when spawned
@@ -32,27 +39,17 @@ void ABaseCrop::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TimeManager = Cast<ATimeManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ATimeManager::StaticClass()));
+	TimeManager = Cast<ATimeManager>(
+		UGameplayStatics::GetActorOfClass(GetWorld(),
+		                                  ATimeManager::StaticClass()));
 	if (!TimeManager)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("타임 매니저가 없습니다"));
 		return;
 	}
 
-	CropStartGrowDay = TimeManager->GetDay();
-	CropStartGrowTime = (TimeManager->GetHour()) + (TimeManager->GetMinute() / 60) + (TimeManager->GetSecond() / 3600);
-
-	// 2초에 한번씩 다 자랐는지 체크
-	TWeakObjectPtr<ABaseCrop> weakThis = this;
-	GetWorld()->GetTimerManager().SetTimer(GrowTimerHandle, [weakThis]()
-	{
-		if (weakThis.IsValid())
-		{
-			weakThis.Get()->CheckGrowTime();
-		}
-	}, 2.f, true);
-
-	Root->OnComponentBeginOverlap.AddDynamic(this, &ABaseCrop::CropBeginOverlap);
+	DisplayText = TEXT("물주기");
+	CropRemainGrowTime = CropTotalGrowDay * 24;
 }
 
 void ABaseCrop::GetLifetimeReplicatedProps(
@@ -68,39 +65,120 @@ void ABaseCrop::GetLifetimeReplicatedProps(
 void ABaseCrop::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (bIsGetWater && !bIsMature)
+	{
+		CheckGrowTime();
+	}
+
+	if (bIsGetWater)
+	{
+		CheckWaterDurationTime();
+	}
 }
 
 void ABaseCrop::CheckGrowTime()
 {
+	if (bIsMature)
+	{
+		return;
+	}
+	if (bIsGetWater == false)
+	{
+		return;
+	}
+
 	// 시간단위로 바꿔서 현재 월드의 시간을 구한다.
-	float CropCurrentGrowDay = TimeManager->GetDay() - CropStartGrowDay;
-	float CropCurrentGrowTime = (CropCurrentGrowDay * 24) + (TimeManager->GetHour()) + (TimeManager->GetMinute() / 60) + (TimeManager->GetSecond() / 3600);
+	int32 CropCurrentGrowDay = TimeManager->GetDay() - CropStartGrowDay;
+	int32 CropCurrentGrowTime = (CropCurrentGrowDay * 24) + (TimeManager->
+		GetHour()) + (TimeManager->GetMinute() / 60) + (TimeManager->GetSecond()
+		/ 3600);
+	UE_LOG(LogTemp, Warning, TEXT("cropcurrentgrowtime : %d"),
+	       CropCurrentGrowTime);
+
 
 	// 현재 시간과 씨앗을 심은 시간을 빼서 현재 지난 시간을 구한다.
-	float CropGrowTime = CropCurrentGrowTime - CropStartGrowTime;
+	CropGrowTime = CropCurrentGrowTime - CropStartGrowTime;
+	UE_LOG(LogTemp, Warning, TEXT("cropgrowtime : %d"), CropGrowTime);
+
 
 	// 농작물의 성장 시간 변수와 비교한다
-	if (CropGrowTime >= CropTotalGrowDay * 24.f)
+	if (CropGrowTime >= CropRemainGrowTime)
 	{
-		bIsMature = true;
 		UE_LOG(LogTemp, Warning, TEXT("다 자랐다"));
+		bIsMature = true;
+		DisplayText = TEXT("수확하기");
 		SetActorScale3D(FVector(2.0f));
-		GetWorld()->GetTimerManager().ClearTimer(GrowTimerHandle);
 	}
 }
 
-void ABaseCrop::CropBeginOverlap(UPrimitiveComponent* OverlappedComponent,
-	AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
-	bool bFromSweep, const FHitResult& SweepResult)
+void ABaseCrop::CheckWaterDurationTime()
 {
-	if (bIsMature == false) return;
+	// 물을 준 후 부터 작물이 자라기 시작하기에 물 준후 지난시간과 작물의 총 성장시간은 동일하다.
 
-	AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(OtherActor);
-	if (player)
+	if (CropGrowTime >= WaterDuration)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("캐짐"));
+		bIsGetWater = false;
+		CanInteractive = true;
+		CropRemainGrowTime -= CropGrowTime;
+		UE_LOG(LogTemp, Warning, TEXT("cropremaingrowtime : %d"),
+		       CropRemainGrowTime);
+
+		CropGrowTime = 0.f;
+	}
+}
+
+void ABaseCrop::OnInteractive(AActor* Causer)
+{
+	IInteractionInterface::OnInteractive(Causer);
+
+	bIsGetWater = true;
+	CanInteractive = false;
+
+	// 물주기 시작
+	CropStartGrowDay = TimeManager->GetDay();
+	CropStartGrowTime = (TimeManager->GetHour()) + (TimeManager->GetMinute() /
+		60) + (TimeManager->GetSecond() / 3600);
+
+	Causer->SetActorLocation(GetActorLocation());
+
+	FGameplayTagContainer ActivateTag;
+	if (bIsMature)
+	{
+		ActivateTag.AddTag(ISGGameplayTags::Farming_Active_Harvest);
+		const AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(Causer);
+		if (player)
+		{
+			const AMainPlayerState* ps = Cast<AMainPlayerState>(player->GetPlayerState());
+
+			if (ps)
+			{
+				ps->GetInventoryComponent()->AddItem(UItemManager::GetInitialItemMetaDataById(CropId));
+			}
+			
+			// TArray<UGameplayAbility*> ActiveAbilities;
+			// for (FGameplayAbilitySpec& Spec : player->GetAbilitySystemComponent()->GetActivatableAbilities())
+			// {
+			// 	if (Spec.IsActive())
+			// 	{
+			// 		Cast<UGA_Harvest>(Spec.Ability)->CropId = this->CropId;
+			// 		break;
+			// 	}
+			// }
+			
+			player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
+				ActivateTag);
+		}
 		Destroy();
 	}
+	else
+	{
+		ActivateTag.AddTag(ISGGameplayTags::Farming_Active_Watering);
+		const AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(Causer);
+		if (player)
+		{
+			player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
+				ActivateTag);
+		}
+	}
 }
-
-
