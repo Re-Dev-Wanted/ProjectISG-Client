@@ -22,7 +22,11 @@ void AMainPlayerController::BeginPlay()
 	if (IsLocalController())
 	{
 		UIManageComponent->Initialize();
-		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
+
+		if (HasAuthority())
+		{
+			UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
+		}
 	}
 }
 
@@ -30,19 +34,10 @@ void AMainPlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
-	if (IsLocalController())
+	GetPlayerState<AMainPlayerState>()->InitializeData();
+	if (!HasAuthority() && IsLocalController())
 	{
-		GetPlayerState<AMainPlayerState>()->InitializeData();
-	}
-}
-
-void AMainPlayerController::OnPossess(APawn* InPawn)
-{
-	Super::OnPossess(InPawn);
-
-	if (IsLocalController() && HasAuthority())
-	{
-		GetPlayerState<AMainPlayerState>()->InitializeData();
+		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
 	}
 }
 

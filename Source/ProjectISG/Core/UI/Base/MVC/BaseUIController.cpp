@@ -53,7 +53,7 @@ void UBaseUIController::BindInputAction(UEnhancedInputComponent* InputComponent)
 
 void UBaseUIController::AppearUI()
 {
-	View->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	View->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UBaseUIController::DisappearUI()
