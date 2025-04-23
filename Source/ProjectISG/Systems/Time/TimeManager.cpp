@@ -148,19 +148,23 @@ void ATimeManager::StopTime(bool value)
 	if (value)
 	{
 		TimeStop = true;
+		TimeStoppedTime = Hour;
+		UE_LOG(LogTemp, Warning, TEXT("시간 정지"));
 	}
 	else
 	{
 		TimeStop = false;
+		UE_LOG(LogTemp, Warning, TEXT("시간 정지 해제"));
 	}
 }
 
 void ATimeManager::Sleep()
 {
-	if (CheckAllPlayerIsLieOnBed() && Hour >= 9)
+	if (CheckAllPlayerIsLieOnBed() && Hour >= CanSleepTime)
 	{
 		ChangeAllPlayerSleepValue(true);
 		bSleepCinematicStart = true;
+		StopTime(true);
 	}
 }
 
@@ -169,6 +173,9 @@ void ATimeManager::ForceSleep()
 	// 강제 수면시간 저녁 11시로 하드 코딩
 	if (Hour >= 23)
 	{
+		// 시간을 멈춘다
+		StopTime(true);
+		
 		// 침대에 각 플레이어를 배정 시킨다
 		AssignBedEachPlayer();
 
@@ -180,6 +187,7 @@ void ATimeManager::ForceSleep()
 
 		// 시네마틱을 진행시킨다.
 		bSleepCinematicStart = true;
+
 	}
 }
 
@@ -188,6 +196,8 @@ void ATimeManager::SleepCinematic(float DeltaTime)
 	CinematicElapsedTime += DeltaTime;
 	if (CinematicElapsedTime >= CinematicEndTime)
 	{
+		StopTime(false);
+		AddSleepTimeToCrop.Broadcast();
 		ChangeAllPlayerSleepValue(false);
 		bSleepCinematicStart = false;
 		Hour = 6;

@@ -33,6 +33,7 @@ void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			FItemInfoData itemData = UItemManager::GetItemInfoById(
 				player->GetPlayerInventoryComponent()->GetCurrentSlotIndex());
 			FVector SpawnLocation = player->GetActorLocation();
+			SpawnLocation.Z = 0.f;
 			FRotator SpawnRotation = FRotator::ZeroRotator;
 			ABaseCrop* Crop = GetWorld()->SpawnActor<ABaseCrop>(itemData.GetPlaceItemActor(), SpawnLocation, SpawnRotation);
 			if (Crop)

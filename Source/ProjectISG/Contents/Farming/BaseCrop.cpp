@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
@@ -30,6 +31,11 @@ ABaseCrop::ABaseCrop()
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
+	Mesh->SetCollisionProfileName(TEXT("NoCollision"));
+
+	InteractionPos = CreateDefaultSubobject<USceneComponent>(TEXT("InteractionPos"));
+	InteractionPos->SetupAttachment(Root);
+
 
 	CanInteractive = true;
 }
@@ -50,6 +56,8 @@ void ABaseCrop::BeginPlay()
 
 	DisplayText = TEXT("물주기");
 	CropRemainGrowTime = CropTotalGrowDay * 24;
+
+	TimeManager->AddSleepTimeToCrop.AddDynamic(this, &ThisClass::UpdateGrowTimeBySleep);
 }
 
 void ABaseCrop::GetLifetimeReplicatedProps(
@@ -93,13 +101,11 @@ void ABaseCrop::CheckGrowTime()
 	int32 CropCurrentGrowTime = (CropCurrentGrowDay * 24) + (TimeManager->
 		GetHour()) + (TimeManager->GetMinute() / 60) + (TimeManager->GetSecond()
 		/ 3600);
-	UE_LOG(LogTemp, Warning, TEXT("cropcurrentgrowtime : %d"),
-	       CropCurrentGrowTime);
 
 
 	// 현재 시간과 씨앗을 심은 시간을 빼서 현재 지난 시간을 구한다.
 	CropGrowTime = CropCurrentGrowTime - CropStartGrowTime;
-	UE_LOG(LogTemp, Warning, TEXT("cropgrowtime : %d"), CropGrowTime);
+	UE_LOG(LogTemp, Warning, TEXT("CropGrowTime : %d"), CropGrowTime);
 
 
 	// 농작물의 성장 시간 변수와 비교한다
@@ -142,7 +148,7 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 	CropStartGrowTime = (TimeManager->GetHour()) + (TimeManager->GetMinute() /
 		60) + (TimeManager->GetSecond() / 3600);
 
-	Causer->SetActorLocation(GetActorLocation());
+	Causer->SetActorLocation(InteractionPos->GetComponentLocation());
 
 	FGameplayTagContainer ActivateTag;
 	if (bIsMature)
@@ -171,5 +177,36 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 			player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
 				ActivateTag);
 		}
+	}
+}
+
+void ABaseCrop::UpdateGrowTimeBySleep()
+{
+	if (bIsGetWater == false) return;
+
+	// 총 수면 시간 체크 (24시간에서 자기 시작한 시간을 뺀 후 기상시간인 6시를 더해준다)
+	int32 TotalSleepTime = (24 - TimeManager->GetTimeStoppedTime()) + 6;
+	// 작물의 총 성장시간 체크
+
+	if (CropRemainGrowTime > TotalSleepTime)
+	{
+		// water duration과 물 준후의 지난 시간 체크
+		int32 RemainWaterDuration = WaterDuration - CropGrowTime;
+		if (RemainWaterDuration <= TotalSleepTime)
+		{
+			bIsGetWater = false;
+			CanInteractive = true;
+			CropRemainGrowTime -= WaterDuration;
+			UE_LOG(LogTemp, Warning, TEXT("CropRemainGrowTime : %d"), CropRemainGrowTime);
+			CropGrowTime = 0.f;
+		}
+		else
+		{
+			CropGrowTime += TotalSleepTime;
+		}
+	}
+	else
+	{
+		bIsMature = true;
 	}
 }

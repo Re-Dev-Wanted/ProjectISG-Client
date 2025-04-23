@@ -8,6 +8,7 @@
 #include "TimeManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSleep);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAddSleepTimeToCrop);
 
 UCLASS()
 class PROJECTISG_API ATimeManager : public AActor
@@ -61,6 +62,7 @@ public:
 	GETTER(int32, Hour);
 	GETTER(int32, Minute);
 	GETTER(float, Second);
+	GETTER(int32, TimeStoppedTime);
 
 private:
 #pragma region Sky
@@ -110,6 +112,7 @@ private:
 		meta = (AllowPrivateAccess = "true"), Category = "Time")
 	TArray<int32> DaysInMonths;
 
+	// 5000이면 1초에 1시간 정도
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = "true"), Category = "Time")
 	int32 SpeedOfTime = 1;
@@ -125,6 +128,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = "true"), Category = "Time")
 	int32 CanSleepTime = 9;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Time")
+	int32 TimeStoppedTime = 0;
 #pragma endregion
 
 #pragma region Sleep
@@ -145,4 +152,7 @@ private:
 public:
 	UPROPERTY()
 	FSleep SleepDelegate;
+
+	UPROPERTY()
+	FAddSleepTimeToCrop AddSleepTimeToCrop;
 };

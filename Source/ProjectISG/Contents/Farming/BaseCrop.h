@@ -27,6 +27,8 @@ protected:
 
 	virtual void OnInteractive(AActor* Causer) override;
 
+	UFUNCTION()
+	void UpdateGrowTimeBySleep();
 public:
 	GETTER_SETTER(int32, CropTotalGrowDay);
 	GETTER_SETTER(int32, WaterDuration);
@@ -37,6 +39,8 @@ private:
 
 	void CheckWaterDurationTime();
 
+private:
+#pragma region Settings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
 		meta = (AllowPrivateAccess = true))
 	class UBoxComponent* Root;
@@ -45,19 +49,19 @@ private:
 		meta = (AllowPrivateAccess = true))
 	class UStaticMeshComponent* Mesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
+	meta = (AllowPrivateAccess = true))
+	class USceneComponent* InteractionPos;
+	
 	UPROPERTY(EditAnywhere, Category = Settings,
 		meta = (AllowPrivateAccess = true))
 	uint16 CropId;
-
-	UPROPERTY()
-	FTimerHandle GrowTimerHandle;
-
-	UPROPERTY()
-	FTimerHandle WaterTimerHandle;
-
+	
 	UPROPERTY()
 	class ATimeManager* TimeManager = nullptr;
+#pragma endregion 
 
+#pragma region Grow
 	UPROPERTY(EditAnywhere, Category = Grow)
 	float CropStartGrowTime;
 
@@ -81,4 +85,5 @@ private:
 
 	UPROPERTY(Replicated, EditAnywhere, Category = Grow)
 	bool bIsGetWater = false;
+#pragma endregion 
 };
