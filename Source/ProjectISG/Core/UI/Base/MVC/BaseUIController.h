@@ -17,7 +17,6 @@ public:
 	virtual void InitializeController(UBaseUIView* NewView,
 	                                  UBaseUIModel* NewModel);
 
-	void AddViewToViewport(const uint16 ZIndex) const;
 	GETTER(TObjectPtr<UBaseUIView>, View)
 
 protected:
