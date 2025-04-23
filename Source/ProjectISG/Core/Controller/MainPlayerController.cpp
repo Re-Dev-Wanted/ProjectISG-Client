@@ -1,11 +1,11 @@
 ﻿#include "MainPlayerController.h"
 
-#include "Blueprint/UserWidget.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
-#include "ProjectISG/Core/UI/HUD/MainHUD.h"
-#include "ProjectISG/Core/UI/HUD/Inventory/InventoryUI.h"
+#include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
+#include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
+#include "ProjectISG/Core/UI/Popup/Inventory/UI/UIC_InventoryUI.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 
 AMainPlayerController::AMainPlayerController()
@@ -66,26 +66,32 @@ void AMainPlayerController::ToggleInventoryUI(const bool IsShow)
 	}
 }
 
-TObjectPtr<UMainHUD> AMainPlayerController::GetMainHUD() const
+TObjectPtr<UUIC_MainHUD> AMainPlayerController::GetMainHUD() const
 {
-	if (!UIManageComponent->WidgetInstances.FindRef(EUIName::Gameplay_MainHUD))
+	// 컨트롤러가 없는 경우에만 만들기
+	if (!UIManageComponent->ControllerInstances.FindRef(
+		EUIName::Gameplay_MainHUD))
 	{
 		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
 	}
 
-	return Cast<UMainHUD>(
-		UIManageComponent->WidgetInstances.FindRef(EUIName::Gameplay_MainHUD));
+	return Cast<UUIC_MainHUD>(
+		UIManageComponent->ControllerInstances.FindRef(
+			EUIName::Gameplay_MainHUD));
 }
 
-TObjectPtr<UInventoryUI> AMainPlayerController::GetInventoryUI() const
+TObjectPtr<UUIC_InventoryUI> AMainPlayerController::GetInventoryUI() const
 {
-	if (!UIManageComponent->WidgetInstances.FindRef(EUIName::Popup_InventoryUI))
+	// 컨트롤러가 없는 경우에만 만들기
+	if (!UIManageComponent->ControllerInstances.FindRef(
+		EUIName::Popup_InventoryUI))
 	{
 		UIManageComponent->PushWidget(EUIName::Popup_InventoryUI);
 	}
 
-	return Cast<UInventoryUI>(
-		UIManageComponent->WidgetInstances.FindRef(EUIName::Popup_InventoryUI));
+	return Cast<UUIC_InventoryUI>(
+		UIManageComponent->ControllerInstances.FindRef(
+			EUIName::Popup_InventoryUI));
 }
 
 void AMainPlayerController::PopUI()

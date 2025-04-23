@@ -12,11 +12,12 @@ class PROJECTISG_API UBaseUIView : public UUserWidget
 {
 	GENERATED_BODY()
 
+public:
+	GETTER_EDITABLE(TObjectPtr<UBaseUIController>, Controller)
+
 protected:
 	virtual void NativeConstruct() override;
-
 	GETTER_EDITABLE(TObjectPtr<UBaseUIModel>, Model)
-	GETTER_EDITABLE(TObjectPtr<UBaseUIController>, Controller)
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Options",

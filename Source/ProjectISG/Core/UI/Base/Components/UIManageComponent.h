@@ -1,19 +1,20 @@
-﻿#pragma once
+﻿// UIManageComponent.h
+#pragma once
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "ProjectISG/Core/UI/UIEnum.h"
 #include "UIManageComponent.generated.h"
 
-class URootHUD;
-enum class EUILayer : uint8;
-enum class EUIName : uint32;
+class UBaseUIView;
+class UBaseUIController;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTISG_API UUIManageComponent : public UActorComponent
 {
-public:
 	GENERATED_BODY()
 
+public:
 	void Initialize();
 
 	void PushWidget(const EUIName Key);
@@ -21,12 +22,12 @@ public:
 	EUIName GetLastStackUI() const;
 
 	UPROPERTY()
-	TMap<EUIName, TObjectPtr<UUserWidget>> WidgetInstances;
+	TMap<EUIName, TObjectPtr<UBaseUIController>> ControllerInstances;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Options|UI",
-		meta = (AllowPrivateAccess = true))
-	TMap<EUIName, TSubclassOf<UUserWidget>> WidgetClasses;
+		meta=(AllowPrivateAccess = true))
+	TMap<EUIName, TSubclassOf<UBaseUIView>> ViewClasses;
 
 	UPROPERTY()
 	TMap<EUIName, EUILayer> WidgetLayers;

@@ -6,11 +6,12 @@
 #include "MainPlayerController.generated.h"
 
 enum class EUIName : uint32;
+
 class UUIManageComponent;
-class URootHUD;
 class UItemInfo;
-class UMainHUD;
-class UInventoryUI;
+
+class UUIC_InventoryUI;
+class UUIC_MainHUD;
 
 UCLASS()
 class PROJECTISG_API AMainPlayerController : public APlayerController
@@ -25,8 +26,10 @@ public:
 	void RemoveItemInfo() const;
 	void PopUI();
 
-	TObjectPtr<UMainHUD> GetMainHUD() const;
-	TObjectPtr<UInventoryUI> GetInventoryUI() const;
+
+	TObjectPtr<UUIC_MainHUD> GetMainHUD() const;
+
+	TObjectPtr<UUIC_InventoryUI> GetInventoryUI() const;
 	GETTER(TObjectPtr<UUIManageComponent>, UIManageComponent)
 
 protected:

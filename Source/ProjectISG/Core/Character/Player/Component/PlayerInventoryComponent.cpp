@@ -1,11 +1,12 @@
 ﻿#include "PlayerInventoryComponent.h"
 #include "EnhancedInputComponent.h"
+
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
 #include "ProjectISG/Core/UI/HUD/MainHUD.h"
-#include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
-#include "ProjectISG/Core/UI/HUD/Inventory/InventoryUI.h"
+#include "ProjectISG/Core/UI/Popup/Inventory/UI/UIC_InventoryUI.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
@@ -122,8 +123,7 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 		return;
 	}
 
-	PC->GetMainHUD()->GetMainSlotList()->SelectSlot(
-		CurrentSlotIndex, NewIndex);
+	PC->GetMainHUD()->SelectSlot(CurrentSlotIndex, NewIndex);
 
 	CurrentSlotIndex = NewIndex;
 }
@@ -145,22 +145,25 @@ void UPlayerInventoryComponent::UpdatePlayerInventoryUI()
 	const AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(
 		GetOwner());
 
-	if (!OwnerPlayer->GetController<AMainPlayerController>())
+	const AMainPlayerController* PC = OwnerPlayer->GetController<
+		AMainPlayerController>();
+
+	if (!PC)
 	{
 		return;
 	}
 
-	if (OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD())
+	if (PC->GetMainHUD())
 	{
-		OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD()->
-		             GetMainSlotList()->UpdateItemData();
+		PC->GetMainHUD()->
+		    UpdateMainHotSlot();
 	}
 
-	if (OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI())
+	if (PC->GetInventoryUI())
 	{
+		PC->GetInventoryUI()->
+		    UpdateMainSlotItemData();
 		OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI()->
-		             GetMainSlotList()->UpdateItemData();
-		OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI()->
-		             GetInventoryList()->UpdateItemData();
+		             UpdateInventorySlotItemData();
 	}
 }

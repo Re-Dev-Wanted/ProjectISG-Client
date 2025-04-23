@@ -18,10 +18,10 @@ public:
 	                                  UBaseUIModel* NewModel);
 
 	void AddViewToViewport(const uint16 ZIndex) const;
+	GETTER(TObjectPtr<UBaseUIView>, View)
 
 protected:
 	GETTER_EDITABLE(TObjectPtr<UBaseUIModel>, Model)
-	GETTER_EDITABLE(TObjectPtr<UBaseUIView>, View)
 
 private:
 	UPROPERTY()
