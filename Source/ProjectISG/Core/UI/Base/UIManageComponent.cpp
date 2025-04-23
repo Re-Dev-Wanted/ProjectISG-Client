@@ -1,18 +1,15 @@
 ﻿#include "UIManageComponent.h"
 
-#include "RootHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 
-void UUIManageComponent::Initialize(URootHUD* NewRootHUD)
+void UUIManageComponent::Initialize()
 {
 	if (!IsPlayerInLocalControlled())
 	{
 		return;
 	}
-
-	RootHUD = NewRootHUD;
 
 	for (auto WidgetClass : WidgetClasses)
 	{
@@ -62,6 +59,12 @@ void UUIManageComponent::PushWidget(const EUIName Key)
 		PC->DisableInput(PC);
 	}
 
+	if (!WidgetInstances.IsEmpty())
+	{
+		WidgetInstances[WidgetStack.Last()]->SetVisibility(
+			ESlateVisibility::Hidden);
+	}
+
 	WidgetStack.Add(Key);
 	UUserWidget* NewWidget = WidgetInstances.FindRef(Key);
 
@@ -69,7 +72,7 @@ void UUIManageComponent::PushWidget(const EUIName Key)
 	{
 		NewWidget = CreateWidget(PC, WidgetClasses.FindRef(Key));
 		WidgetInstances.Add(Key, NewWidget);
-		RootHUD->AddWidgetToLayer(NewWidget, WidgetLayers[Key]);
+		NewWidget->AddToViewport(static_cast<int>(WidgetLayers[Key]));
 	}
 
 	NewWidget->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
@@ -90,9 +93,18 @@ void UUIManageComponent::PopWidget()
 	const EUIName LastWidgetName = WidgetStack.Last();
 	WidgetInstances[LastWidgetName]->SetVisibility(ESlateVisibility::Hidden);
 
-	APlayerController* PC = Cast<APlayerController>(GetOwner());
+	// 스택 제거 이후에 대한 동작 처리
 	WidgetStack.Pop();
 
+	if (WidgetStack.IsEmpty())
+	{
+		return;
+	}
+
+	WidgetInstances[WidgetStack.Last()]->SetVisibility(
+		ESlateVisibility::SelfHitTestInvisible);
+
+	APlayerController* PC = Cast<APlayerController>(GetOwner());
 	if (WidgetLayers[LastWidgetName] != EUILayer::Gameplay && WidgetLayers[
 		WidgetStack.Last()] == EUILayer::Gameplay)
 	{

@@ -39,10 +39,4 @@ protected:
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UUIManageComponent> UIManageComponent;
-
-#pragma region UI
-	UPROPERTY(EditDefaultsOnly, Category = "Options|UI",
-		meta = (AllowPrivateAccess = true))
-	TSubclassOf<URootHUD> RootHUDClass;
-#pragma endregion
 };

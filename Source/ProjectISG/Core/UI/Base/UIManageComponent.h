@@ -14,7 +14,7 @@ class PROJECTISG_API UUIManageComponent : public UActorComponent
 public:
 	GENERATED_BODY()
 
-	void Initialize(URootHUD* NewRootHUD);
+	void Initialize();
 
 	void PushWidget(const EUIName Key);
 	void PopWidget();
@@ -33,9 +33,6 @@ private:
 
 	UPROPERTY()
 	TArray<EUIName> WidgetStack;
-
-	UPROPERTY()
-	TObjectPtr<URootHUD> RootHUD;
 
 	bool IsPlayerInLocalControlled() const;
 };
