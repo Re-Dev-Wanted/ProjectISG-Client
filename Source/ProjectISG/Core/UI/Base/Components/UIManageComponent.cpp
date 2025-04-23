@@ -71,11 +71,11 @@ void UUIManageComponent::PushWidget(const EUIName Key)
 		ControllerInstances.Add(Key, NewView->GetController());
 	}
 
-	// UBaseUIView* CurrentView = ControllerInstances[Key]->GetView();
-	// if (CurrentView)
-	// {
-	// 	CurrentView->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	// }
+	UBaseUIView* CurrentView = ControllerInstances[Key]->GetView();
+	if (CurrentView)
+	{
+		CurrentView->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+	}
 }
 
 void UUIManageComponent::PopWidget()
