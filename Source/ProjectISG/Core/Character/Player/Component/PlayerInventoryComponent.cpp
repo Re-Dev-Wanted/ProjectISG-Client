@@ -105,21 +105,10 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 	{
 		Player->GetPlacementIndicatorComponent()->OnActivate(
 			ItemInfoData.GetShowItemActor());
-		Player->SetMainHandItem(nullptr);
 	}
 	else
 	{
 		Player->GetPlacementIndicatorComponent()->OnDeactivate();
-		AActor* SpawnActor = GetWorld()->SpawnActor(
-			ItemInfoData.GetShowItemActor());
-		if (SpawnActor)
-		{
-			Player->SetMainHandItem(SpawnActor);
-			Player->SetMainHandItemId(ItemId);
-			SpawnActor->AttachToComponent(Player->GetMesh(),
-			                              FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-			                              TEXT("ItemSocket"));
-		}
 	}
 
 	const AMainPlayerController* PC = Cast<AMainPlayerController>(

@@ -132,6 +132,8 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 {
 	IInteractionInterface::OnInteractive(Causer);
 
+	if (CanInteractive == false) return;
+
 	bIsGetWater = true;
 	CanInteractive = false;
 
@@ -155,17 +157,6 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 			{
 				ps->GetInventoryComponent()->AddItem(UItemManager::GetInitialItemMetaDataById(CropId));
 			}
-			
-			// TArray<UGameplayAbility*> ActiveAbilities;
-			// for (FGameplayAbilitySpec& Spec : player->GetAbilitySystemComponent()->GetActivatableAbilities())
-			// {
-			// 	if (Spec.IsActive())
-			// 	{
-			// 		Cast<UGA_Harvest>(Spec.Ability)->CropId = this->CropId;
-			// 		break;
-			// 	}
-			// }
-			
 			player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
 				ActivateTag);
 		}

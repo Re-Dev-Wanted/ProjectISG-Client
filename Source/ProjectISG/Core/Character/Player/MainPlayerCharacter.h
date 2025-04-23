@@ -50,8 +50,6 @@ protected:
 public:
 	GETTER_SETTER(bool, bIsSleep);
 	GETTER_SETTER(bool, bLieOnBed);
-	GETTER_SETTER(TObjectPtr<AActor>, MainHandItem)
-	GETTER_SETTER(uint16, MainHandItemId)
 	
 	GETTER(TObjectPtr<UPlacementIndicatorComponent>,
 	       PlacementIndicatorComponent)
@@ -59,12 +57,6 @@ public:
 	GETTER(TObjectPtr<UInteractionComponent>, InteractionComponent)
 
 private:
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<AActor> MainHandItem;
-
-	UPROPERTY(EditAnywhere)
-	uint16 MainHandItemId;
-
 #pragma region ActorComponent
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent;

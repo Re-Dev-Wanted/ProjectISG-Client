@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "ProjectISG/Utils/MacroUtil.h"
 #include "PlayerInventoryComponent.generated.h"
 
 struct FInputActionValue;
@@ -20,6 +21,8 @@ public:
 	bool RemoveItemCurrentSlotIndex(const int32 Count);
 
 	void InitializePlayerInventory();
+
+	GETTER(int, CurrentSlotIndex);
 
 protected:
 	virtual void BeginPlay() override;
