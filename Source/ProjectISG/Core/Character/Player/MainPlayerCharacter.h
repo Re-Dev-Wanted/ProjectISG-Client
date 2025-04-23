@@ -34,6 +34,8 @@ public:
 
 	GETTER(TObjectPtr<UCameraComponent>, CameraComponent);
 
+	GETTER(TObjectPtr<UInputMappingContext>, DefaultMappingContext)
+
 protected:
 	virtual void BeginPlay() override;
 
