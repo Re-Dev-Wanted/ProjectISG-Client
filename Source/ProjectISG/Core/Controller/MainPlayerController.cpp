@@ -46,30 +46,11 @@ void AMainPlayerController::OnPossess(APawn* InPawn)
 	}
 }
 
-void AMainPlayerController::ToggleInventoryUI(const bool IsShow)
-{
-	if (!IsLocalController())
-	{
-		return;
-	}
-
-	if (IsShow)
-	{
-		UIManageComponent->PushWidget(EUIName::Popup_InventoryUI);
-	}
-	else
-	{
-		if (UIManageComponent->GetLastStackUI() == EUIName::Popup_InventoryUI)
-		{
-			UIManageComponent->PopWidget();
-		}
-	}
-}
-
 TObjectPtr<UUIC_MainHUD> AMainPlayerController::GetMainHUD() const
 {
 	// 컨트롤러가 없는 경우에만 만들기
 	if (!UIManageComponent->ControllerInstances.FindRef(
+		EUIName::Gameplay_MainHUD) && UIManageComponent->HasViewUI(
 		EUIName::Gameplay_MainHUD))
 	{
 		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
@@ -84,6 +65,7 @@ TObjectPtr<UUIC_InventoryUI> AMainPlayerController::GetInventoryUI() const
 {
 	// 컨트롤러가 없는 경우에만 만들기
 	if (!UIManageComponent->ControllerInstances.FindRef(
+		EUIName::Popup_InventoryUI) && UIManageComponent->HasViewUI(
 		EUIName::Popup_InventoryUI))
 	{
 		UIManageComponent->PushWidget(EUIName::Popup_InventoryUI);
@@ -97,6 +79,16 @@ TObjectPtr<UUIC_InventoryUI> AMainPlayerController::GetInventoryUI() const
 void AMainPlayerController::PopUI()
 {
 	UIManageComponent->PopWidget();
+}
+
+void AMainPlayerController::OpenInventory()
+{
+	if (!IsLocalController())
+	{
+		return;
+	}
+
+	UIManageComponent->PushWidget(EUIName::Popup_InventoryUI);
 }
 
 void AMainPlayerController::ShowItemInfo(const uint16 InventoryIndex) const

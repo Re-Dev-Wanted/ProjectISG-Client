@@ -57,8 +57,8 @@ void UUIManageComponent::PushWidget(const EUIName Key)
 		const EUIName LastKey = WidgetStack.Last();
 		if (ControllerInstances.Contains(LastKey))
 		{
-			// ControllerInstances[LastKey]->GetView()->SetVisibility(
-			// 	ESlateVisibility::Hidden);
+			ControllerInstances[LastKey]->GetView()->SetVisibility(
+				ESlateVisibility::Hidden);
 		}
 	}
 
@@ -71,11 +71,7 @@ void UUIManageComponent::PushWidget(const EUIName Key)
 		ControllerInstances.Add(Key, NewView->GetController());
 	}
 
-	UBaseUIView* CurrentView = ControllerInstances[Key]->GetView();
-	if (CurrentView)
-	{
-		CurrentView->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-	}
+	ControllerInstances[Key]->AppearUI();
 }
 
 void UUIManageComponent::PopWidget()
@@ -88,22 +84,22 @@ void UUIManageComponent::PopWidget()
 	const EUIName LastKey = WidgetStack.Last();
 	if (ControllerInstances.Contains(LastKey))
 	{
-		ControllerInstances[LastKey]->GetView()->SetVisibility(
-			ESlateVisibility::Hidden);
+		ControllerInstances[LastKey]->DisappearUI();
 	}
 
 	WidgetStack.Pop();
 
+	// 여기서부터는 제거된 Stack을 기반으로 동작함
 	if (WidgetStack.IsEmpty())
 	{
 		return;
 	}
 
+	// 제거된 이후 남은 Key 기반으로 UI 노출 처리
 	const EUIName PrevKey = WidgetStack.Last();
 	if (ControllerInstances.Contains(PrevKey))
 	{
-		ControllerInstances[PrevKey]->GetView()->SetVisibility(
-			ESlateVisibility::SelfHitTestInvisible);
+		ControllerInstances[PrevKey]->AppearUI();
 	}
 
 	APlayerController* PC = Cast<APlayerController>(GetOwner());
@@ -124,4 +120,9 @@ bool UUIManageComponent::IsPlayerInLocalControlled() const
 EUIName UUIManageComponent::GetLastStackUI() const
 {
 	return WidgetStack.Last();
+}
+
+bool UUIManageComponent::HasViewUI(const EUIName Key)
+{
+	return WidgetStack.Find(Key) != INDEX_NONE;
 }

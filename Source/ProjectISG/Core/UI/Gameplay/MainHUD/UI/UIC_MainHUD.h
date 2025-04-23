@@ -10,6 +10,8 @@ class PROJECTISG_API UUIC_MainHUD : public UBaseUIController
 	GENERATED_BODY()
 
 public:
+	virtual void AppearUI() override;
+
 	void UpdateMainHotSlot() const;
 
 	void SelectSlot(const uint8 CurrentSlot, const uint8 NextSlot) const;

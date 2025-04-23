@@ -4,9 +4,18 @@
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
 #include "ProjectISG/Core/UI/HUD/Interactive/InteractiveUI.h"
 
+void UUIC_MainHUD::AppearUI()
+{
+	Super::AppearUI();
+
+	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
+	MainHUDView->GetMainSlotList()->UpdateItemData();
+}
+
 void UUIC_MainHUD::UpdateMainHotSlot() const
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
+	MainHUDView->GetMainSlotList()->UpdateItemData();
 }
 
 void UUIC_MainHUD::SelectSlot(const uint8 CurrentSlot,

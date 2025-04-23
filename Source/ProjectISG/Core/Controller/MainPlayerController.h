@@ -21,7 +21,7 @@ class PROJECTISG_API AMainPlayerController : public APlayerController
 public:
 	AMainPlayerController();
 
-	void ToggleInventoryUI(const bool IsShow);
+	void OpenInventory();
 	void ShowItemInfo(const uint16 InventoryIndex) const;
 	void RemoveItemInfo() const;
 	void PopUI();
@@ -30,6 +30,7 @@ public:
 	TObjectPtr<UUIC_MainHUD> GetMainHUD() const;
 
 	TObjectPtr<UUIC_InventoryUI> GetInventoryUI() const;
+
 	GETTER(TObjectPtr<UUIManageComponent>, UIManageComponent)
 
 protected:

@@ -4,6 +4,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
+#include "ProjectISG/Utils/MacroUtil.h"
 #include "UIManageComponent.generated.h"
 
 class UBaseUIView;
@@ -15,11 +16,15 @@ class PROJECTISG_API UUIManageComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
+	GETTER(TArray<EUIName>, WidgetStack)
+
 	void Initialize();
 
 	void PushWidget(const EUIName Key);
 	void PopWidget();
 	EUIName GetLastStackUI() const;
+
+	bool HasViewUI(const EUIName Key);
 
 	UPROPERTY()
 	TMap<EUIName, TObjectPtr<UBaseUIController>> ControllerInstances;

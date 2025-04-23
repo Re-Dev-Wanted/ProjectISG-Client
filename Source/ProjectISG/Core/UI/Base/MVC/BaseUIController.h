@@ -17,6 +17,9 @@ public:
 	virtual void InitializeController(UBaseUIView* NewView,
 	                                  UBaseUIModel* NewModel);
 
+	virtual void AppearUI();
+	virtual void DisappearUI();
+
 	GETTER(TObjectPtr<UBaseUIView>, View)
 
 protected:
