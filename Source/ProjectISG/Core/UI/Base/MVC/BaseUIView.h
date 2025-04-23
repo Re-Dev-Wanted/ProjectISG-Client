@@ -1,23 +1,32 @@
 ﻿#pragma once
 
-#include "CoreMinimal.h"
-#include "BaseUIController.h"
 #include "Blueprint/UserWidget.h"
+#include "ProjectISG/Utils/MacroUtil.h"
 #include "BaseUIView.generated.h"
 
-class UBaseUIController;
 class UBaseUIModel;
+class UBaseUIController;
 
-UCLASS()
+UCLASS(Abstract, Blueprintable)
 class PROJECTISG_API UBaseUIView : public UUserWidget
 {
 	GENERATED_BODY()
 
-public:
-	virtual void InitializeUI(UBaseUIModel* BaseUIModel,
-	                          UBaseUIController* BaseUIController);
-
 protected:
+	virtual void NativeConstruct() override;
+
+	GETTER_EDITABLE(TObjectPtr<UBaseUIModel>, Model)
+	GETTER_EDITABLE(TObjectPtr<UBaseUIController>, Controller)
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Options",
+		meta=(AllowPrivateAccess = true))
+	TSubclassOf<UBaseUIModel> ModelClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Options",
+		meta=(AllowPrivateAccess = true))
+	TSubclassOf<UBaseUIController> ControllerClass;
+
 	UPROPERTY()
 	TObjectPtr<UBaseUIModel> Model;
 

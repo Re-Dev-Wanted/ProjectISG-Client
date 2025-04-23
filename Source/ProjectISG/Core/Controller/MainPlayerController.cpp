@@ -3,7 +3,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
-#include "ProjectISG/Core/UI/Base/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/HUD/MainHUD.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryUI.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
