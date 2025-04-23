@@ -24,5 +24,4 @@ enum class EUIName: uint32
 {
 	Gameplay_MainHUD,
 	Popup_InventoryUI,
-	Modal_ItemInfo,
 };
