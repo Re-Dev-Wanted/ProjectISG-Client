@@ -26,10 +26,10 @@ public:
 	void RemoveItemInfo() const;
 	void PopUI();
 
-
+#pragma region GetUI
 	TObjectPtr<UUIC_MainHUD> GetMainHUD() const;
-
 	TObjectPtr<UUIC_InventoryUI> GetInventoryUI() const;
+#pragma endregion
 
 	GETTER(TObjectPtr<UUIManageComponent>, UIManageComponent)
 

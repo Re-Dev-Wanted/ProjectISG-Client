@@ -39,6 +39,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<APlayerController> PlayerController;
 
+	// 컨트롤러 내부 옵션이기 때문에 Model이 아닌 Controller에 둔다.
 	UPROPERTY(EditDefaultsOnly, Category = "Options",
 		meta= (AllowPrivateAccess = true))
 	bool IsInputAccess;
@@ -53,5 +54,5 @@ private:
 	UPROPERTY()
 	TObjectPtr<UBaseUIView> View;
 
-	void ChangeInputActionToUI();
+	void ChangeInputActionToUI(const bool IsBindAction);
 };

@@ -121,6 +121,11 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 		return;
 	}
 
+	if (!PC->GetMainHUD())
+	{
+		return;
+	}
+
 	PC->GetMainHUD()->SelectSlot(CurrentSlotIndex, NewIndex);
 
 	CurrentSlotIndex = NewIndex;

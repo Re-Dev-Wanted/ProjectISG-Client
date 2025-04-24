@@ -1,7 +1,7 @@
 ﻿#include "UIC_InventoryUI.h"
+#include "UIV_InventoryUI.h"
 
 #include "EnhancedInputComponent.h"
-#include "UIV_InventoryUI.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
 
 void UUIC_InventoryUI::UpdateMainSlotItemData() const

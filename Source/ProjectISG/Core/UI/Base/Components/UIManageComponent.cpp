@@ -3,6 +3,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
+#include "ProjectISG/Utils/EnumUtil.h"
 
 void UUIManageComponent::Initialize()
 {
@@ -55,6 +56,14 @@ void UUIManageComponent::PushWidget(const EUIName Key)
 			ControllerInstances[LastKey]->DisappearUI();
 		}
 	}
+
+	// 동일한 Key가 들어가 있으면 순서를 앞으로 이동시킨다
+	// UI는 반드시 Key 하나당 하나의 UI로 바인딩 된다는 비즈니스
+	// 규칙을 명시한다. [25.04.24]
+	// if (WidgetStack.Find(Key) != INDEX_NONE)
+	// {
+	// 	WidgetStack.Remove(Key);
+	// }
 
 	WidgetStack.Add(Key);
 

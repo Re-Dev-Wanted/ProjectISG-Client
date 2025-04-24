@@ -1,5 +1,6 @@
 ﻿#include "BaseUIController.h"
 
+#include "BaseUIModel.h"
 #include "BaseUIView.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
@@ -18,10 +19,10 @@ void UBaseUIController::InitializeSettingToPlayerController(
 	APlayerController* PC)
 {
 	PlayerController = PC;
-	ChangeInputActionToUI();
+	ChangeInputActionToUI(true);
 }
 
-void UBaseUIController::ChangeInputActionToUI()
+void UBaseUIController::ChangeInputActionToUI(const bool IsBindAction)
 {
 	if (!IsInputAccess)
 	{
@@ -49,7 +50,11 @@ void UBaseUIController::ChangeInputActionToUI()
 		{
 			return;
 		}
-		BindInputAction(EnhancedInputComponent);
+
+		if (IsBindAction)
+		{
+			BindInputAction(EnhancedInputComponent);
+		}
 	}
 }
 
@@ -61,10 +66,9 @@ void UBaseUIController::AppearUI(const EUILayer Layer)
 {
 	View->SetVisibility(ESlateVisibility::Visible);
 
-
 	if (Layer != EUILayer::Gameplay)
 	{
-		ChangeInputActionToUI();
+		ChangeInputActionToUI(false);
 
 		FInputModeGameAndUI InputMode;
 		InputMode.SetWidgetToFocus(GetView()->TakeWidget());
@@ -111,14 +115,5 @@ void UBaseUIController::ClearInputMappingContext()
 	{
 		Subsystem->RemoveMappingContext(UIMappingContext);
 		Subsystem->AddMappingContext(Player->GetDefaultMappingContext(), 0);
-
-		UEnhancedInputComponent* EnhancedInputComponent = Cast<
-			UEnhancedInputComponent>(PlayerController->InputComponent);
-
-		if (!EnhancedInputComponent)
-		{
-			return;
-		}
-		BindInputAction(EnhancedInputComponent);
 	}
 }

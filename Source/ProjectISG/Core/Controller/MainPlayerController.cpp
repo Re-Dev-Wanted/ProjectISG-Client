@@ -30,12 +30,6 @@ void AMainPlayerController::BeginPlay()
 void AMainPlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
-
-	// if (!HasAuthority() && IsLocalController())
-	// {
-	// 	UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
-	// }
-	// GetPlayerState<AMainPlayerState>()->InitializeData();
 }
 
 TObjectPtr<UUIC_MainHUD> AMainPlayerController::GetMainHUD() const
