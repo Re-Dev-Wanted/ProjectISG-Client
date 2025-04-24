@@ -2,14 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/GA_BaseInputAbility.h"
-#include "GA_StartCookingMode.generated.h"
+#include "GA_EndCookingMode.generated.h"
 
-class AMainPlayerCharacter;
-class UAT_StartCookingModeCinematic;
+class UAT_EndCookingModeCinematic;
 class ULevelSequence;
 
 UCLASS()
-class PROJECTISG_API UGA_StartCookingMode : public UGA_BaseInputAbility
+class PROJECTISG_API UGA_EndCookingMode : public UGA_BaseInputAbility
 {
 	GENERATED_BODY()
 
@@ -24,11 +23,13 @@ protected:
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Cinematic",
 		meta = (AllowPrivateAccess = true))
-	TObjectPtr<ULevelSequence> StartCookingCinematic;
+	TObjectPtr<ULevelSequence> EndCookingCinematic;
 
 	UPROPERTY()
-	TObjectPtr<UAT_StartCookingModeCinematic> AT_StartCookingModeCinematic;
+	TObjectPtr<UAT_EndCookingModeCinematic> AT_EndCookingModeCinematic;
 
 	UFUNCTION()
 	void OnEndCinematic();
+
+	void UnlockPlayer();
 };
