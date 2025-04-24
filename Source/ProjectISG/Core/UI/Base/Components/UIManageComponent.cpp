@@ -46,19 +46,13 @@ void UUIManageComponent::PushWidget(const EUIName Key)
 	}
 
 	APlayerController* PC = Cast<APlayerController>(GetOwner());
-	if (WidgetLayers[Key] != EUILayer::Gameplay)
-	{
-		PC->SetShowMouseCursor(true);
-		PC->DisableInput(PC);
-	}
 
 	if (!WidgetStack.IsEmpty())
 	{
 		const EUIName LastKey = WidgetStack.Last();
 		if (ControllerInstances.Contains(LastKey))
 		{
-			ControllerInstances[LastKey]->GetView()->SetVisibility(
-				ESlateVisibility::Hidden);
+			ControllerInstances[LastKey]->DisappearUI();
 		}
 	}
 
@@ -71,7 +65,7 @@ void UUIManageComponent::PushWidget(const EUIName Key)
 		ControllerInstances.Add(Key, NewView->GetController());
 	}
 
-	ControllerInstances[Key]->AppearUI();
+	ControllerInstances[Key]->AppearUI(WidgetLayers[Key]);
 }
 
 void UUIManageComponent::PopWidget()
@@ -99,7 +93,7 @@ void UUIManageComponent::PopWidget()
 	const EUIName PrevKey = WidgetStack.Last();
 	if (ControllerInstances.Contains(PrevKey))
 	{
-		ControllerInstances[PrevKey]->AppearUI();
+		ControllerInstances[PrevKey]->AppearUI(WidgetLayers[PrevKey]);
 	}
 
 	APlayerController* PC = Cast<APlayerController>(GetOwner());
@@ -107,7 +101,6 @@ void UUIManageComponent::PopWidget()
 		EUILayer::Gameplay)
 	{
 		PC->SetShowMouseCursor(false);
-		PC->EnableInput(PC);
 	}
 }
 

@@ -5,6 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/UI/UIEnum.h"
 
 void UBaseUIController::InitializeController(UBaseUIView* NewView,
                                              UBaseUIModel* NewModel)
@@ -17,6 +18,11 @@ void UBaseUIController::InitializeSettingToPlayerController(
 	APlayerController* PC)
 {
 	PlayerController = PC;
+	ChangeInputActionToUI();
+}
+
+void UBaseUIController::ChangeInputActionToUI()
+{
 	if (!IsInputAccess)
 	{
 		return;
@@ -51,15 +57,33 @@ void UBaseUIController::BindInputAction(UEnhancedInputComponent* InputComponent)
 {
 }
 
-void UBaseUIController::AppearUI()
+void UBaseUIController::AppearUI(const EUILayer Layer)
 {
 	View->SetVisibility(ESlateVisibility::Visible);
+
+
+	if (Layer != EUILayer::Gameplay)
+	{
+		ChangeInputActionToUI();
+
+		FInputModeGameAndUI InputMode;
+		InputMode.SetWidgetToFocus(GetView()->TakeWidget());
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+
+		PlayerController->SetInputMode(InputMode);
+		PlayerController->SetShowMouseCursor(true);
+	}
 }
 
 void UBaseUIController::DisappearUI()
 {
 	View->SetVisibility(ESlateVisibility::Hidden);
+
 	ClearInputMappingContext();
+
+	const FInputModeGameOnly InputMode;
+	PlayerController->SetInputMode(InputMode);
+	PlayerController->SetShowMouseCursor(false);
 }
 
 void UBaseUIController::PopUIFromPlayerController()

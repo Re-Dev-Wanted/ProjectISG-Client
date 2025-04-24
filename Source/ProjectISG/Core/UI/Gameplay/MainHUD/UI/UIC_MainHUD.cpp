@@ -1,12 +1,13 @@
 ﻿#include "UIC_MainHUD.h"
 
 #include "UIV_MainHUD.h"
+#include "ProjectISG/Core/UI/UIEnum.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
 #include "ProjectISG/Core/UI/HUD/Interactive/InteractiveUI.h"
 
-void UUIC_MainHUD::AppearUI()
+void UUIC_MainHUD::AppearUI(const EUILayer Layer)
 {
-	Super::AppearUI();
+	Super::AppearUI(Layer);
 
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 	MainHUDView->GetMainSlotList()->UpdateItemData();

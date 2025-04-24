@@ -5,6 +5,7 @@
 #include "UObject/Object.h"
 #include "BaseUIController.generated.h"
 
+enum class EUILayer : uint8;
 class UInputMappingContext;
 class UBaseUIView;
 class UBaseUIModel;
@@ -20,7 +21,7 @@ public:
 
 	virtual void InitializeSettingToPlayerController(APlayerController* PC);
 
-	virtual void AppearUI();
+	virtual void AppearUI(const EUILayer Layer);
 	virtual void DisappearUI();
 
 	virtual void PopUIFromPlayerController();
@@ -51,4 +52,6 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UBaseUIView> View;
+
+	void ChangeInputActionToUI();
 };

@@ -7,11 +7,11 @@
 
 enum class EUIName : uint32;
 
-class UUIManageComponent;
 class UItemInfo;
+class UUIManageComponent;
 
-class UUIC_InventoryUI;
 class UUIC_MainHUD;
+class UUIC_InventoryUI;
 
 UCLASS()
 class PROJECTISG_API AMainPlayerController : public APlayerController
@@ -37,8 +37,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void OnRep_PlayerState() override;
-
-	virtual void OnPossess(APawn* InPawn) override;
 
 private:
 	UPROPERTY(EditDefaultsOnly)

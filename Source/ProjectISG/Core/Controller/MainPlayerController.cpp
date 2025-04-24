@@ -19,14 +19,11 @@ void AMainPlayerController::BeginPlay()
 	Super::BeginPlay();
 	ConsoleCommand(TEXT("showdebug abilitysystem"));
 
+	GetPlayerState<AMainPlayerState>()->InitializeData();
 	if (IsLocalController())
 	{
 		UIManageComponent->Initialize();
-
-		if (HasAuthority())
-		{
-			UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
-		}
+		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
 	}
 }
 
@@ -34,11 +31,11 @@ void AMainPlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
-	GetPlayerState<AMainPlayerState>()->InitializeData();
-	if (!HasAuthority() && IsLocalController())
-	{
-		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
-	}
+	// if (!HasAuthority() && IsLocalController())
+	// {
+	// 	UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
+	// }
+	// GetPlayerState<AMainPlayerState>()->InitializeData();
 }
 
 TObjectPtr<UUIC_MainHUD> AMainPlayerController::GetMainHUD() const
