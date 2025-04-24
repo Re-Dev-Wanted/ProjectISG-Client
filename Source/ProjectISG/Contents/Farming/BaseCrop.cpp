@@ -50,7 +50,8 @@ void ABaseCrop::BeginPlay()
 		return;
 	}
 
-	DisplayText = TEXT("물주기");
+	DisplayText = TEXT("물 주기");
+
 	CropRemainGrowTime = CropTotalGrowDay * 24;
 
 	TimeManager->AddSleepTimeToCrop.AddDynamic(
@@ -64,6 +65,8 @@ void ABaseCrop::GetLifetimeReplicatedProps(
 
 	DOREPLIFETIME(ABaseCrop, bIsMature);
 	DOREPLIFETIME(ABaseCrop, bIsGetWater);
+	DOREPLIFETIME(ABaseCrop, CanInteractive);
+	DOREPLIFETIME(ABaseCrop, DisplayText);
 }
 
 void ABaseCrop::Tick(float DeltaTime)
@@ -83,6 +86,16 @@ void ABaseCrop::Tick(float DeltaTime)
 	{
 		CheckWaterDurationTime();
 	}
+}
+
+bool ABaseCrop::GetCanInteractive() const
+{
+	return CanInteractive;
+}
+
+FString ABaseCrop::GetDisplayText() const
+{
+	return DisplayText;
 }
 
 void ABaseCrop::CheckGrowTime()
@@ -109,7 +122,6 @@ void ABaseCrop::CheckGrowTime()
 		{
 			Server_CropIsMature();
 		}
-		DisplayText = TEXT("수확하기");
 	}
 }
 
@@ -120,7 +132,9 @@ void ABaseCrop::CheckWaterDurationTime()
 	if (CropGrowTime >= WaterDuration)
 	{
 		bIsGetWater = false;
+		
 		CanInteractive = true;
+		
 		CropRemainGrowTime -= CropGrowTime;
 		CropGrowTime = 0.f;
 	}
@@ -136,6 +150,7 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 	}
 
 	bIsGetWater = true;
+	
 	CanInteractive = false;
 
 	Causer->SetActorLocation(InteractionPos->GetComponentLocation());
@@ -152,8 +167,8 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 
 			if (ps)
 			{
-				ps->GetInventoryComponent()->AddItem(
-					UItemManager::GetInitialItemMetaDataById(CropId));
+				// ps->GetInventoryComponent()->AddItem(
+				// 	UItemManager::GetInitialItemMetaDataById(CropId));
 			}
 			player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
 				ActivateTag);
@@ -218,6 +233,7 @@ void ABaseCrop::UpdateGrowTimeBySleep()
 void ABaseCrop::Server_CropIsMature_Implementation()
 {
 	bIsMature = true;
+	DisplayText = TEXT("수확하기");
 	NetMulticast_ChangeCropMeshToMature();
 }
 

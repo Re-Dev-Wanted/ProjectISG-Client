@@ -27,6 +27,10 @@ protected:
 
 	virtual void Tick(float DeltaTime) override;
 
+	virtual bool GetCanInteractive() const override;
+
+	virtual FString GetDisplayText() const override;
+
 	UFUNCTION()
 	void UpdateGrowTimeBySleep();
 
@@ -46,6 +50,7 @@ private:
 	UFUNCTION(Reliable, NetMulticast)
 	void NetMulticast_ChangeCropMeshToMature();
 
+private:
 #pragma region Settings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
 		meta = (AllowPrivateAccess = true))
@@ -65,6 +70,12 @@ private:
 
 	UPROPERTY()
 	class ATimeManager* TimeManager = nullptr;
+
+	UPROPERTY(Replicated)
+	bool CanInteractive;
+	
+	UPROPERTY(Replicated)
+	FString DisplayText;
 #pragma endregion
 
 #pragma region Grow
@@ -92,4 +103,6 @@ private:
 	UPROPERTY(Replicated, EditAnywhere, Category = Grow)
 	bool bIsGetWater = false;
 #pragma endregion
+
+
 };

@@ -3,14 +3,20 @@
 
 #include "GA_Harvest.h"
 
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Utils/EnumUtil.h"
+
+
 void UGA_Harvest::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                   const FGameplayAbilityActorInfo* ActorInfo,
                                   const FGameplayAbilityActivationInfo ActivationInfo,
                                   const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	UE_LOG(LogTemp, Warning, TEXT("harvest activate"));
-
+	
+	const AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(
+			ActorInfo->AvatarActor.Get());
+	UE_LOG(LogTemp, Warning, TEXT("수확하기, %s"), *FEnumUtil::GetClassEnumKeyAsString(player->GetLocalRole()));
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
 

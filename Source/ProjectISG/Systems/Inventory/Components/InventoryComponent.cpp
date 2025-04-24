@@ -35,6 +35,7 @@ void UInventoryComponent::InitializeItemData()
 	CropItemMetaInfo.SetId(3);
 	CropItemMetaInfo.SetCurrentCount(2);
 
+	InventoryList[3] = CropItemMetaInfo;
 	AddItemToInventory(3, CropItemMetaInfo);
 }
 
