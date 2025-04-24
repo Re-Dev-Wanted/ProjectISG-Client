@@ -1,6 +1,7 @@
 ﻿#include "MainPlayerController.h"
 
 #include "Blueprint/UserWidget.h"
+#include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/HUD/MainHUD.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"

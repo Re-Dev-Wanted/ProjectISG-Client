@@ -3,6 +3,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
+#include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/HUD/MainHUD.h"
@@ -48,7 +49,7 @@ void UInteractionComponent::OnInteractive()
 	{
 		return;
 	}
-
+	
 	IInteractionInterface* Interaction = Cast<IInteractionInterface>(
 		TargetTraceResult.GetActor());
 
@@ -57,6 +58,10 @@ void UInteractionComponent::OnInteractive()
 		return;
 	}
 
+	// OnInteraction 호출 전에 클라이언트가 접근하고 있는 작물 액터의 정보를 플레이어 서버RPC함수에 전달
+	ABaseCrop* crop = Cast<ABaseCrop>(TargetTraceResult.GetActor());
+	PlayerCharacter->Server_InteractCrop(crop);
+	
 	Interaction->OnInteractive(GetOwner());
 }
 

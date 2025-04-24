@@ -1,6 +1,6 @@
 ﻿#include "PlayerInventoryComponent.h"
 #include "EnhancedInputComponent.h"
-#include "EntitySystem/MovieSceneEntitySystemRunner.h"
+#include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
@@ -21,6 +21,14 @@ void UPlayerInventoryComponent::InitializeComponent()
 
 	OwnerPlayer->OnInputBindingNotified.AddDynamic(
 		this, &ThisClass::BindingInputActions);
+}
+
+void UPlayerInventoryComponent::GetLifetimeReplicatedProps(
+	TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, CurrentSlotIndex);
 }
 
 void UPlayerInventoryComponent::BeginPlay()
@@ -122,7 +130,7 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 	PC->GetMainHUD()->GetMainSlotList()->SelectSlot(
 		CurrentSlotIndex, NewIndex);
 
-	CurrentSlotIndex = NewIndex;
+	Server_ChangeCurrentSlotIndex(NewIndex);
 }
 
 bool UPlayerInventoryComponent::RemoveItemCurrentSlotIndex(const int32 Count)
@@ -156,3 +164,10 @@ void UPlayerInventoryComponent::UpdatePlayerInventoryUI()
 		             GetInventoryList()->UpdateItemData();
 	}
 }
+
+void UPlayerInventoryComponent::
+Server_ChangeCurrentSlotIndex_Implementation(int idx)
+{
+	CurrentSlotIndex = idx;
+}
+

@@ -6,9 +6,8 @@
 #include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
-#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
-#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
+#include "ProjectISG/Utils/EnumUtil.h"
 
 void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                   const FGameplayAbilityActorInfo* ActorInfo,
@@ -18,13 +17,17 @@ void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	
-	UE_LOG(LogTemp, Warning, TEXT("seeding"));
 
+
+	
 	const AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(
-		GetWorld()->GetFirstPlayerController()->GetCharacter());
+		ActorInfo->AvatarActor.Get());
+
+	UE_LOG(LogTemp, Warning, TEXT("씨앗 심기, %s"), *FEnumUtil::GetClassEnumKeyAsString(player->GetLocalRole()));
+	
 	if (player)
 	{
+		if (player->HasAuthority() == false) return;
 		int id = player->GetPlayerInventoryComponent()->GetCurrentSlotIndex();
 		const bool isInteraction = UItemManager::IsItemCanInteraction(
 			id);
@@ -35,18 +38,21 @@ void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			FVector SpawnLocation = player->GetActorLocation();
 			SpawnLocation.Z = 0.f;
 			FRotator SpawnRotation = FRotator::ZeroRotator;
-			ABaseCrop* Crop = GetWorld()->SpawnActor<ABaseCrop>(itemData.GetPlaceItemActor(), SpawnLocation, SpawnRotation);
+			ABaseCrop* Crop = GetWorld()->SpawnActor<ABaseCrop>(
+				itemData.GetPlaceItemActor(), SpawnLocation, SpawnRotation);
 			if (Crop)
 			{
 				Crop->SetCropId(id);
 			}
-			player->GetPlayerInventoryComponent()->RemoveItemCurrentSlotIndex(1);
+			player->GetPlayerInventoryComponent()->
+			        RemoveItemCurrentSlotIndex(1);
 		}
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("doesn't work"));
 	}
+
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }

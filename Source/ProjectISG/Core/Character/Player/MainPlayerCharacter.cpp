@@ -5,6 +5,7 @@
 #include "Component/InteractionComponent.h"
 #include "Component/PlayerInventoryComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/ISGAbilitySystemComponent.h"
 #include "ProjectISG/GAS/Common/Attribute/ISGAttributeSet.h"
@@ -136,4 +137,23 @@ void AMainPlayerCharacter::Look(const FInputActionValue& Value)
 	const FVector2d LookToValue = Value.Get<FVector2d>();
 	AddControllerYawInput(LookToValue.X);
 	AddControllerPitchInput(LookToValue.Y);
+}
+
+void AMainPlayerCharacter::Server_InteractCrop_Implementation(
+	class ABaseCrop* crop)
+{
+	if (!crop || !crop->IsValidLowLevel() || crop->IsPendingKillPending())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Invalid crop received from client"));
+		return;
+	}
+
+	if (!crop->HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Warning: Forged object"));
+		return;
+	}
+
+	// 정상 처리
+	crop->OnInteractive(this);
 }
