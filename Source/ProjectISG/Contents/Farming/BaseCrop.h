@@ -17,6 +17,8 @@ class PROJECTISG_API ABaseCrop : public ABaseActor, public IInteractionInterface
 public:
 	ABaseCrop();
 
+	virtual void OnInteractive(AActor* Causer) override;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -25,10 +27,9 @@ protected:
 
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void OnInteractive(AActor* Causer) override;
-
 	UFUNCTION()
 	void UpdateGrowTimeBySleep();
+
 public:
 	GETTER_SETTER(int32, CropTotalGrowDay);
 	GETTER_SETTER(int32, WaterDuration);
@@ -39,7 +40,12 @@ private:
 
 	void CheckWaterDurationTime();
 
-private:
+	UFUNCTION(Reliable, Server)
+	void Server_CropIsMature();
+
+	UFUNCTION(Reliable, NetMulticast)
+	void NetMulticast_ChangeCropMeshToMature();
+
 #pragma region Settings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
 		meta = (AllowPrivateAccess = true))
@@ -50,16 +56,16 @@ private:
 	class UStaticMeshComponent* Mesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
-	meta = (AllowPrivateAccess = true))
+		meta = (AllowPrivateAccess = true))
 	class USceneComponent* InteractionPos;
-	
+
 	UPROPERTY(EditAnywhere, Category = Settings,
 		meta = (AllowPrivateAccess = true))
 	uint16 CropId;
-	
+
 	UPROPERTY()
 	class ATimeManager* TimeManager = nullptr;
-#pragma endregion 
+#pragma endregion
 
 #pragma region Grow
 	UPROPERTY(EditAnywhere, Category = Grow)
@@ -85,5 +91,5 @@ private:
 
 	UPROPERTY(Replicated, EditAnywhere, Category = Grow)
 	bool bIsGetWater = false;
-#pragma endregion 
+#pragma endregion
 };

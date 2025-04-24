@@ -9,7 +9,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
-#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
@@ -17,10 +16,8 @@
 #include "ProjectISG/Systems/Time/TimeManager.h"
 
 
-// Sets default values
 ABaseCrop::ABaseCrop()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 	Super::SetReplicateMovement(true);
@@ -33,14 +30,13 @@ ABaseCrop::ABaseCrop()
 	Mesh->SetupAttachment(Root);
 	Mesh->SetCollisionProfileName(TEXT("NoCollision"));
 
-	InteractionPos = CreateDefaultSubobject<USceneComponent>(TEXT("InteractionPos"));
+	InteractionPos = CreateDefaultSubobject<USceneComponent>(
+		TEXT("InteractionPos"));
 	InteractionPos->SetupAttachment(Root);
-
 
 	CanInteractive = true;
 }
 
-// Called when the game starts or when spawned
 void ABaseCrop::BeginPlay()
 {
 	Super::BeginPlay();
@@ -57,7 +53,8 @@ void ABaseCrop::BeginPlay()
 	DisplayText = TEXT("물주기");
 	CropRemainGrowTime = CropTotalGrowDay * 24;
 
-	TimeManager->AddSleepTimeToCrop.AddDynamic(this, &ThisClass::UpdateGrowTimeBySleep);
+	TimeManager->AddSleepTimeToCrop.AddDynamic(
+		this, &ThisClass::UpdateGrowTimeBySleep);
 }
 
 void ABaseCrop::GetLifetimeReplicatedProps(
@@ -69,10 +66,13 @@ void ABaseCrop::GetLifetimeReplicatedProps(
 	DOREPLIFETIME(ABaseCrop, bIsGetWater);
 }
 
-// Called every frame
 void ABaseCrop::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (HasAuthority() == false)
+	{
+		return;
+	}
 
 	if (bIsGetWater && !bIsMature)
 	{
@@ -87,11 +87,7 @@ void ABaseCrop::Tick(float DeltaTime)
 
 void ABaseCrop::CheckGrowTime()
 {
-	if (bIsMature)
-	{
-		return;
-	}
-	if (bIsGetWater == false)
+	if (bIsMature || bIsGetWater == false)
 	{
 		return;
 	}
@@ -102,19 +98,18 @@ void ABaseCrop::CheckGrowTime()
 		GetHour()) + (TimeManager->GetMinute() / 60) + (TimeManager->GetSecond()
 		/ 3600);
 
-
 	// 현재 시간과 씨앗을 심은 시간을 빼서 현재 지난 시간을 구한다.
 	CropGrowTime = CropCurrentGrowTime - CropStartGrowTime;
-	UE_LOG(LogTemp, Warning, TEXT("CropGrowTime : %d"), CropGrowTime);
-
 
 	// 농작물의 성장 시간 변수와 비교한다
 	if (CropGrowTime >= CropRemainGrowTime)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("다 자랐다"));
-		bIsMature = true;
+		if (HasAuthority())
+		{
+			Server_CropIsMature();
+		}
 		DisplayText = TEXT("수확하기");
-		SetActorScale3D(FVector(2.0f));
 	}
 }
 
@@ -127,9 +122,6 @@ void ABaseCrop::CheckWaterDurationTime()
 		bIsGetWater = false;
 		CanInteractive = true;
 		CropRemainGrowTime -= CropGrowTime;
-		UE_LOG(LogTemp, Warning, TEXT("cropremaingrowtime : %d"),
-		       CropRemainGrowTime);
-
 		CropGrowTime = 0.f;
 	}
 }
@@ -138,15 +130,13 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 {
 	IInteractionInterface::OnInteractive(Causer);
 
-	if (CanInteractive == false) return;
+	if (HasAuthority() == false || CanInteractive == false)
+	{
+		return;
+	}
 
 	bIsGetWater = true;
 	CanInteractive = false;
-
-	// 물주기 시작
-	CropStartGrowDay = TimeManager->GetDay();
-	CropStartGrowTime = (TimeManager->GetHour()) + (TimeManager->GetMinute() /
-		60) + (TimeManager->GetSecond() / 3600);
 
 	Causer->SetActorLocation(InteractionPos->GetComponentLocation());
 
@@ -157,11 +147,13 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 		const AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(Causer);
 		if (player)
 		{
-			const AMainPlayerState* ps = Cast<AMainPlayerState>(player->GetPlayerState());
+			const AMainPlayerState* ps = Cast<AMainPlayerState>(
+				player->GetPlayerState());
 
 			if (ps)
 			{
-				ps->GetInventoryComponent()->AddItem(UItemManager::GetInitialItemMetaDataById(CropId));
+				ps->GetInventoryComponent()->AddItem(
+					UItemManager::GetInitialItemMetaDataById(CropId));
 			}
 			player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
 				ActivateTag);
@@ -176,13 +168,23 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 		{
 			player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
 				ActivateTag);
+
+			// 물주기 시작
+			bIsGetWater = true;
+			CropStartGrowDay = TimeManager->GetDay();
+			CropStartGrowTime = (TimeManager->GetHour()) + (TimeManager->
+				GetMinute() /
+				60) + (TimeManager->GetSecond() / 3600);
 		}
 	}
 }
 
 void ABaseCrop::UpdateGrowTimeBySleep()
 {
-	if (bIsGetWater == false) return;
+	if (bIsGetWater == false)
+	{
+		return;
+	}
 
 	// 총 수면 시간 체크 (24시간에서 자기 시작한 시간을 뺀 후 기상시간인 6시를 더해준다)
 	int32 TotalSleepTime = (24 - TimeManager->GetTimeStoppedTime()) + 6;
@@ -197,7 +199,6 @@ void ABaseCrop::UpdateGrowTimeBySleep()
 			bIsGetWater = false;
 			CanInteractive = true;
 			CropRemainGrowTime -= WaterDuration;
-			UE_LOG(LogTemp, Warning, TEXT("CropRemainGrowTime : %d"), CropRemainGrowTime);
 			CropGrowTime = 0.f;
 		}
 		else
@@ -207,6 +208,20 @@ void ABaseCrop::UpdateGrowTimeBySleep()
 	}
 	else
 	{
-		bIsMature = true;
+		if (HasAuthority())
+		{
+			Server_CropIsMature();
+		}
 	}
+}
+
+void ABaseCrop::Server_CropIsMature_Implementation()
+{
+	bIsMature = true;
+	NetMulticast_ChangeCropMeshToMature();
+}
+
+void ABaseCrop::NetMulticast_ChangeCropMeshToMature_Implementation()
+{
+	SetActorScale3D(FVector(2.0f));
 }
