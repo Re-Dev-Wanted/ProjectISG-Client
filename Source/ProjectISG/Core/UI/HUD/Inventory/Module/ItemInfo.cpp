@@ -4,11 +4,14 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/TextBlock.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
-void UItemInfo::ShowItemData(const FItemMetaInfo& ItemMetaInfo,
-                             const FItemInfoData& ItemInfoData)
+void UItemInfo::ShowItemData(const FItemMetaInfo& ItemMetaInfo)
 {
 	SetVisibility(ESlateVisibility::HitTestInvisible);
+	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(
+		ItemMetaInfo.GetId());
+
 	ItemDisplayName->SetText(FText::FromString(ItemInfoData.GetDisplayName()));
 	IsActive = true;
 }

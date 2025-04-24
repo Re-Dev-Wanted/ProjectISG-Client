@@ -1,11 +1,12 @@
 ﻿#include "PlayerInventoryComponent.h"
 #include "EnhancedInputComponent.h"
+
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
-#include "ProjectISG/Core/UI/HUD/MainHUD.h"
-#include "ProjectISG/Core/UI/HUD/Inventory/InventoryUI.h"
-#include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
+#include "ProjectISG/Core/UI/Popup/Inventory/UI/UIC_InventoryUI.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
@@ -33,17 +34,16 @@ void UPlayerInventoryComponent::InitializePlayerInventory()
 		GetOwner());
 
 	OwnerPlayer->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()
-	           ->
-	           OnInventoryUpdateNotified.AddDynamic(
+	           ->OnInventoryUpdateNotified.AddDynamic(
 		           this, &ThisClass::UpdatePlayerInventoryUI);
 }
 
 void UPlayerInventoryComponent::BindingInputActions(
 	UEnhancedInputComponent* EnhancedInputComponent)
 {
-	EnhancedInputComponent->BindAction(ToggleInventoryInputAction,
+	EnhancedInputComponent->BindAction(OpenInventoryInputAction,
 	                                   ETriggerEvent::Triggered, this,
-	                                   &ThisClass::ToggleInventory);
+	                                   &ThisClass::OpenInventory);
 	EnhancedInputComponent->BindAction(SelectHotSlotInputAction,
 	                                   ETriggerEvent::Triggered, this,
 	                                   &ThisClass::SelectHotSlot);
@@ -52,13 +52,12 @@ void UPlayerInventoryComponent::BindingInputActions(
 	                                   &ThisClass::MoveHotSlot);
 }
 
-void UPlayerInventoryComponent::ToggleInventory()
+void UPlayerInventoryComponent::OpenInventory()
 {
 	AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetOwner()->GetInstigatorController());
 
-	IsOpenedInventory = !IsOpenedInventory;
-	PC->ToggleInventoryUI(IsOpenedInventory);
+	PC->OpenInventory();
 }
 
 void UPlayerInventoryComponent::SelectHotSlot(const FInputActionValue& Value)
@@ -122,8 +121,12 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 		return;
 	}
 
-	PC->GetMainHUD()->GetMainSlotList()->SelectSlot(
-		CurrentSlotIndex, NewIndex);
+	if (!PC->GetMainHUD())
+	{
+		return;
+	}
+
+	PC->GetMainHUD()->SelectSlot(CurrentSlotIndex, NewIndex);
 
 	CurrentSlotIndex = NewIndex;
 }
@@ -145,17 +148,25 @@ void UPlayerInventoryComponent::UpdatePlayerInventoryUI()
 	const AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(
 		GetOwner());
 
-	if (OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD())
+	const AMainPlayerController* PC = OwnerPlayer->GetController<
+		AMainPlayerController>();
+
+	if (!PC)
 	{
-		OwnerPlayer->GetController<AMainPlayerController>()->GetMainHUD()->
-		             GetMainSlotList()->UpdateItemData();
+		return;
 	}
 
-	if (OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI())
+	if (PC->GetMainHUD())
 	{
+		PC->GetMainHUD()->
+		    UpdateMainHotSlot();
+	}
+
+	if (PC->GetInventoryUI())
+	{
+		PC->GetInventoryUI()->
+		    UpdateMainSlotItemData();
 		OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI()->
-		             GetMainSlotList()->UpdateItemData();
-		OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI()->
-		             GetInventoryList()->UpdateItemData();
+		             UpdateInventorySlotItemData();
 	}
 }

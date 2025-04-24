@@ -118,7 +118,6 @@ void ULoggingSubSystem::CreateLogDataStringForMultipart(
     AddTextField(TEXT("action_name"), FEnumUtil::GetClassEnumKeyAsString(LogData.ActionName), false);
     AddTextField(TEXT("detail"), TEXT("Test"), false);
 
-	UE_LOG(LogTemp, Display, TEXT("테스트: %s"), *FEnumUtil::GetClassEnumKeyAsString(LogData.ActionType));
     // 선택적 필드 추가
     if (!LogData.With.IsEmpty())
     {

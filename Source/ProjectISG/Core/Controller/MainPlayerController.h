@@ -5,9 +5,13 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerController.generated.h"
 
+enum class EUIName : uint32;
+
 class UItemInfo;
-class UMainHUD;
-class UInventoryUI;
+class UUIManageComponent;
+
+class UUIC_MainHUD;
+class UUIC_InventoryUI;
 
 UCLASS()
 class PROJECTISG_API AMainPlayerController : public APlayerController
@@ -15,42 +19,26 @@ class PROJECTISG_API AMainPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
-	void InitializeHUD();
-	void ToggleInventoryUI(const bool IsShow);
+	AMainPlayerController();
+
+	void OpenInventory();
 	void ShowItemInfo(const uint16 InventoryIndex) const;
 	void RemoveItemInfo() const;
+	void PopUI();
 
-	GETTER(TObjectPtr<UMainHUD>, MainHUD)
-	GETTER(TObjectPtr<UInventoryUI>, InventoryUI)
+#pragma region GetUI
+	TObjectPtr<UUIC_MainHUD> GetMainHUD() const;
+	TObjectPtr<UUIC_InventoryUI> GetInventoryUI() const;
+#pragma endregion
+
+	GETTER(TObjectPtr<UUIManageComponent>, UIManageComponent)
 
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void OnRep_PlayerState() override;
 
-	virtual void OnPossess(APawn* InPawn) override;
-
 private:
-#pragma region UI
-	UPROPERTY(EditDefaultsOnly, Category = "Options|UI",
-		meta = (AllowPrivateAccess = true))
-	TSubclassOf<UMainHUD> MainHUDClass;
-
-	UPROPERTY()
-	TObjectPtr<UMainHUD> MainHUD;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Options|UI",
-		meta = (AllowPrivateAccess = true))
-	TSubclassOf<UInventoryUI> InventoryUIClass;
-
-	UPROPERTY()
-	TObjectPtr<UInventoryUI> InventoryUI;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Options|UI",
-		meta = (AllowPrivateAccess = true))
-	TSubclassOf<UItemInfo> ItemInfoWidgetClass;
-
-	UPROPERTY()
-	TObjectPtr<UItemInfo> ItemInfoWidget;
-#pragma endregion
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UUIManageComponent> UIManageComponent;
 };

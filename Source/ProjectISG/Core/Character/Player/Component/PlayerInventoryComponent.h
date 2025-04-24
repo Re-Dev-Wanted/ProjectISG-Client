@@ -27,7 +27,6 @@ protected:
 	virtual void InitializeComponent() override;
 
 private:
-	bool IsOpenedInventory = false;
 	int CurrentSlotIndex = 0;
 	uint8 MaxMainSlotIndex = 8;
 
@@ -37,7 +36,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",
 		meta = (AllowPrivateAccess = true))
-	TObjectPtr<UInputAction> ToggleInventoryInputAction;
+	TObjectPtr<UInputAction> OpenInventoryInputAction;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",
 		meta = (AllowPrivateAccess = true))
@@ -47,7 +46,7 @@ private:
 		meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInputAction> MoveToHotSlotInputAction;
 
-	void ToggleInventory();
+	void OpenInventory();
 
 	void SelectHotSlot(const FInputActionValue& Value);
 	void MoveHotSlot(const FInputActionValue& Value);

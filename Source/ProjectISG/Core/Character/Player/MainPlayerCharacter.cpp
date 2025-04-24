@@ -36,6 +36,7 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 
 	ScreenShotComponent = CreateDefaultSubobject<UScreenShotComponent>(
 		"ScreenShot Component");
+
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(
 		"Interaction Component");
 }
@@ -147,4 +148,10 @@ void AMainPlayerCharacter::Look(const FInputActionValue& Value)
 	const FVector2d LookToValue = Value.Get<FVector2d>();
 	AddControllerYawInput(LookToValue.X);
 	AddControllerPitchInput(LookToValue.Y);
+}
+
+void AMainPlayerCharacter::Server_SetActorTransformReplicated_Implementation(
+	const FTransform& Transform)
+{
+	SetActorTransform(Transform);
 }

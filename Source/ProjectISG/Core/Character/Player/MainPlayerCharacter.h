@@ -6,7 +6,6 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerCharacter.generated.h"
 
-
 class UInteractionComponent;
 class UScreenShotComponent;
 class UPlayerInventoryComponent;
@@ -35,6 +34,8 @@ public:
 
 	GETTER(TObjectPtr<UCameraComponent>, CameraComponent);
 
+	GETTER(TObjectPtr<UInputMappingContext>, DefaultMappingContext)
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -55,6 +56,9 @@ public:
 	       PlacementIndicatorComponent)
 	GETTER(TObjectPtr<UPlayerInventoryComponent>, PlayerInventoryComponent)
 	GETTER(TObjectPtr<UInteractionComponent>, InteractionComponent)
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetActorTransformReplicated(const FTransform& Transform);
 
 private:
 	UPROPERTY()
