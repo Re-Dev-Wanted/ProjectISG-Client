@@ -138,7 +138,7 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 
 bool UPlayerInventoryComponent::RemoveItemCurrentSlotIndex(const int32 Count)
 {
-	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
 
 	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 
@@ -181,4 +181,3 @@ Server_ChangeCurrentSlotIndex_Implementation(int idx)
 {
 	CurrentSlotIndex = idx;
 }
-
