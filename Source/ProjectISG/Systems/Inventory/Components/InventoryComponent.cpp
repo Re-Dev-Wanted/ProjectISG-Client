@@ -1,6 +1,7 @@
 ﻿#include "InventoryComponent.h"
 
 #include "Kismet/KismetMathLibrary.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
@@ -28,6 +29,14 @@ void UInventoryComponent::InitializeItemData()
 	BuildItemMetaInfo.SetCurrentCount(1);
 
 	InventoryList[2] = BuildItemMetaInfo;
+	AddItemToInventory(2, BuildItemMetaInfo);
+
+	FItemMetaInfo CropItemMetaInfo;
+	CropItemMetaInfo.SetId(3);
+	CropItemMetaInfo.SetCurrentCount(2);
+
+	InventoryList[3] = CropItemMetaInfo;
+	AddItemToInventory(3, CropItemMetaInfo);
 }
 
 void UInventoryComponent::BeginPlay()

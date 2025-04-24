@@ -29,13 +29,18 @@ class PROJECTISG_API AMainPlayerCharacter : public ABaseCharacter
 
 public:
 	AMainPlayerCharacter();
-
+	
 	FOnInputBindingNotified OnInputBindingNotified;
 
 	GETTER(TObjectPtr<UCameraComponent>, CameraComponent);
 
 	GETTER(TObjectPtr<UInputMappingContext>, DefaultMappingContext)
 
+	// client에서 crop에 접근하면 Authority가 아닌 SimulateProxy이기에 ServerRPC를 호출하지 못하는 문제가 발생
+	// 로직을 Authority를 가진 서버 쪽 Crop에 접근하기 위해서 플레이어쪽에서 ServerRPC를 호출하기 위한 함수
+	UFUNCTION(Reliable, Server)
+	void Server_InteractCrop(class ABaseCrop* crop);
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -51,7 +56,6 @@ protected:
 public:
 	GETTER_SETTER(bool, bIsSleep);
 	GETTER_SETTER(bool, bLieOnBed);
-	GETTER_SETTER(TObjectPtr<AActor>, MainHandItem)
 	GETTER(TObjectPtr<UPlacementIndicatorComponent>,
 	       PlacementIndicatorComponent)
 	GETTER(TObjectPtr<UPlayerInventoryComponent>, PlayerInventoryComponent)
@@ -61,9 +65,6 @@ public:
 	void Server_SetActorTransformReplicated(const FTransform& Transform);
 
 private:
-	UPROPERTY()
-	TObjectPtr<AActor> MainHandItem;
-
 #pragma region ActorComponent
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent;

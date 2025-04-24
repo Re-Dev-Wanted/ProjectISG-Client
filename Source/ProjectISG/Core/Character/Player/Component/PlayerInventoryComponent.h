@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "ProjectISG/Utils/MacroUtil.h"
 #include "PlayerInventoryComponent.generated.h"
 
 struct FInputActionValue;
@@ -21,12 +22,19 @@ public:
 
 	void InitializePlayerInventory();
 
+	GETTER(int, CurrentSlotIndex);
+
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void InitializeComponent() override;
 
+	virtual void GetLifetimeReplicatedProps(
+		TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
 private:
+	bool IsOpenedInventory = false;
+	UPROPERTY(Replicated)
 	int CurrentSlotIndex = 0;
 	uint8 MaxMainSlotIndex = 8;
 
@@ -55,4 +63,7 @@ private:
 
 	UFUNCTION()
 	void UpdatePlayerInventoryUI();
+
+	UFUNCTION(Reliable, Server)
+	void Server_ChangeCurrentSlotIndex(int idx);
 };

@@ -70,4 +70,11 @@ namespace ISGGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooking_Active_StartCooking,
 	                               "Cooking.Active.StartCooking",
 	                               "요리 관련 액티브 : 요리 시작");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Farming_Active_Watering,
+	                               "Farming.Active.Watering",
+	                               "농사 관련 액티브 : 물주기");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Farming_Active_Harvest,
+	                               "Farming.Active.Harvest",
+	                               "농사 관련 액티브 : 수확하기");
 }

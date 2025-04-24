@@ -11,7 +11,8 @@ UENUM()
 enum class EAbilityInputId : uint8
 {
 	Undefined,
-	Test
+	Test,
+	Test1,
 };
 
 UCLASS()

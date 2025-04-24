@@ -1,5 +1,7 @@
 ﻿#include "MainPlayerController.h"
 
+#include "Blueprint/UserWidget.h"
+#include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"

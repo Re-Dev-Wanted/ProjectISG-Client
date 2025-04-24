@@ -1,5 +1,6 @@
 ﻿#include "PlayerInventoryComponent.h"
 #include "EnhancedInputComponent.h"
+#include "Net/UnrealNetwork.h"
 
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
@@ -21,6 +22,14 @@ void UPlayerInventoryComponent::InitializeComponent()
 
 	OwnerPlayer->OnInputBindingNotified.AddDynamic(
 		this, &ThisClass::BindingInputActions);
+}
+
+void UPlayerInventoryComponent::GetLifetimeReplicatedProps(
+	TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, CurrentSlotIndex);
 }
 
 void UPlayerInventoryComponent::BeginPlay()
@@ -103,14 +112,10 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 	{
 		Player->GetPlacementIndicatorComponent()->OnActivate(
 			ItemInfoData.GetShowItemActor());
-		Player->SetMainHandItem(nullptr);
 	}
 	else
 	{
 		Player->GetPlacementIndicatorComponent()->OnDeactivate();
-		AActor* SpawnActor = GetWorld()->SpawnActor(
-			ItemInfoData.GetShowItemActor());
-		Player->SetMainHandItem(SpawnActor);
 	}
 
 	const AMainPlayerController* PC = Cast<AMainPlayerController>(
@@ -128,7 +133,7 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 
 	PC->GetMainHUD()->SelectSlot(CurrentSlotIndex, NewIndex);
 
-	CurrentSlotIndex = NewIndex;
+	Server_ChangeCurrentSlotIndex(NewIndex);
 }
 
 bool UPlayerInventoryComponent::RemoveItemCurrentSlotIndex(const int32 Count)
@@ -170,3 +175,10 @@ void UPlayerInventoryComponent::UpdatePlayerInventoryUI()
 		             UpdateInventorySlotItemData();
 	}
 }
+
+void UPlayerInventoryComponent::
+Server_ChangeCurrentSlotIndex_Implementation(int idx)
+{
+	CurrentSlotIndex = idx;
+}
+
