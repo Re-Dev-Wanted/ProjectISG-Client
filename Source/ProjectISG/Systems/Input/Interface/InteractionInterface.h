@@ -18,21 +18,12 @@ class PROJECTISG_API IInteractionInterface
 	GENERATED_BODY()
 
 public:
-	GETTER(bool, CanInteractive)
-	GETTER(bool, CanTouch)
-	GETTER(FString, DisplayText)
-	GETTER(FString, DisplayKey)
+	virtual bool GetCanInteractive() const { return false; }
+	virtual bool GetCanTouch() const { return false; }
+	virtual FString GetDisplayText() const { return TEXT(""); }
+	virtual FString GetDisplayKey() const { return TEXT(""); }
 
 	virtual void OnInteractive(AActor* Causer);
 
 	virtual void OnTouch(AActor* Causer);
-
-protected:
-	FString DisplayText;
-	FString DisplayKey;
-
-	// F키 같은 별도의 Interactive 키에 대한 대응
-	bool CanInteractive = false;
-	// 마우스 우클릭에 대한 대응 처리
-	bool CanTouch = false;
 };

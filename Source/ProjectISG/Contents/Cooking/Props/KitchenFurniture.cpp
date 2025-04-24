@@ -19,15 +19,21 @@ AKitchenFurniture::AKitchenFurniture()
 	KitchenCameraComponent = CreateDefaultSubobject<UCameraComponent>(
 		"Kitchen Camera Component");
 	KitchenCameraComponent->SetupAttachment(Mesh);
+}
 
-	CanInteractive = true;
+bool AKitchenFurniture::GetCanInteractive() const
+{
+	return true;
+}
+
+FString AKitchenFurniture::GetDisplayText() const
+{
+	return TEXT("요리하기");
 }
 
 void AKitchenFurniture::BeginPlay()
 {
 	Super::BeginPlay();
-
-	DisplayText = TEXT("요리하기");
 }
 
 void AKitchenFurniture::OnInteractive(AActor* Causer)
