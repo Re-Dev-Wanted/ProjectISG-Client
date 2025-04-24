@@ -19,6 +19,12 @@ public:
 
 	virtual void OnInteractive(AActor* Causer) override;
 
+	GETTER(TObjectPtr<UCameraComponent>, KitchenCameraComponent)
+
+	virtual bool GetCanInteractive() const override;
+
+	virtual FString GetDisplayText() const override;
+
 protected:
 	virtual void BeginPlay() override;
 

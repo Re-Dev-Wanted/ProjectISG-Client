@@ -10,9 +10,10 @@ AMainPlayerState::AMainPlayerState()
 	AbilitySystemComponent = CreateDefaultSubobject<UISGAbilitySystemComponent>(
 		"Ability System Component");
 
-	AttributeSet = CreateDefaultSubobject<UISGAttributeSet>(TEXT("Attribute Set"));
+	AttributeSet = CreateDefaultSubobject<UISGAttributeSet>(
+		TEXT("Attribute Set"));
 
-	
+
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(
 		"Inventory Component");
 }
@@ -30,5 +31,4 @@ void AMainPlayerState::BeginPlay()
 void AMainPlayerState::InitializeData()
 {
 	GetInventoryComponent()->InitializeItemData();
-	Cast<AMainPlayerController>(GetPlayerController())->InitializeHUD();
 }

@@ -4,6 +4,7 @@
 #include "Camera/CameraComponent.h"
 #include "AbilitySystemComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 
 AKitchenFurniture::AKitchenFurniture()
@@ -18,28 +19,43 @@ AKitchenFurniture::AKitchenFurniture()
 	KitchenCameraComponent = CreateDefaultSubobject<UCameraComponent>(
 		"Kitchen Camera Component");
 	KitchenCameraComponent->SetupAttachment(Mesh);
+}
 
-	CanInteractive = true;
+bool AKitchenFurniture::GetCanInteractive() const
+{
+	return true;
+}
+
+FString AKitchenFurniture::GetDisplayText() const
+{
+	return TEXT("요리하기");
 }
 
 void AKitchenFurniture::BeginPlay()
 {
 	Super::BeginPlay();
-
-	DisplayText = TEXT("요리하기");
 }
 
 void AKitchenFurniture::OnInteractive(AActor* Causer)
 {
 	IInteractionInterface::OnInteractive(Causer);
 
-	Causer->SetActorTransform(KitchenStandPosition->GetComponentTransform());
-
-	FGameplayTagContainer ActivateTag;
-	ActivateTag.AddTag(ISGGameplayTags::Cooking_Active_StartCooking);
-
-	if (const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
+	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
+		Player->bUseControllerRotationYaw = false;
+		Player->SetActorTransform(
+			KitchenStandPosition->GetComponentTransform());
+
+		if (!Player->HasAuthority())
+		{
+			Player->Server_SetActorTransformReplicated(
+				KitchenStandPosition->GetComponentTransform());
+		}
+
+		Player->GetInteractionComponent()->SetIsInteractive(false);
+
+		FGameplayTagContainer ActivateTag;
+		ActivateTag.AddTag(ISGGameplayTags::Cooking_Active_StartCooking);
 		Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
 			ActivateTag);
 	}

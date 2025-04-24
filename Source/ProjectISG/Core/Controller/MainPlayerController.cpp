@@ -2,86 +2,91 @@
 
 #include "Blueprint/UserWidget.h"
 #include "ProjectISG/Contents/Farming/BaseCrop.h"
+#include "ProjectISG/Core/UI/UIEnum.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
-#include "ProjectISG/Core/UI/HUD/MainHUD.h"
-#include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
-#include "ProjectISG/Core/UI/HUD/Inventory/InventoryUI.h"
-#include "ProjectISG/Core/UI/HUD/Inventory/Module/ItemInfo.h"
+#include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
+#include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Popup/Inventory/UI/UIC_InventoryUI.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
-#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
+
+AMainPlayerController::AMainPlayerController()
+{
+	UIManageComponent = CreateDefaultSubobject<UUIManageComponent>(
+		"UI Manage Component");
+}
 
 void AMainPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+	ConsoleCommand(TEXT("showdebug abilitysystem"));
 
-	//ConsoleCommand(TEXT("showdebug abilitysystem"));
 	if (IsLocalController())
 	{
-		ItemInfoWidget = CreateWidget<UItemInfo>(this, ItemInfoWidgetClass);
-		ItemInfoWidget->RemoveItemWidget();
-		ItemInfoWidget->AddToViewport(9999);
+		UIManageComponent->Initialize();
+	}
+
+	if (IsLocalController() && HasAuthority())
+	{
+		GetPlayerState<AMainPlayerState>()->InitializeData();
+		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
 	}
 }
 
 void AMainPlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
-
 	GetPlayerState<AMainPlayerState>()->InitializeData();
+
+	if (IsLocalController())
+	{
+		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
+	}
 }
 
-void AMainPlayerController::OnPossess(APawn* InPawn)
+TObjectPtr<UUIC_MainHUD> AMainPlayerController::GetMainHUD() const
 {
-	Super::OnPossess(InPawn);
-
-	if (HasAuthority())
+	// 컨트롤러가 없는 경우에만 만들기
+	if (!UIManageComponent->ControllerInstances.FindRef(
+		EUIName::Gameplay_MainHUD) && UIManageComponent->HasViewUI(
+		EUIName::Gameplay_MainHUD))
 	{
-		GetPlayerState<AMainPlayerState>()->InitializeData();
+		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
 	}
+
+	return Cast<UUIC_MainHUD>(
+		UIManageComponent->ControllerInstances.FindRef(
+			EUIName::Gameplay_MainHUD));
 }
 
-void AMainPlayerController::ToggleInventoryUI(const bool IsShow)
+TObjectPtr<UUIC_InventoryUI> AMainPlayerController::GetInventoryUI() const
 {
-	if (!IsLocalController())
+	// 컨트롤러가 없는 경우에만 만들기
+	if (!UIManageComponent->ControllerInstances.FindRef(
+		EUIName::Popup_InventoryUI) && UIManageComponent->HasViewUI(
+		EUIName::Popup_InventoryUI))
 	{
-		return;
+		UIManageComponent->PushWidget(EUIName::Popup_InventoryUI);
 	}
 
-	if (!InventoryUI)
-	{
-		InventoryUI = CreateWidget<UInventoryUI>(this, InventoryUIClass);
-		InventoryUI->AddToViewport();
-	}
-
-	if (IsShow)
-	{
-		InventoryUI->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-		MainHUD->SetVisibility(ESlateVisibility::Hidden);
-
-		SetShowMouseCursor(true);
-		DisableInput(this);
-
-		return;
-	}
-
-	InventoryUI->SetVisibility(ESlateVisibility::Hidden);
-	MainHUD->GetMainSlotList()->UpdateItemData();
-	MainHUD->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
-
-	SetShowMouseCursor(false);
-	EnableInput(this);
+	return Cast<UUIC_InventoryUI>(
+		UIManageComponent->ControllerInstances.FindRef(
+			EUIName::Popup_InventoryUI));
 }
 
-void AMainPlayerController::InitializeHUD()
+void AMainPlayerController::PopUI()
+{
+	UIManageComponent->PopWidget();
+}
+
+void AMainPlayerController::OpenInventory()
 {
 	if (!IsLocalController())
 	{
 		return;
 	}
 
-	MainHUD = CreateWidget<UMainHUD>(this, MainHUDClass);
-	MainHUD->AddToViewport();
-	MainHUD->InitializeHUD();
+	UIManageComponent->PushWidget(EUIName::Popup_InventoryUI);
 }
 
 void AMainPlayerController::ShowItemInfo(const uint16 InventoryIndex) const
@@ -93,16 +98,19 @@ void AMainPlayerController::ShowItemInfo(const uint16 InventoryIndex) const
 
 	if (ItemMetaInfo.GetId() == 0)
 	{
-		return;
 	}
 
-	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(
-		ItemMetaInfo.GetId());
+	// UIManageComponent->PushWidget(EUIName::Modal_ItemInfo);
 
-	ItemInfoWidget->ShowItemData(ItemMetaInfo, ItemInfoData);
+	// UItemInfo* ItemInfoWidget = Cast<UItemInfo>(
+	// 	UIManageComponent->WidgetInstances[EUIName::Modal_ItemInfo]);
+	// ItemInfoWidget->ShowItemData(ItemMetaInfo);
 }
 
 void AMainPlayerController::RemoveItemInfo() const
 {
-	ItemInfoWidget->RemoveItemWidget();
+	// if (UIManageComponent->GetLastStackUI() == EUIName::Modal_ItemInfo)
+	// {
+	// 	UIManageComponent->PopWidget();
+	// }
 }

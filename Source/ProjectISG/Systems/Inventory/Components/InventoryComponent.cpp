@@ -16,19 +16,19 @@ void UInventoryComponent::InitializeItemData()
 	FItemMetaInfo NewItemMetaInfo;
 	NewItemMetaInfo.SetId(1);
 	NewItemMetaInfo.SetCurrentCount(1);
-
-	AddItemToInventory(0, NewItemMetaInfo);
+	InventoryList[0] = NewItemMetaInfo;
 
 	FItemMetaInfo NewItemMetaInfo2;
-	NewItemMetaInfo.SetId(1);
-	NewItemMetaInfo.SetCurrentCount(2);
+	NewItemMetaInfo2.SetId(1);
+	NewItemMetaInfo2.SetCurrentCount(2);
 
-	AddItemToInventory(1, NewItemMetaInfo);
+	InventoryList[1] = NewItemMetaInfo2;
 
 	FItemMetaInfo BuildItemMetaInfo;
 	BuildItemMetaInfo.SetId(2);
 	BuildItemMetaInfo.SetCurrentCount(1);
 
+	InventoryList[2] = BuildItemMetaInfo;
 	AddItemToInventory(2, BuildItemMetaInfo);
 
 	FItemMetaInfo CropItemMetaInfo;

@@ -6,13 +6,14 @@
 #include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
-#include "ProjectISG/Core/UI/HUD/MainHUD.h"
+#include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
 #include "ProjectISG/Systems/Input/Interface/InteractionInterface.h"
 
 UInteractionComponent::UInteractionComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	bWantsInitializeComponent = true;
+	IsInteractive = true;
 }
 
 void UInteractionComponent::BeginPlay()
@@ -90,7 +91,10 @@ void UInteractionComponent::TickComponent(float DeltaTime,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	LineTraceToFindTarget();
+	if (IsInteractive)
+	{
+		LineTraceToFindTarget();
+	}
 }
 
 void UInteractionComponent::LineTraceToFindTarget()
@@ -161,5 +165,33 @@ void UInteractionComponent::LineTraceToFindTarget()
 		{
 			PC->GetMainHUD()->ToggleInteractiveUI(false);
 		}
+	}
+}
+
+void UInteractionComponent::SetIsInteractive(const bool NewIsInteractive)
+{
+	IsInteractive = NewIsInteractive;
+
+	if (!NewIsInteractive)
+	{
+		if (!PlayerCharacter)
+		{
+			return;
+		}
+
+		const AMainPlayerController* PC = PlayerCharacter->GetController<
+			AMainPlayerController>();
+
+		if (!PC)
+		{
+			return;
+		}
+
+		if (!PC->GetMainHUD())
+		{
+			return;
+		}
+
+		PC->GetMainHUD()->ToggleInteractiveUI(false);
 	}
 }

@@ -15,8 +15,7 @@ class PROJECTISG_API UItemInfo : public UUserWidget
 
 public:
 	// 두개 다 필요로 해서 둘 다 가져오게끔 처리
-	void ShowItemData(const FItemMetaInfo& ItemMetaInfo,
-	                  const FItemInfoData& ItemInfoData);
+	void ShowItemData(const FItemMetaInfo& ItemMetaInfo);
 	void RemoveItemWidget();
 
 protected:

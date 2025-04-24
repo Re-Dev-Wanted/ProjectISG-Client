@@ -16,7 +16,7 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>("Spring Arm");
 	SpringArm->SetupAttachment(GetMesh());
 	SpringArm->SetRelativeRotation({0, 90, 0});
-	SpringArm->bUsePawnControlRotation = false;
+	SpringArm->bUsePawnControlRotation = true;
 
 	SpringArm->SetRelativeLocation({0, 0, 130});
 	SpringArm->SetRelativeRotation({0, 0, 90});
@@ -56,6 +56,20 @@ void AMainPlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	// FOnCaptureFrameNotified NewCaptureFrameNotified;
+	// NewCaptureFrameNotified.BindLambda([this](const TArray64<uint8>& FileBinary)
+	// {
+	// 	FDiaryLogParams PayloadData;
+	// 	PayloadData.ActionType = ELoggingActionType::DAY_CYCLE;
+	// 	PayloadData.ActionName = ELoggingActionName::evening;
+	// 	PayloadData.File = FileBinary;
+	//
+	// 	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+	// 	            SendLoggingNow(PayloadData);
+	// });
+	//
+	// ScreenShotComponent->SaveCaptureFrameImage(NewCaptureFrameNotified);
 }
 
 void AMainPlayerCharacter::OnRep_PlayerState()
@@ -156,4 +170,10 @@ void AMainPlayerCharacter::Server_InteractCrop_Implementation(
 
 	// 정상 처리
 	crop->OnInteractive(this);
+}
+
+void AMainPlayerCharacter::Server_SetActorTransformReplicated_Implementation(
+	const FTransform& Transform)
+{
+	SetActorTransform(Transform);
 }

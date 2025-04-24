@@ -6,7 +6,6 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerCharacter.generated.h"
 
-
 class UInteractionComponent;
 class UScreenShotComponent;
 class UPlayerInventoryComponent;
@@ -35,6 +34,8 @@ public:
 
 	GETTER(TObjectPtr<UCameraComponent>, CameraComponent);
 
+	GETTER(TObjectPtr<UInputMappingContext>, DefaultMappingContext)
+
 	// client에서 crop에 접근하면 Authority가 아닌 SimulateProxy이기에 ServerRPC를 호출하지 못하는 문제가 발생
 	// 로직을 Authority를 가진 서버 쪽 Crop에 접근하기 위해서 플레이어쪽에서 ServerRPC를 호출하기 위한 함수
 	UFUNCTION(Reliable, Server)
@@ -55,11 +56,13 @@ protected:
 public:
 	GETTER_SETTER(bool, bIsSleep);
 	GETTER_SETTER(bool, bLieOnBed);
-	
 	GETTER(TObjectPtr<UPlacementIndicatorComponent>,
 	       PlacementIndicatorComponent)
 	GETTER(TObjectPtr<UPlayerInventoryComponent>, PlayerInventoryComponent)
 	GETTER(TObjectPtr<UInteractionComponent>, InteractionComponent)
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetActorTransformReplicated(const FTransform& Transform);
 
 private:
 #pragma region ActorComponent

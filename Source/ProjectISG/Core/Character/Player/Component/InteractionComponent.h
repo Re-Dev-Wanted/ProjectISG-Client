@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "ProjectISG/Utils/MacroUtil.h"
 #include "InteractionComponent.generated.h"
 
 
@@ -15,6 +16,10 @@ class PROJECTISG_API UInteractionComponent : public UActorComponent
 
 public:
 	UInteractionComponent();
+
+	GETTER(FHitResult, TargetTraceResult)
+
+	void SetIsInteractive(const bool NewIsInteractive);
 
 protected:
 	virtual void BeginPlay() override;
@@ -62,5 +67,9 @@ private:
 	FHitResult TargetTraceResult;
 
 	void LineTraceToFindTarget();
+
+	// 현재 상호작용 중 인지 알 수 있는 flag 값으로
+	// 해당 flag가 비활성화 상태인 경우는 Trace가 되지 않는 상태가 된다.
+	bool IsInteractive;
 #pragma endregion
 };

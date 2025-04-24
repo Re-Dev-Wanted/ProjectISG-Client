@@ -1,18 +1,17 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
-#include "ProjectISG/Utils/MacroUtil.h"
-#include "InventoryUI.generated.h"
+#include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
+#include "UIV_InventoryUI.generated.h"
 
 class UInventoryList;
 
 UCLASS()
-class PROJECTISG_API UInventoryUI : public UUserWidget
+class PROJECTISG_API UUIV_InventoryUI : public UBaseUIView
 {
-public:
 	GENERATED_BODY()
 
+public:
 	GETTER(TObjectPtr<UInventoryList>, InventoryList)
 	GETTER(TObjectPtr<UInventoryList>, MainSlotList)
 
