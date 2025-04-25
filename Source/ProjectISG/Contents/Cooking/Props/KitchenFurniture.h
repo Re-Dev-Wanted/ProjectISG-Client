@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "ProjectISG/GAS/Common/Object/BaseActor.h"
 #include "ProjectISG/Systems/Input/Interface/InteractionInterface.h"
+#include "ProjectISG/Utils/MacroUtil.h"
 #include "KitchenFurniture.generated.h"
 
 class UCameraComponent;

@@ -92,6 +92,16 @@ void UGA_BaseInputAbility::EndAbility(
 	}
 }
 
+void UGA_BaseInputAbility::BlockInputForMontage(bool value)
+{
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		CurrentActorInfo->AvatarActor.Get());
+	if (Player)
+	{
+		Player->GetController()->SetIgnoreLookInput(value);
+	}
+}
+
 // Ability 자체가 제거될 때 기본적인 Binding된 정보를 제거해준다.
 void UGA_BaseInputAbility::OnRemoveAbility(
 	const FGameplayAbilityActorInfo* ActorInfo,
