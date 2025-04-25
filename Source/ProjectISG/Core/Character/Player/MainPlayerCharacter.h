@@ -2,13 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Core/Character/BaseCharacter.h"
-#include "ProjectISG/Systems/Grid/Components/PlacementIndicatorComponent.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerCharacter.generated.h"
 
 class UInteractionComponent;
 class UScreenShotComponent;
 class UPlayerInventoryComponent;
+class UPlacementIndicatorComponent;
+class UPlayerHandSlotComponent;
 struct FInputActionValue;
 
 class USpringArmComponent;
@@ -22,6 +23,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInputBindingNotified,
                                             UEnhancedInputComponent*,
                                             EnhancedInputComponent);
 
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnUpdateSelectedItem, bool, 
+TSubclassOf<AActor>, FName);
+
 UCLASS()
 class PROJECTISG_API AMainPlayerCharacter : public ABaseCharacter
 {
@@ -31,6 +35,8 @@ public:
 	AMainPlayerCharacter();
 	
 	FOnInputBindingNotified OnInputBindingNotified;
+
+	FOnUpdateSelectedItem OnUpdateSelectedItem;
 
 	GETTER(TObjectPtr<UCameraComponent>, CameraComponent);
 
@@ -60,6 +66,7 @@ public:
 	       PlacementIndicatorComponent)
 	GETTER(TObjectPtr<UPlayerInventoryComponent>, PlayerInventoryComponent)
 	GETTER(TObjectPtr<UInteractionComponent>, InteractionComponent)
+	GETTER(TObjectPtr<UPlayerHandSlotComponent>, HandSlotComponent)
 
 	UFUNCTION(Server, Reliable)
 	void Server_SetActorTransformReplicated(const FTransform& Transform);
@@ -79,6 +86,10 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
 		meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInteractionComponent> InteractionComponent;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<UPlayerHandSlotComponent> HandSlotComponent;
 #pragma endregion
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))

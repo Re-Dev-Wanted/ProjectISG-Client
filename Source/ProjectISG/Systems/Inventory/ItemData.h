@@ -31,7 +31,8 @@ enum class EConstDataKey : uint32
 {
 	None,
 	MaxDurability,
-	ItemUseType
+	ItemUseType,
+	SocketName
 };
 
 // 아이템 정보를 담아 추후 아이템을 구성할 때 사용할 요소

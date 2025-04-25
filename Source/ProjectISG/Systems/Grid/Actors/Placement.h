@@ -2,13 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ProjectISG/GAS/Common/Object/BaseActor.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "Placement.generated.h"
 
 // 그리드에 place할 모든 것들은 이것을 상속 받아야함
 
 UCLASS()
-class PROJECTISG_API APlacement : public AActor
+class PROJECTISG_API APlacement : public ABaseActor
 {
 	GENERATED_BODY()
 

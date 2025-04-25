@@ -18,6 +18,10 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	virtual void OnAttackAction(AActor* Causer) {}
+	virtual void OnInteractAction(AActor* Causer) {}
+	virtual void OnTouchAction(AActor* Causer) {}
+
 protected:
 	virtual void BeginPlay() override;
 

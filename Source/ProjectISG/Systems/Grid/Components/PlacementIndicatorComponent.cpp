@@ -21,6 +21,25 @@ void UPlacementIndicatorComponent::BeginPlay()
 
 	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	GridManager = Cast<AGridManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGridManager::StaticClass()));
+
+	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner()))
+	{
+		Player->OnUpdateSelectedItem.AddUObject(this, 
+		&UPlacementIndicatorComponent::OnUpdateSelectedItem);
+	}
+}
+
+void UPlacementIndicatorComponent::OnUpdateSelectedItem(bool bIsEquippable,
+	TSubclassOf<AActor> ActorClass, FName SocketName)
+{
+	if (bIsEquippable)
+	{
+		OnDeactivate();
+	}
+	else
+	{
+		OnActivate(ActorClass);
+	}
 }
 
 // Called every frame

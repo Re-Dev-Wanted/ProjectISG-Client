@@ -20,6 +20,10 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+	void OnUpdateSelectedItem(bool bIsEquippable, TSubclassOf<AActor> 
+	ActorClass, FName SocketName = NAME_None);
+
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,

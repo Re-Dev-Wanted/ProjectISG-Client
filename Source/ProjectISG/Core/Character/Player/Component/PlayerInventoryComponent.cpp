@@ -105,18 +105,13 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 		NewIndex].GetId();
 
 	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
+	
+	const bool IsItemCanHousing = UItemManager::IsItemCanHousing(ItemId);
 
-	const bool bAvailable = UItemManager::IsItemCanHousing(ItemId);
+	const FName SocketName = UItemManager::GetSocketName(ItemId);
 
-	if (bAvailable)
-	{
-		Player->GetPlacementIndicatorComponent()->OnActivate(
-			ItemInfoData.GetShowItemActor());
-	}
-	else
-	{
-		Player->GetPlacementIndicatorComponent()->OnDeactivate();
-	}
+	Player->OnUpdateSelectedItem.Broadcast(!IsItemCanHousing,
+	ItemInfoData.GetShowItemActor(), SocketName);
 
 	const AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetOwner()->GetInstigatorController());

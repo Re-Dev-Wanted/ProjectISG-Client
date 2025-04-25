@@ -77,3 +77,24 @@ bool UItemManager::IsItemCanInteraction(const uint16 Id)
 	
 	return true;
 }
+
+FName UItemManager::GetSocketName(const uint16 Id)
+{
+	const FItemInfoData ItemInfoData = GetItemInfoById(Id);
+
+	const FString* FindData = ItemInfoData.GetConstData().Find(EConstDataKey::SocketName);
+
+	if (!FindData)
+	{
+		return NAME_None;
+	}
+
+	const FString FindDataRef = ItemInfoData.GetConstData().FindRef(EConstDataKey::SocketName);
+
+	if (FindDataRef.IsEmpty())
+	{
+		return NAME_None;
+	}
+
+	return *FindDataRef;
+}
