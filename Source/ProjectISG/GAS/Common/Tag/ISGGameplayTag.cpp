@@ -70,6 +70,9 @@ namespace ISGGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooking_Active_StartCooking,
 	                               "Cooking.Active.StartCooking",
 	                               "요리 관련 액티브 : 요리 시작");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooking_Active_EndCooking,
+	                               "Cooking.Active.EndCooking",
+	                               "요리 관련 액티브 : 요리 종료");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Farming_Active_Watering,
 	                               "Farming.Active.Watering",

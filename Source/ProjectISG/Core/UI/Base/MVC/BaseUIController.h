@@ -27,6 +27,7 @@ public:
 	virtual void PopUIFromPlayerController();
 
 	GETTER(TObjectPtr<UBaseUIView>, View)
+	GETTER(TObjectPtr<APlayerController>, PlayerController)
 
 protected:
 	GETTER_EDITABLE(TObjectPtr<UBaseUIModel>, Model)
