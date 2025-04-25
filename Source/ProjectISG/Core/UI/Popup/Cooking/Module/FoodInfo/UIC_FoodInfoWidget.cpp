@@ -1,4 +1,13 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿#include "UIC_FoodInfoWidget.h"
 
+#include "UIV_FoodInfoWidget.h"
+#include "Components/Image.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
-#include "UIC_FoodInfoWidget.h"
+void UUIC_FoodInfoWidget::SetFoodThumbnail(const uint32 FoodId)
+{
+	UTexture2D* Thumbnail = UItemManager::GetItemInfoById(FoodId).GetThumbnail()
+		.LoadSynchronous();
+	Cast<UUIV_FoodInfoWidget>(GetView())->GetFoodThumbnail()->
+	                                      SetBrushFromTexture(Thumbnail);
+}

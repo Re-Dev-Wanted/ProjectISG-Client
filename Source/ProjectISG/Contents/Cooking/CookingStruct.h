@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include "CookingEnum.h"
+#include "ProjectISG/Utils/MacroUtil.h"
 
 #include "CookingStruct.generated.h"
 
@@ -18,14 +20,19 @@ struct PROJECTISG_API FFoodRecipe : public FTableRowBase
 {
 	GENERATED_BODY()
 
+	GETTER(uint32, FoodId)
+	GETTER(ECookingTool, CookingTool)
+	FORCEINLINE TMap<uint16, uint8> GetRecipeData() { return RecipeData; }
+
+private:
 	// 실제로는 Item Table에 들어가는 아이디로 Recipe의
 	// 고유한 RowName과 별개로 관리한다.
-	UPROPERTY()
-	uint32 FoodId;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	uint32 FoodId = 0;
 
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TMap<uint16, uint8> RecipeData;
 
-	UPROPERTY()
-	ECookingTool CookingTool;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	ECookingTool CookingTool = ECookingTool::None;
 };

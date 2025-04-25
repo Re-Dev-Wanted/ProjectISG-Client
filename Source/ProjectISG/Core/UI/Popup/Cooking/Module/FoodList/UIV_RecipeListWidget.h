@@ -12,6 +12,11 @@ class PROJECTISG_API UUIV_RecipeListWidget : public UBaseUIView
 {
 	GENERATED_BODY()
 
+public:
+	GETTER(TObjectPtr<UGridPanel>, RecipeListGrid)
+	GETTER(uint16, ColumnValue)
+	GETTER(TSubclassOf<UUIV_FoodInfoWidget>, FoodInfoWidgetClass)
+
 protected:
 	virtual void NativePreConstruct() override;
 

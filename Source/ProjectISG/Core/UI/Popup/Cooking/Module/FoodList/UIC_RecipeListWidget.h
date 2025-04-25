@@ -8,4 +8,7 @@ UCLASS()
 class PROJECTISG_API UUIC_RecipeListWidget : public UBaseUIController
 {
 	GENERATED_BODY()
+
+public:
+	void InitializeData();
 };
