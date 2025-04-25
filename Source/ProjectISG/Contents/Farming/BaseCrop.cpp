@@ -154,6 +154,7 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 	CanInteractive = false;
 
 	Causer->SetActorLocation(InteractionPos->GetComponentLocation());
+	Causer->SetActorRotation(InteractionPos->GetComponentRotation());
 
 	FGameplayTagContainer ActivateTag;
 	if (bIsMature)

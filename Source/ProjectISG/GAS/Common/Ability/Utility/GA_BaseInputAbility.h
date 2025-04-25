@@ -52,6 +52,9 @@ protected:
 		meta = (AllowPrivateAccess = true))
 	bool IsPassive;
 
+public:
+	void BlockInputForMontage(bool value);
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Option|Input",
 		meta = (AllowPrivateAccess = true, EditCondition = "!IsPassive"))
@@ -64,4 +67,5 @@ private:
 	void OnAbilityInputPressed(const FGameplayAbilityActorInfo* ActorInfo);
 
 	void OnAbilityInputReleased(const FGameplayAbilityActorInfo* ActorInfo);
+
 };

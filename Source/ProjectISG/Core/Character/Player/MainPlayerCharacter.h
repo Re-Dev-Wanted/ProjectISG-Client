@@ -54,12 +54,15 @@ protected:
 	virtual void InitializeAbilitySystem() override;
 
 public:
-	GETTER_SETTER(bool, bIsSleep);
-	GETTER_SETTER(bool, bLieOnBed);
+	GETTER_SETTER(bool, bIsSleep)
+	GETTER_SETTER(bool, bLieOnBed)
 	GETTER(TObjectPtr<UPlacementIndicatorComponent>,
 	       PlacementIndicatorComponent)
 	GETTER(TObjectPtr<UPlayerInventoryComponent>, PlayerInventoryComponent)
 	GETTER(TObjectPtr<UInteractionComponent>, InteractionComponent)
+
+	GETTER(TObjectPtr<UAnimMontage>, SeedingMontage)
+	GETTER(TObjectPtr<UAnimMontage>, WateringMontage)
 
 	UFUNCTION(Server, Reliable)
 	void Server_SetActorTransformReplicated(const FTransform& Transform);
@@ -106,10 +109,19 @@ private:
 	void Look(const FInputActionValue& Value);
 
 	// 장진혁
+#pragma region JJH
 	UPROPERTY(EditAnywhere, Category = "Sleep",
 		meta = (AllowPrivateAccess = true))
 	bool bIsSleep = false;
 	UPROPERTY(EditAnywhere, Category = "Sleep",
 		meta = (AllowPrivateAccess = true))
 	bool bLieOnBed = false;
+
+	UPROPERTY(EditAnywhere, Category = "Farming",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<UAnimMontage> SeedingMontage;
+	UPROPERTY(EditAnywhere, Category = "Farming",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<UAnimMontage> WateringMontage;
+#pragma endregion 
 };
