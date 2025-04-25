@@ -60,8 +60,8 @@ void UInteractionComponent::OnInteractive()
 	}
 
 	// OnInteraction 호출 전에 클라이언트가 접근하고 있는 작물 액터의 정보를 플레이어 서버RPC함수에 전달
-	ABaseCrop* crop = Cast<ABaseCrop>(TargetTraceResult.GetActor());
-	PlayerCharacter->Server_InteractCrop(crop);
+	ABaseCrop* Crop = Cast<ABaseCrop>(TargetTraceResult.GetActor());
+	Server_InteractCrop(Crop);
 	
 	Interaction->OnInteractive(GetOwner());
 }
@@ -194,4 +194,23 @@ void UInteractionComponent::SetIsInteractive(const bool NewIsInteractive)
 
 		PC->GetMainHUD()->ToggleInteractiveUI(false);
 	}
+}
+
+void UInteractionComponent::Server_InteractCrop_Implementation(
+	class ABaseCrop* crop)
+{
+	if (!crop || !crop->IsValidLowLevel() || crop->IsPendingKillPending())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Invalid crop received from client"));
+		return;
+	}
+
+	if (!crop->HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Warning: Forged object"));
+		return;
+	}
+
+	// 정상 처리
+	crop->OnInteractive(PlayerCharacter);
 }
