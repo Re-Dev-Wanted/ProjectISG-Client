@@ -4,6 +4,7 @@
 #include "ProjectISG/GAS/Common/Ability/Utility/GA_BaseInputAbility.h"
 #include "GA_StartCookingMode.generated.h"
 
+class AMainPlayerCharacter;
 class UAT_StartCookingModeCinematic;
 class ULevelSequence;
 

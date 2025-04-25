@@ -1,5 +1,7 @@
 ﻿#include "GA_StartCookingMode.h"
 
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "Task/AT_StartCookingModeCinematic.h"
 
 void UGA_StartCookingMode::ActivateAbility(
@@ -10,6 +12,11 @@ void UGA_StartCookingMode::ActivateAbility(
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		GetAvatarActorFromActorInfo());
+
+	Player->GetController<AMainPlayerController>()->PopUI();
+
 	AT_StartCookingModeCinematic = UAT_StartCookingModeCinematic::InitialEvent(
 		this, StartCookingCinematic);
 	AT_StartCookingModeCinematic->OnStartCookingModeCinematicEndNotified.
@@ -19,6 +26,12 @@ void UGA_StartCookingMode::ActivateAbility(
 
 void UGA_StartCookingMode::OnEndCinematic()
 {
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		GetAvatarActorFromActorInfo());
+
+	Player->GetController<AMainPlayerController>()->PushUI(
+		EUIName::Popup_CookingRecipeUI);
+
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo,
 	           false, false);
 }

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "ProjectISG/Core/UI/UIEnum.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerController.generated.h"
 
@@ -24,6 +25,7 @@ public:
 	void OpenInventory();
 	void ShowItemInfo(const uint16 InventoryIndex) const;
 	void RemoveItemInfo() const;
+	void PushUI(const EUIName UIName);
 	void PopUI();
 
 #pragma region GetUI

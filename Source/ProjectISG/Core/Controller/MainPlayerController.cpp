@@ -74,6 +74,11 @@ TObjectPtr<UUIC_InventoryUI> AMainPlayerController::GetInventoryUI() const
 			EUIName::Popup_InventoryUI));
 }
 
+void AMainPlayerController::PushUI(const EUIName UIName)
+{
+	UIManageComponent->PushWidget(UIName);
+}
+
 void AMainPlayerController::PopUI()
 {
 	UIManageComponent->PopWidget();
