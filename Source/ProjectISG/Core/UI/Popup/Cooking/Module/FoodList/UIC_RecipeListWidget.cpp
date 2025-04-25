@@ -25,7 +25,7 @@ void UUIC_RecipeListWidget::InitializeData()
 			NewWidget, i / RecipeListWidgetView->GetColumnValue()
 			, i % RecipeListWidgetView->GetColumnValue());
 
-		Cast<UUIC_FoodInfoWidget>(NewWidget->GetController())->SetFoodThumbnail(
+		Cast<UUIC_FoodInfoWidget>(NewWidget->GetController())->SetFoodInfo(
 			RecipeData.Value.GetFoodId());
 
 		i += 1;

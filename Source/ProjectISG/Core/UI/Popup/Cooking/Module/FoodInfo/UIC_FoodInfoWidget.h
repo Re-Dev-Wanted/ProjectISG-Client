@@ -10,5 +10,5 @@ class PROJECTISG_API UUIC_FoodInfoWidget : public UBaseUIController
 	GENERATED_BODY()
 
 public:
-	void SetFoodThumbnail(const uint32 FoodId);
+	void SetFoodInfo(const uint32 FoodId);
 };
