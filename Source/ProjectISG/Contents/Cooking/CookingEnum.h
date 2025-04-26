@@ -5,6 +5,17 @@
 UENUM()
 enum class ECookingTool : uint8
 {
-	None,
-	FryingPan,
+	None, FryingPan,
+};
+
+UENUM()
+enum class ECookingQTEType: uint8
+{
+	None, KeyPressArray, KeyChargeGage
+};
+
+UENUM()
+enum class ECookingQTEKey: uint8
+{
+	Q, W, E, A, S, D, Space
 };
