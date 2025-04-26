@@ -13,21 +13,15 @@ void UUIC_RecipeListWidget::InitializeData()
 
 	RecipeListWidgetView->GetRecipeListGrid()->ClearChildren();
 
-	int i = 0;
-	for (auto RecipeData :
-	     UCookingManager::GetRecipeData())
+	for (int i = 0; i < UCookingManager::GetRecipeData().Num(); i++)
 	{
 		UUIV_FoodInfoWidget* NewWidget = CreateWidget<UUIV_FoodInfoWidget>(
-			RecipeListWidgetView,
-			RecipeListWidgetView->GetFoodInfoWidgetClass());
+			RecipeListWidgetView
+			, RecipeListWidgetView->GetFoodInfoWidgetClass());
 
 		RecipeListWidgetView->GetRecipeListGrid()->AddChildToGrid(
 			NewWidget, i / RecipeListWidgetView->GetColumnValue()
 			, i % RecipeListWidgetView->GetColumnValue());
-
-		Cast<UUIC_FoodInfoWidget>(NewWidget->GetController())->SetFoodInfo(
-			RecipeData.Value.GetFoodId());
-
-		i += 1;
+		Cast<UUIC_FoodInfoWidget>(NewWidget->GetController())->SetFoodInfo(i);
 	}
 }

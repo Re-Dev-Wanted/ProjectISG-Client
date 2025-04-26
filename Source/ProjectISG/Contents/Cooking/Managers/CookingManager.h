@@ -12,8 +12,11 @@ class PROJECTISG_API UCookingManager : public UObject
 
 public:
 	static void Initialize();
-	static TMap<uint32, FFoodRecipe> GetRecipeData() { return RecipeData; }
+	static TArray<FFoodRecipe> GetRecipeData() { return RecipeData; }
 
 private:
-	static TMap<uint32, FFoodRecipe> RecipeData;
+	// 
+	static TMap<uint32, TArray<FFoodRecipe>> RecipeMapByFoodId;
+	static TArray<FFoodRecipe> RecipeData;
+	static bool IsInitialize;
 };

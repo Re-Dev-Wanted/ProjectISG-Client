@@ -8,4 +8,7 @@ UCLASS()
 class PROJECTISG_API UUIC_SelectedFoodDetailWidget : public UBaseUIController
 {
 	GENERATED_BODY()
+
+public:
+	void ShowDataByRecipeId(const uint32 RecipeId);
 };

@@ -22,7 +22,7 @@ struct PROJECTISG_API FFoodRecipe : public FTableRowBase
 
 	GETTER(uint32, FoodId)
 	GETTER(ECookingTool, CookingTool)
-	FORCEINLINE TMap<uint16, uint8> GetRecipeData() { return RecipeData; }
+	FORCEINLINE TMap<uint16, uint8> GetRecipeData() const { return RecipeData; }
 
 private:
 	// 실제로는 Item Table에 들어가는 아이디로 Recipe의

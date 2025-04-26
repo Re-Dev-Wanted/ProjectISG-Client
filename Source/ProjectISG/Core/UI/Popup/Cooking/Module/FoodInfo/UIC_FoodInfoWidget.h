@@ -10,5 +10,13 @@ class PROJECTISG_API UUIC_FoodInfoWidget : public UBaseUIController
 	GENERATED_BODY()
 
 public:
-	void SetFoodInfo(const uint32 FoodId);
+	void SetFoodInfo(const uint32 RecipeId);
+
+protected:
+	virtual void InitializeController(UBaseUIView* NewView
+									, UBaseUIModel* NewModel) override;
+
+private:
+	UFUNCTION()
+	void OnSelectFoodData();
 };
