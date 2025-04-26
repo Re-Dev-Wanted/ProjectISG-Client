@@ -4,6 +4,7 @@
 #include "EnhancedInputComponent.h"
 #include "UIM_CookingRecipeUI.h"
 #include "UIV_CookingRecipeUI.h"
+#include "Components/Button.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Popup/Cooking/Module/SelectedFoodDetail/UIC_SelectedFoodDetailWidget.h"
 #include "ProjectISG/Core/UI/Popup/Cooking/Module/SelectedFoodDetail/UIV_SelectedFoodDetailWidget.h"
@@ -13,11 +14,13 @@ void UUIC_CookingRecipeUI::AppearUI(const EUILayer Layer)
 {
 	Super::AppearUI(Layer);
 
-	UUIV_CookingRecipeUI* CookingRecipeUI = Cast<UUIV_CookingRecipeUI>(
+	const UUIV_CookingRecipeUI* CookingRecipeUI = Cast<UUIV_CookingRecipeUI>(
 		GetView());
 	const bool IsShowSelectedRecipe = Cast<UUIM_CookingRecipeUI>(GetModel())->
 		GetSelectedRecipe() != INDEX_NONE;
 
+	CookingRecipeUI->GetCookingButton()->OnClicked.AddDynamic(
+		this, &ThisClass::StartCooking);
 	CookingRecipeUI->GetSelectedFoodDetail()->SetVisibility(
 		IsShowSelectedRecipe
 			? ESlateVisibility::Visible
@@ -61,6 +64,16 @@ void UUIC_CookingRecipeUI::OnCloseCookingRecipeUI()
 {
 	FGameplayTagContainer ActivateTag;
 	ActivateTag.AddTag(ISGGameplayTags::Cooking_Active_EndCooking);
+
+	GetPlayerController()->GetPlayerState<AMainPlayerState>()->
+							GetAbilitySystemComponent()->
+							TryActivateAbilitiesByTag(ActivateTag);
+}
+
+void UUIC_CookingRecipeUI::StartCooking()
+{
+	FGameplayTagContainer ActivateTag;
+	ActivateTag.AddTag(ISGGameplayTags::Cooking_Active_QTEAction);
 
 	GetPlayerController()->GetPlayerState<AMainPlayerState>()->
 							GetAbilitySystemComponent()->

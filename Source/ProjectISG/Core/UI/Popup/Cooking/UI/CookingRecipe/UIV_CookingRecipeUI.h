@@ -16,6 +16,7 @@ class PROJECTISG_API UUIV_CookingRecipeUI : public UBaseUIView
 
 public:
 	GETTER(TObjectPtr<UUIV_SelectedFoodDetailWidget>, SelectedFoodDetail)
+	GETTER(TObjectPtr<UButton>, CookingButton)
 
 private:
 	UPROPERTY(meta = (BindWidget))

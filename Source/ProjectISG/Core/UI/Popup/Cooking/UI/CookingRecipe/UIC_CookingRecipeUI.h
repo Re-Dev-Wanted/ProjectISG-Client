@@ -29,4 +29,7 @@ private:
 
 	UFUNCTION()
 	void OnCloseCookingRecipeUI();
+
+	UFUNCTION()
+	void StartCooking();
 };

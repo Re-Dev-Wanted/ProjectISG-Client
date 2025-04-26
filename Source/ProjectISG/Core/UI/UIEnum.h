@@ -22,7 +22,6 @@ enum class EUILayer: uint8
 UENUM()
 enum class EUIName: uint32
 {
-	Gameplay_MainHUD,
-	Popup_InventoryUI,
-	Popup_CookingRecipeUI,
+	Gameplay_MainHUD, Popup_InventoryUI, Popup_CookingRecipeUI, Popup_CookingQTE
+	,
 };
