@@ -60,6 +60,16 @@ void UGA_CookingQTEAction::EndAbility(const FGameplayAbilitySpecHandle Handle
 
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		GetAvatarActorFromActorInfo());
+	if (!Player)
+	{
+		return;
+	}
+
+	if (!Player->GetController<AMainPlayerController>())
+	{
+		return;
+	}
+
 	Player->GetController<AMainPlayerController>()->PopUI();
 }
 

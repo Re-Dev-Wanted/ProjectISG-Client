@@ -10,6 +10,13 @@ void UUIC_CookingQTEUI::StartQTE(const ECookingQTEType QTEType)
 {
 	UUIM_CookingQTEUI* QTEModel = Cast<UUIM_CookingQTEUI>(GetModel());
 	QTEModel->SetCurrentQTEType(QTEType);
+	const UUIV_CookingQTEUI* QTEUI = Cast<UUIV_CookingQTEUI>(GetView());
+
+	if (QTEType == ECookingQTEType::KeyPressArray)
+	{
+		Cast<UUIC_CookingQTEKeyPressWidget>(
+			QTEUI->GetQTEKeyPress()->GetController())->StartQTE();
+	}
 }
 
 void UUIC_CookingQTEUI::BindInputAction(UEnhancedInputComponent* InputComponent)

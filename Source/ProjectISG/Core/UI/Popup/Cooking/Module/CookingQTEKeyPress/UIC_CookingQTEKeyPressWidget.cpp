@@ -1,12 +1,13 @@
 ﻿#include "UIC_CookingQTEKeyPressWidget.h"
 
-#include "EnhancedInputComponent.h"
+#include "UIC_CookingQTEKeyWidget.h"
 #include "UIM_CookingQTEKeyPressWidget.h"
 #include "UIV_CookingQTEKeyPressWidget.h"
 #include "UIV_CookingQTEKeyWidget.h"
 #include "Components/HorizontalBox.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "ProjectISG/Contents/Cooking/CookingEnum.h"
+#include "ProjectISG/Utils/EnumUtil.h"
 
 void UUIC_CookingQTEKeyPressWidget::StartQTE()
 {
@@ -17,7 +18,6 @@ void UUIC_CookingQTEKeyPressWidget::StartQTE()
 	DataModel->GetRemainQTEKeys().Empty();
 
 	const uint8 RandomCount = FMath::RandRange(4, 10);
-	DataModel->SetMaxQTELength(RandomCount);
 	DataModel->SetCurrentQTEIndex(0);
 
 	const TArray<ECookingQTEKey> ValidKeys = {
@@ -25,15 +25,28 @@ void UUIC_CookingQTEKeyPressWidget::StartQTE()
 		, ECookingQTEKey::A, ECookingQTEKey::S, ECookingQTEKey::D
 	};
 
+	UIView->GetKeySlots()->ClearChildren();
+
 	for (int i = 0; i < RandomCount; i++)
 	{
 		const int32 RandomIndex = UKismetMathLibrary::RandomInteger(
 			ValidKeys.Num());
-		DataModel->GetRemainQTEKeys().Add(ValidKeys[RandomIndex]);
 
 		UUIV_CookingQTEKeyWidget* NewKeyWidget = CreateWidget<
 			UUIV_CookingQTEKeyWidget>(UIView, UIView->GetQTEKeyWidgetClass());
 		UIView->GetKeySlots()->AddChild(NewKeyWidget);
+
+		Cast<UUIC_CookingQTEKeyWidget>(NewKeyWidget->GetController())->
+			SetupKeyPress(ValidKeys[RandomIndex]);
+
+		DataModel->GetRemainQTEKeys().Add(ValidKeys[RandomIndex]);
+		DataModel->GetKeyWidgets().Add(NewKeyWidget);
+	}
+
+	for (const ECookingQTEKey RemainQTEKey : DataModel->GetRemainQTEKeys())
+	{
+		UE_LOG(LogTemp, Display, TEXT("하이: %s")
+				, *FEnumUtil::GetClassEnumKeyAsString(RemainQTEKey));
 	}
 }
 
@@ -42,14 +55,20 @@ void UUIC_CookingQTEKeyPressWidget::CheckQTE(const uint8 CookingQTEKey)
 	UUIM_CookingQTEKeyPressWidget* DataModel = Cast<
 		UUIM_CookingQTEKeyPressWidget>(GetModel());
 
+	const bool IsSuccess = CookingQTEKey == static_cast<uint8>(DataModel->
+		GetRemainQTEKeys()[DataModel->GetCurrentQTEIndex()]);
+
+	Cast<UUIC_CookingQTEKeyWidget>(
+		DataModel->GetKeyWidgets()[DataModel->GetCurrentQTEIndex()]->
+		GetController())->PressToEnd(IsSuccess);
+
 	// Key와 현재가 다른 경우에 대한 처리
-	if (CookingQTEKey != static_cast<uint8>(DataModel->GetRemainQTEKeys()[
-		DataModel->GetCurrentQTEIndex()]))
+	if (!IsSuccess)
 	{
 		UE_LOG(LogTemp, Display, TEXT("틀렸음"))
 		return;
 	}
 
-	UE_LOG(LogTemp, Display, TEXT("맞았음"))
 	DataModel->SetCurrentQTEIndex(DataModel->GetCurrentQTEIndex() + 1);
+	UE_LOG(LogTemp, Display, TEXT("맞았음"))
 }
