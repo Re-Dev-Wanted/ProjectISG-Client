@@ -1,4 +1,6 @@
 ﻿#include "AT_PlayCinematic.h"
+
+#include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
 #include "MovieSceneSequencePlaybackSettings.h"
 
@@ -39,4 +41,7 @@ void UAT_PlayCinematic::Activate()
 void UAT_PlayCinematic::OnEndCinematic()
 {
 	OnPlayCinematicEndNotified.Broadcast();
+
+	// TODO: Pooling으로 대체할 필요 있음
+	LevelSequenceActor->Destroy();
 }
