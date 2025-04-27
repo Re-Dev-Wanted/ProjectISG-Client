@@ -41,7 +41,7 @@ void UUIC_CookingQTEUI::BindInputAction(UEnhancedInputComponent* InputComponent)
 	Super::BindInputAction(InputComponent);
 
 	InputComponent->BindAction(QTEInputAction, ETriggerEvent::Triggered, this
-								, &ThisClass::OnPressQTEAction);
+	                           , &ThisClass::OnPressQTEAction);
 }
 
 void UUIC_CookingQTEUI::OnPressQTEAction(const FInputActionValue& Value)
@@ -67,5 +67,7 @@ void UUIC_CookingQTEUI::OnPressQTEAction(const FInputActionValue& Value)
 
 	const float ValueData = Value.Get<float>();
 
-	KeyPressQTEController->CheckQTE(static_cast<uint8>(ValueData));
+	// Enhanced Input 이슈 때문에 0은 입력이 안되서 1부터 시작하게
+	// 처리하고 C++ 코드에서 1을 뺀다.
+	KeyPressQTEController->CheckQTE(static_cast<uint8>(ValueData) - 1);
 }
