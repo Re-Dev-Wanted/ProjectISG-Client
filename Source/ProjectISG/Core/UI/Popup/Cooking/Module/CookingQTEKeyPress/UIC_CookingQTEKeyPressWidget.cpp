@@ -7,7 +7,6 @@
 #include "Components/HorizontalBox.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "ProjectISG/Contents/Cooking/CookingEnum.h"
-#include "ProjectISG/Utils/EnumUtil.h"
 
 void UUIC_CookingQTEKeyPressWidget::StartQTE()
 {
@@ -17,7 +16,9 @@ void UUIC_CookingQTEKeyPressWidget::StartQTE()
 		GetView());
 	DataModel->GetRemainQTEKeys().Empty();
 
-	const uint8 RandomCount = FMath::RandRange(4, 10);
+	const uint8 RandomCount = FMath::RandRange(DataModel->GetMinAccessValue()
+												, DataModel->
+												GetMaxAccessValue());
 	DataModel->SetCurrentQTEIndex(0);
 
 	const TArray<ECookingQTEKey> ValidKeys = {
@@ -27,6 +28,8 @@ void UUIC_CookingQTEKeyPressWidget::StartQTE()
 
 	UIView->GetKeySlots()->ClearChildren();
 
+	TArray<ECookingQTEKey> NewKeys;
+	TArray<TObjectPtr<UUIV_CookingQTEKeyWidget>> NewWidgets;
 	for (int i = 0; i < RandomCount; i++)
 	{
 		const int32 RandomIndex = UKismetMathLibrary::RandomInteger(
@@ -39,15 +42,12 @@ void UUIC_CookingQTEKeyPressWidget::StartQTE()
 		Cast<UUIC_CookingQTEKeyWidget>(NewKeyWidget->GetController())->
 			SetupKeyPress(ValidKeys[RandomIndex]);
 
-		DataModel->GetRemainQTEKeys().Add(ValidKeys[RandomIndex]);
-		DataModel->GetKeyWidgets().Add(NewKeyWidget);
+		NewKeys.Add(ValidKeys[RandomIndex]);
+		NewWidgets.Add(NewKeyWidget);
 	}
 
-	for (const ECookingQTEKey RemainQTEKey : DataModel->GetRemainQTEKeys())
-	{
-		UE_LOG(LogTemp, Display, TEXT("하이: %s")
-				, *FEnumUtil::GetClassEnumKeyAsString(RemainQTEKey));
-	}
+	DataModel->SetRemainQTEKeys(NewKeys);
+	DataModel->SetKeyWidgets(NewWidgets);
 }
 
 void UUIC_CookingQTEKeyPressWidget::CheckQTE(const uint8 CookingQTEKey)
