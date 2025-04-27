@@ -29,6 +29,8 @@ protected:
 							, bool bWasCancelled) override;
 
 private:
+	uint32 SelectedFoodRecipeId;
+
 	UPROPERTY()
 	TObjectPtr<UAT_PlayCinematic> AT_PlayCinematic;
 

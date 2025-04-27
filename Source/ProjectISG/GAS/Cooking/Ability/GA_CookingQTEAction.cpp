@@ -1,9 +1,18 @@
 ﻿#include "GA_CookingQTEAction.h"
 
 #include "LevelSequenceActor.h"
+#include "ProjectISG/Contents/Cooking/CookingStruct.h"
+#include "ProjectISG/Contents/Cooking/Managers/CookingManager.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Popup/Cooking/UI/CookingRecipe/UIC_CookingRecipeUI.h"
+#include "ProjectISG/Core/UI/Popup/Cooking/UI/CookingRecipe/UIM_CookingRecipeUI.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/AT_PlayCinematic.h"
+#include "ProjectISG/Systems/Inventory/ItemData.h"
+#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 void UGA_CookingQTEAction::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle
@@ -15,6 +24,19 @@ void UGA_CookingQTEAction::ActivateAbility(
 
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		GetAvatarActorFromActorInfo());
+
+	const AMainPlayerController* PC = Player->GetController<
+		AMainPlayerController>();
+
+	UUIC_CookingRecipeUI* CookingRecipeController = Cast<UUIC_CookingRecipeUI>(
+		PC->GetUIManageComponent()->ControllerInstances[
+			EUIName::Popup_CookingRecipeUI]);
+
+	// 현재 UI에서 선택한 Recipe Id 가져오기
+	SelectedFoodRecipeId = Cast<UUIM_CookingRecipeUI>(
+		CookingRecipeController->GetModel())->GetSelectedRecipe();
+
+	// 그다음 Push UI로 다음 Flow UI로 넘어가기
 	Player->GetController<AMainPlayerController>()->PushUI(
 		EUIName::Popup_CookingQTE);
 
@@ -72,7 +94,14 @@ void UGA_CookingQTEAction::EndAbility(const FGameplayAbilitySpecHandle Handle
 
 	Player->GetController<AMainPlayerController>()->PopUI();
 
-	// TODO: 여기에 완료된 음식 아이템 주기 로직 추가
+	// 완료된 음식 아이템 주기
+	const FFoodRecipe Recipe = UCookingManager::GetRecipeData()[
+		SelectedFoodRecipeId];
+	const FItemMetaInfo NewFoodItem = UItemManager::GetInitialItemMetaDataById(
+		Recipe.GetFoodId());
+
+	Player->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
+			AddItem(NewFoodItem);
 }
 
 void UGA_CookingQTEAction::OnEndSequence()
