@@ -39,4 +39,6 @@ namespace ISGGameplayTags
 		Cooking_Active_QTEEvent_KeyPressArray)
 	PROJECTISG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Farming_Active_Watering)
 	PROJECTISG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Farming_Active_Harvest)
+	PROJECTISG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Building_Active_StartSitDown)
+	PROJECTISG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Building_Active_EndSitDown)
 }

@@ -30,9 +30,9 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 	if (Player->GetHandSlotComponent() && Player->GetInteractionComponent())
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), "???");
-
 		FHitResult TargetResult = Player->GetInteractionComponent()->GetTargetTraceResult();
+
+		UKismetSystemLibrary::PrintString(GetWorld(), "???");
 
 		if (TargetResult.GetActor())
 		{

@@ -50,8 +50,6 @@ void UInteractionComponent::OnInteractive()
 	{
 		return;
 	}
-
-	// UKismetSystemLibrary::PrintString(GetWorld(), TargetTraceResult.GetActor()->GetActorNameOrLabel());
 	
 	IInteractionInterface* Interaction = Cast<IInteractionInterface>(
 		TargetTraceResult.GetActor());

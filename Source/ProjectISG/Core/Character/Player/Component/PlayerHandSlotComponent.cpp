@@ -1,9 +1,11 @@
 #include "PlayerHandSlotComponent.h"
 
-#include "Kismet/KismetSystemLibrary.h"
+#include "PlayerInventoryComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Object/BaseActor.h"
-
+#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 UPlayerHandSlotComponent::UPlayerHandSlotComponent()
 {
@@ -90,4 +92,26 @@ void UPlayerHandSlotComponent::InitializeComponent()
 
 	EmptyItem = NewObject<ABaseActor>(this, TEXT("Empty"));
 	HeldItem = EmptyItem;
+}
+
+bool UPlayerHandSlotComponent::IsHousingHandItem()
+{
+	if (!HeldItem || HeldItem == EmptyItem)
+	{
+		return false;
+	}
+
+	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner()))
+	{
+		int Index = Player->GetPlayerInventoryComponent()->GetCurrentSlotIndex();
+
+		const AMainPlayerState* PS = Cast<AMainPlayerState>(Player->GetPlayerState());
+
+		const uint16 ItemId = PS->GetInventoryComponent()->GetInventoryList()[
+			Index].GetId();
+
+		return UItemManager::IsItemCanHousing(ItemId);
+	}
+
+	return false;
 }

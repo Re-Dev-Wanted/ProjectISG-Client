@@ -27,6 +27,8 @@ public:
 	
 	void OnTouchAction(AActor* Causer);
 
+	bool IsHousingHandItem();
+
 protected:
 	virtual void BeginPlay() override;
 
