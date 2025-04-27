@@ -5,6 +5,8 @@
 
 #include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 
 void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                       const FGameplayAbilityActorInfo* ActorInfo,
@@ -21,7 +23,22 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 	
-	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("파괴해라"));
+	if (!Player->HasAuthority())
+	{
+		return;
+	}
+
+	if (Player->GetHandSlotComponent() && Player->GetInteractionComponent())
+	{
+		UKismetSystemLibrary::PrintString(GetWorld(), "???");
+
+		FHitResult TargetResult = Player->GetInteractionComponent()->GetTargetTraceResult();
+
+		if (TargetResult.GetActor())
+		{
+			Player->GetHandSlotComponent()->OnTouchAction(TargetResult.GetActor());
+		}
+	}
 }
 
 void UGA_Deconstruct::EndAbility(const FGameplayAbilitySpecHandle Handle,

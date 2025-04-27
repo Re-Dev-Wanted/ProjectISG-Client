@@ -7,7 +7,6 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "PlayerHandSlotComponent.generated.h"
 
-
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTISG_API UPlayerHandSlotComponent : public UActorComponent
 {
@@ -18,8 +17,15 @@ public:
 
 	GETTER(class ABaseActor*, EmptyItem)
 
+	UFUNCTION()
 	void OnChange(bool bIsEquippable, TSubclassOf<AActor> ActorClass = nullptr, 
 	FName SocketName = NAME_None);
+	
+	void OnAttackAction(AActor* Causer);
+	
+	void OnInteractAction(AActor* Causer);
+	
+	void OnTouchAction(AActor* Causer);
 
 protected:
 	virtual void BeginPlay() override;

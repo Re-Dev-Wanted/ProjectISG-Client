@@ -144,13 +144,6 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 {
 	IInteractionInterface::OnInteractive(Causer);
 
-	OnInteractAction(Causer);
-}
-
-void ABaseCrop::OnInteractAction(AActor* Causer)
-{
-	Super::OnInteractAction(Causer);
-
 	if (HasAuthority() == false || CanInteractive == false)
 	{
 		return;
@@ -200,6 +193,13 @@ void ABaseCrop::OnInteractAction(AActor* Causer)
 				60) + (TimeManager->GetSecond() / 3600);
 		}
 	}
+}
+
+void ABaseCrop::OnInteractAction(AActor* Causer)
+{
+	Super::OnInteractAction(Causer);
+
+	OnInteractive(Causer);
 }
 
 void ABaseCrop::UpdateGrowTimeBySleep()

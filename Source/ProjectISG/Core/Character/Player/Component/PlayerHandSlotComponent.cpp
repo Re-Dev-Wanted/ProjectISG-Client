@@ -42,14 +42,35 @@ void UPlayerHandSlotComponent::OnChange(bool bIsEquippable,
 
 	AActor* Actor = GetWorld()->SpawnActor(ActorClass);
 	HeldItem = Cast<ABaseActor>(Actor);
-
-	
-	UKismetSystemLibrary::PrintString(GetWorld(), HeldItem->GetActorNameOrLabel());
 	
 	if (HeldItem && !SocketName.IsNone())
 	{
 		HeldItem->AttachToComponent(Player->GetMesh(), 
 		FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+	}
+}
+
+void UPlayerHandSlotComponent::OnAttackAction(AActor* Causer)
+{
+	if (HeldItem)
+	{
+		HeldItem->OnAttackAction(Causer);
+	}
+}
+
+void UPlayerHandSlotComponent::OnInteractAction(AActor* Causer)
+{
+	if (HeldItem)
+	{
+		HeldItem->OnInteractAction(Causer);
+	}
+}
+
+void UPlayerHandSlotComponent::OnTouchAction(AActor* Causer)
+{
+	if (HeldItem)
+	{
+		HeldItem->OnTouchAction(Causer);
 	}
 }
 
