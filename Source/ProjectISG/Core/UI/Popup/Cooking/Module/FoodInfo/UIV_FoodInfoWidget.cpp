@@ -1,4 +1,1 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "UIV_FoodInfoWidget.h"
+﻿#include "UIV_FoodInfoWidget.h"
