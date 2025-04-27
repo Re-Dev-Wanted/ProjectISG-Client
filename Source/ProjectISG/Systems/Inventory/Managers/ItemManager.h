@@ -18,4 +18,5 @@ public:
 
 private:
 	static TArray<FItemInfoData> ItemInfoList;
+	static bool IsInitialize;
 };

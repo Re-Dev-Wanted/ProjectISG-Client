@@ -27,4 +27,12 @@ protected:
 	                        const FGameplayAbilityActivationInfo ActivationInfo,
 	                        bool bReplicateEndAbility,
 	                        bool bWasCancelled) override;
+
+private:
+	UFUNCTION()
+	void OnEndWateringAnim(FGameplayTag EventTag, FGameplayEventData EventData);
+
+private:
+	UPROPERTY()
+	class UPlayMontageWithEvent* AT_WateringAnim;
 };

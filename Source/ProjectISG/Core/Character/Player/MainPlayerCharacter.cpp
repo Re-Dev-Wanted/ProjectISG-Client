@@ -158,25 +158,6 @@ void AMainPlayerCharacter::Look(const FInputActionValue& Value)
 	AddControllerPitchInput(LookToValue.Y);
 }
 
-void AMainPlayerCharacter::Server_InteractCrop_Implementation(
-	class ABaseCrop* crop)
-{
-	if (!crop || !crop->IsValidLowLevel() || crop->IsPendingKillPending())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Invalid crop received from client"));
-		return;
-	}
-
-	if (!crop->HasAuthority())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Warning: Forged object"));
-		return;
-	}
-
-	// 정상 처리
-	crop->OnInteractive(this);
-}
-
 void AMainPlayerCharacter::Server_SetActorTransformReplicated_Implementation(
 	const FTransform& Transform)
 {

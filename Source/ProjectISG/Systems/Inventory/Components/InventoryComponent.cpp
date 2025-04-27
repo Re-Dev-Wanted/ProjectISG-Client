@@ -28,21 +28,18 @@ void UInventoryComponent::InitializeItemData()
 	BuildItemMetaInfo.SetId(2);
 	BuildItemMetaInfo.SetCurrentCount(1);
 
-	InventoryList[2] = BuildItemMetaInfo;
 	AddItemToInventory(2, BuildItemMetaInfo);
 
 	FItemMetaInfo CropItemMetaInfo;
 	CropItemMetaInfo.SetId(3);
 	CropItemMetaInfo.SetCurrentCount(2);
 
-	InventoryList[3] = CropItemMetaInfo;
 	AddItemToInventory(3, CropItemMetaInfo);
 
 	FItemMetaInfo HammerItemMetaInfo;
-	HammerItemMetaInfo.SetId(4);
+	HammerItemMetaInfo.SetId(9);
 	HammerItemMetaInfo.SetCurrentCount(1);
 
-	InventoryList[4] = HammerItemMetaInfo;
 	AddItemToInventory(4, HammerItemMetaInfo);
 }
 

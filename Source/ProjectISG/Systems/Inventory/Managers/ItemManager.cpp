@@ -2,10 +2,18 @@
 
 #include "ProjectISG/Systems/Inventory/ItemData.h"
 
+bool UItemManager::IsInitialize;
 TArray<FItemInfoData> UItemManager::ItemInfoList;
 
 void UItemManager::Initialize()
 {
+	if (IsInitialize)
+	{
+		return;
+	}
+
+	IsInitialize = true;
+
 	const static ConstructorHelpers::FObjectFinder<UDataTable>
 		ItemInfoDataTable(TEXT(
 			"/Script/Engine.DataTable'/Game/Systems/Inventory/DT_ItemList.DT_ItemList'"));
@@ -44,17 +52,15 @@ bool UItemManager::IsItemCanHousing(const uint16 Id)
 {
 	const FItemInfoData ItemInfoData = GetItemInfoById(Id);
 
-	const FString* FindData = ItemInfoData.GetConstData().
-	                                       Find(
-		                                       EConstDataKey::ItemUseType);
+	const FString* FindData = ItemInfoData.GetConstData().Find(
+		EConstDataKey::ItemUseType);
 	if (!FindData)
 	{
 		return false;
 	}
 
-	const FString FindDataRef = ItemInfoData.GetConstData().
-	                                         FindRef(
-		                                         EConstDataKey::ItemUseType);
+	const FString FindDataRef = ItemInfoData.GetConstData().FindRef(
+		EConstDataKey::ItemUseType);
 
 	if (!FindDataRef.Equals(TEXT("Housing")))
 	{
@@ -74,7 +80,7 @@ bool UItemManager::IsItemCanInteraction(const uint16 Id)
 	{
 		return false;
 	}
-	
+
 	return true;
 }
 

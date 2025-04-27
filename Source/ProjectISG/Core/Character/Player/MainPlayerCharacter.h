@@ -42,10 +42,7 @@ public:
 
 	GETTER(TObjectPtr<UInputMappingContext>, DefaultMappingContext)
 
-	// client에서 crop에 접근하면 Authority가 아닌 SimulateProxy이기에 ServerRPC를 호출하지 못하는 문제가 발생
-	// 로직을 Authority를 가진 서버 쪽 Crop에 접근하기 위해서 플레이어쪽에서 ServerRPC를 호출하기 위한 함수
-	UFUNCTION(Reliable, Server)
-	void Server_InteractCrop(class ABaseCrop* crop);
+
 	
 protected:
 	virtual void BeginPlay() override;
@@ -60,13 +57,16 @@ protected:
 	virtual void InitializeAbilitySystem() override;
 
 public:
-	GETTER_SETTER(bool, bIsSleep);
-	GETTER_SETTER(bool, bLieOnBed);
+	GETTER_SETTER(bool, bIsSleep)
+	GETTER_SETTER(bool, bLieOnBed)
 	GETTER(TObjectPtr<UPlacementIndicatorComponent>,
 	       PlacementIndicatorComponent)
 	GETTER(TObjectPtr<UPlayerInventoryComponent>, PlayerInventoryComponent)
 	GETTER(TObjectPtr<UInteractionComponent>, InteractionComponent)
 	GETTER(TObjectPtr<UPlayerHandSlotComponent>, HandSlotComponent)
+
+	GETTER(TObjectPtr<UAnimMontage>, SeedingMontage)
+	GETTER(TObjectPtr<UAnimMontage>, WateringMontage)
 
 	UFUNCTION(Server, Reliable)
 	void Server_SetActorTransformReplicated(const FTransform& Transform);
@@ -117,10 +117,19 @@ private:
 	void Look(const FInputActionValue& Value);
 
 	// 장진혁
+#pragma region JJH
 	UPROPERTY(EditAnywhere, Category = "Sleep",
 		meta = (AllowPrivateAccess = true))
 	bool bIsSleep = false;
 	UPROPERTY(EditAnywhere, Category = "Sleep",
 		meta = (AllowPrivateAccess = true))
 	bool bLieOnBed = false;
+
+	UPROPERTY(EditAnywhere, Category = "Farming",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<UAnimMontage> SeedingMontage;
+	UPROPERTY(EditAnywhere, Category = "Farming",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<UAnimMontage> WateringMontage;
+#pragma endregion 
 };

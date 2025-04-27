@@ -1,5 +1,6 @@
 ﻿#include "UIV_RecipeListWidget.h"
 
+#include "UIC_RecipeListWidget.h"
 #include "Components/GridPanel.h"
 #include "ProjectISG/Core/UI/Popup/Cooking/Module/FoodInfo/UIV_FoodInfoWidget.h"
 
@@ -23,8 +24,10 @@ void UUIV_RecipeListWidget::NativePreConstruct()
 
 void UUIV_RecipeListWidget::NativeConstruct()
 {
-	Super::NativeOnInitialized();
+	Super::NativeConstruct();
 
-	// RecipeListGrid->ClearChildren();
-	// List Initialize 필요함.
+	UUIC_RecipeListWidget* RecipeListWidgetController = Cast<
+		UUIC_RecipeListWidget>(GetController());
+
+	RecipeListWidgetController->InitializeData();
 }
