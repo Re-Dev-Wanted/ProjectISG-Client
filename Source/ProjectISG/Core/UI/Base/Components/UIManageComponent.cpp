@@ -3,7 +3,6 @@
 #include "Blueprint/UserWidget.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
-#include "ProjectISG/Utils/EnumUtil.h"
 
 void UUIManageComponent::Initialize()
 {
@@ -18,23 +17,19 @@ void UUIManageComponent::Initialize()
 			static_cast<int64>(Elem.Key));
 		if (NameStr.StartsWith(TEXT("Gameplay_")))
 		{
-			WidgetLayers.Add(
-				Elem.Key, EUILayer::Gameplay);
+			WidgetLayers.Add(Elem.Key, EUILayer::Gameplay);
 		}
 		else if (NameStr.StartsWith(TEXT("Popup_")))
 		{
-			WidgetLayers.Add(
-				Elem.Key, EUILayer::Popup);
+			WidgetLayers.Add(Elem.Key, EUILayer::Popup);
 		}
 		else if (NameStr.StartsWith(TEXT("Modal_")))
 		{
-			WidgetLayers.Add(
-				Elem.Key, EUILayer::Modal);
+			WidgetLayers.Add(Elem.Key, EUILayer::Modal);
 		}
 		else if (NameStr.StartsWith(TEXT("Loading_")))
 		{
-			WidgetLayers.Add(
-				Elem.Key, EUILayer::Loading);
+			WidgetLayers.Add(Elem.Key, EUILayer::Loading);
 		}
 	}
 }

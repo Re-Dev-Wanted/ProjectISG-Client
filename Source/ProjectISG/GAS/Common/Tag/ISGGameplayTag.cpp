@@ -5,8 +5,8 @@
 
 namespace ISGGameplayTags
 {
-	void AddGameplayTag(UAbilitySystemComponent* ASC, const FGameplayTag Tag,
-	                    const int32 Count, const bool IsReplicated)
+	void AddGameplayTag(UAbilitySystemComponent* ASC, const FGameplayTag Tag
+						, const int32 Count, const bool IsReplicated)
 	{
 		if (IsReplicated)
 		{
@@ -15,14 +15,14 @@ namespace ISGGameplayTags
 		ASC->SetLooseGameplayTagCount(Tag, Count);
 	}
 
-	void RemoveGameplayTag(UAbilitySystemComponent* ASC, const FGameplayTag Tag,
-	                       const int32 Count, const bool IsReplicated)
+	void RemoveGameplayTag(UAbilitySystemComponent* ASC, const FGameplayTag Tag
+							, const int32 Count, const bool IsReplicated)
 	{
 		// Count가 -1 즉 기본 값으로 설정되어 있다면, 전부 없애기 위해 0으로 설정하고
 		// 그게 아니라면 현재 갯수에서 N개만 빼게 설정한다.
 		const int32 NewCount = Count == -1
-			                       ? 0
-			                       : ASC->GetGameplayTagCount(Tag) - Count;
+									? 0
+									: ASC->GetGameplayTagCount(Tag) - Count;
 
 		if (IsReplicated)
 		{
@@ -31,8 +31,8 @@ namespace ISGGameplayTags
 		ASC->SetLooseGameplayTagCount(Tag, NewCount);
 	}
 
-	void SetGameplayTag(UAbilitySystemComponent* ASC, const FGameplayTag Tag,
-	                    const int32 Count, const bool IsReplicated)
+	void SetGameplayTag(UAbilitySystemComponent* ASC, const FGameplayTag Tag
+						, const int32 Count, const bool IsReplicated)
 	{
 		if (IsReplicated)
 		{
@@ -41,23 +41,23 @@ namespace ISGGameplayTags
 		ASC->SetLooseGameplayTagCount(Tag, Count);
 	}
 
-	void SwapGameplayTag(UAbilitySystemComponent* ASC,
-	                     const FGameplayTag FromTag, const FGameplayTag ToTag,
-	                     const bool IsReplicated)
+	void SwapGameplayTag(UAbilitySystemComponent* ASC
+						, const FGameplayTag FromTag, const FGameplayTag ToTag
+						, const bool IsReplicated)
 	{
 		const uint8 FromTagCount = ASC->GetGameplayTagCount(FromTag);
 		RemoveGameplayTag(ASC, FromTag, FromTagCount, IsReplicated);
 		AddGameplayTag(ASC, ToTag, FromTagCount, IsReplicated);
 	}
 
-	bool HasGameplayTag(UAbilitySystemComponent* ASC,
-	                    const FGameplayTag FindToTag)
+	bool HasGameplayTag(UAbilitySystemComponent* ASC
+						, const FGameplayTag FindToTag)
 	{
 		return ASC->HasMatchingGameplayTag(FindToTag);
 	}
 
-	void ToggleGameplayTag(UAbilitySystemComponent* ASC, const FGameplayTag Tag,
-	                       const bool IsForceActive, const bool IsReplicated)
+	void ToggleGameplayTag(UAbilitySystemComponent* ASC, const FGameplayTag Tag
+							, const bool IsForceActive, const bool IsReplicated)
 	{
 		const bool HasTag = ASC->HasMatchingGameplayTag(Tag);
 		// 강제 태그 
@@ -67,17 +67,20 @@ namespace ISGGameplayTags
 	}
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Test_Tag, "Test.Tag", "테스트용 노출 태그");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooking_Active_StartCooking,
-	                               "Cooking.Active.StartCooking",
-	                               "요리 관련 액티브 : 요리 시작");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooking_Active_EndCooking,
-	                               "Cooking.Active.EndCooking",
-	                               "요리 관련 액티브 : 요리 종료");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooking_Active_StartCooking
+									, "Cooking.Active.StartCooking"
+									, "요리 관련 액티브 : 요리 시작");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooking_Active_EndCooking
+									, "Cooking.Active.EndCooking"
+									, "요리 관련 액티브 : 요리 종료");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooking_Active_QTEAction
+									, "Cooking.Active.QTEAction"
+									, "요리 관련 액티브 : QTE 액션");
 
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Farming_Active_Watering,
-	                               "Farming.Active.Watering",
-	                               "농사 관련 액티브 : 물주기");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Farming_Active_Harvest,
-	                               "Farming.Active.Harvest",
-	                               "농사 관련 액티브 : 수확하기");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Farming_Active_Watering
+									, "Farming.Active.Watering"
+									, "농사 관련 액티브 : 물주기");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Farming_Active_Harvest
+									, "Farming.Active.Harvest"
+									, "농사 관련 액티브 : 수확하기");
 }
