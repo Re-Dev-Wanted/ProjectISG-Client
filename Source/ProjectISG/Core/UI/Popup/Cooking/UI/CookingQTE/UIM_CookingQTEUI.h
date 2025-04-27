@@ -1,9 +1,12 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "ProjectISG/Contents/Cooking/CookingEnum.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIModel.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "UIM_CookingQTEUI.generated.h"
+
+enum class ECookingQTEType : uint8;
 
 UCLASS()
 class PROJECTISG_API UUIM_CookingQTEUI : public UBaseUIModel
@@ -11,8 +14,8 @@ class PROJECTISG_API UUIM_CookingQTEUI : public UBaseUIModel
 	GENERATED_BODY()
 
 public:
-	GETTER_SETTER(bool, IsStartQTE)
+	GETTER_SETTER(ECookingQTEType, CurrentQTEType)
 
 private:
-	bool IsStartQTE = false;
+	ECookingQTEType CurrentQTEType = ECookingQTEType::None;
 };

@@ -17,5 +17,5 @@ enum class ECookingQTEType: uint8
 UENUM()
 enum class ECookingQTEKey: uint8
 {
-	Q, W, E, A, S, D, Space
+	Q, W, E, A, S, D, Space, MAX
 };
