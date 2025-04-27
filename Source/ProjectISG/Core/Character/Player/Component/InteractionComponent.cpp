@@ -60,8 +60,13 @@ void UInteractionComponent::OnInteractive()
 	}
 
 	// OnInteraction 호출 전에 클라이언트가 접근하고 있는 작물 액터의 정보를 플레이어 서버RPC함수에 전달
+	// 기본적으로 멀티 고려가 안되어있는거같음
+	// BaseActor에 serverRPC를 만들어서 Interaction을 불러오는 형식으로 바꾸는게 좋아보임
 	ABaseCrop* Crop = Cast<ABaseCrop>(TargetTraceResult.GetActor());
-	Server_InteractCrop(Crop);
+	if (Crop)
+	{
+		Server_InteractCrop(Crop);
+	}
 	
 	Interaction->OnInteractive(GetOwner());
 }
