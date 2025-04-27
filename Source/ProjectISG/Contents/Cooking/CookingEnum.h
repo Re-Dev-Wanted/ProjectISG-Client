@@ -17,5 +17,11 @@ enum class ECookingQTEType: uint8
 UENUM()
 enum class ECookingQTEKey: uint8
 {
-	Q, W, E, A, S, D, Space, MAX
+	Q, W, E, A, S, D, Space
+};
+
+UENUM()
+enum class ECookingQTEStatus: uint8
+{
+	None, Trying, Success, Fail
 };

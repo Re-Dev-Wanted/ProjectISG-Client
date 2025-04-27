@@ -18,4 +18,6 @@ public:
 	void StartQTE();
 
 	void CheckQTE(const uint8 CookingQTEKey);
+
+	void DecreaseTime(const float DeltaTime);
 };

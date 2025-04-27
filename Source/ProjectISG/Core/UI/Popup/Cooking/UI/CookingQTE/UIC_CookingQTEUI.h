@@ -7,6 +7,7 @@
 struct FInputActionValue;
 class UInputAction;
 enum class ECookingQTEType : uint8;
+enum class ECookingQTEStatus : uint8;
 
 UCLASS()
 class PROJECTISG_API UUIC_CookingQTEUI : public UBaseUIController
@@ -15,6 +16,8 @@ class PROJECTISG_API UUIC_CookingQTEUI : public UBaseUIController
 
 public:
 	void StartQTE(const ECookingQTEType QTEType);
+	void SetQTEStatus(const ECookingQTEStatus QTEStatus);
+	bool IsPlayerQTETrying();
 
 protected:
 	virtual void

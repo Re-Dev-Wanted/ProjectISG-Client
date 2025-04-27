@@ -71,6 +71,8 @@ void UGA_CookingQTEAction::EndAbility(const FGameplayAbilitySpecHandle Handle
 	}
 
 	Player->GetController<AMainPlayerController>()->PopUI();
+
+	// TODO: 여기에 완료된 음식 아이템 주기 로직 추가
 }
 
 void UGA_CookingQTEAction::OnEndSequence()
