@@ -10,8 +10,8 @@ class UCameraComponent;
 class UCookingComponent;
 
 UCLASS()
-class PROJECTISG_API AKitchenFurniture : public ABaseActor,
-                                         public IInteractionInterface
+class PROJECTISG_API AKitchenFurniture
+	: public ABaseActor, public IInteractionInterface
 {
 	GENERATED_BODY()
 
