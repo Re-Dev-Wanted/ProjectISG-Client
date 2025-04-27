@@ -37,25 +37,14 @@ void UUIC_CookingQTEKeyPressWidget::StartQTE()
 	}
 }
 
-void UUIC_CookingQTEKeyPressWidget::BindInputAction(
-	UEnhancedInputComponent* InputComponent)
-{
-	Super::BindInputAction(InputComponent);
-
-	InputComponent->BindAction(QTEInputAction, ETriggerEvent::Triggered, this
-								, &ThisClass::OnPressQTEAction);
-}
-
-void UUIC_CookingQTEKeyPressWidget::OnPressQTEAction(
-	const FInputActionValue& Value)
+void UUIC_CookingQTEKeyPressWidget::CheckQTE(const uint8 CookingQTEKey)
 {
 	UUIM_CookingQTEKeyPressWidget* DataModel = Cast<
 		UUIM_CookingQTEKeyPressWidget>(GetModel());
-	const float ValueData = Value.Get<float>();
 
 	// Key와 현재가 다른 경우에 대한 처리
-	if (static_cast<uint8>(ValueData) != static_cast<uint8>(DataModel->
-		GetRemainQTEKeys()[DataModel->GetCurrentQTEIndex()]))
+	if (CookingQTEKey != static_cast<uint8>(DataModel->GetRemainQTEKeys()[
+		DataModel->GetCurrentQTEIndex()]))
 	{
 		UE_LOG(LogTemp, Display, TEXT("틀렸음"))
 		return;

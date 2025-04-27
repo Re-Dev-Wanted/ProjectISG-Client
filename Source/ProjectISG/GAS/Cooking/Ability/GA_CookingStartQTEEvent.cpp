@@ -20,5 +20,6 @@ void UGA_CookingStartQTEEvent::ActivateAbility(
 		AMainPlayerController>()->GetUIManageComponent()->ControllerInstances[
 		EUIName::Popup_CookingQTE];
 
-	Cast<UUIC_CookingQTEUI>(QTEPopupUI);
+	Cast<UUIC_CookingQTEUI>(QTEPopupUI)->StartQTE(CookingQTE);
+	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 }

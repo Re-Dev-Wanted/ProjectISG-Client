@@ -76,6 +76,9 @@ namespace ISGGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooking_Active_QTEAction
 									, "Cooking.Active.QTEAction"
 									, "요리 관련 액티브 : QTE 액션");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooking_Active_QTEEvent
+									, "Cooking.Active.QTEEvent"
+									, "요리 관련 액티브 : QTE 이벤트 시작");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Farming_Active_Watering
 									, "Farming.Active.Watering"
