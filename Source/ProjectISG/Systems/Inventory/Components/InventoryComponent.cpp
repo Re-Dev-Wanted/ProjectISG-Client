@@ -37,6 +37,13 @@ void UInventoryComponent::InitializeItemData()
 
 	InventoryList[3] = CropItemMetaInfo;
 	AddItemToInventory(3, CropItemMetaInfo);
+
+	FItemMetaInfo HammerItemMetaInfo;
+	HammerItemMetaInfo.SetId(4);
+	HammerItemMetaInfo.SetCurrentCount(1);
+
+	InventoryList[4] = HammerItemMetaInfo;
+	AddItemToInventory(4, HammerItemMetaInfo);
 }
 
 void UInventoryComponent::BeginPlay()

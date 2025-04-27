@@ -1,126 +1,78 @@
 #include "PlacementIndicatorComponent.h"
 
-#include "Kismet/GameplayStatics.h"
-
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Manager/GridManager.h"
 
 class AMainPlayerCharacter;
 
-UPlacementIndicatorComponent::UPlacementIndicatorComponent()
-{
-	PrimaryComponentTick.bCanEverTick = true;
-}
-
-// Called when the game starts
-void UPlacementIndicatorComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	GridManager = Cast<AGridManager>(UGameplayStatics::GetActorOfClass(GetWorld(), AGridManager::StaticClass()));
-
-	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner()))
-	{
-		Player->OnUpdateSelectedItem.AddUObject(this, 
-		&UPlacementIndicatorComponent::OnUpdateSelectedItem);
-	}
-}
-
-void UPlacementIndicatorComponent::OnUpdateSelectedItem(bool bIsEquippable,
-	TSubclassOf<AActor> ActorClass, FName SocketName)
-{
-	if (bIsEquippable)
-	{
-		OnDeactivate();
-	}
-	else
-	{
-		OnActivate(ActorClass);
-	}
-}
-
-// Called every frame
 void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                                  FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!GridManager || !PlayerController)
+	if (!PlayerController || !PlayerController->PlayerState)
+	{
+		return;
+	}
+	
+	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(PlayerController->PlayerState);
+
+	if (!PlayerState)
+	{
+		return;
+	}
+	
+	AGridManager* GridManager = PlayerState->GetGridManager();
+
+	if (!GridManager)
 	{
 		return;
 	}
 
-	if (GhostPlacement && PlayerController->IsLocalController())
+	if (IndicateActor && PlayerController->IsLocalController())
 	{
-		bool bIsBlock = false;
-		
 		FVector SnappedLocation = GridManager->GetLocationInPointerDirectionPlacement(
-			PlayerController, GhostPlacement->GetMeshSize());
-
-
-		GhostPlacement->SetActorLocation(FMath::VInterpTo(GhostPlacement->GetActorLocation(), SnappedLocation,
-		                                                  0.1f,
-		                                                  InterpSpeed));
-		GhostPlacement->SetActorRotation(FMath::RInterpTo(GhostPlacement->GetActorRotation(),
+			PlayerController, IndicateActor->GetMeshSize());
+		
+		IndicateActor->SetActorRotation(FMath::RInterpTo(IndicateActor->GetActorRotation(),
 		                                                  FRotator(0, GetDegrees(RotateDirection), 0), 0.1f,
 		                                                  InterpSpeed));
 		FIntVector GridCoord;
 		APlacement* PlacedActor;
 
-		bIsBlock = GridManager->TryGetPlacement(SnappedLocation, GridCoord, PlacedActor);
+		bool bIsBlock = GridManager->TryGetPlacement(SnappedLocation, GridCoord, PlacedActor);
 
-		GhostPlacement->SetColor(true, bIsBlock);
+		IndicateActor->SetColor(true, bIsBlock);
 	}
 }
 
-void UPlacementIndicatorComponent::OnActivate(const TSubclassOf<AActor>& Factory)
+void UPlacementIndicatorComponent::Execute()
 {
-	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
-	
-	if (Player && Player->IsLocallyControlled())
+	Super::Execute();
+
+	if (!IndicateActor)
 	{
-		SetActive(true);
-
-		if (GhostPlacement)
-		{
-			GhostPlacement->Destroy();
-		}
-	
-		AActor* Actor = GetWorld()->SpawnActor<AActor>(Factory);
-		GhostPlacement = Cast<APlacement>(Actor);
-
-		if (GhostPlacement)
-		{
-			GhostPlacement->SetReplicates(false); // 복제 금지
-			GhostPlacement->SetActorEnableCollision(false); // 충돌 제거
-			GhostPlacement->SetActorTickEnabled(false);
-			GhostPlacement->SetActorHiddenInGame(false); // 자기 화면에선 보이게
-			GhostPlacement->Setup(GridManager->SnapSize);
-		}
+		return;
 	}
-}
-
-void UPlacementIndicatorComponent::OnDeactivate()
-{
-	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
 	
-	if (Player && Player->IsLocallyControlled())
+	if (!PlayerController || !PlayerController->PlayerState)
 	{
-		if (GhostPlacement)
-		{
-			GhostPlacement->Destroy();
-		}
-
-		SetActive(false);
+		return;
 	}
-}
+	
+	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(PlayerController->PlayerState);
 
-void UPlacementIndicatorComponent::Build()
-{
-	if (!GhostPlacement)
+	if (!PlayerState)
+	{
+		return;
+	}
+	
+	AGridManager* GridManager = PlayerState->GetGridManager();
+
+	if (!GridManager)
 	{
 		return;
 	}
@@ -133,27 +85,21 @@ void UPlacementIndicatorComponent::Build()
 	{
 		if (GetOwner()->GetNetMode() == NM_Standalone)
 		{
-			if (GridManager)
-			{
-				const TSubclassOf<APlacement> PlacementFactory = GhostPlacement->GetClass();
-				// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
-				GridManager->BuildPlacementAtGhost(PlacementFactory, GhostPlacement);
-			}
+			const TSubclassOf<APlacement> PlacementFactory = IndicateActor->GetClass();
+			// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
+			GridManager->BuildPlacementAtGhost(PlacementFactory, IndicateActor);
 		}
 		else
 		{
 			if (GetOwner()->HasAuthority())
 			{
-				if (GridManager)
-				{
-					const TSubclassOf<APlacement> PlacementFactory = GhostPlacement->GetClass();
-					// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
-					GridManager->BuildPlacementAtGhost(PlacementFactory, GhostPlacement);
-				}
+				const TSubclassOf<APlacement> PlacementFactory = IndicateActor->GetClass();
+				// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
+				GridManager->BuildPlacementAtGhost(PlacementFactory, IndicateActor);
 			}
 			else
 			{
-				Server_Build(GhostPlacement->GetActorPivotLocation(), GhostPlacement->GetActorLocation(), GhostPlacement->GetActorRotation(), GhostPlacement->GetClass());
+				Server_Execute(IndicateActor->GetActorPivotLocation(), IndicateActor->GetActorLocation(), IndicateActor->GetActorRotation(), IndicateActor->GetClass());
 			}
 		}
 		OnDeactivate();
@@ -161,9 +107,25 @@ void UPlacementIndicatorComponent::Build()
 	
 }
 
-void UPlacementIndicatorComponent::Server_Build_Implementation(FVector Pivot, FVector Location, FRotator Rotation,
+void UPlacementIndicatorComponent::ExecuteInternal(FVector Pivot, FVector Location, FRotator Rotation,
 	TSubclassOf<APlacement> PlacementClass)
 {
+	Super::ExecuteInternal(Pivot, Location, Rotation, PlacementClass);
+
+	if (!PlayerController || !PlayerController->PlayerState)
+	{
+		return;
+	}
+	
+	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(PlayerController->PlayerState);
+
+	if (!PlayerState)
+	{
+		return;
+	}
+	
+	AGridManager* GridManager = PlayerState->GetGridManager();
+
 	if (GridManager)
 	{
 		GridManager->Server_BuildPlacement(PlacementClass, Pivot, Location, Rotation);
@@ -172,13 +134,32 @@ void UPlacementIndicatorComponent::Server_Build_Implementation(FVector Pivot, FV
 
 void UPlacementIndicatorComponent::Remove()
 {
-	if (GridManager && GhostPlacement)
+	if (!IndicateActor)
+	{
+		return;
+	}
+	
+	if (!PlayerController || !PlayerController->PlayerState)
+	{
+		return;
+	}
+	
+	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(PlayerController->PlayerState);
+
+	if (!PlayerState)
+	{
+		return;
+	}
+	
+	AGridManager* GridManager = PlayerState->GetGridManager();
+	
+	if (GridManager)
 	{
 		// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
 		FIntVector GridCoord;
 		APlacement* PlacedActor;
 
-		if (GridManager->TryGetPlacement(GhostPlacement, GridCoord, PlacedActor))
+		if (GridManager->TryGetPlacement(IndicateActor, GridCoord, PlacedActor))
 		{
 			// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%s"), *GridCoord.ToString()));
 			GridManager->RemovePlacement(GridCoord);

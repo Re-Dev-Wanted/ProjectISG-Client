@@ -3,16 +3,22 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BaseEquipment.h"
 #include "ProjectISG/GAS/Common/Object/BaseActor.h"
+#include "ProjectISG/Systems/Input/Interface/InteractionInterface.h"
 #include "Hammer.generated.h"
 
 UCLASS()
-class PROJECTISG_API AHammer : public ABaseActor
+class PROJECTISG_API AHammer : public ABaseEquipment
 {
 	GENERATED_BODY()
 
 public:
 	AHammer();
+
+	virtual void OnInteractive(AActor* Causer) override;
+
+	virtual void OnInteractAction(AActor* Causer) override;
 
 protected:
 	virtual void BeginPlay() override;
