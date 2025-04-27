@@ -23,7 +23,11 @@ public:
 
 	virtual bool GetCanInteractive() const override;
 
+	virtual void OnTouchAction(AActor* Causer) override;
+
 	virtual void OnInteractive(AActor* Causer) override;
+
+	virtual void OnTouch(AActor* Causer) override;
 
 	virtual FString GetDisplayText() const override;
 

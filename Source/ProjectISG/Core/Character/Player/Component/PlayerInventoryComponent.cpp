@@ -106,7 +106,7 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 
 	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
 	
-	const bool IsItemCanHousing = UItemManager::IsItemCanHousing(ItemId);
+	const bool IsItemCanHousing = ItemInfoData.GetItemType() != EItemType::Equipment && UItemManager::IsItemCanHousing(ItemId);
 
 	const FName SocketName = UItemManager::GetSocketName(ItemId);
 

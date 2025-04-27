@@ -36,6 +36,6 @@ void AHammer::OnTouchAction(AActor* Causer)
 {
 	Super::OnTouchAction(Causer);
 
-	UKismetSystemLibrary::PrintString(GetWorld(), "Deconstruct");
+	
 }
 

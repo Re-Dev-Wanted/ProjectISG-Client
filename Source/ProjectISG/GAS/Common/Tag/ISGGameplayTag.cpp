@@ -89,6 +89,9 @@ namespace ISGGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Farming_Active_Harvest
 									, "Farming.Active.Harvest"
 									, "농사 관련 액티브 : 수확하기");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Building_Active_Deconstruct
+									, "Building.Active.Deconstruct"
+									, "건설 관련 액티브 : 철거하기");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Building_Active_StartSitDown
 									, "Building.Active.StartSitDown"
 									, "의자 관련 액티브 : 앉기 시작");

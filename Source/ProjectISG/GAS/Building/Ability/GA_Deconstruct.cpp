@@ -7,6 +7,9 @@
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Systems/Grid/Actors/Placement.h"
+#include "ProjectISG/Systems/Grid/Manager/GridManager.h"
 
 void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                       const FGameplayAbilityActorInfo* ActorInfo,
@@ -14,7 +17,7 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                       const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
+	
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		ActorInfo->AvatarActor.Get());
 
@@ -32,11 +35,35 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		FHitResult TargetResult = Player->GetInteractionComponent()->GetTargetTraceResult();
 
-		UKismetSystemLibrary::PrintString(GetWorld(), "???");
+		AMainPlayerState* PlayerState = Cast<AMainPlayerState>(Player->GetController()->PlayerState);
 
-		if (TargetResult.GetActor())
+		if (!PlayerState)
 		{
-			Player->GetHandSlotComponent()->OnTouchAction(TargetResult.GetActor());
+			return;
+		}
+	
+		AGridManager* GridManager = PlayerState->GetGridManager();
+
+		if (!GridManager)
+		{
+			return;
+		}
+		
+		if (!TargetResult.GetActor())
+		{
+			return;
+		}
+
+		if (APlacement* TargetPlacement = Cast<APlacement>(TargetResult.GetActor()))
+		{
+			FIntVector GridCoord;
+			APlacement* PlacedActor;
+
+			if (GridManager->TryGetPlacement(TargetPlacement, GridCoord, PlacedActor))
+			{
+				// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%s"), *GridCoord.ToString()));
+				GridManager->RemovePlacement(GridCoord);
+			}
 		}
 	}
 }

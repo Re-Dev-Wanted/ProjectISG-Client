@@ -1,6 +1,7 @@
 #include "PlayerHandSlotComponent.h"
 
 #include "PlayerInventoryComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Object/BaseActor.h"

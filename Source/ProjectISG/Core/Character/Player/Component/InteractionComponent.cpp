@@ -80,6 +80,9 @@ void UInteractionComponent::OnTouch()
 		return;
 	}
 
+	ABaseActor* InteractActor = Cast<ABaseActor>(TargetTraceResult.GetActor());
+	Server_Touch(InteractActor);
+	
 	Interaction->OnTouch(GetOwner());
 }
 
@@ -211,4 +214,21 @@ void UInteractionComponent::Server_Interact_Implementation(class ABaseActor* Int
 
 	// 정상 처리
 	InteractActor->OnInteractAction(PlayerCharacter);
+}
+
+void UInteractionComponent::Server_Touch_Implementation(class ABaseActor* InteractActor)
+{
+	if (!InteractActor || !InteractActor->IsValidLowLevel() || InteractActor->IsPendingKillPending())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Invalid crop received from client"));
+		return;
+	}
+
+	if (!InteractActor->HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Warning: Forged object"));
+		return;
+	}
+
+	InteractActor->OnTouchAction(PlayerCharacter);
 }

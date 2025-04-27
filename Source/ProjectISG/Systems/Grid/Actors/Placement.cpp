@@ -8,6 +8,7 @@
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 
 APlacement::APlacement()
@@ -42,6 +43,13 @@ bool APlacement::GetCanInteractive() const
 	return true;
 }
 
+void APlacement::OnTouchAction(AActor* Causer)
+{
+	Super::OnTouchAction(Causer);
+
+	// OnTouch(Causer);
+}
+
 void APlacement::OnInteractive(AActor* Causer)
 {
 	IInteractionInterface::OnInteractive(Causer);
@@ -54,6 +62,22 @@ void APlacement::OnInteractive(AActor* Causer)
 		FGameplayTagContainer ActivateTag;
 		ActivateTag.AddTag(ISGGameplayTags::Building_Active_StartSitDown);
 		Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
+	}
+}
+
+void APlacement::OnTouch(AActor* Causer)
+{
+	IInteractionInterface::OnTouch(Causer);
+
+	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
+	{
+		UKismetSystemLibrary::PrintString(GetWorld(), ">");
+		if (Player->GetHandSlotComponent()->IsHousingHandItem())
+		{
+			FGameplayTagContainer ActivateTag;
+			ActivateTag.AddTag(ISGGameplayTags::Building_Active_Deconstruct);
+			Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
+		}
 	}
 }
 

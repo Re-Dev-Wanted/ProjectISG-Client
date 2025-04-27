@@ -23,6 +23,9 @@ public:
 	UFUNCTION(Reliable, Server)
 	void Server_Interact(class ABaseActor* InteractActor);
 
+	UFUNCTION(Reliable, Server)
+	void Server_Touch(class ABaseActor* InteractActor);
+
 protected:
 	virtual void BeginPlay() override;
 
