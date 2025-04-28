@@ -65,15 +65,6 @@ void UInteractionComponent::OnInteractive()
 	{
 		Server_InteractCrop(Crop);
 	}
-	else
-	{
-		ATradingNPC* TradingNPC = Cast<ATradingNPC>(
-			TargetTraceResult.GetActor());
-		if (TradingNPC)
-		{
-			Server_Interact(TradingNPC);
-		}
-	}
 
 	Interaction->OnInteractive(GetOwner());
 }
@@ -218,16 +209,4 @@ void UInteractionComponent::Server_InteractCrop_Implementation(
 	}
 
 	crop->OnInteractive(PlayerCharacter);
-}
-
-void UInteractionComponent::Server_Interact_Implementation(
-	class ATradingNPC* tradingNPC)
-{
-	if (!tradingNPC->HasAuthority())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Warning: Forged object"));
-		return;
-	}
-
-	tradingNPC->OnInteractive(PlayerCharacter);
 }

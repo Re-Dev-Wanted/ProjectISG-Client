@@ -16,15 +16,13 @@ class PROJECTISG_API ATradingNPC : public ABaseActor,
 public:
 	ATradingNPC();
 
-	virtual void OnInteractive(AActor* Causer) override;
 
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void GetLifetimeReplicatedProps(
-		TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
-
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void OnInteractive(AActor* Causer) override;
 
 	virtual bool GetCanInteractive() const override;
 
@@ -43,6 +41,7 @@ private:
 		meta = (AllowPrivateAccess = true))
 	class USceneComponent* InteractionPos;
 
-	UPROPERTY(Replicated, EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
+		meta = (AllowPrivateAccess = true))
 	bool CanInteractive = false;
 };

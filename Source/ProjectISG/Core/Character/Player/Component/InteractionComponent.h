@@ -26,9 +26,6 @@ public:
 	UFUNCTION(Reliable, Server)
 	void Server_InteractCrop(class ABaseCrop* crop);
 
-	UFUNCTION(Reliable, Server)
-	void Server_Interact(class ATradingNPC* tradingNPC);
-
 protected:
 	virtual void BeginPlay() override;
 

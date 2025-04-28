@@ -14,7 +14,12 @@ class PROJECTISG_API UUIC_TradingUI : public UBaseUIController
 {
 	GENERATED_BODY()
 
-private:
-	virtual void BindInputAction(UEnhancedInputComponent* InputComponent) override;
-	
+	virtual void
+	BindInputAction(UEnhancedInputComponent* InputComponent) override;
+
+	UFUNCTION()
+	void OnCloseTradingUI();
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Input"
+		, meta = (AllowPrivateAccess = true, EditCondition = "IsInputAccess"))
+	class UInputAction* CloseTradingUI;
 };

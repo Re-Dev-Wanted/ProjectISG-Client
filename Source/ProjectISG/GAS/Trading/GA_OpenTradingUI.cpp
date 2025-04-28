@@ -22,11 +22,12 @@ void UGA_OpenTradingUI::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		ActorInfo->AvatarActor.Get());
 	UE_LOG(LogTemp, Warning, TEXT("Open Trading UI, %s"),
 	       *FEnumUtil::GetClassEnumKeyAsString(Player->GetLocalRole()));
-	
+
 	Player->GetController<AMainPlayerController>()->PopUI();
-	Player->GetController<AMainPlayerController>()->PushUI(EUIName::Popup_TradingUI);
-	
-	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+	Player->GetController<AMainPlayerController>()->PushUI(
+		EUIName::Popup_TradingUI);
+
+	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 }
 
 void UGA_OpenTradingUI::EndAbility(const FGameplayAbilitySpecHandle Handle,

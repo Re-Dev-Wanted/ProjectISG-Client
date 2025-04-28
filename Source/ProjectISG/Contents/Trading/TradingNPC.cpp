@@ -6,7 +6,6 @@
 #include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
 #include "Components/BoxComponent.h"
-#include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 
@@ -31,20 +30,12 @@ ATradingNPC::ATradingNPC()
 	InteractionPos->SetupAttachment(Root);
 
 	CanInteractive = true;
-	
 }
 
 void ATradingNPC::BeginPlay()
 {
 	Super::BeginPlay();
 	
-}
-
-void ATradingNPC::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(ThisClass, CanInteractive);
 }
 
 void ATradingNPC::Tick(float DeltaTime)
@@ -56,13 +47,6 @@ void ATradingNPC::OnInteractive(AActor* Causer)
 {
 	IInteractionInterface::OnInteractive(Causer);
 	
-	if (HasAuthority() == false || CanInteractive == false)
-	{
-		return;
-	}
-
-	CanInteractive = false;
-
 	Causer->SetActorLocation(InteractionPos->GetComponentLocation());
 	Causer->SetActorRotation(InteractionPos->GetComponentRotation());
 
@@ -74,8 +58,6 @@ void ATradingNPC::OnInteractive(AActor* Causer)
 		Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
 			ActivateTag);
 	}
-
-	
 }
 
 bool ATradingNPC::GetCanInteractive() const
