@@ -1,5 +1,7 @@
 #include "PlacementIndicatorComponent.h"
 
+#include "EnhancedInputComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
@@ -8,6 +10,26 @@
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 
 class AMainPlayerCharacter;
+
+UPlacementIndicatorComponent::UPlacementIndicatorComponent()
+{
+	ConstructorHelpers::FObjectFinder<UInputAction> InputAction(TEXT("/Game/Core/Character/Blueprints/MainPlayer/Input/IA_RotateObject.IA_RotateObject"));
+
+	if (InputAction.Succeeded())
+	{
+		RotateAction = InputAction.Object;
+	}
+}
+
+void UPlacementIndicatorComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+
+	AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(GetOwner());
+
+	OwnerPlayer->OnInputBindingNotified.AddDynamic(
+		this, &ThisClass::BindingInputActions);
+}
 
 void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                                  FActorComponentTickFunction* ThisTickFunction)
@@ -139,12 +161,22 @@ void UPlacementIndicatorComponent::ExecuteInternal(FVector Pivot, FVector Locati
 	}
 }
 
-void UPlacementIndicatorComponent::Rotate(bool bClockwise)
+void UPlacementIndicatorComponent::BindingInputActions(UEnhancedInputComponent* EnhancedInputComponent)
 {
-	if (bClockwise)
+	EnhancedInputComponent->BindAction(RotateAction, ETriggerEvent::Triggered, this, &ThisClass::OnRotate);
+}
+
+void UPlacementIndicatorComponent::OnRotate(const FInputActionValue& InputActionValue)
+{
+	float Value = InputActionValue.Get<float>();
+	
+	if (Value > 0)
 	{
 		RotateDirection = RotateDirection << static_cast<uint8>(1);
-		return;
 	}
-	RotateDirection = RotateDirection >> static_cast<uint8>(1);
+
+	if (Value < 0)
+	{
+		RotateDirection = RotateDirection >> static_cast<uint8>(1);
+	}
 }
