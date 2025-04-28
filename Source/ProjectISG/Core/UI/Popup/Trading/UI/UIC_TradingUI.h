@@ -1,0 +1,20 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
+#include "UIC_TradingUI.generated.h"
+
+/**
+ * 
+ */
+UCLASS()
+class PROJECTISG_API UUIC_TradingUI : public UBaseUIController
+{
+	GENERATED_BODY()
+
+private:
+	virtual void BindInputAction(UEnhancedInputComponent* InputComponent) override;
+	
+};

@@ -4,6 +4,7 @@
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "ProjectISG/Contents/Farming/BaseCrop.h"
+#include "ProjectISG/Contents/Trading/TradingNPC.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
@@ -50,7 +51,7 @@ void UInteractionComponent::OnInteractive()
 	{
 		return;
 	}
-	
+
 	IInteractionInterface* Interaction = Cast<IInteractionInterface>(
 		TargetTraceResult.GetActor());
 
@@ -59,15 +60,21 @@ void UInteractionComponent::OnInteractive()
 		return;
 	}
 
-	// OnInteraction 호출 전에 클라이언트가 접근하고 있는 작물 액터의 정보를 플레이어 서버RPC함수에 전달
-	// 기본적으로 멀티 고려가 안되어있는거같음
-	// BaseActor에 serverRPC를 만들어서 Interaction을 불러오는 형식으로 바꾸는게 좋아보임
 	ABaseCrop* Crop = Cast<ABaseCrop>(TargetTraceResult.GetActor());
 	if (Crop)
 	{
 		Server_InteractCrop(Crop);
 	}
-	
+	else
+	{
+		ATradingNPC* TradingNPC = Cast<ATradingNPC>(
+			TargetTraceResult.GetActor());
+		if (TradingNPC)
+		{
+			Server_Interact(TradingNPC);
+		}
+	}
+
 	Interaction->OnInteractive(GetOwner());
 }
 
@@ -204,18 +211,23 @@ void UInteractionComponent::SetIsInteractive(const bool NewIsInteractive)
 void UInteractionComponent::Server_InteractCrop_Implementation(
 	class ABaseCrop* crop)
 {
-	if (!crop || !crop->IsValidLowLevel() || crop->IsPendingKillPending())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Invalid crop received from client"));
-		return;
-	}
-
 	if (!crop->HasAuthority())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Warning: Forged object"));
 		return;
 	}
 
-	// 정상 처리
 	crop->OnInteractive(PlayerCharacter);
+}
+
+void UInteractionComponent::Server_Interact_Implementation(
+	class ATradingNPC* tradingNPC)
+{
+	if (!tradingNPC->HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Warning: Forged object"));
+		return;
+	}
+
+	tradingNPC->OnInteractive(PlayerCharacter);
 }

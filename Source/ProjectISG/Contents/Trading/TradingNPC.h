@@ -8,27 +8,27 @@
 #include "TradingNPC.generated.h"
 
 UCLASS()
-class PROJECTISG_API ATradingNPC : public ABaseActor, public IInteractionInterface
+class PROJECTISG_API ATradingNPC : public ABaseActor,
+                                   public IInteractionInterface
 {
 	GENERATED_BODY()
 
 public:
 	ATradingNPC();
 
+	virtual void OnInteractive(AActor* Causer) override;
+
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void GetLifetimeReplicatedProps(
+		TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void Tick(float DeltaTime) override;
-
-	virtual void OnInteractive(AActor* Causer) override;
 
 	virtual bool GetCanInteractive() const override;
 
 	virtual FString GetDisplayText() const override;
-	
-public:
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
@@ -43,6 +43,6 @@ private:
 		meta = (AllowPrivateAccess = true))
 	class USceneComponent* InteractionPos;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, EditAnywhere)
 	bool CanInteractive = false;
 };
