@@ -14,8 +14,7 @@ UPlayerHandSlotComponent::UPlayerHandSlotComponent()
 }
 
 
-void UPlayerHandSlotComponent::OnChange(bool bIsEquippable,
-	TSubclassOf<AActor> ActorClass, FName SocketName)
+void UPlayerHandSlotComponent::OnChange(TSubclassOf<AActor> ActorClass, FItemMetaInfo _ItemMetaInfo)
 {
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
 
@@ -37,14 +36,22 @@ void UPlayerHandSlotComponent::OnChange(bool bIsEquippable,
 		}
 	}
 
-	if (!bIsEquippable || !IsValid(ActorClass))
+	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemMetaInfo.GetId());
+
+	const bool bIsStructure = ItemInfoData.GetItemType() != EItemType::Equipment && UItemManager::IsItemCanHousing(ItemMetaInfo.GetId());
+
+	if (bIsStructure || !IsValid(ActorClass))
 	{
 		HeldItem = EmptyItem;
+		ItemMetaInfo = FItemMetaInfo();
 		return;
 	}
 
 	AActor* Actor = GetWorld()->SpawnActor(ActorClass);
 	HeldItem = Cast<ABaseActor>(Actor);
+	ItemMetaInfo = _ItemMetaInfo;
+
+	const FName SocketName = UItemManager::GetSocketNameById(ItemMetaInfo.GetId());
 	
 	if (HeldItem && !SocketName.IsNone())
 	{
@@ -83,7 +90,7 @@ void UPlayerHandSlotComponent::BeginPlay()
 
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner()))
 	{
-		Player->OnUpdateSelectedItem.AddUObject(this, &UPlayerHandSlotComponent::OnChange);
+		Player->OnUpdateSelectedItem.AddDynamic(this, &UPlayerHandSlotComponent::OnChange);
 	}
 }
 
@@ -104,14 +111,7 @@ bool UPlayerHandSlotComponent::IsHousingHandItem()
 
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner()))
 	{
-		int Index = Player->GetPlayerInventoryComponent()->GetCurrentSlotIndex();
-
-		const AMainPlayerState* PS = Cast<AMainPlayerState>(Player->GetPlayerState());
-
-		const uint16 ItemId = PS->GetInventoryComponent()->GetInventoryList()[
-			Index].GetId();
-
-		return UItemManager::IsItemCanHousing(ItemId);
+		return UItemManager::IsItemCanHousing(ItemMetaInfo.GetId());
 	}
 
 	return false;

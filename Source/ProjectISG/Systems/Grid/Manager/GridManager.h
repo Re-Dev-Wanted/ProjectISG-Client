@@ -56,7 +56,7 @@ public:
 	                                               int32 Distance = 1);
 
 	template <class T, std::enable_if_t<std::is_base_of_v<APlacement, T>, int> = 0>
-	void BuildPlacement(TSubclassOf<T> PlacementClass, const FVector& Pivot, const FVector& Location,
+	void BuildPlacement(TSubclassOf<T> PlacementClass, FItemMetaInfo ItemMetaInfo, const FVector& Pivot, const FVector& Location,
 	                    const FRotator& Rotation)
 	{
 		FIntVector GridCoord = FIntVector
@@ -98,27 +98,27 @@ public:
 		SpawnedActor->ForceNetUpdate();
 		SpawnedActor->Setup(SnapSize);
 		
-		PlacementGridContainer.Add(GridCoord, SpawnedActor);
+		PlacementGridContainer.Add(GridCoord, SpawnedActor, ItemMetaInfo);
 	}
 
 	template <class T, std::enable_if_t<std::is_base_of_v<APlacement, T>, int> = 0>
-	void BuildPlacementAtGhost(TSubclassOf<T> PlacementClass, T* Ghost)
+	void BuildPlacementAtGhost(TSubclassOf<T> PlacementClass, FItemMetaInfo ItemMetaInfo, T* Ghost)
 	{
-		BuildPlacement<T>(PlacementClass, Ghost->GetActorPivotLocation(), Ghost->GetActorLocation(),
+		BuildPlacement<T>(PlacementClass, ItemMetaInfo, Ghost->GetActorPivotLocation(), Ghost->GetActorLocation(),
 		                  Ghost->GetActorRotation());
 	}
 
 	template <class T, std::enable_if_t<std::is_base_of_v<APlacement, T>, int> = 0>
-	void BuildPlacementInFrontOfActor(TSubclassOf<T> PlacementClass, AActor* Actor, const FRotator& Rotation)
+	void BuildPlacementInFrontOfActor(TSubclassOf<T> PlacementClass, FItemMetaInfo ItemMetaInfo, AActor* Actor, const FRotator& Rotation)
 	{
 		FVector BuildLocation = GetLocationInFront(Actor, 1);
-		BuildPlacement<T>(PlacementClass, BuildLocation, Rotation);
+		BuildPlacement<T>(PlacementClass, ItemMetaInfo, BuildLocation, Rotation);
 	}
 
 	UFUNCTION(Server, Reliable)
-	void Server_BuildPlacement(TSubclassOf<APlacement> PlacementClass, FVector Pivot, FVector Location, FRotator Rotation);
+	void Server_BuildPlacement(TSubclassOf<APlacement> PlacementClass, FItemMetaInfo_Net ItemMetaInfo, FVector Pivot, FVector Location, FRotator Rotation);
 
-	void RemovePlacement(const FIntVector& GridAt);
+	FItemMetaInfo RemovePlacement(const FIntVector& GridAt);
 
 	bool TryGetPlacement(APlacement* Placement, FIntVector& OutGridAt, APlacement*& OutPlacement);
 

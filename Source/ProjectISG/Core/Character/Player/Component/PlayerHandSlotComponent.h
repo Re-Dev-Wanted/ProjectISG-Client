@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "PlayerHandSlotComponent.generated.h"
 
@@ -18,8 +19,7 @@ public:
 	GETTER(class ABaseActor*, EmptyItem)
 
 	UFUNCTION()
-	void OnChange(bool bIsEquippable, TSubclassOf<AActor> ActorClass = nullptr, 
-	FName SocketName = NAME_None);
+	void OnChange(TSubclassOf<AActor> ActorClass, FItemMetaInfo _ItemMetaInfo);
 	
 	void OnAttackAction(AActor* Causer);
 	
@@ -38,4 +38,7 @@ protected:
 	class ABaseActor* EmptyItem;
 
 	TObjectPtr<class ABaseActor> HeldItem;
+
+	UPROPERTY()
+	FItemMetaInfo ItemMetaInfo;
 };

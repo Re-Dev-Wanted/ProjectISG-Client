@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "GridIndicatorComponent.generated.h"
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -18,8 +19,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-	virtual void OnUpdateSelectedItem(bool bIsEquippable, TSubclassOf<AActor> 
-	ActorClass, FName SocketName = NAME_None);
+	virtual void OnUpdateSelectedItem(TSubclassOf<AActor> ActorClass, FItemMetaInfo ItemMetaInfo);
 
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
@@ -44,8 +44,8 @@ public:
 	virtual void Execute();
 
 	UFUNCTION(Server, Reliable)
-	void Server_Execute(FVector Pivot, FVector Location, FRotator Rotation, TSubclassOf<APlacement> PlacementClass);
+	void Server_Execute(FVector Pivot, FVector Location, FRotator Rotation, TSubclassOf<APlacement> PlacementClass, FItemMetaInfo_Net ItemMetaInfo);
 
 	UFUNCTION()
-	virtual void ExecuteInternal(FVector Pivot, FVector Location, FRotator Rotation, TSubclassOf<APlacement> PlacementClass);
+	virtual void ExecuteInternal(FVector Pivot, FVector Location, FRotator Rotation, TSubclassOf<APlacement> PlacementClass, FItemMetaInfo ItemMetaInfo);
 };

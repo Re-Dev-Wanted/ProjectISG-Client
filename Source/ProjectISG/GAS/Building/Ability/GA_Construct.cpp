@@ -2,6 +2,7 @@
 
 #include "GA_Construct.h"
 
+#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
@@ -34,6 +35,8 @@ void UGA_Construct::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		Index].GetId();
 
 	const bool bIsHousing = UItemManager::IsItemCanHousing(ItemId);
+
+	// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("construct %d"), ItemId));
 
 	if (bIsHousing)
 	{

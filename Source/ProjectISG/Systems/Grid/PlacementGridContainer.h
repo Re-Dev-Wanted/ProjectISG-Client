@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Net/Serialization/FastArraySerializer.h"
+#include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "PlacementGridContainer.generated.h"
 
@@ -15,6 +16,9 @@ struct FPlacementGridEntry : public FFastArraySerializerItem
 
 	UPROPERTY()
 	TWeakObjectPtr<class APlacement> Placement;
+
+	UPROPERTY()
+	FItemMetaInfo ItemMetaInfo;
 
 	bool IsValid() const
 	{
@@ -32,9 +36,9 @@ struct FPlacementGridContainer : public FFastArraySerializer
 
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms);
 
-	void Add(const FIntVector& GridCoord, class APlacement* Placement);
+	void Add(const FIntVector& GridCoord, class APlacement* Placement, FItemMetaInfo ItemMetaInfo);
 
-	void Remove(class APlacement* Placement);
+	FItemMetaInfo Remove(class APlacement* Placement);
 
 	TMap<FIntVector, TWeakObjectPtr<class APlacement>> GetPlacedMap() const
 	{

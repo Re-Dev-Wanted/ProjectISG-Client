@@ -22,10 +22,7 @@ public:
 	
 	virtual void Execute() override;
 	
-	virtual void ExecuteInternal(FVector Pivot, FVector Location, FRotator Rotation, TSubclassOf<APlacement> PlacementClass) override;
-
-	UFUNCTION(BlueprintCallable)
-	void Remove();
+	virtual void ExecuteInternal(FVector Pivot, FVector Location, FRotator Rotation, TSubclassOf<APlacement> PlacementClass, FItemMetaInfo ItemMetaInfo) override;
 
 	UFUNCTION(BlueprintCallable)
 	void Rotate(bool bClockwise);

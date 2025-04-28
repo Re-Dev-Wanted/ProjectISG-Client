@@ -14,7 +14,7 @@ public:
 	static FItemMetaInfo GetInitialItemMetaDataById(const uint16 Id);
 	static bool IsItemCanHousing(const uint16 Id);
 	static bool IsItemCanInteraction(const uint16 Id);
-	static FName GetSocketName(const uint16 Id);
+	static FName GetSocketNameById(const uint16 Id);
 
 private:
 	static TArray<FItemInfoData> ItemInfoList;

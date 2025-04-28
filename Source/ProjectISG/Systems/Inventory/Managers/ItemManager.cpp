@@ -84,7 +84,7 @@ bool UItemManager::IsItemCanInteraction(const uint16 Id)
 	return true;
 }
 
-FName UItemManager::GetSocketName(const uint16 Id)
+FName UItemManager::GetSocketNameById(const uint16 Id)
 {
 	const FItemInfoData ItemInfoData = GetItemInfoById(Id);
 

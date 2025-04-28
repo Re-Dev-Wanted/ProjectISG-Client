@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Core/Character/BaseCharacter.h"
+#include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerCharacter.generated.h"
 
@@ -23,8 +24,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInputBindingNotified,
                                             UEnhancedInputComponent*,
                                             EnhancedInputComponent);
 
-DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnUpdateSelectedItem, bool, 
-TSubclassOf<AActor>, FName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpdateSelectedItem, 
+TSubclassOf<AActor>, ActorClass, FItemMetaInfo, ItemMetaInfo);
 
 UCLASS()
 class PROJECTISG_API AMainPlayerCharacter : public ABaseCharacter

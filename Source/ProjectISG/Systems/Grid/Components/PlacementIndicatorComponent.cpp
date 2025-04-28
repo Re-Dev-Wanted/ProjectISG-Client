@@ -5,6 +5,7 @@
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Manager/GridManager.h"
+#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 
 class AMainPlayerCharacter;
 
@@ -80,6 +81,10 @@ void UPlacementIndicatorComponent::Execute()
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
 
 	const TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent = Player->GetPlayerInventoryComponent();
+
+	const int SlotIndex = PlayerInventoryComponent->GetCurrentSlotIndex();
+
+	FItemMetaInfo ItemMetaInfo = PlayerState->GetInventoryComponent()->GetInventoryList()[SlotIndex];
 	
 	if (PlayerInventoryComponent->RemoveItemCurrentSlotIndex(1))
 	{
@@ -87,7 +92,7 @@ void UPlacementIndicatorComponent::Execute()
 		{
 			const TSubclassOf<APlacement> PlacementFactory = IndicateActor->GetClass();
 			// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
-			GridManager->BuildPlacementAtGhost(PlacementFactory, IndicateActor);
+			GridManager->BuildPlacementAtGhost(PlacementFactory, ItemMetaInfo, IndicateActor);
 		}
 		else
 		{
@@ -95,11 +100,12 @@ void UPlacementIndicatorComponent::Execute()
 			{
 				const TSubclassOf<APlacement> PlacementFactory = IndicateActor->GetClass();
 				// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
-				GridManager->BuildPlacementAtGhost(PlacementFactory, IndicateActor);
+				GridManager->BuildPlacementAtGhost(PlacementFactory, ItemMetaInfo, IndicateActor);
 			}
 			else
 			{
-				Server_Execute(IndicateActor->GetActorPivotLocation(), IndicateActor->GetActorLocation(), IndicateActor->GetActorRotation(), IndicateActor->GetClass());
+				FItemMetaInfo_Net Info(ItemMetaInfo);
+				Server_Execute(IndicateActor->GetActorPivotLocation(), IndicateActor->GetActorLocation(), IndicateActor->GetActorRotation(), IndicateActor->GetClass(), Info);
 			}
 		}
 		OnDeactivate();
@@ -108,9 +114,9 @@ void UPlacementIndicatorComponent::Execute()
 }
 
 void UPlacementIndicatorComponent::ExecuteInternal(FVector Pivot, FVector Location, FRotator Rotation,
-	TSubclassOf<APlacement> PlacementClass)
+	TSubclassOf<APlacement> PlacementClass, FItemMetaInfo ItemMetaInfo)
 {
-	Super::ExecuteInternal(Pivot, Location, Rotation, PlacementClass);
+	Super::ExecuteInternal(Pivot, Location, Rotation, PlacementClass, ItemMetaInfo);
 
 	if (!PlayerController || !PlayerController->PlayerState)
 	{
@@ -128,42 +134,8 @@ void UPlacementIndicatorComponent::ExecuteInternal(FVector Pivot, FVector Locati
 
 	if (GridManager)
 	{
-		GridManager->Server_BuildPlacement(PlacementClass, Pivot, Location, Rotation);
-	}
-}
-
-void UPlacementIndicatorComponent::Remove()
-{
-	if (!IndicateActor)
-	{
-		return;
-	}
-	
-	if (!PlayerController || !PlayerController->PlayerState)
-	{
-		return;
-	}
-	
-	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(PlayerController->PlayerState);
-
-	if (!PlayerState)
-	{
-		return;
-	}
-	
-	AGridManager* GridManager = PlayerState->GetGridManager();
-	
-	if (GridManager)
-	{
-		// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
-		FIntVector GridCoord;
-		APlacement* PlacedActor;
-
-		if (GridManager->TryGetPlacement(IndicateActor, GridCoord, PlacedActor))
-		{
-			// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%s"), *GridCoord.ToString()));
-			GridManager->RemovePlacement(GridCoord);
-		}
+		FItemMetaInfo_Net Info(ItemMetaInfo);
+		GridManager->Server_BuildPlacement(PlacementClass, Info, Pivot, Location, Rotation);
 	}
 }
 

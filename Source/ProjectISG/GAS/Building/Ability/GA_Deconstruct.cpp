@@ -10,6 +10,7 @@
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Manager/GridManager.h"
+#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 
 void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                       const FGameplayAbilityActorInfo* ActorInfo,
@@ -61,8 +62,9 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 			if (GridManager->TryGetPlacement(TargetPlacement, GridCoord, PlacedActor))
 			{
-				// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%s"), *GridCoord.ToString()));
-				GridManager->RemovePlacement(GridCoord);
+				FItemMetaInfo ItemMetaInfo = GridManager->RemovePlacement(GridCoord);
+				// UKismetSystemLibrary::PrintString(GetWorld(),  FString::Printf(TEXT("??? %d"), ItemMetaInfo.GetId()));
+				PlayerState->GetInventoryComponent()->AddItem(ItemMetaInfo);
 			}
 		}
 	}

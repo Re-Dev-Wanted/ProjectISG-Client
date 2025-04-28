@@ -5,6 +5,7 @@
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Manager/GridManager.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 UGridIndicatorComponent::UGridIndicatorComponent()
 {
@@ -19,19 +20,23 @@ void UGridIndicatorComponent::BeginPlay()
 
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner()))
 	{
-		Player->OnUpdateSelectedItem.AddUObject(this, &ThisClass::OnUpdateSelectedItem);
+		Player->OnUpdateSelectedItem.AddDynamic(this, &ThisClass::OnUpdateSelectedItem);
 	}
 }
 
-void UGridIndicatorComponent::OnUpdateSelectedItem(bool bIsEquippable, TSubclassOf<AActor> ActorClass, FName SocketName)
+void UGridIndicatorComponent::OnUpdateSelectedItem(TSubclassOf<AActor> ActorClass, FItemMetaInfo ItemMetaInfo)
 {
-	if (bIsEquippable)
+	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemMetaInfo.GetId());
+
+	const bool bIsStructure = ItemInfoData.GetItemType() != EItemType::Equipment && UItemManager::IsItemCanHousing(ItemMetaInfo.GetId());
+	
+	if (bIsStructure)
 	{
-		OnDeactivate();
+		OnActivate(ActorClass);
 	}
 	else
 	{
-		OnActivate(ActorClass);
+		OnDeactivate();
 	}
 }
 
@@ -136,16 +141,18 @@ void UGridIndicatorComponent::Execute()
 }
 
 void UGridIndicatorComponent::Server_Execute_Implementation(FVector Pivot, FVector Location, FRotator Rotation,
-                                                            TSubclassOf<APlacement> PlacementClass)
+                                                            TSubclassOf<APlacement> PlacementClass, FItemMetaInfo_Net ItemMetaInfo)
 {
 	if (GetOwner()->HasAuthority())
 	{
-		ExecuteInternal(Pivot, Location, Rotation, PlacementClass);
+		FItemMetaInfo Info;
+		ItemMetaInfo.To(Info);
+		ExecuteInternal(Pivot, Location, Rotation, PlacementClass, Info);
 	}
 }
 
 void UGridIndicatorComponent::ExecuteInternal(FVector Pivot, FVector Location, FRotator Rotation,
-	TSubclassOf<APlacement> PlacementClass)
+	TSubclassOf<APlacement> PlacementClass, FItemMetaInfo ItemMetaInfo)
 {
 }
 
