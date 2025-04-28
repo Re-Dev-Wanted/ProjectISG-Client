@@ -11,8 +11,17 @@ class PROJECTISG_API UUIC_CookingRecipeUI : public UBaseUIController
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",
-		meta = (AllowPrivateAccess = true, EditCondition = "IsInputAccess"))
+public:
+	void SetSelectedCookingRecipe(const uint32 RecipeId);
+
+	void TurnOffSelectedCookingRecipe();
+
+protected:
+	virtual void AppearUI(const EUILayer Layer) override;
+
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Input"
+		, meta = (AllowPrivateAccess = true, EditCondition = "IsInputAccess"))
 	TObjectPtr<UInputAction> CloseCookingRecipeUI;
 
 	virtual void
@@ -20,4 +29,7 @@ class PROJECTISG_API UUIC_CookingRecipeUI : public UBaseUIController
 
 	UFUNCTION()
 	void OnCloseCookingRecipeUI();
+
+	UFUNCTION()
+	void StartCooking();
 };
