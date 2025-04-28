@@ -2,8 +2,6 @@
 
 #include "HttpModule.h"
 #include "Interfaces/IHttpRequest.h"
-#include "Kismet/GameplayStatics.h"
-#include "ProjectISG/Systems/Time/TimeManager.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 #include "ProjectISG/Utils/SessionUtil.h"
 
@@ -116,21 +114,13 @@ void ULoggingSubSystem::CreateLogDataStringForMultipart(
 		Payload.Append((uint8*)Converter.Get(), Converter.Length());
 	};
 
-	const ATimeManager* TimeManager = Cast<ATimeManager>(
-		UGameplayStatics::GetActorOfClass(GetWorld(),
-		                                  ATimeManager::StaticClass()));
-
-	const FString InGameDatetime = TimeManager
-		                               ? TimeManager->GetDateText()
-		                               : FDateTime::Now().ToString();
-
 	// 필수 필드 추가
 	AddTextField(
 		TEXT("session_id"), TEXT("e1827901-2536-4fb9-b76a-ca8e149015cb"), true);
 	AddTextField(TEXT("user_id"), FSessionUtil::GetCurrentId(GetWorld()),
 	             false);
 	AddTextField(TEXT("timestamp"), FDateTime::Now().ToString(), false);
-	AddTextField(TEXT("ingame_datetime"), InGameDatetime, false);
+	AddTextField(TEXT("ingame_datetime"), LogData.CurrentDate, false);
 	// TODO: 나중에 해당 값을 별도로 Parameter로 받던가
 	// or 외부 상태를 관리하고 가져오는 형식으로 변경해줘야 한다.
 	AddTextField(TEXT("location"), TEXT("농장"), false);

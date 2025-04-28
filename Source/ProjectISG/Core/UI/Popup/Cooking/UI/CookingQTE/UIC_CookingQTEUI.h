@@ -24,6 +24,8 @@ protected:
 	BindInputAction(UEnhancedInputComponent* InputComponent) override;
 
 private:
+	void InitializeDataToQTE();
+
 	UFUNCTION()
 	void OnPressQTEAction(const FInputActionValue& Value);
 

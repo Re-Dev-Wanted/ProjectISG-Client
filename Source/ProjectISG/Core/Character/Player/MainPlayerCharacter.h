@@ -34,7 +34,7 @@ class PROJECTISG_API AMainPlayerCharacter : public ABaseCharacter
 
 public:
 	AMainPlayerCharacter();
-	
+
 	FOnInputBindingNotified OnInputBindingNotified;
 
 	FOnUpdateSelectedItem OnUpdateSelectedItem;
@@ -43,8 +43,8 @@ public:
 
 	GETTER(TObjectPtr<UInputMappingContext>, DefaultMappingContext)
 
+	GETTER(TObjectPtr<UScreenShotComponent>, ScreenShotComponent)
 
-	
 protected:
 	virtual void BeginPlay() override;
 
@@ -134,5 +134,5 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Farming",
 		meta = (AllowPrivateAccess = true))
 	TObjectPtr<UAnimMontage> WateringMontage;
-#pragma endregion 
+#pragma endregion
 };

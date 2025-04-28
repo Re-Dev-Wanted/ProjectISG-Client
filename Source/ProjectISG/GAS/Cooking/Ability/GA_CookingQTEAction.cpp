@@ -9,10 +9,13 @@
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Popup/Cooking/UI/CookingRecipe/UIC_CookingRecipeUI.h"
 #include "ProjectISG/Core/UI/Popup/Cooking/UI/CookingRecipe/UIM_CookingRecipeUI.h"
+#include "ProjectISG/GAS/Common/Ability/Utility/AT_LogWithScreenShot.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/AT_PlayCinematic.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
+#include "ProjectISG/Systems/Logging/LoggingEnum.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 
 void UGA_CookingQTEAction::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle
@@ -21,6 +24,8 @@ void UGA_CookingQTEAction::ActivateAbility(
 	, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	AT_LogCooking = UAT_LogWithScreenShot::InitialEvent(this);
 
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		GetAvatarActorFromActorInfo());
@@ -47,6 +52,8 @@ void UGA_CookingQTEAction::ActivateAbility(
 	}
 
 	PlayNextSequence();
+
+	LoggingToStartCook();
 }
 
 void UGA_CookingQTEAction::PlayNextSequence()
@@ -68,17 +75,18 @@ void UGA_CookingQTEAction::OnPlayReadySequence(
 	ALevelSequenceActor* TargetSequenceActor)
 {
 	TargetSequenceActor->AddBindingByTag(FName(TEXT("Player"))
-										, GetAvatarActorFromActorInfo());
+	                                     , GetAvatarActorFromActorInfo());
 }
 
 void UGA_CookingQTEAction::EndAbility(const FGameplayAbilitySpecHandle Handle
-									, const FGameplayAbilityActorInfo* ActorInfo
-									, const FGameplayAbilityActivationInfo
-									ActivationInfo, bool bReplicateEndAbility
-									, bool bWasCancelled)
+                                      , const FGameplayAbilityActorInfo*
+                                      ActorInfo
+                                      , const FGameplayAbilityActivationInfo
+                                      ActivationInfo, bool bReplicateEndAbility
+                                      , bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility
-					, bWasCancelled);
+	                  , bWasCancelled);
 
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		GetAvatarActorFromActorInfo());
@@ -92,6 +100,8 @@ void UGA_CookingQTEAction::EndAbility(const FGameplayAbilitySpecHandle Handle
 		return;
 	}
 
+	LoggingToEndCook();
+
 	Player->GetController<AMainPlayerController>()->PopUI();
 
 	// 완료된 음식 아이템 주기
@@ -101,7 +111,7 @@ void UGA_CookingQTEAction::EndAbility(const FGameplayAbilitySpecHandle Handle
 		Recipe.GetFoodId());
 
 	Player->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
-			AddItem(NewFoodItem);
+	        AddItem(NewFoodItem);
 }
 
 void UGA_CookingQTEAction::OnEndSequence()
@@ -110,9 +120,35 @@ void UGA_CookingQTEAction::OnEndSequence()
 	if (RemainQTEQueue.IsEmpty())
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo
-					, true, false);
+		           , true, false);
 		return;
 	}
 
 	PlayNextSequence();
+}
+
+void UGA_CookingQTEAction::LoggingToStartCook()
+{
+	FDiaryLogParams LogParams;
+	LogParams.Location = TEXT("요리장");
+	LogParams.ActionType = ELoggingActionType::COOKING;
+	LogParams.ActionName = ELoggingActionName::start_cooking;
+
+	AT_LogCooking->SetLogParams(LogParams);
+	AT_LogCooking->SetIsLogWithScreenShot(false);
+
+	AT_LogCooking->ReadyForActivation();
+}
+
+void UGA_CookingQTEAction::LoggingToEndCook()
+{
+	FDiaryLogParams LogParams;
+	LogParams.Location = TEXT("요리장");
+	LogParams.ActionType = ELoggingActionType::COOKING;
+	LogParams.ActionName = ELoggingActionName::finish_cooking;
+
+	AT_LogCooking->SetLogParams(LogParams);
+	AT_LogCooking->SetIsLogWithScreenShot(true);
+
+	AT_LogCooking->ReadyForActivation();
 }
