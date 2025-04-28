@@ -19,6 +19,8 @@ public:
 
 	virtual void OnInteractive(AActor* Causer) override;
 
+	virtual void OnInteractAction(AActor* Causer) override;
+
 protected:
 	virtual void BeginPlay() override;
 

@@ -101,22 +101,15 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 
 	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 
-	const uint16 ItemId = PS->GetInventoryComponent()->GetInventoryList()[
-		NewIndex].GetId();
+	const FItemMetaInfo ItemMetaInfo = PS->GetInventoryComponent()->GetInventoryList()[
+		NewIndex];
+
+	const uint16 ItemId = ItemMetaInfo.GetId();
 
 	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
 
-	const bool bAvailable = UItemManager::IsItemCanHousing(ItemId);
-
-	if (bAvailable)
-	{
-		Player->GetPlacementIndicatorComponent()->OnActivate(
-			ItemInfoData.GetShowItemActor());
-	}
-	else
-	{
-		Player->GetPlacementIndicatorComponent()->OnDeactivate();
-	}
+	Player->OnUpdateSelectedItem.Broadcast(
+	ItemInfoData.GetShowItemActor(), ItemMetaInfo);
 
 	const AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetOwner()->GetInstigatorController());

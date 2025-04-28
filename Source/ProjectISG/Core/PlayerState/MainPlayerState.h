@@ -22,8 +22,10 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	class UISGAttributeSet* GetAttributeSet() const { return AttributeSet; }
-	GETTER(TObjectPtr<UInventoryComponent>, InventoryComponent)
 
+	GETTER(TObjectPtr<UInventoryComponent>, InventoryComponent)
+	GETTER_SETTER(TObjectPtr<class AGridManager>, GridManager)
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -32,6 +34,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<class UISGAttributeSet> AttributeSet;
+
+	UPROPERTY()
+	TObjectPtr<class AGridManager> GridManager;
 
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))

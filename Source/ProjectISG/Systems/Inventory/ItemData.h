@@ -31,7 +31,8 @@ enum class EConstDataKey : uint32
 {
 	None,
 	MaxDurability,
-	ItemUseType
+	ItemUseType,
+	SocketName
 };
 
 // 아이템 정보를 담아 추후 아이템을 구성할 때 사용할 요소
@@ -148,6 +149,11 @@ struct PROJECTISG_API FItemMetaInfo
 		return CompareItem.GetId() == GetId();
 	}
 
+	bool IsValid() const
+	{
+		return Id > 0;
+	}
+
 private:
 	// 0인 경우 아이템이 안들어가게 처리해야함.
 	UPROPERTY(EditDefaultsOnly, Category = "Data", meta =
@@ -160,4 +166,51 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Data")
 	TMap<EMetaDataKey, FString> MetaData;
+};
+
+
+USTRUCT(BlueprintType)
+struct FItemMetaInfo_Net
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	int32 Id = 0;
+
+	UPROPERTY()
+	int Count = 0;
+
+	UPROPERTY()
+	TArray<EMetaDataKey> Keys;
+
+	UPROPERTY()
+	TArray<FString> Values;
+
+	FItemMetaInfo_Net() {}
+
+	FItemMetaInfo_Net(const FItemMetaInfo& Original)
+	{
+		Id = Original.GetId();
+		Count = Original.GetCurrentCount();
+
+		for (const auto& Pair : Original.GetMetaData())
+		{
+			Keys.Add(Pair.Key);
+			Values.Add(Pair.Value);
+		}
+	}
+
+	void To(FItemMetaInfo& OutData) const
+	{
+		OutData.SetId(Id);
+		OutData.SetCurrentCount(Count);
+		TMap<EMetaDataKey, FString> MetaData;
+		
+		for (int32 i = 0; i < Keys.Num(); ++i)
+		{
+			MetaData.Add(Keys[i], Values[i]);
+		}
+
+		OutData.SetMetaData(MetaData);
+	}
 };

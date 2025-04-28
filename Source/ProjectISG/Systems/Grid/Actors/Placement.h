@@ -2,13 +2,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ProjectISG/GAS/Common/Object/BaseActor.h"
+#include "ProjectISG/Systems/Input/Interface/InteractionInterface.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "Placement.generated.h"
 
 // 그리드에 place할 모든 것들은 이것을 상속 받아야함
 
 UCLASS()
-class PROJECTISG_API APlacement : public AActor
+class PROJECTISG_API APlacement : public ABaseActor, public IInteractionInterface
 {
 	GENERATED_BODY()
 
@@ -19,6 +21,16 @@ public:
 	GETTER(FVector, MeshSize)
 	SETTER(float, CachedSnapSize)
 
+	virtual bool GetCanInteractive() const override;
+
+	virtual void OnTouchAction(AActor* Causer) override;
+
+	virtual void OnInteractive(AActor* Causer) override;
+
+	virtual void OnTouch(AActor* Causer) override;
+
+	virtual FString GetDisplayText() const override;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -28,6 +40,9 @@ protected:
 
 	UPROPERTY(Replicated)
 	float CachedSnapSize;
+
+	UPROPERTY(Replicated)
+	bool bCanInteractive;
 
 public:
 	virtual void Tick(float DeltaTime) override;
