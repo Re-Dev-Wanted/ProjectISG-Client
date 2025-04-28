@@ -13,4 +13,11 @@ UCLASS()
 class PROJECTISG_API UUIV_TradingUI : public UBaseUIView
 {
 	GENERATED_BODY()
+
+private:
+	UPROPERTY(meta = (BindWidget))
+	class UScrollBox* ProductListScroll;
+
+	UPROPERTY(meta = (BindWidget))
+	class UUIV_ProductListWidget* ProductList;
 };

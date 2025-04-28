@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
-#include "UIC_ProductInfo.generated.h"
+#include "ProjectISG/Core/UI/Base/MVC/BaseUIModel.h"
+#include "UIM_ProductListWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTISG_API UUIC_ProductInfo : public UBaseUIController
+class PROJECTISG_API UUIM_ProductListWidget : public UBaseUIModel
 {
 	GENERATED_BODY()
 };

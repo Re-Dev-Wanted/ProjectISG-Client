@@ -4,6 +4,7 @@
 #include "GA_OpenTradingUI.h"
 
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 
 class AMainPlayerCharacter;
@@ -17,10 +18,14 @@ void UGA_OpenTradingUI::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                         TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	const AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		ActorInfo->AvatarActor.Get());
 	UE_LOG(LogTemp, Warning, TEXT("Open Trading UI, %s"),
-	       *FEnumUtil::GetClassEnumKeyAsString(player->GetLocalRole()));
+	       *FEnumUtil::GetClassEnumKeyAsString(Player->GetLocalRole()));
+	
+	Player->GetController<AMainPlayerController>()->PopUI();
+	Player->GetController<AMainPlayerController>()->PushUI(EUIName::Popup_TradingUI);
+	
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
 

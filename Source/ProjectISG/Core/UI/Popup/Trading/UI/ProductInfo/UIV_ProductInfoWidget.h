@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
-#include "UIV_ProductInfo.generated.h"
+#include "UIV_ProductInfoWidget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTISG_API UUIV_ProductInfo : public UBaseUIView
+class PROJECTISG_API UUIV_ProductInfoWidget : public UBaseUIView
 {
 	GENERATED_BODY()
 
