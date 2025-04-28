@@ -2,6 +2,8 @@
 
 #include "HttpModule.h"
 #include "Interfaces/IHttpRequest.h"
+#include "Kismet/GameplayStatics.h"
+#include "ProjectISG/Systems/Time/TimeManager.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 #include "ProjectISG/Utils/SessionUtil.h"
 
@@ -11,7 +13,7 @@ void ULoggingSubSystem::Initialize(FSubsystemCollectionBase& Collection)
 
 	Boundary = "----Boundary" + FGuid::NewGuid().ToString(
 		EGuidFormats::Digits);
-	
+
 	if (const UWorld* World = GetWorld())
 	{
 		World->GetTimerManager().SetTimer(
@@ -36,7 +38,8 @@ void ULoggingSubSystem::Deinitialize()
 
 void ULoggingSubSystem::LoggingData(const FDiaryLogParams& Payload)
 {
-	if (FMath::RandRange(0, 1) > static_cast<double>(CurrentScreenShotLogCount) / MaxScreenShotLogCount)
+	if (FMath::RandRange(0, 1) > static_cast<double>(CurrentScreenShotLogCount)
+		/ MaxScreenShotLogCount)
 	{
 		CurrentScreenShotLogCount = 1;
 		SendLoggingNow(Payload);
@@ -92,55 +95,78 @@ void ULoggingSubSystem::CreateLogDataStringForMultipart(
 	const FString MiddleBoundary = TEXT("\r\n--") + Boundary + TEXT("\r\n");
 	// 마지막 경계선
 	const FString EndBoundary = TEXT("\r\n--") + Boundary + TEXT("--\r\n");
-    
+
 	// RequestContent 초기화 - 비워두기
 	Payload.Empty();
-    
+
 	// 함수 형식 텍스트 필드 추가
-	auto AddTextField = [&Payload, &FirstBoundary, &MiddleBoundary](const FString& FieldName, const FString& Value, const bool IsFirstField)
+	auto AddTextField = [&Payload, &FirstBoundary, &MiddleBoundary](
+		const FString& FieldName, const FString& Value, const bool IsFirstField)
 	{
-		const FString BoundaryStr = IsFirstField ? FirstBoundary : MiddleBoundary;
-        
-		const FString FieldHeader = BoundaryStr + TEXT("Content-Disposition: form-data; name=\"") + FieldName + TEXT("\"\r\n\r\n");
+		const FString BoundaryStr = IsFirstField
+			                            ? FirstBoundary
+			                            : MiddleBoundary;
+
+		const FString FieldHeader = BoundaryStr + TEXT(
+			"Content-Disposition: form-data; name=\"") + FieldName + TEXT(
+			"\"\r\n\r\n");
 		const FString FieldContent = FieldHeader + Value;
-        
+
 		const FTCHARToUTF8 Converter(*FieldContent);
 		Payload.Append((uint8*)Converter.Get(), Converter.Length());
 	};
-	
-    // 필수 필드 추가
-    AddTextField(TEXT("session_id"), TEXT("Test_Sessions"), true);
-    AddTextField(TEXT("user_id"), FSessionUtil::GetCurrentId(GetWorld()), false);
-    AddTextField(TEXT("timestamp"), FDateTime::Now().ToString(), false);
-    AddTextField(TEXT("ingame_datetime"), FDateTime::Now().ToString(), false);
-    AddTextField(TEXT("location"), TEXT("농장"), false);
-    AddTextField(TEXT("action_type"), FEnumUtil::GetClassEnumKeyAsString(LogData.ActionType), false);
-    AddTextField(TEXT("action_name"), FEnumUtil::GetClassEnumKeyAsString(LogData.ActionName), false);
-    AddTextField(TEXT("detail"), TEXT("Test"), false);
 
-    // 선택적 필드 추가
-    if (!LogData.With.IsEmpty())
-    {
-        AddTextField(TEXT("with_"), LogData.With, false);
-    }
+	const ATimeManager* TimeManager = Cast<ATimeManager>(
+		UGameplayStatics::GetActorOfClass(GetWorld(),
+		                                  ATimeManager::StaticClass()));
 
-    // 스크린샷 파일 추가
-    if (LogData.File.Num() > 0)
-    {
-        const FString MimeType = TEXT("image/png");
-        
-        FString FileHeader = MiddleBoundary +
-            TEXT("Content-Disposition: form-data; name=\"file\"; filename=\"") + TEXT("log_screenshot") + TEXT("\"\r\n") +
-            TEXT("Content-Type: ") + MimeType + TEXT("\r\n\r\n");
-        
-        FTCHARToUTF8 HeaderConverter(*FileHeader);
-        Payload.Append((uint8*)HeaderConverter.Get(), HeaderConverter.Length());
-        Payload.Append(LogData.File);
-    }
+	const FString InGameDatetime = TimeManager
+		                               ? TimeManager->GetDateText()
+		                               : FDateTime::Now().ToString();
 
-    // 마지막 경계선 추가
-    FTCHARToUTF8 EndBoundaryConverter(*EndBoundary);
-    Payload.Append((uint8*)EndBoundaryConverter.Get(), EndBoundaryConverter.Length());
+	// 필수 필드 추가
+	AddTextField(
+		TEXT("session_id"), TEXT("e1827901-2536-4fb9-b76a-ca8e149015cb"), true);
+	AddTextField(TEXT("user_id"), FSessionUtil::GetCurrentId(GetWorld()),
+	             false);
+	AddTextField(TEXT("timestamp"), FDateTime::Now().ToString(), false);
+	AddTextField(TEXT("ingame_datetime"), InGameDatetime, false);
+	// TODO: 나중에 해당 값을 별도로 Parameter로 받던가
+	// or 외부 상태를 관리하고 가져오는 형식으로 변경해줘야 한다.
+	AddTextField(TEXT("location"), TEXT("농장"), false);
+	AddTextField(
+		TEXT("action_type"),
+		FEnumUtil::GetClassEnumKeyAsString(LogData.ActionType), false);
+	AddTextField(
+		TEXT("action_name"),
+		FEnumUtil::GetClassEnumKeyAsString(LogData.ActionName), false);
+	AddTextField(TEXT("detail"), TEXT("{}"), false);
+
+	// 선택적 필드 추가
+	if (!LogData.With.IsEmpty())
+	{
+		AddTextField(TEXT("with_"), LogData.With, false);
+	}
+
+	// 스크린샷 파일 추가
+	if (LogData.File.Num() > 0)
+	{
+		const FString MimeType = TEXT("image/png");
+
+		FString FileHeader = MiddleBoundary +
+			TEXT("Content-Disposition: form-data; name=\"file\"; filename=\"") +
+			TEXT("log_screenshot") + TEXT("\"\r\n") +
+			TEXT("Content-Type: ") + MimeType + TEXT("\r\n\r\n");
+
+		FTCHARToUTF8 HeaderConverter(*FileHeader);
+		Payload.Append((uint8*)HeaderConverter.Get(), HeaderConverter.Length());
+		Payload.Append(LogData.File);
+	}
+
+	// 마지막 경계선 추가
+	FTCHARToUTF8 EndBoundaryConverter(*EndBoundary);
+	Payload.Append((uint8*)EndBoundaryConverter.Get(),
+	               EndBoundaryConverter.Length());
 }
 
 void ULoggingSubSystem::SendHttpRequest(FApiCallData& CallData)
@@ -152,7 +178,7 @@ void ULoggingSubSystem::SendHttpRequest(FApiCallData& CallData)
 	TArray<uint8> Payload;
 	const FString ContentType = "multipart/form-data; boundary=" + Boundary;
 	CreateLogDataStringForMultipart(CallData.Payload, Payload);
-	
+
 	Request->SetURL(ApiPath + CallData.Url);
 	Request->SetVerb(TEXT("POST"));
 	Request->SetHeader(TEXT("Content-type"), ContentType);

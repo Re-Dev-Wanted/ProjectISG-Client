@@ -26,7 +26,7 @@ private:
 	uint8 MaxScreenShotLogCount = 10;
 	uint8 CurrentScreenShotLogCount = 1;
 
-	FString ApiPath = TEXT("http://192.168.10.70:8080/log");
+	FString ApiPath = TEXT("http://192.168.20.62:8016/log");
 
 	void SendHttpRequest(FApiCallData& CallData);
 

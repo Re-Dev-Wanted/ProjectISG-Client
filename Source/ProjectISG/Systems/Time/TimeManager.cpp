@@ -175,7 +175,7 @@ void ATimeManager::ForceSleep()
 	{
 		// 시간을 멈춘다
 		StopTime(true);
-		
+
 		// 침대에 각 플레이어를 배정 시킨다
 		AssignBedEachPlayer();
 
@@ -187,7 +187,6 @@ void ATimeManager::ForceSleep()
 
 		// 시네마틱을 진행시킨다.
 		bSleepCinematicStart = true;
-
 	}
 }
 
@@ -276,4 +275,12 @@ void ATimeManager::ChangeTimeToForceSleepTime()
 void ATimeManager::ChangeTimeToCanSleepTime()
 {
 	Hour = 9;
+}
+
+FString ATimeManager::GetDateText() const
+{
+	FDateTime DateText(0, 0, 0, 0, 0, 0);
+	DateText += FTimespan(Day, Hour, Minute, Second);
+
+	return DateText.ToString();
 }

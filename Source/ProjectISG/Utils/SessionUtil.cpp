@@ -160,7 +160,7 @@ FString FSessionUtil::GetCurrentId(const UWorld* World)
 	}
 
 	// Fallback: 임시 ID
-	return FString("0");
+	return FString("1");
 }
 
 FString FSessionUtil::EncodeData(const FString& Str)

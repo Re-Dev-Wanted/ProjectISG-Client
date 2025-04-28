@@ -8,6 +8,7 @@
 #include "TimeManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSleep);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAddSleepTimeToCrop);
 
 UCLASS()
@@ -63,6 +64,8 @@ public:
 	GETTER(int32, Minute);
 	GETTER(float, Second);
 	GETTER(int32, TimeStoppedTime);
+
+	FString GetDateText() const;
 
 private:
 #pragma region Sky
@@ -128,7 +131,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = "true"), Category = "Time")
 	int32 CanSleepTime = 9;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = "true"), Category = "Time")
 	int32 TimeStoppedTime = 0;
