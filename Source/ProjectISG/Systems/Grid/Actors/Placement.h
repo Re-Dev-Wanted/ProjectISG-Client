@@ -10,7 +10,7 @@
 // 그리드에 place할 모든 것들은 이것을 상속 받아야함
 
 UCLASS()
-class PROJECTISG_API APlacement : public ABaseActor, public IInteractionInterface
+class PROJECTISG_API APlacement : public ABaseActor
 {
 	GENERATED_BODY()
 
@@ -22,8 +22,6 @@ public:
 	SETTER(float, CachedSnapSize)
 
 	virtual bool GetCanInteractive() const override;
-
-	virtual void OnTouchAction(AActor* Causer) override;
 
 	virtual void OnInteractive(AActor* Causer) override;
 

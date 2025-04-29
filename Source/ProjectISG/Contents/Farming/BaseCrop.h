@@ -9,7 +9,7 @@
 #include "BaseCrop.generated.h"
 
 UCLASS()
-class PROJECTISG_API ABaseCrop : public ABaseActor, public IInteractionInterface
+class PROJECTISG_API ABaseCrop : public ABaseActor
 
 {
 	GENERATED_BODY()
@@ -18,8 +18,6 @@ public:
 	ABaseCrop();
 
 	virtual void OnInteractive(AActor* Causer) override;
-
-	virtual void OnInteractAction(AActor* Causer) override;
 
 protected:
 	virtual void BeginPlay() override;

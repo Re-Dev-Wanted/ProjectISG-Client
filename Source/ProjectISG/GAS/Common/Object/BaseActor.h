@@ -3,13 +3,15 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Actor.h"
+#include "ProjectISG/Systems/Input/Interface/InteractionInterface.h"
 #include "BaseActor.generated.h"
 
 class UISGAbilitySystemComponent;
 class UISGAbilitySystemInitializeData;
 
 UCLASS()
-class PROJECTISG_API ABaseActor : public AActor, public IAbilitySystemInterface
+class PROJECTISG_API ABaseActor : public AActor, public 
+IAbilitySystemInterface, public IInteractionInterface
 {
 	GENERATED_BODY()
 
@@ -17,15 +19,6 @@ public:
 	ABaseActor();
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
-	UFUNCTION()
-	virtual void OnAttackAction(AActor* Causer) {}
-
-	UFUNCTION()
-	virtual void OnInteractAction(AActor* Causer) {}
-
-	UFUNCTION()
-	virtual void OnTouchAction(AActor* Causer) {}
 
 protected:
 	virtual void BeginPlay() override;

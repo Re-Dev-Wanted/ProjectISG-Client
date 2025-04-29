@@ -21,11 +21,9 @@ public:
 	UFUNCTION()
 	void OnChange(TSubclassOf<AActor> ActorClass, FItemMetaInfo _ItemMetaInfo);
 	
-	void OnAttackAction(AActor* Causer);
+	void OnInteractAction(AActor* Causer) const;
 	
-	void OnInteractAction(AActor* Causer);
-	
-	void OnTouchAction(AActor* Causer);
+	void OnTouchAction(AActor* Causer) const;
 
 	bool IsHousingHandItem();
 
@@ -35,9 +33,9 @@ protected:
 	virtual void InitializeComponent() override;
 
 	UPROPERTY()
-	class ABaseActor* EmptyItem;
+	class ABaseActor* EmptyItem = nullptr;
 
-	TObjectPtr<class ABaseActor> HeldItem;
+	TObjectPtr<class ABaseActor> HeldItem = nullptr;
 
 	UPROPERTY()
 	FItemMetaInfo ItemMetaInfo;

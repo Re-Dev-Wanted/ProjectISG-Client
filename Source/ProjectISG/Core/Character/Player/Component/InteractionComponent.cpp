@@ -213,7 +213,7 @@ void UInteractionComponent::Server_Interact_Implementation(class ABaseActor* Int
 	}
 
 	// 정상 처리
-	InteractActor->OnInteractAction(PlayerCharacter);
+	InteractActor->OnInteractive(PlayerCharacter);
 }
 
 void UInteractionComponent::Server_Touch_Implementation(class ABaseActor* InteractActor)
@@ -230,5 +230,5 @@ void UInteractionComponent::Server_Touch_Implementation(class ABaseActor* Intera
 		return;
 	}
 
-	InteractActor->OnTouchAction(PlayerCharacter);
+	InteractActor->OnTouch(PlayerCharacter);
 }

@@ -11,8 +11,26 @@
 UPlayerHandSlotComponent::UPlayerHandSlotComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+	bWantsInitializeComponent = true;
 }
 
+void UPlayerHandSlotComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner()))
+	{
+		Player->OnUpdateSelectedItem.AddDynamic(this, &UPlayerHandSlotComponent::OnChange);
+	}
+}
+
+void UPlayerHandSlotComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+
+	EmptyItem = NewObject<ABaseActor>(this, TEXT("Empty"));
+	HeldItem = EmptyItem;
+}
 
 void UPlayerHandSlotComponent::OnChange(TSubclassOf<AActor> ActorClass, FItemMetaInfo _ItemMetaInfo)
 {
@@ -60,46 +78,20 @@ void UPlayerHandSlotComponent::OnChange(TSubclassOf<AActor> ActorClass, FItemMet
 	}
 }
 
-void UPlayerHandSlotComponent::OnAttackAction(AActor* Causer)
+void UPlayerHandSlotComponent::OnInteractAction(AActor* Causer) const
 {
-	if (HeldItem)
+	if (HeldItem && HeldItem != EmptyItem)
 	{
-		HeldItem->OnAttackAction(Causer);
+		HeldItem->OnInteractive(Causer);
 	}
 }
 
-void UPlayerHandSlotComponent::OnInteractAction(AActor* Causer)
+void UPlayerHandSlotComponent::OnTouchAction(AActor* Causer) const
 {
-	if (HeldItem)
+	if (HeldItem && HeldItem != EmptyItem)
 	{
-		HeldItem->OnInteractAction(Causer);
+		HeldItem->OnTouch(Causer);
 	}
-}
-
-void UPlayerHandSlotComponent::OnTouchAction(AActor* Causer)
-{
-	if (HeldItem)
-	{
-		HeldItem->OnTouchAction(Causer);
-	}
-}
-
-void UPlayerHandSlotComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner()))
-	{
-		Player->OnUpdateSelectedItem.AddDynamic(this, &UPlayerHandSlotComponent::OnChange);
-	}
-}
-
-void UPlayerHandSlotComponent::InitializeComponent()
-{
-	Super::InitializeComponent();
-
-	EmptyItem = NewObject<ABaseActor>(this, TEXT("Empty"));
-	HeldItem = EmptyItem;
 }
 
 bool UPlayerHandSlotComponent::IsHousingHandItem()

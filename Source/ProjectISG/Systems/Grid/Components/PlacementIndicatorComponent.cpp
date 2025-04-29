@@ -13,6 +13,9 @@ class AMainPlayerCharacter;
 
 UPlacementIndicatorComponent::UPlacementIndicatorComponent()
 {
+	PrimaryComponentTick.bCanEverTick = true;
+	bWantsInitializeComponent = true;
+	
 	ConstructorHelpers::FObjectFinder<UInputAction> InputAction(TEXT("/Game/Core/Character/Blueprints/MainPlayer/Input/IA_RotateObject.IA_RotateObject"));
 
 	if (InputAction.Succeeded())

@@ -9,7 +9,7 @@
 
 UGridComponent::UGridComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 	LineMeshComp = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Lines_ProceduralMesh"));
 	SquareMeshComp = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Squares_ProceduralMesh"));
@@ -23,14 +23,6 @@ UGridComponent::UGridComponent()
 }
 
 
-// Called when the game starts
-void UGridComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// ...
-}
-
 void UGridComponent::OnRegister()
 {
 	Super::OnRegister();
@@ -38,15 +30,6 @@ void UGridComponent::OnRegister()
 	Manager = Cast<AGridManager>(GetOwner());
 
 	OnUpdatedProperties();
-}
-
-
-// Called every frame
-void UGridComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 
 void UGridComponent::OnUpdatedProperties()

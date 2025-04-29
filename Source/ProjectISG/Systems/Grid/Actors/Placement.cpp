@@ -43,13 +43,6 @@ bool APlacement::GetCanInteractive() const
 	return true;
 }
 
-void APlacement::OnTouchAction(AActor* Causer)
-{
-	Super::OnTouchAction(Causer);
-
-	// OnTouch(Causer);
-}
-
 void APlacement::OnInteractive(AActor* Causer)
 {
 	IInteractionInterface::OnInteractive(Causer);
