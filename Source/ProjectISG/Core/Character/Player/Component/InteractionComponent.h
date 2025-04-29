@@ -24,10 +24,12 @@ public:
 	void OnChange(TSubclassOf<AActor> ActorClass, FItemMetaInfo _ItemMetaInfo);
 
 	UFUNCTION(Reliable, Server)
-	void Server_Interact(class ABaseInteractiveActor* InteractActor);
+	void Server_Interact(class ABaseInteractiveActor* InteractActor, AActor* 
+	Causer);
 
 	UFUNCTION(Reliable, Server)
-	void Server_Touch(class ABaseInteractiveActor* InteractActor);
+	void Server_Touch(class ABaseInteractiveActor* InteractActor, AActor* 
+	Causer);
 
 protected:
 	virtual void BeginPlay() override;

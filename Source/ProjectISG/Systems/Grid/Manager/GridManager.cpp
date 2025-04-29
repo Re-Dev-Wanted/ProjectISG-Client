@@ -1,5 +1,6 @@
 #include "GridManager.h"
 
+#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Components/GridComponent.h"
@@ -121,6 +122,58 @@ FVector AGridManager::GetLocationInPointerDirectionPlacement(APlayerController* 
 	}
 
 	return FVector::ZeroVector;
+}
+
+void AGridManager::BuildPlacement(TSubclassOf<APlacement> PlacementClass,
+	FItemMetaInfo ItemMetaInfo, const FVector& Pivot, const FVector& Location,
+	const FRotator& Rotation)
+{
+	FIntVector GridCoord = FIntVector
+	(
+		FMath::FloorToInt(Pivot.X / SnapSize),
+		FMath::FloorToInt(Pivot.Y / SnapSize),
+		FMath::RoundToInt(Pivot.Z / SnapSize)
+	);
+
+	UE_LOG(LogTemp, Warning, TEXT("Pivot %s"), *Pivot.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("Coord %s"), *GridCoord.ToString());
+
+	FActorSpawnParameters Params;
+	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	Params.bNoFail = true;
+	Params.Owner = this;
+
+	APlacement* SpawnedActor = GetWorld()->SpawnActor<APlacement>(PlacementClass, Location, Rotation, Params);
+		
+	if (!SpawnedActor)
+	{
+		return;
+	}
+
+	SpawnedActor->SetReplicates(true);
+	SpawnedActor->SetReplicatingMovement(true);
+	if (SpawnedActor->GetMeshAssetPath().IsValid())
+	{
+		SpawnedActor->SetMeshAssetPath(SpawnedActor->GetMeshAssetPath());
+		SpawnedActor->OnRep_LoadMeshAsset();  // 서버 즉시 적용
+	}
+
+	SpawnedActor->SetCachedSnapSize(SnapSize);
+	SpawnedActor->ForceNetUpdate();
+	SpawnedActor->Setup(SnapSize);
+
+	// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("BuildPlacement %s"), 
+	// *SpawnedActor
+	// ->GetActorNameOrLabel()));
+		
+	PlacementGridContainer.Add(GridCoord, SpawnedActor, ItemMetaInfo);
+}
+
+void AGridManager::BuildPlacementAtGhost(TSubclassOf<APlacement> PlacementClass,
+	FItemMetaInfo ItemMetaInfo, const APlacement& Ghost)
+{
+	BuildPlacement(PlacementClass, ItemMetaInfo, Ghost.GetActorPivotLocation(), Ghost.GetActorLocation(),
+						  Ghost.GetActorRotation());
 }
 
 FItemMetaInfo AGridManager::RemovePlacement(const FIntVector& GridAt)

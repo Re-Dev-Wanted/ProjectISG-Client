@@ -14,9 +14,6 @@ void UPlayerHandSlotComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
-	EmptyItem = NewObject<ABaseActor>(this, TEXT("Empty"));
-	HeldItem = EmptyItem;
-
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner()))
 	{
 		Player->OnUpdateSelectedItem.AddDynamic(this, &UPlayerHandSlotComponent::OnChange);
@@ -34,25 +31,18 @@ void UPlayerHandSlotComponent::OnChange(TSubclassOf<AActor> ActorClass, FItemMet
 
 	if (HeldItem)
 	{
-		if (HeldItem->IsAttachedTo(Player))
-		{
-			HeldItem->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		}
-
-		if (HeldItem != EmptyItem)
-		{
-			HeldItem->Destroy();
-		}
+		ABaseActor* DestroyActor = HeldItem.Get();
+		HeldItem = nullptr;
+		DestroyActor->Destroy();
+		ItemMetaInfo = FItemMetaInfo();
 	}
 
 	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemMetaInfo.GetId());
 
 	const bool bIsStructure = ItemInfoData.GetItemType() != EItemType::Equipment && UItemManager::IsItemCanHousing(ItemMetaInfo.GetId());
 
-	if (bIsStructure || !IsValid(ActorClass))
+	if (bIsStructure)
 	{
-		HeldItem = EmptyItem;
-		ItemMetaInfo = FItemMetaInfo();
 		return;
 	}
 
@@ -71,7 +61,7 @@ void UPlayerHandSlotComponent::OnChange(TSubclassOf<AActor> ActorClass, FItemMet
 
 bool UPlayerHandSlotComponent::IsHousingHandItem()
 {
-	if (!HeldItem || HeldItem == EmptyItem)
+	if (!HeldItem)
 	{
 		return false;
 	}

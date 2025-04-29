@@ -1,6 +1,7 @@
 #include "PlacementIndicatorComponent.h"
 
 #include "EnhancedInputComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
@@ -8,6 +9,7 @@
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Manager/GridManager.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 class AMainPlayerCharacter;
 
@@ -35,10 +37,14 @@ void UPlacementIndicatorComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
+	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
 	AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(GetOwner());
 
 	OwnerPlayer->OnInputBindingNotified.AddDynamic(
 		this, &ThisClass::BindingInputActions);
+
+	OwnerPlayer->OnUpdateSelectedItem.AddDynamic(this, &ThisClass::OnChange);
 }
 
 void UPlacementIndicatorComponent::BindingInputActions(UEnhancedInputComponent* EnhancedInputComponent)
@@ -77,10 +83,14 @@ void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 		return;
 	}
 
-	if (IndicateActor && PlayerController->IsLocalController())
+	if (PlayerController->GetCharacter()->IsLocallyControlled())
 	{
 		FVector SnappedLocation = GridManager->GetLocationInPointerDirectionPlacement(
 			PlayerController, IndicateActor->GetMeshSize());
+
+		IndicateActor->SetActorLocation(FMath::VInterpTo(IndicateActor->GetActorLocation(), SnappedLocation,
+														  0.1f,
+														  InterpSpeed));
 		
 		IndicateActor->SetActorRotation(FMath::RInterpTo(IndicateActor->GetActorRotation(),
 		                                                  FRotator(0, GetDegrees(RotateDirection), 0), 0.1f,
@@ -96,8 +106,6 @@ void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 
 void UPlacementIndicatorComponent::Execute()
 {
-	Super::Execute();
-
 	if (!bIsIndicatorActive)
 	{
 		return;
@@ -137,26 +145,10 @@ void UPlacementIndicatorComponent::Execute()
 	
 	if (PlayerInventoryComponent->RemoveItemCurrentSlotIndex(1))
 	{
-		if (GetOwner()->GetNetMode() == NM_Standalone)
-		{
-			const TSubclassOf<APlacement> PlacementFactory = IndicateActor->GetClass();
-			// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
-			GridManager->BuildPlacementAtGhost(PlacementFactory, ItemMetaInfo, IndicateActor);
-		}
-		else
-		{
-			if (GetOwner()->HasAuthority())
-			{
-				const TSubclassOf<APlacement> PlacementFactory = IndicateActor->GetClass();
-				// UE_LOG(LogTemp, Warning, TEXT("%s"), *GhostPlacement->GetActorLocation().ToCompactString());
-				GridManager->BuildPlacementAtGhost(PlacementFactory, ItemMetaInfo, IndicateActor);
-			}
-			else
-			{
-				FItemMetaInfo_Net Info(ItemMetaInfo);
-				Server_Execute(IndicateActor->GetActorPivotLocation(), IndicateActor->GetActorLocation(), IndicateActor->GetActorRotation(), IndicateActor->GetClass(), Info);
-			}
-		}
+		FItemMetaInfo_Net Info(ItemMetaInfo);
+
+		Server_Execute(IndicateActor->GetActorPivotLocation(), IndicateActor->GetActorLocation(), IndicateActor->GetActorRotation(), IndicateActor->GetClass(), Info);
+
 		OnDeactivate();
 	}
 	
@@ -165,13 +157,7 @@ void UPlacementIndicatorComponent::Execute()
 void UPlacementIndicatorComponent::ExecuteInternal(FVector Pivot, FVector Location, FRotator Rotation,
 	TSubclassOf<APlacement> PlacementClass, FItemMetaInfo ItemMetaInfo)
 {
-	Super::ExecuteInternal(Pivot, Location, Rotation, PlacementClass, ItemMetaInfo);
-
-	if (!bIsIndicatorActive)
-	{
-		return;
-	}
-
+	
 	if (!PlayerController || !PlayerController->PlayerState)
 	{
 		return;
@@ -211,4 +197,99 @@ void UPlacementIndicatorComponent::OnRotate(const FInputActionValue& InputAction
 	{
 		RotateDirection = RotateDirection >> static_cast<uint8>(1);
 	}
+}
+
+void UPlacementIndicatorComponent::OnChange(
+	TSubclassOf<AActor> ActorClass, FItemMetaInfo ItemMetaInfo)
+{
+	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemMetaInfo.GetId());
+
+	const bool bIsStructure = ItemInfoData.GetItemType() != EItemType::Equipment && UItemManager::IsItemCanHousing(ItemMetaInfo.GetId());
+
+	bIsIndicatorActive = bIsStructure;
+	
+	if (bIsStructure && ActorClass->IsChildOf(APlacement::StaticClass()))
+	{
+		TSubclassOf<APlacement> PlacementClass { ActorClass };
+		OnActivate(PlacementClass);
+	}
+	else
+	{
+		OnDeactivate();
+	}
+}
+
+void UPlacementIndicatorComponent::OnActivate(
+	const TSubclassOf<APlacement>& Factory)
+{
+	if (!PlayerController || !PlayerController->PlayerState)
+	{
+		return;
+	}
+	
+	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(PlayerController->PlayerState);
+
+	if (!PlayerState)
+	{
+		return;
+	}
+	
+	AGridManager* GridManager = PlayerState->GetGridManager();
+
+	if (!GridManager)
+	{
+		return;
+	}
+
+	UKismetSystemLibrary::PrintString(GetWorld(), "?>??");
+	
+	if (PlayerController->GetCharacter()->IsLocallyControlled())
+	{
+		SetActive(true);
+
+		if (IndicateActor)
+		{
+			APlacement* DestroyActor = IndicateActor.Get();
+			DestroyActor->Destroy();
+			IndicateActor = nullptr;
+		}
+	
+		IndicateActor = GetWorld()->SpawnActor<APlacement>(Factory);
+		
+		UKismetSystemLibrary::PrintString(GetWorld(), IndicateActor->GetActorNameOrLabel());
+
+		if (IndicateActor)
+		{
+			IndicateActor->SetReplicates(false); // 복제 금지
+			IndicateActor->SetActorEnableCollision(false); // 충돌 제거
+			IndicateActor->SetActorTickEnabled(false);
+			IndicateActor->Setup(GridManager->SnapSize);
+		}
+	}
+}
+
+void UPlacementIndicatorComponent::OnDeactivate()
+{
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
+	
+	if (Player && Player->IsLocallyControlled())
+	{
+		if (IndicateActor)
+		{
+			APlacement* DestroyActor = IndicateActor.Get();
+			DestroyActor->Destroy();
+			IndicateActor = nullptr;
+		}
+
+		SetActive(false);
+	}
+}
+
+void UPlacementIndicatorComponent::Server_Execute_Implementation(FVector Pivot,
+	FVector Location, FRotator Rotation, TSubclassOf<APlacement> PlacementClass,
+	FItemMetaInfo_Net ItemMetaInfo)
+{
+	FItemMetaInfo Info;
+	ItemMetaInfo.To(Info);
+	ExecuteInternal(Pivot, Location, Rotation, PlacementClass, Info);
 }

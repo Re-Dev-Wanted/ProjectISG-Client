@@ -54,7 +54,7 @@ void UInteractionComponent::OnChange(TSubclassOf<AActor> ActorClass,
 
 	const bool bIsStructure = ItemInfoData.GetItemType() != EItemType::Equipment && UItemManager::IsItemCanHousing(ItemMetaInfo.GetId());
 
-	IsInteractive = !bIsStructure;
+	SetIsInteractive(!bIsStructure);
 }
 
 void UInteractionComponent::OnInteractive()
@@ -63,54 +63,32 @@ void UInteractionComponent::OnInteractive()
 	{
 		return;
 	}
-	
-	IInteractionInterface* Interaction = Cast<IInteractionInterface>(
-		TargetTraceResult.GetActor());
 
-	if (!Interaction)
+	ABaseInteractiveActor* InteractActor = Cast<ABaseInteractiveActor>(TargetTraceResult.GetActor());
+
+	if (!InteractActor)
 	{
 		return;
 	}
 
-	ABaseInteractiveActor* InteractActor = Cast<ABaseInteractiveActor>(TargetTraceResult.GetActor());
-
-	if (!GetOwner()->HasAuthority())
-	{
-		Server_Interact(InteractActor);
-	}
-	else
-	{
-		Interaction->OnInteractive(GetOwner());
-	}
+	Server_Interact(InteractActor, GetOwner());
 }
 
 void UInteractionComponent::OnTouch()
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), "Test");
-
 	if (!TargetTraceResult.GetActor())
-	{
-		return;
-	}
-
-	IInteractionInterface* Interaction = Cast<IInteractionInterface>(
-		TargetTraceResult.GetActor());
-	
-	if (!Interaction)
 	{
 		return;
 	}
 	
 	ABaseInteractiveActor* InteractActor = Cast<ABaseInteractiveActor>(TargetTraceResult.GetActor());
+
+	if (!InteractActor)
+	{
+		return;
+	}
 	
-	if (!GetOwner()->HasAuthority())
-	{
-		Server_Touch(InteractActor);
-	}
-	else
-	{
-		Interaction->OnTouch(GetOwner());
-	}
+	Server_Touch(InteractActor, GetOwner());
 }
 
 void UInteractionComponent::TickComponent(float DeltaTime,
@@ -156,7 +134,7 @@ void UInteractionComponent::LineTraceToFindTarget()
 			return;
 		}
 
-		const IInteractionInterface* Interaction = Cast<IInteractionInterface>(
+		const ABaseInteractiveActor* Interaction = Cast<ABaseInteractiveActor>(
 			TargetTraceResult.GetActor());
 
 		if (!Interaction)
@@ -227,38 +205,17 @@ void UInteractionComponent::SetIsInteractive(const bool NewIsInteractive)
 }
 
 void UInteractionComponent::Server_Interact_Implementation(class ABaseInteractiveActor* 
-InteractActor)
+InteractActor, AActor* Causer)
 {
-	if (!InteractActor || !InteractActor->IsValidLowLevel() || InteractActor->IsPendingKillPending())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Invalid crop received from client"));
-		return;
-	}
-
-	if (!InteractActor->HasAuthority())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Warning: Forged object"));
-		return;
-	}
-
 	// 정상 처리
-	InteractActor->OnInteractive(PlayerCharacter);
+	InteractActor->OnInteractive(Causer);
 }
 
 void UInteractionComponent::Server_Touch_Implementation(class ABaseInteractiveActor* 
-InteractActor)
+InteractActor, AActor* Causer)
 {
-	if (!InteractActor || !InteractActor->IsValidLowLevel() || InteractActor->IsPendingKillPending())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Invalid crop received from client"));
-		return;
-	}
-
-	if (!InteractActor->HasAuthority())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Warning: Forged object"));
-		return;
-	}
-
-	InteractActor->OnTouch(PlayerCharacter);
+	// UKismetSystemLibrary::PrintString(GetWorld(), 
+	// FString::Printf(TEXT("Server_Touch_Implementation %s"), *InteractActor
+	// ->GetActorNameOrLabel()));
+	InteractActor->OnTouch(Causer);
 }

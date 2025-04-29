@@ -16,8 +16,6 @@ class PROJECTISG_API UPlayerHandSlotComponent : public UActorComponent
 public:
 	UPlayerHandSlotComponent();
 
-	GETTER(class ABaseActor*, EmptyItem)
-
 	UFUNCTION()
 	void OnChange(TSubclassOf<AActor> ActorClass, FItemMetaInfo _ItemMetaInfo);
 
@@ -25,9 +23,6 @@ public:
 
 protected:
 	virtual void InitializeComponent() override;
-
-	UPROPERTY()
-	class ABaseActor* EmptyItem = nullptr;
 
 	TObjectPtr<class ABaseActor> HeldItem = nullptr;
 
