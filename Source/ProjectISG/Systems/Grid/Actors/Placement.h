@@ -20,13 +20,7 @@ public:
 	GETTER(FVector, MeshSize)
 	SETTER(float, CachedSnapSize)
 
-	virtual bool GetCanInteractive() const override;
-
-	virtual void OnInteractive(AActor* Causer) override;
-
 	virtual void OnTouch(AActor* Causer) override;
-
-	virtual FString GetDisplayText() const override;
 
 protected:
 	virtual void BeginPlay() override;

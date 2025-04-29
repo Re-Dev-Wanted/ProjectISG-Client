@@ -33,38 +33,28 @@ APlacement::APlacement()
 	ProceduralMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ProceduralMeshComp->SetGenerateOverlapEvents(false);
 
+	ConstructorHelpers::FObjectFinder<UMaterialInstance> Mat_Instance(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Systems/Grid/Materials/SelectBrushMaterial_Inst.SelectBrushMaterial_Inst'"));
+
+	if (Mat_Instance.Succeeded())
+	{
+		TempMaterial = Mat_Instance.Object;
+	}
+
 	bReplicates = true;
 	bAlwaysRelevant = true;
 	SetReplicatingMovement(true);
 }
 
-bool APlacement::GetCanInteractive() const
-{
-	return true;
-}
-
-void APlacement::OnInteractive(AActor* Causer)
-{
-	ABaseInteractiveActor::OnInteractive(Causer);
-
-	//TODO: Test.. 후에 SittingPlacement로 자식클래스로 만들어서 관리
-	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
-	{
-		Player->GetInteractionComponent()->SetIsInteractive(false);
-
-		FGameplayTagContainer ActivateTag;
-		ActivateTag.AddTag(ISGGameplayTags::Building_Active_StartSitDown);
-		Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
-	}
-}
-
 void APlacement::OnTouch(AActor* Causer)
 {
-	ABaseInteractiveActor::OnTouch(Causer);
+	Super::OnTouch(Causer);
 
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
-		if (Player->GetHandSlotComponent()->IsHousingHandItem())
+		const FString HandItemUsingType = Player->GetHandSlotComponent()
+		->GetItemUsingType();
+		
+		if (HandItemUsingType.Equals("Deconstruct"))
 		{
 			FGameplayTagContainer ActivateTag;
 			ActivateTag.AddTag(ISGGameplayTags::Building_Active_Deconstruct);
@@ -76,11 +66,6 @@ void APlacement::OnTouch(AActor* Causer)
 			FString::Printf(TEXT("OnTouch %d"), DebugCheck));
 		}
 	}
-}
-
-FString APlacement::GetDisplayText() const
-{
-	return TEXT("앉기");
 }
 
 void APlacement::BeginPlay()
@@ -249,8 +234,7 @@ TArray<FIntVector> APlacement::GetOccupiedGrid(float SnapSize, const FIntVector&
 {
 	TArray<FIntVector> Array;
 	Occupied.Empty();
-
-
+	
 	FVector BoxExtent = CollisionComp->Bounds.BoxExtent;
 
 	float HalfSize = SnapSize * 0.5f;

@@ -59,6 +59,16 @@ void UPlayerHandSlotComponent::OnChange(TSubclassOf<AActor> ActorClass, FItemMet
 	}
 }
 
+FString UPlayerHandSlotComponent::GetItemUsingType()
+{
+	if (!HeldItem)
+	{
+		return FString();
+	}
+
+	return UItemManager::GetItemUsingType(ItemMetaInfo.GetId());
+}
+
 bool UPlayerHandSlotComponent::IsHousingHandItem()
 {
 	if (!HeldItem)
@@ -66,10 +76,5 @@ bool UPlayerHandSlotComponent::IsHousingHandItem()
 		return false;
 	}
 
-	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner()))
-	{
-		return UItemManager::IsItemCanHousing(ItemMetaInfo.GetId());
-	}
-
-	return false;
+	return UItemManager::IsItemCanHousing(ItemMetaInfo.GetId());
 }

@@ -48,6 +48,21 @@ FItemMetaInfo UItemManager::GetInitialItemMetaDataById(const uint16 Id)
 	return NewMetaInfo;
 }
 
+FString UItemManager::GetItemUsingType(const uint16 Id)
+{
+	const FItemInfoData ItemInfoData = GetItemInfoById(Id);
+
+	const FString* FindData = ItemInfoData.GetConstData().Find(
+		EConstDataKey::ItemUseType);
+
+	if (!FindData)
+	{
+		return FString();
+	}
+
+	return ItemInfoData.GetConstData().FindRef(EConstDataKey::ItemUseType);
+}
+
 bool UItemManager::IsItemCanHousing(const uint16 Id)
 {
 	const FItemInfoData ItemInfoData = GetItemInfoById(Id);

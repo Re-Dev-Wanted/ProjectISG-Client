@@ -19,6 +19,8 @@ public:
 	UFUNCTION()
 	void OnChange(TSubclassOf<AActor> ActorClass, FItemMetaInfo _ItemMetaInfo);
 
+	FString GetItemUsingType();
+	
 	bool IsHousingHandItem();
 
 protected:
