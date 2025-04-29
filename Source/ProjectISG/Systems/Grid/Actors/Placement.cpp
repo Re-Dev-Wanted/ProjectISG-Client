@@ -45,7 +45,7 @@ bool APlacement::GetCanInteractive() const
 
 void APlacement::OnInteractive(AActor* Causer)
 {
-	IInteractionInterface::OnInteractive(Causer);
+	ABaseInteractiveActor::OnInteractive(Causer);
 
 	//TODO: Test.. 후에 SittingPlacement로 자식클래스로 만들어서 관리
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
@@ -60,7 +60,7 @@ void APlacement::OnInteractive(AActor* Causer)
 
 void APlacement::OnTouch(AActor* Causer)
 {
-	IInteractionInterface::OnTouch(Causer);
+	ABaseInteractiveActor::OnTouch(Causer);
 
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
@@ -68,7 +68,12 @@ void APlacement::OnTouch(AActor* Causer)
 		{
 			FGameplayTagContainer ActivateTag;
 			ActivateTag.AddTag(ISGGameplayTags::Building_Active_Deconstruct);
-			Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
+			bool DebugCheck = Player->GetAbilitySystemComponent()
+			->TryActivateAbilitiesByTag
+			(ActivateTag);
+
+			UKismetSystemLibrary::PrintString(GetWorld(), 
+			FString::Printf(TEXT("OnTouch %d"), DebugCheck));
 		}
 	}
 }

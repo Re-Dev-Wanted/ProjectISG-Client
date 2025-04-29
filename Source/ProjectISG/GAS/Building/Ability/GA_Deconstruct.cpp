@@ -24,11 +24,13 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 	if (!Player)
 	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 		return;
 	}
 	
 	if (!Player->HasAuthority())
 	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 		return;
 	}
 
@@ -40,6 +42,7 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		
 		if (!PlayerState)
 		{
+			EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 			return;
 		}
 	
@@ -47,11 +50,13 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 		if (!GridManager)
 		{
+			EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 			return;
 		}
 		
 		if (!TargetResult.GetActor())
 		{
+			EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 			return;
 		}
 		
@@ -66,6 +71,8 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 				PlayerState->GetInventoryComponent()->AddItem(ItemMetaInfo);
 			}
 		}
+
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 	}
 }
 

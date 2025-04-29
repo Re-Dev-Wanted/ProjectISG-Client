@@ -214,8 +214,5 @@ InteractActor, AActor* Causer)
 void UInteractionComponent::Server_Touch_Implementation(class ABaseInteractiveActor* 
 InteractActor, AActor* Causer)
 {
-	// UKismetSystemLibrary::PrintString(GetWorld(), 
-	// FString::Printf(TEXT("Server_Touch_Implementation %s"), *InteractActor
-	// ->GetActorNameOrLabel()));
 	InteractActor->OnTouch(Causer);
 }
