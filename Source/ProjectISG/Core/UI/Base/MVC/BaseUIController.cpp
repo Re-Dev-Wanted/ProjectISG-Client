@@ -6,6 +6,7 @@
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 
 void UBaseUIController::InitializeController(UBaseUIView* NewView,
                                              UBaseUIModel* NewModel)

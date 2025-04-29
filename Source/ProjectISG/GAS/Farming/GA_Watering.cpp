@@ -5,6 +5,7 @@
 
 #include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 
@@ -19,6 +20,7 @@ void UGA_Watering::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		ActorInfo->AvatarActor.Get());
 	UE_LOG(LogTemp, Warning, TEXT("물주기, %s"), *FEnumUtil::GetClassEnumKeyAsString(Player->GetLocalRole()));
+
 
 	if (!IsValid(Player)) return;
 
@@ -40,6 +42,11 @@ void UGA_Watering::EndAbility(const FGameplayAbilitySpecHandle Handle,
 
 void UGA_Watering::OnEndWateringAnim(FGameplayTag EventTag, FGameplayEventData EventData)
 {
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+	CurrentActorInfo->AvatarActor.Get());
+	ABaseCrop* Crop = Cast<ABaseCrop>(Player->GetInteractionComponent()->GetTargetTraceResult().GetActor());
+	Crop->CanInteractive = true;
+	
 	BlockInputForMontage(false);
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

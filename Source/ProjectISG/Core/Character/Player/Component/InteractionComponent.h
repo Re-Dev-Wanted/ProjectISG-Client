@@ -9,6 +9,7 @@
 class AMainPlayerCharacter;
 class UInputAction;
 
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTISG_API UInteractionComponent : public UActorComponent
 {
@@ -21,10 +22,10 @@ public:
 
 	void SetIsInteractive(const bool NewIsInteractive);
 
-	// client에서 crop에 접근하면 Authority가 아닌 SimulateProxy이기에 ServerRPC를 호출하지 못하는 문제가 발생
-	// 로직을 Authority를 가진 서버 쪽 Crop에 접근하기 위해서 플레이어쪽에서 ServerRPC를 호출하기 위한 함수
-	UFUNCTION(Reliable, Server)
-	void Server_InteractCrop(class ABaseCrop* crop);
+	// 하드 코딩 방지를 위해 해당 actor class를 BaseActor로 받아서
+	// 따로 조건 처리를 하는게 맞아보인다.
+	UFUNCTION(Server, Reliable)
+	void Server_OnInteractiveResponse();
 
 protected:
 	virtual void BeginPlay() override;

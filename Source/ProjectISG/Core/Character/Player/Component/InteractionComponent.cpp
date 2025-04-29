@@ -60,12 +60,6 @@ void UInteractionComponent::OnInteractive()
 		return;
 	}
 
-	ABaseCrop* Crop = Cast<ABaseCrop>(TargetTraceResult.GetActor());
-	if (Crop)
-	{
-		Server_InteractCrop(Crop);
-	}
-
 	Interaction->OnInteractive(GetOwner());
 }
 
@@ -199,14 +193,14 @@ void UInteractionComponent::SetIsInteractive(const bool NewIsInteractive)
 	}
 }
 
-void UInteractionComponent::Server_InteractCrop_Implementation(
-	class ABaseCrop* crop)
+void UInteractionComponent::Server_OnInteractiveResponse_Implementation()
 {
-	if (!crop->HasAuthority())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Warning: Forged object"));
-		return;
-	}
+	IInteractionInterface* Interaction = Cast<IInteractionInterface>(
+		TargetTraceResult.GetActor());
 
-	crop->OnInteractive(PlayerCharacter);
+	if (Interaction)
+	{
+		Interaction->OnInteractiveResponse();
+	}
 }
+

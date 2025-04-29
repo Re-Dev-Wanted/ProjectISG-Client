@@ -8,8 +8,11 @@
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
+
 
 void UUIC_ProductInfoWidget::InitializeController(UBaseUIView* NewView,
                                                   UBaseUIModel* NewModel)
@@ -44,4 +47,12 @@ void UUIC_ProductInfoWidget::OnSelectProductData()
 {
 	// 선택 하면 구매 확인 widget을 생성해서 띄운다.
 	UE_LOG(LogTemp, Warning, TEXT("구매 확인창 띄우기"));
+
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		GetPlayerController()->GetPawn());
+	if (Player)
+	{
+		Player->GetController<AMainPlayerController>()->PushUI(
+			EUIName::Modal_BuyNotification);
+	}
 }
