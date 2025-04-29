@@ -66,6 +66,7 @@ public:
 	GETTER(int32, TimeStoppedTime);
 
 	FString GetDateText() const;
+	uint32 GetTotalPlayingDay() const;
 
 private:
 #pragma region Sky

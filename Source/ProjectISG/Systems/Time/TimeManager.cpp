@@ -128,7 +128,7 @@ void ATimeManager::UpdateCycleDate()
 
 void ATimeManager::RotateSun()
 {
-	float TotalMinutes = Hour * 60.0f + Minute;
+	const float TotalMinutes = Hour * 60.0f + Minute;
 
 	// 06(해 뜨는 시간) ~ 24(해 지는 시간)을 기준으로 offset을 통해 일출과 일몰 시간을 정해줌
 	float SunPitch = FMath::GetMappedRangeValueClamped(
@@ -283,4 +283,17 @@ FString ATimeManager::GetDateText() const
 	DateText += FTimespan(Day - 1, Hour, Minute, Second);
 
 	return DateText.ToString();
+}
+
+uint32 ATimeManager::GetTotalPlayingDay() const
+{
+	const uint32 YearToDay = Year * 365;
+
+	uint32 MonthOfDay = 0;
+	for (int i = 1; i <= Month; i++)
+	{
+		MonthOfDay += DaysInMonths[i - 1];
+	}
+
+	return YearToDay + MonthOfDay + Day;
 }

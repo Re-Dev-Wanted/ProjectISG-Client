@@ -31,7 +31,7 @@ void FSessionUtil::CreateSession(const FSessionCreateData& SessionCreateData)
 		UE_LOG(LogTemp, Error, TEXT("세션이 현재 존재하지 않습니다"));
 		return;
 	}
-	
+
 	const FNamedOnlineSession* ExistSession =
 		OnlineSessionInterface->GetNamedSession(NAME_GameSession);
 	if (ExistSession)
@@ -40,37 +40,40 @@ void FSessionUtil::CreateSession(const FSessionCreateData& SessionCreateData)
 		OnlineSessionInterface->DestroySession(NAME_GameSession);
 		UE_LOG(LogTemp, Error, TEXT("하지만, 못난 프로그래머를 위해 세션을 제거해드립니다."));
 	}
-	
+
 	OnlineSessionInterface->ClearOnCreateSessionCompleteDelegate_Handle(
 		OnCreateSessionCompleteDelegateHandle);
-	
-	OnCreateSessionCompleteDelegateHandle = OnlineSessionInterface->AddOnCreateSessionCompleteDelegate_Handle(
-		SessionCreateData.OnCreateSessionCompleteDelegate);
+
+	OnCreateSessionCompleteDelegateHandle = OnlineSessionInterface->
+		AddOnCreateSessionCompleteDelegate_Handle(
+			SessionCreateData.OnCreateSessionCompleteDelegate);
 
 	const TSharedPtr<FOnlineSessionSettings> SessionSettings =
 		MakeShareable(new FOnlineSessionSettings());
-	
-	SessionSettings->bIsLANMatch = IOnlineSubsystem::Get()->GetSubsystemName().IsEqual(TEXT("NULL"));
+
+	SessionSettings->bIsLANMatch = IOnlineSubsystem::Get()->GetSubsystemName().
+		IsEqual(TEXT("NULL"));
 	SessionSettings->bAllowJoinInProgress = true;
 	SessionSettings->bUseLobbiesIfAvailable = true;
 	SessionSettings->bUsesPresence = true;
-	
+
 	SessionSettings->NumPublicConnections = SessionCreateData.MaxPlayer;
 	SessionSettings->bShouldAdvertise = SessionCreateData.IsPublic;
 
 	for (TTuple<FString, FString> Option : SessionCreateData.Options)
 	{
 		SessionSettings->Set(FName(Option.Key), Option.Value
-		, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+		                     , EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 	}
-	
+
 	std::string RoomNameString = TCHAR_TO_UTF8(*SessionCreateData.RoomName);
 	SessionSettings->Set(FName(TEXT("RoomName")), FBase64::Encode(
-		TArray<uint8>((uint8*)RoomNameString.c_str(), RoomNameString.length()))
-		, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
-	
+		                     TArray<uint8>((uint8*)RoomNameString.c_str(),
+		                                   RoomNameString.length()))
+	                     , EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
+
 	OnlineSessionInterface->CreateSession(0,
-		NAME_GameSession, *SessionSettings);
+	                                      NAME_GameSession, *SessionSettings);
 }
 
 void FSessionUtil::SearchSession(FSessionSearchData& SessionSearchData)
@@ -86,32 +89,42 @@ void FSessionUtil::SearchSession(FSessionSearchData& SessionSearchData)
 	// 최대 검색 수 30개로 제한
 	SessionSearchData.SessionSearch->MaxSearchResults = 30;
 	// Lan 검색이 아닌 온라인 검색으로 처리
-	SessionSearchData.SessionSearch->bIsLanQuery = IOnlineSubsystem::Get()->GetSubsystemName().IsEqual(TEXT("NULL"));
+	SessionSearchData.SessionSearch->bIsLanQuery = IOnlineSubsystem::Get()->
+	                                               GetSubsystemName().IsEqual(
+		                                               TEXT("NULL"));
 	// 검색에 필요한 쿼리 세팅
-	SessionSearchData.SessionSearch->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals);
-	
+	SessionSearchData.SessionSearch->QuerySettings.Set(
+		SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals);
+
 	OnlineSessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(
 		OnFindSessionsCompleteDelegateHandle);
-	
-	OnFindSessionsCompleteDelegateHandle = OnlineSessionInterface->AddOnFindSessionsCompleteDelegate_Handle(
-		SessionSearchData.OnFindSessionsCompleteDelegate);
-	
+
+	OnFindSessionsCompleteDelegateHandle = OnlineSessionInterface->
+		AddOnFindSessionsCompleteDelegate_Handle(
+			SessionSearchData.OnFindSessionsCompleteDelegate);
+
 	OnlineSessionInterface->FindSessions(0,
-		SessionSearchData.SessionSearch.ToSharedRef());
+	                                     SessionSearchData.SessionSearch.
+	                                     ToSharedRef());
 }
 
 void FSessionUtil::JoinSession(const UWorld* World
-	, FOnlineSessionSearchResult& Result
-	, const FOnJoinSessionCompleteDelegate& OnJoinSessionCompleteDelegate)
+                               , FOnlineSessionSearchResult& Result
+                               , const FOnJoinSessionCompleteDelegate&
+                               OnJoinSessionCompleteDelegate)
 {
-	const ULocalPlayer* LocalPlayer = World->GetFirstLocalPlayerFromController();
+	const ULocalPlayer* LocalPlayer = World->
+		GetFirstLocalPlayerFromController();
 
 	Result.Session.SessionSettings.bUsesPresence = true;
 	Result.Session.SessionSettings.bUseLobbiesIfAvailable = true;
 
-	OnlineSessionInterface->ClearOnJoinSessionCompleteDelegate_Handle(OnJoinSessionCompleteDelegateHandle);
-	OnJoinSessionCompleteDelegateHandle = OnlineSessionInterface->AddOnJoinSessionCompleteDelegate_Handle(OnJoinSessionCompleteDelegate);
-	OnlineSessionInterface->JoinSession(*LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession, Result);
+	OnlineSessionInterface->ClearOnJoinSessionCompleteDelegate_Handle(
+		OnJoinSessionCompleteDelegateHandle);
+	OnJoinSessionCompleteDelegateHandle = OnlineSessionInterface->
+		AddOnJoinSessionCompleteDelegate_Handle(OnJoinSessionCompleteDelegate);
+	OnlineSessionInterface->JoinSession(*LocalPlayer->GetPreferredUniqueNetId(),
+	                                    NAME_GameSession, Result);
 }
 
 void FSessionUtil::DestroySession()
@@ -121,7 +134,7 @@ void FSessionUtil::DestroySession()
 		UE_LOG(LogTemp, Error, TEXT("세션이 현재 존재하지 않습니다"));
 		return;
 	}
-	
+
 	const FNamedOnlineSession* ExistSession =
 		OnlineSessionInterface->GetNamedSession(NAME_GameSession);
 	if (ExistSession)
@@ -145,13 +158,23 @@ FNamedOnlineSession* FSessionUtil::GetCurrentSession()
 FString FSessionUtil::GetCurrentId(const UWorld* World)
 {
 	IOnlineSubsystem* OnlineSub = IOnlineSubsystem::Get();
+
 	if (OnlineSub)
 	{
-		const IOnlineIdentityPtr IdentityInterface = OnlineSub->GetIdentityInterface();
+		// 온라인 SubSystem의 이름값이 NULL이라면 로컬 실행중이므로
+		// 테스트 환경 Id인 1을 반환시킨다.
+		if (OnlineSub->GetSubsystemName().IsEqual(TEXT("NULL")))
+		{
+			return FString("1");
+		}
+
+		const IOnlineIdentityPtr IdentityInterface = OnlineSub->
+			GetIdentityInterface();
 		if (IdentityInterface.IsValid())
 		{
 			const FUniqueNetIdRepl NetId =
-				World->GetFirstLocalPlayerFromController()->GetPreferredUniqueNetId();
+				World->GetFirstLocalPlayerFromController()->
+				       GetPreferredUniqueNetId();
 			if (NetId.IsValid())
 			{
 				return NetId->ToString(); // Steam ID
@@ -174,7 +197,7 @@ FString FSessionUtil::EncodeData(const FString& Str)
 FString FSessionUtil::DecodeData(const FString& Str)
 {
 	TArray<uint8> ArrayData;
-	FBase64::Decode(Str, ArrayData);	
+	FBase64::Decode(Str, ArrayData);
 	const std::string Utf8String((char*)ArrayData.GetData(), ArrayData.Num());
 	return UTF8_TO_TCHAR(Utf8String.c_str());
 }
