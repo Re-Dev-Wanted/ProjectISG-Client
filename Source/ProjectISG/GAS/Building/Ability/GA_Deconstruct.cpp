@@ -37,7 +37,7 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		FHitResult TargetResult = Player->GetInteractionComponent()->GetTargetTraceResult();
 
 		AMainPlayerState* PlayerState = Cast<AMainPlayerState>(Player->GetController()->PlayerState);
-
+		
 		if (!PlayerState)
 		{
 			return;
@@ -54,7 +54,7 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		{
 			return;
 		}
-
+		
 		if (APlacement* TargetPlacement = Cast<APlacement>(TargetResult.GetActor()))
 		{
 			FIntVector GridCoord;
@@ -63,7 +63,6 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			if (GridManager->TryGetPlacement(TargetPlacement, GridCoord, PlacedActor))
 			{
 				FItemMetaInfo ItemMetaInfo = GridManager->RemovePlacement(GridCoord);
-				// UKismetSystemLibrary::PrintString(GetWorld(),  FString::Printf(TEXT("??? %d"), ItemMetaInfo.GetId()));
 				PlayerState->GetInventoryComponent()->AddItem(ItemMetaInfo);
 			}
 		}

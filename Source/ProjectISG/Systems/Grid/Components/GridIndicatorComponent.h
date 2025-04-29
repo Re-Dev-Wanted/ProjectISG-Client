@@ -21,6 +21,8 @@ protected:
 	UFUNCTION()
 	virtual void OnUpdateSelectedItem(TSubclassOf<AActor> ActorClass, FItemMetaInfo ItemMetaInfo);
 
+	bool bIsIndicatorActive = false;
+	
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;

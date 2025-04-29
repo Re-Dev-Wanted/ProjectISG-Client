@@ -34,6 +34,10 @@ protected:
 		meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInputAction> RotateAction;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<UInputAction> TouchAction;
+
 	UFUNCTION()
 	void BindingInputActions(
 		UEnhancedInputComponent* EnhancedInputComponent);

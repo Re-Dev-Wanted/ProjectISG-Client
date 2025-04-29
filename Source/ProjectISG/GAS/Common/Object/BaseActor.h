@@ -3,15 +3,13 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Actor.h"
-#include "ProjectISG/Systems/Input/Interface/InteractionInterface.h"
 #include "BaseActor.generated.h"
 
 class UISGAbilitySystemComponent;
 class UISGAbilitySystemInitializeData;
 
 UCLASS()
-class PROJECTISG_API ABaseActor : public AActor, public 
-IAbilitySystemInterface, public IInteractionInterface
+class PROJECTISG_API ABaseActor : public AActor, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 

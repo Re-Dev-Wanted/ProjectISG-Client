@@ -27,6 +27,7 @@ void UGA_Construct::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 		return;
 	}
 	
+
 	int Index = Player->GetPlayerInventoryComponent()->GetCurrentSlotIndex();
 
 	const AMainPlayerState* PS = Cast<AMainPlayerState>(Player->GetPlayerState());
@@ -34,10 +35,10 @@ void UGA_Construct::ActivateAbility(const FGameplayAbilitySpecHandle Handle, con
 	const uint16 ItemId = PS->GetInventoryComponent()->GetInventoryList()[
 		Index].GetId();
 
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("construct %d"), ItemId));
+
 	const bool bIsHousing = UItemManager::IsItemCanHousing(ItemId);
-
-	// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("construct %d"), ItemId));
-
+	
 	if (bIsHousing)
 	{
 		Player->GetPlacementIndicatorComponent()->Execute();

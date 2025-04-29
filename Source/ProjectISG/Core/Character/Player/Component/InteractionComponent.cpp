@@ -8,6 +8,7 @@
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
 #include "ProjectISG/Systems/Input/Interface/InteractionInterface.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 UInteractionComponent::UInteractionComponent()
 {
@@ -31,6 +32,8 @@ void UInteractionComponent::InitializeComponent()
 
 	OwnerPlayer->OnInputBindingNotified.AddDynamic(
 		this, &ThisClass::BindingInputActions);
+
+	OwnerPlayer->OnUpdateSelectedItem.AddDynamic(this, &ThisClass::OnChange);
 }
 
 void UInteractionComponent::BindingInputActions(
@@ -42,6 +45,16 @@ void UInteractionComponent::BindingInputActions(
 	EnhancedInputComponent->BindAction(TouchAction,
 	                                   ETriggerEvent::Triggered, this,
 	                                   &ThisClass::OnTouch);
+}
+
+void UInteractionComponent::OnChange(TSubclassOf<AActor> ActorClass,
+	FItemMetaInfo ItemMetaInfo)
+{
+	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemMetaInfo.GetId());
+
+	const bool bIsStructure = ItemInfoData.GetItemType() != EItemType::Equipment && UItemManager::IsItemCanHousing(ItemMetaInfo.GetId());
+
+	IsInteractive = !bIsStructure;
 }
 
 void UInteractionComponent::OnInteractive()
@@ -59,14 +72,22 @@ void UInteractionComponent::OnInteractive()
 		return;
 	}
 
-	ABaseActor* InteractActor = Cast<ABaseActor>(TargetTraceResult.GetActor());
-	Server_Interact(InteractActor);
-	
-	Interaction->OnInteractive(GetOwner());
+	ABaseInteractiveActor* InteractActor = Cast<ABaseInteractiveActor>(TargetTraceResult.GetActor());
+
+	if (!GetOwner()->HasAuthority())
+	{
+		Server_Interact(InteractActor);
+	}
+	else
+	{
+		Interaction->OnInteractive(GetOwner());
+	}
 }
 
 void UInteractionComponent::OnTouch()
 {
+	UKismetSystemLibrary::PrintString(GetWorld(), "Test");
+
 	if (!TargetTraceResult.GetActor())
 	{
 		return;
@@ -74,16 +95,22 @@ void UInteractionComponent::OnTouch()
 
 	IInteractionInterface* Interaction = Cast<IInteractionInterface>(
 		TargetTraceResult.GetActor());
-
+	
 	if (!Interaction)
 	{
 		return;
 	}
-
-	ABaseActor* InteractActor = Cast<ABaseActor>(TargetTraceResult.GetActor());
-	Server_Touch(InteractActor);
 	
-	Interaction->OnTouch(GetOwner());
+	ABaseInteractiveActor* InteractActor = Cast<ABaseInteractiveActor>(TargetTraceResult.GetActor());
+	
+	if (!GetOwner()->HasAuthority())
+	{
+		Server_Touch(InteractActor);
+	}
+	else
+	{
+		Interaction->OnTouch(GetOwner());
+	}
 }
 
 void UInteractionComponent::TickComponent(float DeltaTime,
@@ -116,6 +143,7 @@ void UInteractionComponent::LineTraceToFindTarget()
 
 	const AMainPlayerController* PC = PlayerCharacter->GetController<
 		AMainPlayerController>();
+	
 	if (!PC)
 	{
 		return;
@@ -198,7 +226,8 @@ void UInteractionComponent::SetIsInteractive(const bool NewIsInteractive)
 	}
 }
 
-void UInteractionComponent::Server_Interact_Implementation(class ABaseActor* InteractActor)
+void UInteractionComponent::Server_Interact_Implementation(class ABaseInteractiveActor* 
+InteractActor)
 {
 	if (!InteractActor || !InteractActor->IsValidLowLevel() || InteractActor->IsPendingKillPending())
 	{
@@ -216,7 +245,8 @@ void UInteractionComponent::Server_Interact_Implementation(class ABaseActor* Int
 	InteractActor->OnInteractive(PlayerCharacter);
 }
 
-void UInteractionComponent::Server_Touch_Implementation(class ABaseActor* InteractActor)
+void UInteractionComponent::Server_Touch_Implementation(class ABaseInteractiveActor* 
+InteractActor)
 {
 	if (!InteractActor || !InteractActor->IsValidLowLevel() || InteractActor->IsPendingKillPending())
 	{

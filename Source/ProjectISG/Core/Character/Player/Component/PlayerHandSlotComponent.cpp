@@ -1,11 +1,7 @@
 #include "PlayerHandSlotComponent.h"
 
-#include "PlayerInventoryComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
-#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Object/BaseActor.h"
-#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 UPlayerHandSlotComponent::UPlayerHandSlotComponent()
@@ -14,22 +10,17 @@ UPlayerHandSlotComponent::UPlayerHandSlotComponent()
 	bWantsInitializeComponent = true;
 }
 
-void UPlayerHandSlotComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner()))
-	{
-		Player->OnUpdateSelectedItem.AddDynamic(this, &UPlayerHandSlotComponent::OnChange);
-	}
-}
-
 void UPlayerHandSlotComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
 	EmptyItem = NewObject<ABaseActor>(this, TEXT("Empty"));
 	HeldItem = EmptyItem;
+
+	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner()))
+	{
+		Player->OnUpdateSelectedItem.AddDynamic(this, &UPlayerHandSlotComponent::OnChange);
+	}
 }
 
 void UPlayerHandSlotComponent::OnChange(TSubclassOf<AActor> ActorClass, FItemMetaInfo _ItemMetaInfo)
@@ -75,22 +66,6 @@ void UPlayerHandSlotComponent::OnChange(TSubclassOf<AActor> ActorClass, FItemMet
 	{
 		HeldItem->AttachToComponent(Player->GetMesh(), 
 		FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
-	}
-}
-
-void UPlayerHandSlotComponent::OnInteractAction(AActor* Causer) const
-{
-	if (HeldItem && HeldItem != EmptyItem)
-	{
-		HeldItem->OnInteractive(Causer);
-	}
-}
-
-void UPlayerHandSlotComponent::OnTouchAction(AActor* Causer) const
-{
-	if (HeldItem && HeldItem != EmptyItem)
-	{
-		HeldItem->OnTouch(Causer);
 	}
 }
 

@@ -43,6 +43,11 @@ void UGridIndicatorComponent::OnUpdateSelectedItem(TSubclassOf<AActor> ActorClas
 void UGridIndicatorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	FActorComponentTickFunction* ThisTickFunction)
 {
+	if (!bIsIndicatorActive)
+	{
+		return;
+	}
+	
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	if (!PlayerController || !PlayerController->PlayerState)
@@ -101,6 +106,7 @@ void UGridIndicatorComponent::OnActivate(const TSubclassOf<AActor>& Factory)
 	
 	if (Player && Player->IsLocallyControlled())
 	{
+		bIsIndicatorActive = true;
 		SetActive(true);
 
 		if (IndicateActor)
@@ -133,6 +139,7 @@ void UGridIndicatorComponent::OnDeactivate()
 		}
 
 		SetActive(false);
+		bIsIndicatorActive = false;
 	}
 }
 
@@ -143,6 +150,11 @@ void UGridIndicatorComponent::Execute()
 void UGridIndicatorComponent::Server_Execute_Implementation(FVector Pivot, FVector Location, FRotator Rotation,
                                                             TSubclassOf<APlacement> PlacementClass, FItemMetaInfo_Net ItemMetaInfo)
 {
+	if (!bIsIndicatorActive)
+	{
+		return;
+	}
+	
 	if (GetOwner()->HasAuthority())
 	{
 		FItemMetaInfo Info;

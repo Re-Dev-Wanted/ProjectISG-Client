@@ -20,16 +20,10 @@ public:
 
 	UFUNCTION()
 	void OnChange(TSubclassOf<AActor> ActorClass, FItemMetaInfo _ItemMetaInfo);
-	
-	void OnInteractAction(AActor* Causer) const;
-	
-	void OnTouchAction(AActor* Causer) const;
 
 	bool IsHousingHandItem();
 
 protected:
-	virtual void BeginPlay() override;
-
 	virtual void InitializeComponent() override;
 
 	UPROPERTY()

@@ -22,6 +22,13 @@ UPlacementIndicatorComponent::UPlacementIndicatorComponent()
 	{
 		RotateAction = InputAction.Object;
 	}
+
+	ConstructorHelpers::FObjectFinder<UInputAction> InputAction2(TEXT("/Game/Core/Character/Blueprints/MainPlayer/Input/IA_Touch.IA_Touch"));
+
+	if (InputAction2.Succeeded())
+	{
+		TouchAction = InputAction2.Object;
+	}
 }
 
 void UPlacementIndicatorComponent::InitializeComponent()
@@ -34,10 +41,22 @@ void UPlacementIndicatorComponent::InitializeComponent()
 		this, &ThisClass::BindingInputActions);
 }
 
+void UPlacementIndicatorComponent::BindingInputActions(UEnhancedInputComponent* EnhancedInputComponent)
+{
+	EnhancedInputComponent->BindAction(RotateAction, ETriggerEvent::Triggered, this, &ThisClass::OnRotate);
+	EnhancedInputComponent->BindAction(TouchAction, 
+	ETriggerEvent::Triggered, this, &ThisClass::Execute);
+}
+
 void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                                  FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (!bIsIndicatorActive)
+	{
+		return;
+	}
 
 	if (!PlayerController || !PlayerController->PlayerState)
 	{
@@ -78,6 +97,11 @@ void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 void UPlacementIndicatorComponent::Execute()
 {
 	Super::Execute();
+
+	if (!bIsIndicatorActive)
+	{
+		return;
+	}
 
 	if (!IndicateActor)
 	{
@@ -143,6 +167,11 @@ void UPlacementIndicatorComponent::ExecuteInternal(FVector Pivot, FVector Locati
 {
 	Super::ExecuteInternal(Pivot, Location, Rotation, PlacementClass, ItemMetaInfo);
 
+	if (!bIsIndicatorActive)
+	{
+		return;
+	}
+
 	if (!PlayerController || !PlayerController->PlayerState)
 	{
 		return;
@@ -164,13 +193,13 @@ void UPlacementIndicatorComponent::ExecuteInternal(FVector Pivot, FVector Locati
 	}
 }
 
-void UPlacementIndicatorComponent::BindingInputActions(UEnhancedInputComponent* EnhancedInputComponent)
-{
-	EnhancedInputComponent->BindAction(RotateAction, ETriggerEvent::Triggered, this, &ThisClass::OnRotate);
-}
-
 void UPlacementIndicatorComponent::OnRotate(const FInputActionValue& InputActionValue)
 {
+	if (!bIsIndicatorActive)
+	{
+		return;
+	}
+	
 	float Value = InputActionValue.Get<float>();
 	
 	if (Value > 0)

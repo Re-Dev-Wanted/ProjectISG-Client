@@ -64,7 +64,6 @@ void APlacement::OnTouch(AActor* Causer)
 
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(Player->GetHandSlotComponent()->IsHousingHandItem()));
 		if (Player->GetHandSlotComponent()->IsHousingHandItem())
 		{
 			FGameplayTagContainer ActivateTag;
