@@ -9,5 +9,7 @@ ABaseEquipment::ABaseEquipment()
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	MeshComp->SetupAttachment(AnchorComp);
+
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 

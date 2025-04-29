@@ -234,17 +234,17 @@ void UPlacementIndicatorComponent::OnActivate(
 		return;
 	}
 	
-	AGridManager* GridManager = PlayerState->GetGridManager();
-
-	if (!GridManager)
-	{
-		return;
-	}
-
-	UKismetSystemLibrary::PrintString(GetWorld(), "?>??");
-	
 	if (PlayerController->GetCharacter()->IsLocallyControlled())
 	{
+		AGridManager* GridManager = PlayerState->GetGridManager();
+
+		if (!GridManager)
+		{
+			return;
+		}
+
+		GridManager->SetVisibleGrid(true);
+		
 		SetActive(true);
 
 		if (IndicateActor)
@@ -255,8 +255,6 @@ void UPlacementIndicatorComponent::OnActivate(
 		}
 	
 		IndicateActor = GetWorld()->SpawnActor<APlacement>(Factory);
-		
-		UKismetSystemLibrary::PrintString(GetWorld(), IndicateActor->GetActorNameOrLabel());
 
 		if (IndicateActor)
 		{
@@ -282,6 +280,23 @@ void UPlacementIndicatorComponent::OnDeactivate()
 		}
 
 		SetActive(false);
+		
+		if (PlayerController)
+		{
+			AMainPlayerState* PlayerState = Cast<AMainPlayerState>(PlayerController->PlayerState);
+
+			if (!PlayerState)
+			{
+				return;
+			}
+			
+			AGridManager* GridManager = PlayerState->GetGridManager();
+
+			if (GridManager)
+			{
+				GridManager->SetVisibleGrid(false);
+			}
+		}
 	}
 }
 

@@ -45,6 +45,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Properties)
 	float SquareOpacity = 0.25f;
 
+	void SetVisibility(bool bIsVisible);
+
 private:
 	void DrawLine(FVector Start, FVector End, float Thickness, TArray<FVector>& Vertices, TArray<int32>& Triangles);
 

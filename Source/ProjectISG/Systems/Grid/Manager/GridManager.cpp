@@ -21,6 +21,8 @@ void AGridManager::BeginPlay()
 
 	PlacementGridContainer.SetOwner(this);
 
+	SetVisibleGrid(false);
+
 	if (!HasAuthority())
 	{
 		Destroy();
@@ -236,8 +238,18 @@ bool AGridManager::TryGetPlacementAt(AActor* Actor, FIntVector& OutGridAt, APlac
 	return false;
 }
 
+void AGridManager::SetVisibleGrid(bool bIsVisible)
+{
+	if (!GridComp)
+	{
+		return;
+	}
+
+	GridComp->SetVisibility(bIsVisible);
+}
+
 void AGridManager::Server_BuildPlacement_Implementation(TSubclassOf<APlacement> PlacementClass, FItemMetaInfo_Net ItemMetaInfo, FVector Pivot,
-	FVector Location, FRotator Rotation)
+                                                        FVector Location, FRotator Rotation)
 {
 	FItemMetaInfo Info;
 

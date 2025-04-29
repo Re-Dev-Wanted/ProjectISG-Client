@@ -73,6 +73,8 @@ public:
 
 	bool TryGetPlacementAt(AActor* Actor, FIntVector& OutGridAt, APlacement*& OutPlacement);
 
+	void SetVisibleGrid(bool bIsVisible);
+
 	float GetGridWidth() const
 	{
 		return Rows * SnapSize;

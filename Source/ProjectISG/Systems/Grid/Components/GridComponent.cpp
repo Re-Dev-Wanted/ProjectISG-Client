@@ -82,6 +82,12 @@ void UGridComponent::OnUpdatedProperties()
 	LineMeshComp->SetMaterial(0, LineMaterialInstance);
 }
 
+void UGridComponent::SetVisibility(bool bIsVisible)
+{
+	LineMeshComp->SetVisibility(bIsVisible);
+	SquareMeshComp->SetVisibility(bIsVisible);
+}
+
 void UGridComponent::DrawLine(FVector Start, FVector End, float Thickness, TArray<FVector>& Vertices,
                               TArray<int32>& Triangles)
 {
