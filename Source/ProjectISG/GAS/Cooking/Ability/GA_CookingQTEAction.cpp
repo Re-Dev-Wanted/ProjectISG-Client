@@ -137,7 +137,7 @@ void UGA_CookingQTEAction::LoggingToStartCook()
 	AT_LogCooking->SetLogParams(LogParams);
 	AT_LogCooking->SetIsLogWithScreenShot(false);
 
-	AT_LogCooking->ReadyForActivation();
+	AT_LogCooking->Activate();
 }
 
 void UGA_CookingQTEAction::LoggingToEndCook()
@@ -150,5 +150,5 @@ void UGA_CookingQTEAction::LoggingToEndCook()
 	AT_LogCooking->SetLogParams(LogParams);
 	AT_LogCooking->SetIsLogWithScreenShot(true);
 
-	AT_LogCooking->ReadyForActivation();
+	AT_LogCooking->Activate();
 }

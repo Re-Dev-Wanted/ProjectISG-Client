@@ -17,7 +17,6 @@ public:
 	SETTER(FDiaryLogParams, LogParams)
 	SETTER(bool, IsLogWithScreenShot)
 
-protected:
 	virtual void Activate() override;
 
 private:

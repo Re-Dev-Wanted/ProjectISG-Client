@@ -47,5 +47,6 @@ void UAT_LogWithScreenShot::Activate()
 		});
 
 	Cast<AMainPlayerCharacter>(GetAvatarActor())->
-		GetScreenShotComponent()->SaveCaptureFrameImage(CaptureFrameNotified);
+		GetScreenShotComponent()->SaveCaptureFrameImage(
+			this, CaptureFrameNotified);
 }

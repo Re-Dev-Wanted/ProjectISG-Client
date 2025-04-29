@@ -2,10 +2,10 @@
 
 #include "IImageWrapperModule.h"
 #include "IImageWrapper.h"
+#include "Camera/CameraComponent.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Kismet/KismetRenderingLibrary.h"
-#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 
 UScreenShotComponent::UScreenShotComponent()
 {
@@ -22,9 +22,16 @@ void UScreenShotComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UScreenShotComponent::SaveCaptureFrameImage(
-	const FOnCaptureFrameNotified& OnCaptureFrameNotified)
+void UScreenShotComponent::SaveCaptureFrameImage(const UObject* Object,
+                                                 const FOnCaptureFrameNotified&
+                                                 OnCaptureFrameNotified)
 {
+	const APawn* Player = Cast<APawn>(GetOwner());
+	const APlayerCameraManager* PlayerCameraManager = Cast<APlayerController>(
+		Player->GetController())->PlayerCameraManager;
+
+	SceneCapture->SetWorldTransform(PlayerCameraManager->GetActorTransform());
+
 	SceneCapture->TextureTarget =
 		UKismetRenderingLibrary::CreateRenderTarget2D(
 			GetWorld(),
@@ -47,30 +54,32 @@ void UScreenShotComponent::SaveCaptureFrameImage(
 	TArray<FColor> RawPixels;
 	RTResource->ReadPixels(RawPixels);
 
-	Async(EAsyncExecution::Thread, [this, RawPixels, OnCaptureFrameNotified]()
-	{
-		// 이미지 래퍼 모듈
-		IImageWrapperModule& ImageWrapperModule =
-			FModuleManager::LoadModuleChecked<
-				IImageWrapperModule>(FName("ImageWrapper"));
-		TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule.
-			CreateImageWrapper(EImageFormat::PNG);
+	Async(EAsyncExecution::Thread,
+	      [this, Object, RawPixels, OnCaptureFrameNotified]()
+	      {
+		      // 이미지 래퍼 모듈
+		      IImageWrapperModule& ImageWrapperModule =
+			      FModuleManager::LoadModuleChecked<
+				      IImageWrapperModule>(FName("ImageWrapper"));
+		      TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule.
+			      CreateImageWrapper(EImageFormat::PNG);
 
-		// 압축
-		ImageWrapper->SetRaw(RawPixels.GetData(),
-		                     RawPixels.Num() * sizeof(FColor),
-		                     SceneCapture->TextureTarget->SizeX,
-		                     SceneCapture->TextureTarget->SizeY,
-		                     ERGBFormat::BGRA, 8);
-		const TArray64<uint8>& CompressedData = ImageWrapper->GetCompressed();
+		      // 압축
+		      ImageWrapper->SetRaw(RawPixels.GetData(),
+		                           RawPixels.Num() * sizeof(FColor),
+		                           SceneCapture->TextureTarget->SizeX,
+		                           SceneCapture->TextureTarget->SizeY,
+		                           ERGBFormat::BGRA, 8);
+		      const TArray64<uint8>& CompressedData = ImageWrapper->
+			      GetCompressed();
 
-		// 저장
-		FFileHelper::SaveArrayToFile(CompressedData,
-		                             *(FPaths::ProjectSavedDir() +
-			                             TEXT("/screenshot/") +
-			                             FDateTime::Now().ToString() +
-			                             TEXT("-screenshot.png")));
+		      // 저장
+		      FFileHelper::SaveArrayToFile(CompressedData,
+		                                   *(FPaths::ProjectSavedDir() +
+			                                   TEXT("/screenshot/") +
+			                                   FDateTime::Now().ToString() +
+			                                   TEXT("-screenshot.png")));
 
-		OnCaptureFrameNotified.Execute(CompressedData);
-	});
+		      OnCaptureFrameNotified.Execute(CompressedData);
+	      });
 }

@@ -17,9 +17,10 @@ class PROJECTISG_API UScreenShotComponent : public UActorComponent
 public:
 	UScreenShotComponent();
 
-	void SaveCaptureFrameImage(
-		const FOnCaptureFrameNotified& OnCaptureFrameNotified =
-			FOnCaptureFrameNotified());
+	void SaveCaptureFrameImage(const UObject* Object,
+	                           const FOnCaptureFrameNotified&
+		                           OnCaptureFrameNotified =
+		                           FOnCaptureFrameNotified());
 
 protected:
 	virtual void BeginPlay() override;
