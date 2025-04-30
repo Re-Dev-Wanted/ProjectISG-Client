@@ -53,3 +53,48 @@ struct PROJECTISG_API FGenerateDiaryResponse
 	UPROPERTY()
 	FString diary;
 };
+
+USTRUCT()
+struct PROJECTISG_API FDiaryData
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	int diary_id;
+
+	UPROPERTY()
+	FString ingame_datetime;
+
+	UPROPERTY()
+	FString content;
+
+	UPROPERTY()
+	FString best_screenshot_path;
+};
+
+USTRUCT()
+struct PROJECTISG_API FGetAllDiariesRequest
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString user_id;
+
+	UPROPERTY()
+	FString session_id;
+};
+
+USTRUCT()
+struct PROJECTISG_API FGetAllDiariesResponse
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString user_id;
+
+	UPROPERTY()
+	FString session_id;
+
+	UPROPERTY()
+	TArray<FDiaryData> diaries;
+};

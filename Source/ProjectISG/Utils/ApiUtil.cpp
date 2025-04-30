@@ -8,7 +8,7 @@ FApiUtil* FApiUtil::GetMainAPI()
 	{
 		// 고유한 Unique ptr 생성
 		MainAPI = MakeUnique<FApiUtil>();
-		MainAPI->URL = TEXT("http://192.168.20.66:8016");
+		MainAPI->URL = TEXT("http://192.168.10.96:8016");
 	}
 
 	return MainAPI.Get();
