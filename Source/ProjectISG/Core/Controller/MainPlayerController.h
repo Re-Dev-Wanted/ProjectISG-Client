@@ -35,6 +35,7 @@ public:
 
 	GETTER(TObjectPtr<UUIManageComponent>, UIManageComponent)
 	GETTER_SETTER(uint32, ClickedProductId);
+	GETTER_SETTER(uint32, ClickedInventoryItem);
 
 protected:
 	virtual void BeginPlay() override;
@@ -47,4 +48,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	uint32 ClickedProductId;
+
+	UPROPERTY(EditAnywhere)
+	uint32 ClickedInventoryItem;
 };

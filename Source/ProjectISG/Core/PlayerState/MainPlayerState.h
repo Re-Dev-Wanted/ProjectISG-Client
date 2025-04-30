@@ -23,6 +23,9 @@ public:
 
 	class UISGAttributeSet* GetAttributeSet() const { return AttributeSet; }
 	GETTER(TObjectPtr<UInventoryComponent>, InventoryComponent)
+	GETTER_SETTER(int32, Gold);
+
+	bool CanBuyProduct(int32 ProductPrice);
 
 protected:
 	virtual void BeginPlay() override;
@@ -36,4 +39,7 @@ protected:
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInventoryComponent> InventoryComponent;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	int32 Gold = 10000;
 };

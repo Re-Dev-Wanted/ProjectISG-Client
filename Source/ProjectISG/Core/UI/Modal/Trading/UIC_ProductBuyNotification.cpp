@@ -5,7 +5,9 @@
 
 #include "UIV_ProductBuyNotification.h"
 #include "Components/Button.h"
+#include "ProjectISG/Contents/Trading/TradingManager.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Popup/Trading/UI/UIV_TradingUI.h"
@@ -35,11 +37,37 @@ void UUIC_ProductBuyNotification::OnClickedBuyButton()
 	{
 		AMainPlayerController* PC = Player->GetController<
 			AMainPlayerController>();
-		AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
+		PC->PopUI();
 		
+		AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 		PS->GetInventoryComponent()->AddItem(
 			UItemManager::GetInitialItemMetaDataById(PC->GetClickedProductId()));
 
-		PC->PopUI();
+		Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
+
+		int32 ItemPrice = FindItemPrice(PC);
+		if (PS->GetGold() >= ItemPrice)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("구매 전 골드 : %d"), PS->GetGold());
+			PS->SetGold(PS->GetGold() - ItemPrice);
+			UE_LOG(LogTemp, Warning, TEXT("구매 후 골드 : %d"), PS->GetGold());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("골드가 부족합니다."));
+		}
 	}
+}
+
+int32 UUIC_ProductBuyNotification::FindItemPrice(class AMainPlayerController* PC)
+{
+	for (int i = 0; i < UTradingManager::GetProductData().Num(); i++)
+	{
+		if (UTradingManager::GetProductData()[i].GetProductId() == PC->GetClickedProductId())
+		{
+			return UTradingManager::GetProductData()[i].GetProductPrice();
+		}
+	}
+
+	return 0;
 }

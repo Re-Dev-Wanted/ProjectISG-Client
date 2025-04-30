@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
-#include "UIC_ProductBuyNotification.generated.h"
+#include "UIC_ProductSellNotification.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTISG_API UUIC_ProductBuyNotification : public UBaseUIController
+class PROJECTISG_API UUIC_ProductSellNotification : public UBaseUIController
 {
 	GENERATED_BODY()
 
@@ -19,7 +19,7 @@ protected:
 	                                  UBaseUIModel* NewModel) override;
 
 	UFUNCTION()
-	void OnClickedBuyButton();
+	void OnClickedSellButton();
 
 private:
 	int32 FindItemPrice(class AMainPlayerController* PC);

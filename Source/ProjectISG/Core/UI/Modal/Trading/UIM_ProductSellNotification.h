@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIModel.h"
-#include "UIM_SellingUI.generated.h"
+#include "UIM_ProductSellNotification.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTISG_API UUIM_SellingUI : public UBaseUIModel
+class PROJECTISG_API UUIM_ProductSellNotification : public UBaseUIModel
 {
 	GENERATED_BODY()
 };

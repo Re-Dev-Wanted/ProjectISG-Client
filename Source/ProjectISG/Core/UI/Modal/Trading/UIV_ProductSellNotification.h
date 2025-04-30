@@ -4,16 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
-#include "UIV_SellingUI.generated.h"
+#include "UIV_ProductSellNotification.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTISG_API UUIV_SellingUI : public UBaseUIView
+class PROJECTISG_API UUIV_ProductSellNotification : public UBaseUIView
 {
 	GENERATED_BODY()
 
+public:
+	GETTER(class UButton*, SellButton);
+
 private:
-	
+	UPROPERTY(meta = (BindWidget))
+	class UButton* SellButton;
 };

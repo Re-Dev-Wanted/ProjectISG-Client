@@ -23,6 +23,15 @@ UAbilitySystemComponent* AMainPlayerState::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
+bool AMainPlayerState::CanBuyProduct(int32 ProductPrice)
+{
+	if (Gold >= ProductPrice)
+	{
+		return true;
+	}
+	return false;
+}
+
 void AMainPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
