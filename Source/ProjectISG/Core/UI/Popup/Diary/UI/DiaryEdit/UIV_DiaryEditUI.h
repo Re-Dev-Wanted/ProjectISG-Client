@@ -2,10 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
-#include "UIV_DiaryInfoUI.generated.h"
+#include "UIV_DiaryEditUI.generated.h"
 
 UCLASS()
-class PROJECTISG_API UUIV_DiaryInfoUI : public UBaseUIView
+class PROJECTISG_API UUIV_DiaryEditUI : public UBaseUIView
 {
 	GENERATED_BODY()
 };

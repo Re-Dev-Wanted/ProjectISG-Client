@@ -1,86 +1,94 @@
 ﻿#include "ApiUtil.h"
 
-#include "HttpModule.h"
-#include "JsonObjectConverter.h"
-#include "Interfaces/IHttpRequest.h"
+TUniquePtr<FApiUtil> FApiUtil::MainAPI = nullptr;
 
-FApiUtil* FApiUtil::MainAPI;
+FApiUtil* FApiUtil::GetMainAPI()
+{
+	if (!MainAPI.IsValid())
+	{
+		// 고유한 Unique ptr 생성
+		MainAPI = MakeUnique<FApiUtil>();
+		MainAPI->URL = TEXT("http://192.168.20.66:8016");
+	}
+
+	return MainAPI.Get();
+}
 
 void FApiUtil::GetApi(UObject* Caller, const FApiRequest& Request,
                       FApiResponse& Response) const
 {
-	if (Response.IsLoading)
-	{
-		return;
-	}
-
-	const FHttpRequestRef HttpRequest = FHttpModule::Get().CreateRequest();
-	HttpRequest->SetURL(FString::Printf(TEXT("%s%s"), *URL, *Request.Path));
-	HttpRequest->SetVerb("GET");
-	HttpRequest->SetHeader(TEXT("Content-type"), TEXT("application/json"));
-
-	for (auto NewHeader : Request.Header)
-	{
-		HttpRequest->SetHeader(NewHeader.Key, NewHeader.Value);
-	}
-
-	Response.IsLoading = true;
-
-	TWeakObjectPtr<UObject> WeakThis = Caller;
-	HttpRequest->OnProcessRequestComplete().BindLambda(
-		[WeakThis, &Request, &Response](const FHttpRequestPtr& Req,
-		                                const FHttpResponsePtr& Res,
-		                                bool bProcessedSuccessfully)
-		{
-			if (!WeakThis.IsValid())
-			{
-				UE_LOG(LogTemp, Error, TEXT("Memory Error!"))
-				return;
-			}
-			Response.IsLoading = false;
-			Request.Callback(Req, Res, bProcessedSuccessfully);
-		});
-
-	HttpRequest->ProcessRequest();
+	SendRequest(Caller, TEXT("GET"), Request, Response);
 }
 
 void FApiUtil::PostApi(UObject* Caller, const FApiRequest& Request,
                        FApiResponse& Response) const
 {
-	if (Response.IsLoading)
+	SendRequest(Caller, TEXT("POST"), Request, Response);
+}
+
+void FApiUtil::SendRequest(UObject* Caller, const FString& Verb,
+                           const FApiRequest& Request,
+                           FApiResponse& Response) const
+{
+	if (Response.bIsLoading)
 	{
 		return;
 	}
 
 	const TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest =
 		FHttpModule::Get().CreateRequest();
+	HttpRequest->SetURL(URL + Request.Path);
+	HttpRequest->SetVerb(Verb);
+	HttpRequest->SetTimeout(30.f);
 
-	HttpRequest->SetURL(FString::Printf(TEXT("%s%s"), *URL, *Request.Path));
-	HttpRequest->SetVerb("POST");
-	HttpRequest->SetContentAsString(Request.Params);
-
-	HttpRequest->SetHeader(TEXT("Content-type"), TEXT("application/json"));
-
-	for (auto NewHeader : Request.Header)
+	// Default Header
+	if (!Request.Header.Contains(TEXT("Content-type")))
 	{
-		HttpRequest->SetHeader(NewHeader.Key, NewHeader.Value);
+		HttpRequest->SetHeader(TEXT("Content-type"), TEXT("application/json"));
 	}
 
-	Response.IsLoading = true;
+	// Custom Headers
+	for (const auto& Pair : Request.Header)
+	{
+		HttpRequest->SetHeader(Pair.Key, Pair.Value);
+	}
 
-	TWeakObjectPtr<UObject> WeakThis = Caller;
+	if (Verb != TEXT("GET"))
+	{
+		HttpRequest->SetContentAsString(Request.Params);
+	}
+
+	Response.bIsLoading = true;
+
+	// 값 자체를 그대로 활용하지 않고 복제해서 사용하기.
+	const FApiRequest CapturedRequest = Request;
+	FApiResponse* CapturedResponse = &Response;
+
+	TWeakObjectPtr<UObject> WeakCaller = Caller;
+
 	HttpRequest->OnProcessRequestComplete().BindLambda(
-		[WeakThis, &Request, &Response](const FHttpRequestPtr& Req,
-		                                const FHttpResponsePtr& Res,
-		                                bool bProcessedSuccessfully)
+		[WeakCaller, CapturedRequest, CapturedResponse](
+		const FHttpRequestPtr& Req,
+		const FHttpResponsePtr& Res,
+		bool bSuccess)
 		{
-			if (!WeakThis.IsValid())
+			if (!WeakCaller.IsValid())
 			{
-				UE_LOG(LogTemp, Error, TEXT("Memory Error!"))
+				UE_LOG(LogTemp, Error,
+				       TEXT("API Request caller no longer valid"));
 				return;
 			}
-			Response.IsLoading = false;
-			Request.Callback(Req, Res, bProcessedSuccessfully);
+
+			CapturedResponse->bIsLoading = false;
+
+			if (CapturedRequest.Callback.IsBound())
+			{
+				CapturedRequest.Callback.Execute(Req, Res, bSuccess);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("API Callback not bound."));
+			}
 		});
 
 	HttpRequest->ProcessRequest();
