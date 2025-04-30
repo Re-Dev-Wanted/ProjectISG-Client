@@ -10,7 +10,7 @@ void ULoggingSubSystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
-	Boundary = "----Boundary" + FGuid::NewGuid().ToString(
+	Boundary = TEXT("----Boundary") + FGuid::NewGuid().ToString(
 		EGuidFormats::Digits);
 
 	if (const UWorld* World = GetWorld())

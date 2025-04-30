@@ -1,6 +1,3 @@
 ﻿#pragma once
 
-struct DiaryEnum
-{
-	
-};
+#include "DiaryEnum.generated.h"

@@ -6,6 +6,7 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerCharacter.generated.h"
 
+class UDiaryComponent;
 class UInteractionComponent;
 class UScreenShotComponent;
 class UPlayerInventoryComponent;
@@ -76,6 +77,9 @@ public:
 
 private:
 #pragma region ActorComponent
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UDiaryComponent> DiaryComponent;
+
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent;
 

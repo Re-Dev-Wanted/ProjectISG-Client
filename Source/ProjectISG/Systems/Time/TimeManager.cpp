@@ -287,10 +287,10 @@ FString ATimeManager::GetDateText() const
 
 uint32 ATimeManager::GetTotalPlayingDay() const
 {
-	const uint32 YearToDay = Year * 365;
+	const uint32 YearToDay = (Year - 1) * 365;
 
 	uint32 MonthOfDay = 0;
-	for (int i = 1; i <= Month; i++)
+	for (int i = 1; i <= (Month - 1); i++)
 	{
 		MonthOfDay += DaysInMonths[i - 1];
 	}
