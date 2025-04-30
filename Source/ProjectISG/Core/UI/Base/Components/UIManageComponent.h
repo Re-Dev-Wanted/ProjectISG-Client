@@ -23,6 +23,7 @@ public:
 	void PushWidget(const EUIName Key);
 	void PopWidget();
 	EUIName GetLastStackUI() const;
+	TSubclassOf<UBaseUIView> GetViewClasses(EUIName Key);
 
 	bool HasViewUI(const EUIName Key);
 

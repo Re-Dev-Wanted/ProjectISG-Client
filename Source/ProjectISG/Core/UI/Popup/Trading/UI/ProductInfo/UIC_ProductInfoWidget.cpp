@@ -52,6 +52,9 @@ void UUIC_ProductInfoWidget::OnSelectProductData()
 		GetPlayerController()->GetPawn());
 	if (Player)
 	{
+		uint32 ProductId = Cast<UUIM_ProductInfoWidget>(
+		GetModel())->GetProductId();
+		Player->GetController<AMainPlayerController>()->SetClickedProductId(ProductId); 
 		Player->GetController<AMainPlayerController>()->PushUI(
 			EUIName::Modal_BuyNotification);
 	}

@@ -24,6 +24,8 @@ void UUIC_TradingUI::OnCloseTradingUI()
 		GetPlayerController()->GetPawn());
 	if (Player)
 	{
-		Player->GetController<AMainPlayerController>()->PopUI();
+		AMainPlayerController* PC = Player->GetController<AMainPlayerController>(); 
+		PC->PopUI();
+		PC->PushUI(EUIName::Gameplay_MainHUD);
 	}
 }

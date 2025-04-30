@@ -121,6 +121,11 @@ EUIName UUIManageComponent::GetLastStackUI() const
 	return WidgetStack.Last();
 }
 
+TSubclassOf<UBaseUIView> UUIManageComponent::GetViewClasses(EUIName Key)
+{
+	return ViewClasses[Key];
+}
+
 bool UUIManageComponent::HasViewUI(const EUIName Key)
 {
 	return WidgetStack.Find(Key) != INDEX_NONE;
