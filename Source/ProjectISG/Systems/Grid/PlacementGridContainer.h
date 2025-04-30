@@ -18,7 +18,7 @@ struct FPlacementGridEntry : public FFastArraySerializerItem
 	TWeakObjectPtr<class APlacement> Placement;
 
 	UPROPERTY()
-	FItemMetaInfo ItemMetaInfo;
+	uint16 ItemId;
 
 	bool IsValid() const
 	{
@@ -36,9 +36,9 @@ struct FPlacementGridContainer : public FFastArraySerializer
 
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms);
 
-	void Add(const FIntVector& GridCoord, class APlacement* Placement, FItemMetaInfo ItemMetaInfo);
+	void Add(const FIntVector& GridCoord, class APlacement* Placement, uint16 ItemId);
 
-	FItemMetaInfo Remove(class APlacement* Placement);
+	uint16 Remove(class APlacement* Placement);
 
 	TMap<FIntVector, TWeakObjectPtr<class APlacement>> GetPlacedMap() const
 	{

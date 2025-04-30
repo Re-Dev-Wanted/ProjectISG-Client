@@ -17,7 +17,7 @@ public:
 	UPlayerHandSlotComponent();
 
 	UFUNCTION()
-	void OnChange(TSubclassOf<AActor> ActorClass, FItemMetaInfo _ItemMetaInfo);
+	void OnChange(uint16 ItemId);
 
 	FString GetItemUsingType();
 	
@@ -29,5 +29,5 @@ protected:
 	TObjectPtr<class ABaseActor> HeldItem = nullptr;
 
 	UPROPERTY()
-	FItemMetaInfo ItemMetaInfo;
+	uint16 ItemId = 0;
 };

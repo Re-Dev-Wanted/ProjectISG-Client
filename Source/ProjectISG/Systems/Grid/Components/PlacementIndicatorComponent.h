@@ -18,10 +18,10 @@ public:
 	
 	virtual void InitializeComponent() override;
 	
-	virtual void Execute();
+	void Execute();
 	
 	UFUNCTION()
-	void OnChange(TSubclassOf<AActor> ActorClass, FItemMetaInfo ItemMetaInfo);
+	void OnChange(uint16 ItemId);
 
 	UFUNCTION()
 	void OnActivate(const TSubclassOf<class APlacement>& Factory);
@@ -55,6 +55,8 @@ protected:
 
 	bool bIsIndicatorActive = false;
 
+	uint16 PlacementItemId = 0;
+
 	UFUNCTION()
 	void BindingInputActions(
 		UEnhancedInputComponent* EnhancedInputComponent);
@@ -63,8 +65,9 @@ protected:
 	void OnRotate(const FInputActionValue& InputActionValue);
 
 	UFUNCTION(Server, Reliable)
-	void Server_Execute(FVector Pivot, FVector Location, FRotator Rotation, TSubclassOf<APlacement> PlacementClass, FItemMetaInfo_Net ItemMetaInfo);
+	void Server_Execute(FVector Pivot, FVector Location, FRotator Rotation, 
+	TSubclassOf<APlacement> PlacementClass, uint16 ItemId);
 
 	UFUNCTION()
-	void ExecuteInternal(FVector Pivot, FVector Location, FRotator Rotation, TSubclassOf<APlacement> PlacementClass, FItemMetaInfo ItemMetaInfo);
+	void ExecuteInternal(FVector Pivot, FVector Location, FRotator Rotation, TSubclassOf<APlacement> PlacementClass, uint16 ItemId);
 };

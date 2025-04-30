@@ -20,7 +20,7 @@ void UPlayerHandSlotComponent::InitializeComponent()
 	}
 }
 
-void UPlayerHandSlotComponent::OnChange(TSubclassOf<AActor> ActorClass, FItemMetaInfo _ItemMetaInfo)
+void UPlayerHandSlotComponent::OnChange(uint16 _ItemId)
 {
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
 
@@ -34,23 +34,26 @@ void UPlayerHandSlotComponent::OnChange(TSubclassOf<AActor> ActorClass, FItemMet
 		ABaseActor* DestroyActor = HeldItem.Get();
 		HeldItem = nullptr;
 		DestroyActor->Destroy();
-		ItemMetaInfo = FItemMetaInfo();
+		ItemId = 0;
 	}
 
-	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemMetaInfo.GetId());
+	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(_ItemId);
 
-	const bool bIsStructure = ItemInfoData.GetItemType() != EItemType::Equipment && UItemManager::IsItemCanHousing(ItemMetaInfo.GetId());
+	const TSubclassOf<AActor> ActorClass = ItemInfoData.GetShowItemActor();
 
-	if (bIsStructure)
+	const bool bIsStructure = ItemInfoData.GetItemType() != 
+	EItemType::Equipment && UItemManager::IsItemCanHousing(_ItemId);
+
+	if (!ActorClass || bIsStructure)
 	{
 		return;
 	}
 
 	AActor* Actor = GetWorld()->SpawnActor(ActorClass);
 	HeldItem = Cast<ABaseActor>(Actor);
-	ItemMetaInfo = _ItemMetaInfo;
+	ItemId = _ItemId;
 
-	const FName SocketName = UItemManager::GetSocketNameById(ItemMetaInfo.GetId());
+	const FName SocketName = UItemManager::GetSocketNameById(_ItemId);
 	
 	if (HeldItem && !SocketName.IsNone())
 	{
@@ -66,7 +69,7 @@ FString UPlayerHandSlotComponent::GetItemUsingType()
 		return FString();
 	}
 
-	return UItemManager::GetItemUsingType(ItemMetaInfo.GetId());
+	return UItemManager::GetItemUsingType(ItemId);
 }
 
 bool UPlayerHandSlotComponent::IsHousingHandItem()
@@ -76,5 +79,5 @@ bool UPlayerHandSlotComponent::IsHousingHandItem()
 		return false;
 	}
 
-	return UItemManager::IsItemCanHousing(ItemMetaInfo.GetId());
+	return UItemManager::IsItemCanHousing(ItemId);
 }

@@ -55,17 +55,15 @@ public:
 	FVector GetLocationInPointerDirectionPlacement(APlayerController* PlayerController, FVector MeshSize,
 	                                               int32 Distance = 1);
 
-	void BuildPlacement(TSubclassOf<APlacement> PlacementClass, FItemMetaInfo 
-	ItemMetaInfo, const FVector& Pivot, const FVector& Location,
+	void BuildPlacement(TSubclassOf<APlacement> PlacementClass, uint16 ItemId, const FVector& Pivot, const FVector& Location,
 	                    const FRotator& Rotation);
 	
-	void BuildPlacementAtGhost(TSubclassOf<APlacement> PlacementClass, FItemMetaInfo 
-	ItemMetaInfo, const APlacement& Ghost);
+	void BuildPlacementAtGhost(TSubclassOf<APlacement> PlacementClass, uint16 ItemId, const APlacement& Ghost);
 
 	UFUNCTION(Server, Reliable)
-	void Server_BuildPlacement(TSubclassOf<APlacement> PlacementClass, FItemMetaInfo_Net ItemMetaInfo, FVector Pivot, FVector Location, FRotator Rotation);
+	void Server_BuildPlacement(TSubclassOf<APlacement> PlacementClass, uint16 ItemId, FVector Pivot, FVector Location, FRotator Rotation);
 
-	FItemMetaInfo RemovePlacement(const FIntVector& GridAt);
+	uint16 RemovePlacement(const FIntVector& GridAt);
 
 	bool TryGetPlacement(APlacement* Placement, FIntVector& OutGridAt, APlacement*& OutPlacement);
 

@@ -10,7 +10,6 @@ AGridManager::AGridManager()
 	bReplicates = true;
 	bAlwaysRelevant = true;
 	bNetLoadOnClient = true;
-	SetReplicates(true);
 	
 	GridComp = CreateDefaultSubobject<UGridComponent>(TEXT("GridComp"));
 }
@@ -127,7 +126,7 @@ FVector AGridManager::GetLocationInPointerDirectionPlacement(APlayerController* 
 }
 
 void AGridManager::BuildPlacement(TSubclassOf<APlacement> PlacementClass,
-	FItemMetaInfo ItemMetaInfo, const FVector& Pivot, const FVector& Location,
+	uint16 ItemId, const FVector& Pivot, const FVector& Location,
 	const FRotator& Rotation)
 {
 	FIntVector GridCoord = FIntVector
@@ -168,30 +167,30 @@ void AGridManager::BuildPlacement(TSubclassOf<APlacement> PlacementClass,
 	// *SpawnedActor
 	// ->GetActorNameOrLabel()));
 		
-	PlacementGridContainer.Add(GridCoord, SpawnedActor, ItemMetaInfo);
+	PlacementGridContainer.Add(GridCoord, SpawnedActor, ItemId);
 }
 
 void AGridManager::BuildPlacementAtGhost(TSubclassOf<APlacement> PlacementClass,
-	FItemMetaInfo ItemMetaInfo, const APlacement& Ghost)
+	uint16 ItemId, const APlacement& Ghost)
 {
-	BuildPlacement(PlacementClass, ItemMetaInfo, Ghost.GetActorPivotLocation(), Ghost.GetActorLocation(),
+	BuildPlacement(PlacementClass, ItemId, Ghost.GetActorPivotLocation(), Ghost.GetActorLocation(),
 						  Ghost.GetActorRotation());
 }
 
-FItemMetaInfo AGridManager::RemovePlacement(const FIntVector& GridAt)
+uint16 AGridManager::RemovePlacement(const FIntVector& GridAt)
 {
-	FItemMetaInfo ItemMetaInfo;
-	
 	TWeakObjectPtr<APlacement> Placement = PlacementGridContainer.GetPlacedMap().FindRef(GridAt);
 	if (Placement.IsValid())
 	{
-		ItemMetaInfo = PlacementGridContainer.Remove(Placement.Get());
+		const uint16 ItemId = PlacementGridContainer.Remove(Placement.Get());
 
 		// 가구 제거
 		Placement->Destroy();
+
+		return ItemId;
 	}
 
-	return ItemMetaInfo;
+	return 0;
 }
 
 bool AGridManager::TryGetPlacement(APlacement* Placement, FIntVector& OutGridAt, APlacement*& OutPlacement)
@@ -247,13 +246,10 @@ void AGridManager::SetVisibleGrid(bool bIsVisible)
 
 	GridComp->SetVisibility(bIsVisible);
 }
-
-void AGridManager::Server_BuildPlacement_Implementation(TSubclassOf<APlacement> PlacementClass, FItemMetaInfo_Net ItemMetaInfo, FVector Pivot,
+ 
+void AGridManager::Server_BuildPlacement_Implementation
+(TSubclassOf<APlacement> PlacementClass, uint16 ItemId, FVector Pivot,
                                                         FVector Location, FRotator Rotation)
 {
-	FItemMetaInfo Info;
-
-	ItemMetaInfo.To(Info);
-	
-	BuildPlacement(PlacementClass, Info, Pivot, Location, Rotation);
+	BuildPlacement(PlacementClass, ItemId, Pivot, Location, Rotation);
 }

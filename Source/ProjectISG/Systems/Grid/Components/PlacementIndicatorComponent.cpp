@@ -147,7 +147,9 @@ void UPlacementIndicatorComponent::Execute()
 	{
 		FItemMetaInfo_Net Info(ItemMetaInfo);
 
-		Server_Execute(IndicateActor->GetActorPivotLocation(), IndicateActor->GetActorLocation(), IndicateActor->GetActorRotation(), IndicateActor->GetClass(), Info);
+		Server_Execute(IndicateActor->GetActorPivotLocation(), 
+		IndicateActor->GetActorLocation(), IndicateActor->GetActorRotation(),
+		 IndicateActor->GetClass(), PlacementItemId);
 
 		OnDeactivate();
 	}
@@ -155,7 +157,7 @@ void UPlacementIndicatorComponent::Execute()
 }
 
 void UPlacementIndicatorComponent::ExecuteInternal(FVector Pivot, FVector Location, FRotator Rotation,
-	TSubclassOf<APlacement> PlacementClass, FItemMetaInfo ItemMetaInfo)
+	TSubclassOf<APlacement> PlacementClass, uint16 ItemId)
 {
 	
 	if (!PlayerController || !PlayerController->PlayerState)
@@ -174,8 +176,8 @@ void UPlacementIndicatorComponent::ExecuteInternal(FVector Pivot, FVector Locati
 
 	if (GridManager)
 	{
-		FItemMetaInfo_Net Info(ItemMetaInfo);
-		GridManager->Server_BuildPlacement(PlacementClass, Info, Pivot, Location, Rotation);
+		GridManager->Server_BuildPlacement(PlacementClass, ItemId, Pivot, 
+		Location, Rotation);
 	}
 }
 
@@ -200,21 +202,27 @@ void UPlacementIndicatorComponent::OnRotate(const FInputActionValue& InputAction
 }
 
 void UPlacementIndicatorComponent::OnChange(
-	TSubclassOf<AActor> ActorClass, FItemMetaInfo ItemMetaInfo)
+	uint16 ItemId)
 {
-	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemMetaInfo.GetId());
+	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
 
-	const bool bIsStructure = ItemInfoData.GetItemType() != EItemType::Equipment && UItemManager::IsItemCanHousing(ItemMetaInfo.GetId());
+	const bool bIsStructure = UItemManager::IsItemCanHousing(ItemId);
 
-	bIsIndicatorActive = bIsStructure;
+	const TSubclassOf<AActor> ActorClass = ItemInfoData.GetPlaceItemActor();
 	
-	if (bIsStructure && ActorClass->IsChildOf(APlacement::StaticClass()))
+	bIsIndicatorActive = bIsStructure
+					&& ActorClass
+					&& ActorClass->IsChildOf(APlacement::StaticClass());
+	
+	if (bIsIndicatorActive)
 	{
+		PlacementItemId = ItemId;
 		TSubclassOf<APlacement> PlacementClass { ActorClass };
 		OnActivate(PlacementClass);
 	}
 	else
 	{
+		PlacementItemId = 0;
 		OnDeactivate();
 	}
 }
@@ -302,9 +310,7 @@ void UPlacementIndicatorComponent::OnDeactivate()
 
 void UPlacementIndicatorComponent::Server_Execute_Implementation(FVector Pivot,
 	FVector Location, FRotator Rotation, TSubclassOf<APlacement> PlacementClass,
-	FItemMetaInfo_Net ItemMetaInfo)
+	uint16 ItemId)
 {
-	FItemMetaInfo Info;
-	ItemMetaInfo.To(Info);
-	ExecuteInternal(Pivot, Location, Rotation, PlacementClass, Info);
+	ExecuteInternal(Pivot, Location, Rotation, PlacementClass, ItemId);
 }

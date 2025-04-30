@@ -7,7 +7,7 @@ bool FPlacementGridContainer::NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaPar
 	return FastArrayDeltaSerialize<FPlacementGridEntry, FPlacementGridContainer>(Items, DeltaParms, *this);
 }
 
-void FPlacementGridContainer::Add(const FIntVector& GridCoord, APlacement* Placement, FItemMetaInfo ItemMetaInfo)
+void FPlacementGridContainer::Add(const FIntVector& GridCoord, APlacement* Placement, uint16 ItemId)
 {
 	APlacement* TypedPlacement = Cast<APlacement>(Placement);
 
@@ -19,7 +19,7 @@ void FPlacementGridContainer::Add(const FIntVector& GridCoord, APlacement* Place
 	FPlacementGridEntry Entry;
 	Entry.GridCoord = GridCoord;
 	Entry.Placement = TypedPlacement;
-	Entry.ItemMetaInfo = ItemMetaInfo;
+	Entry.ItemId = ItemId;
 	Items.Add(Entry);
 
 	MarkItemDirty(Entry);
@@ -33,9 +33,9 @@ void FPlacementGridContainer::Add(const FIntVector& GridCoord, APlacement* Place
 	PlacedMap.Add(GridCoord, Placement);
 }
 
-FItemMetaInfo FPlacementGridContainer::Remove(APlacement* Placement)
+uint16 FPlacementGridContainer::Remove(APlacement* Placement)
 {
-	FItemMetaInfo ItemMetaInfo;
+	uint16 ItemId = 0;
 
 	// 모든 관련 좌표 제거
 	TArray<int32> IndicesToRemove;
@@ -46,9 +46,9 @@ FItemMetaInfo FPlacementGridContainer::Remove(APlacement* Placement)
 
 		if (Entry.Placement == Placement)
 		{
-			if (!ItemMetaInfo.IsValid())
+			if (ItemId == 0)
 			{
-				ItemMetaInfo = Entry.ItemMetaInfo;
+				ItemId = Entry.ItemId;
 			}
 			
 			IndicesToRemove.Add(i);
@@ -73,7 +73,7 @@ FItemMetaInfo FPlacementGridContainer::Remove(APlacement* Placement)
 	
 	MarkArrayDirty();
 
-	return ItemMetaInfo;
+	return ItemId;
 }
 
 // template<>

@@ -24,6 +24,7 @@ APlacement::APlacement()
 	CollisionComp = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionComp"));
 	CollisionComp->SetupAttachment(AnchorComp);
 	CollisionComp->SetIsReplicated(true);
+	CollisionComp->SetCollisionObjectType(ECC_WorldStatic);
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(CollisionComp);

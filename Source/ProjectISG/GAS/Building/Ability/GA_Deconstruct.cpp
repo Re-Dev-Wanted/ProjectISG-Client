@@ -67,8 +67,15 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 			if (GridManager->TryGetPlacement(TargetPlacement, GridCoord, PlacedActor))
 			{
-				FItemMetaInfo ItemMetaInfo = GridManager->RemovePlacement(GridCoord);
-				PlayerState->GetInventoryComponent()->AddItem(ItemMetaInfo);
+				const uint16 ItemId = GridManager->RemovePlacement(GridCoord);
+
+				if (ItemId > 0)
+				{
+					FItemMetaInfo ItemMetaInfo;
+					ItemMetaInfo.SetId(ItemId);
+					ItemMetaInfo.SetCurrentCount(1);
+					PlayerState->GetInventoryComponent()->AddItem(ItemMetaInfo);
+				}
 			}
 		}
 

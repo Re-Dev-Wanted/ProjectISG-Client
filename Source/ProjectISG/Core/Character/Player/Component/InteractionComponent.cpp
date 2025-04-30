@@ -47,12 +47,12 @@ void UInteractionComponent::BindingInputActions(
 	                                   &ThisClass::OnTouch);
 }
 
-void UInteractionComponent::OnChange(TSubclassOf<AActor> ActorClass,
-	FItemMetaInfo ItemMetaInfo)
+void UInteractionComponent::OnChange(uint16 ItemId)
 {
-	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemMetaInfo.GetId());
+	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
 
-	const bool bIsStructure = ItemInfoData.GetItemType() != EItemType::Equipment && UItemManager::IsItemCanHousing(ItemMetaInfo.GetId());
+	const bool bIsStructure = ItemInfoData.GetItemType() != 
+	EItemType::Equipment && UItemManager::IsItemCanHousing(ItemId);
 
 	SetIsInteractive(!bIsStructure);
 }
