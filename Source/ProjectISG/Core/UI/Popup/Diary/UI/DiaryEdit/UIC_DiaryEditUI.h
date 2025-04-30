@@ -13,4 +13,11 @@ class PROJECTISG_API UUIC_DiaryEditUI : public UBaseUIController
 
 public:
 	void InitializeDiaryToEdit(const FGenerateDiaryResponse& Diary);
+
+protected:
+	virtual void AppearUI(const EUILayer Layer) override;
+
+private:
+	UFUNCTION()
+	void OnClickToSaveDiary();
 };

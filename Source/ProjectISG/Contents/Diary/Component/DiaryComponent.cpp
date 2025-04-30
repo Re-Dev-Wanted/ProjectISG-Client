@@ -78,8 +78,10 @@ void UDiaryComponent::GenerateDiary()
 		}
 	});
 
+	FString DataParams;
 	FJsonObjectConverter::UStructToJsonObjectString(
-		DiaryRequest, Request.Params);
+		DiaryRequest, DataParams);
+	Request.Params = DataParams;
 
 	FApiUtil::GetMainAPI()->PostApi(this, Request, GenerateDiaryResponse);
 }

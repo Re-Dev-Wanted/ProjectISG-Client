@@ -280,9 +280,9 @@ void ATimeManager::ChangeTimeToCanSleepTime()
 FString ATimeManager::GetDateText() const
 {
 	FDateTime DateText(1, 1, 1, 0, 0, 0);
-	DateText += FTimespan(Day - 1, Hour, Minute, Second);
+	DateText += FTimespan(Day - 1, 0, 0, 0);
 
-	return DateText.ToString();
+	return DateText.ToString(TEXT("%Y.%m.%d"));
 }
 
 uint32 ATimeManager::GetTotalPlayingDay() const
@@ -290,7 +290,7 @@ uint32 ATimeManager::GetTotalPlayingDay() const
 	const uint32 YearToDay = (Year - 1) * 365;
 
 	uint32 MonthOfDay = 0;
-	for (int i = 1; i <= (Month - 1); i++)
+	for (int i = 1; i <= Month - 1; i++)
 	{
 		MonthOfDay += DaysInMonths[i - 1];
 	}

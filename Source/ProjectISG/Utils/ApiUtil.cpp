@@ -39,7 +39,8 @@ void FApiUtil::SendRequest(UObject* Caller, const FString& Verb,
 		FHttpModule::Get().CreateRequest();
 	HttpRequest->SetURL(URL + Request.Path);
 	HttpRequest->SetVerb(Verb);
-	HttpRequest->SetTimeout(30.f);
+
+	HttpRequest->SetTimeout(300.f);
 
 	// Default Header
 	if (!Request.Header.Contains(TEXT("Content-type")))
@@ -56,6 +57,9 @@ void FApiUtil::SendRequest(UObject* Caller, const FString& Verb,
 	if (Verb != TEXT("GET"))
 	{
 		HttpRequest->SetContentAsString(Request.Params);
+
+		UE_LOG(LogTemp, Display, TEXT("%s: Call Data Request: %s"),
+		       *Request.Path, *Request.Params);
 	}
 
 	Response.bIsLoading = true;
@@ -80,6 +84,12 @@ void FApiUtil::SendRequest(UObject* Caller, const FString& Verb,
 			}
 
 			CapturedResponse->bIsLoading = false;
+
+			if (!bSuccess)
+			{
+				UE_LOG(LogTemp, Error, TEXT("알 수 없는 이유로 API Call 실패"))
+				return;
+			}
 
 			if (CapturedRequest.Callback.IsBound())
 			{

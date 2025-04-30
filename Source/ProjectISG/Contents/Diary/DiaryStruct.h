@@ -7,9 +7,27 @@ struct PROJECTISG_API FGenerateDiaryRequest
 {
 	GENERATED_BODY()
 
+	UPROPERTY()
 	FString session_id;
+	UPROPERTY()
 	FString user_id;
+	UPROPERTY()
 	FString ingame_date;
+};
+
+USTRUCT()
+struct PROJECTISG_API FSaveDiaryRequest
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString session_id;
+	UPROPERTY()
+	FString user_id;
+	UPROPERTY()
+	FString ingame_date;
+	UPROPERTY()
+	FString diary_content;
 };
 
 USTRUCT()

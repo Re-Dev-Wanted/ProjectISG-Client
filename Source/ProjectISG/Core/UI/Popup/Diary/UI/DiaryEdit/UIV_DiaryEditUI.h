@@ -4,6 +4,7 @@
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
 #include "UIV_DiaryEditUI.generated.h"
 
+class UButton;
 class UMultiLineEditableTextBox;
 class UTextBlock;
 class UImage;
@@ -16,6 +17,7 @@ class PROJECTISG_API UUIV_DiaryEditUI : public UBaseUIView
 public:
 	GETTER(TObjectPtr<UTextBlock>, DiaryDayText)
 	GETTER(TObjectPtr<UMultiLineEditableTextBox>, DiaryDescription)
+	GETTER(TObjectPtr<UButton>, SaveButton)
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -23,4 +25,7 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UMultiLineEditableTextBox> DiaryDescription;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> SaveButton;
 };
