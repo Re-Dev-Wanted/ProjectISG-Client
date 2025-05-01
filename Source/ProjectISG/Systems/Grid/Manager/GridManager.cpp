@@ -18,8 +18,6 @@ void AGridManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlacementGridContainer.SetOwner(this);
-
 	if (!HasAuthority())
 	{
 		Destroy();
@@ -123,43 +121,20 @@ FVector AGridManager::GetLocationInPointerDirectionPlacement(APlayerController* 
 	return FVector::ZeroVector;
 }
 
-void AGridManager::RemovePlacement(const FIntVector& GridAt)
+FItemMetaInfo AGridManager::RemovePlacement(const FIntVector& GridAt)
 {
+	FItemMetaInfo ItemMetaInfo;
+	
 	TWeakObjectPtr<APlacement> Placement = PlacementGridContainer.GetPlacedMap().FindRef(GridAt);
 	if (Placement.IsValid())
 	{
-		// 모든 관련 좌표 제거
-		TArray<int32> IndicesToRemove;
-
-		for (int32 i = 0; i < PlacementGridContainer.GetItems().Num(); ++i)
-		{
-			const FPlacementGridEntry& Entry = PlacementGridContainer.GetItems()[i];
-
-			if (Entry.Placement == Placement)
-			{
-				IndicesToRemove.Add(i);
-			}
-		}
-
-		// 실제 배열에서 제거
-		for (int32 Index : IndicesToRemove)
-		{
-			PlacementGridContainer.GetItems().RemoveAt(Index);
-			PlacementGridContainer.MarkArrayDirty();
-		}
-
-		// 캐시 Map도 정리
-		for (auto It = PlacementGridContainer.GetPlacedMap().CreateIterator(); It; ++It)
-		{
-			if (It.Value() == Placement)
-			{
-				It.RemoveCurrent();
-			}
-		}
+		ItemMetaInfo = PlacementGridContainer.Remove(Placement.Get());
 
 		// 가구 제거
 		Placement->Destroy();
 	}
+
+	return ItemMetaInfo;
 }
 
 bool AGridManager::TryGetPlacement(APlacement* Placement, FIntVector& OutGridAt, APlacement*& OutPlacement)
@@ -206,8 +181,12 @@ bool AGridManager::TryGetPlacementAt(AActor* Actor, FIntVector& OutGridAt, APlac
 	return false;
 }
 
-void AGridManager::Server_BuildPlacement_Implementation(TSubclassOf<APlacement> PlacementClass, FVector Pivot,
+void AGridManager::Server_BuildPlacement_Implementation(TSubclassOf<APlacement> PlacementClass, FItemMetaInfo_Net ItemMetaInfo, FVector Pivot,
 	FVector Location, FRotator Rotation)
 {
-	BuildPlacement(PlacementClass, Pivot, Location, Rotation);
+	FItemMetaInfo Info;
+
+	ItemMetaInfo.To(Info);
+	
+	BuildPlacement(PlacementClass, Info, Pivot, Location, Rotation);
 }

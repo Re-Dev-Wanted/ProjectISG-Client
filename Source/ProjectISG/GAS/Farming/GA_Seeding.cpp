@@ -1,5 +1,6 @@
 ﻿#include "GA_Seeding.h"
 
+#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
@@ -29,7 +30,7 @@ void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	int id = Player->GetPlayerInventoryComponent()->GetCurrentSlotIndex();
 	const bool isInteraction = UItemManager::IsItemCanInteraction(
 		id);
-
+	
 	if (isInteraction)
 	{
 		AT_SeedingAnim = UPlayMontageWithEvent::InitialEvent(

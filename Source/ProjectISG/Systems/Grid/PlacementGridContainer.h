@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "Net/Serialization/FastArraySerializer.h"
+#include "ProjectISG/Systems/Inventory/ItemData.h"
+#include "Actors/Placement.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "PlacementGridContainer.generated.h"
 
@@ -14,7 +16,10 @@ struct FPlacementGridEntry : public FFastArraySerializerItem
 	FIntVector GridCoord;
 
 	UPROPERTY()
-	TWeakObjectPtr<class APlacement> Placement;
+	TWeakObjectPtr<APlacement> Placement;
+
+	UPROPERTY()
+	FItemMetaInfo ItemMetaInfo;
 
 	bool IsValid() const
 	{
@@ -28,29 +33,25 @@ struct FPlacementGridContainer : public FFastArraySerializer
 	GENERATED_BODY()
 
 	GETTER(TArray<FPlacementGridEntry>, Items)
-	SETTER(class AGridManager*, Owner)
 
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms);
 
-	void Add(const FIntVector& GridCoord, class APlacement* Placement);
+	void Add(const FIntVector& GridCoord, APlacement* Placement, FItemMetaInfo ItemMetaInfo);
 
-	void Remove(class APlacement* Placement);
+	FItemMetaInfo Remove(APlacement* Placement);
 
-	TMap<FIntVector, TWeakObjectPtr<class APlacement>> GetPlacedMap() const
+	TMap<FIntVector, TWeakObjectPtr<APlacement>> GetPlacedMap() const
 	{
 		return PlacedMap;
 	}
 
 protected:
-	UPROPERTY(NotReplicated)
-	class AGridManager* Owner = nullptr;
-	
 	UPROPERTY()
 	TArray<FPlacementGridEntry> Items;
 
 	//빠른 접근용 Cache Map
 	UPROPERTY(NotReplicated)
-	TMap<FIntVector, TWeakObjectPtr<class APlacement>> PlacedMap;
+	TMap<FIntVector, TWeakObjectPtr<APlacement>> PlacedMap;
 
-	TMap<TWeakObjectPtr<class APlacement>, TArray<FIntVector>> ReverseMap;
+	TMap<TWeakObjectPtr<APlacement>, TArray<FIntVector>> ReverseMap;
 };

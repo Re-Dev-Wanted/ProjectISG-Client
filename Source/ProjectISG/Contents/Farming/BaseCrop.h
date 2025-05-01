@@ -17,6 +17,10 @@ class PROJECTISG_API ABaseCrop : public ABaseActor, public IInteractionInterface
 public:
 	ABaseCrop();
 
+	virtual void OnInteractive(AActor* Causer) override;
+
+	virtual void OnInteractAction(AActor* Causer) override;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -24,8 +28,6 @@ protected:
 		TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void Tick(float DeltaTime) override;
-
-	virtual void OnInteractive(AActor* Causer) override;
 
 	virtual bool GetCanInteractive() const override;
 
@@ -75,9 +77,7 @@ private:
 
 	UPROPERTY()
 	class ATimeManager* TimeManager = nullptr;
-
-
-
+	
 	UPROPERTY(Replicated)
 	FString DisplayText;
 #pragma endregion

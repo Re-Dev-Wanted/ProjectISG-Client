@@ -15,6 +15,7 @@
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/Time/TimeManager.h"
+#include "ProjectISG/Utils/EnumUtil.h"
 
 
 ABaseCrop::ABaseCrop()
@@ -149,6 +150,8 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 		return;
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("작물 상호작용 함수 실행 , 로컬롤 : %s"), *FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
+
 	CanInteractive = false;
 
 	Causer->SetActorLocation(InteractionPos->GetComponentLocation());
@@ -187,6 +190,13 @@ void ABaseCrop::OnInteractiveResponse()
 	{
 		Destroy();
 	}
+}
+
+void ABaseCrop::OnInteractAction(AActor* Causer)
+{
+	Super::OnInteractAction(Causer);
+
+	//OnInteractive(Causer);
 }
 
 void ABaseCrop::UpdateGrowTimeBySleep()

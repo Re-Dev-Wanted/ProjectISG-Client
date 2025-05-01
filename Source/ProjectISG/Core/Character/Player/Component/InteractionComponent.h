@@ -5,10 +5,8 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "InteractionComponent.generated.h"
 
-
 class AMainPlayerCharacter;
 class UInputAction;
-
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTISG_API UInteractionComponent : public UActorComponent
@@ -22,6 +20,12 @@ public:
 
 	void SetIsInteractive(const bool NewIsInteractive);
 
+	UFUNCTION(Reliable, Server)
+	void Server_Interact(class ABaseActor* InteractActor);
+
+	UFUNCTION(Reliable, Server)
+	void Server_Touch(class ABaseActor* InteractActor);
+	
 	// 하드 코딩 방지를 위해 해당 actor class를 BaseActor로 받아서
 	// 따로 조건 처리를 하는게 맞아보인다.
 	UFUNCTION(Server, Reliable)
@@ -36,7 +40,6 @@ protected:
 	                           FActorComponentTickFunction*
 	                           ThisTickFunction) override;
 
-private:
 #pragma region Input
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",
 		meta = (AllowPrivateAccess = true))

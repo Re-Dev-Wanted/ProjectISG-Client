@@ -3,12 +3,14 @@
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Component/InteractionComponent.h"
+#include "Component/PlayerHandSlotComponent.h"
 #include "Component/PlayerInventoryComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/ISGAbilitySystemComponent.h"
 #include "ProjectISG/GAS/Common/Attribute/ISGAttributeSet.h"
+#include "ProjectISG/Systems/Grid/Components/PlacementIndicatorComponent.h"
 #include "ProjectISG/Systems/Logging/Component/ScreenShotComponent.h"
 
 AMainPlayerCharacter::AMainPlayerCharacter()
@@ -40,6 +42,9 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(
 		"Interaction Component");
+
+	HandSlotComponent = CreateDefaultSubobject<UPlayerHandSlotComponent>
+	("Hand Slot Component");
 }
 
 void AMainPlayerCharacter::BeginPlay()
