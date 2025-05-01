@@ -24,7 +24,7 @@ public:
 	class UISGAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
 	GETTER(TObjectPtr<UInventoryComponent>, InventoryComponent)
-	GETTER_SETTER(TObjectPtr<class AGridManager>, GridManager)
+	GETTER(TObjectPtr<class AGridManager>, GridManager)
 	
 protected:
 	virtual void BeginPlay() override;
