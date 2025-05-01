@@ -6,7 +6,6 @@
 #include "GridManager.generated.h"
 
 UCLASS()
-
 class PROJECTISG_API AGridManager : public AActor
 {
 	GENERATED_BODY()

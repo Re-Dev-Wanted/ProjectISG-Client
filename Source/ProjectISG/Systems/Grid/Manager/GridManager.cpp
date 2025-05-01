@@ -18,8 +18,6 @@ void AGridManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlacementGridContainer.SetOwner(this);
-
 	if (!HasAuthority())
 	{
 		Destroy();
