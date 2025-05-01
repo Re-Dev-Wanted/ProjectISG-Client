@@ -11,6 +11,8 @@ void UGA_StartSitDown::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("Sittttttt"));
+
+	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
 
 void UGA_StartSitDown::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,

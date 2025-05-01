@@ -195,13 +195,6 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 	}
 }
 
-void ABaseCrop::OnInteractAction(AActor* Causer)
-{
-	Super::OnInteractAction(Causer);
-
-	OnInteractive(Causer);
-}
-
 void ABaseCrop::UpdateGrowTimeBySleep()
 {
 	if (bIsGetWater == false)

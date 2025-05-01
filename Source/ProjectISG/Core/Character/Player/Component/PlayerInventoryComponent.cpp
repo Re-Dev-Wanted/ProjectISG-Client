@@ -106,10 +106,7 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 
 	const uint16 ItemId = ItemMetaInfo.GetId();
 
-	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
-
-	Player->OnUpdateSelectedItem.Broadcast(
-	ItemInfoData.GetShowItemActor(), ItemMetaInfo);
+	Player->OnUpdateSelectedItem.Broadcast(ItemId);
 
 	const AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetOwner()->GetInstigatorController());

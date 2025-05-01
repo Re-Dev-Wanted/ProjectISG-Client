@@ -1,11 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "GridComponent.generated.h"
-
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTISG_API UGridComponent : public UActorComponent
@@ -13,23 +10,15 @@ class PROJECTISG_API UGridComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this component's properties
 	UGridComponent();
 
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
 	virtual void OnRegister() override;
 
 	UPROPERTY()
 	class AGridManager* Manager;
 
 public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
-
 	void OnUpdatedProperties();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -55,6 +44,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Properties)
 	float SquareOpacity = 0.25f;
+
+	void SetVisibility(bool bIsVisible);
 
 private:
 	void DrawLine(FVector Start, FVector End, float Thickness, TArray<FVector>& Vertices, TArray<int32>& Triangles);

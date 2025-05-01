@@ -8,14 +8,5 @@ UCLASS()
 class PROJECTISG_API AMainGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Classes)
-	TSubclassOf<class AGridManager> GridManagerClass;
-
-protected:
-	virtual void StartPlay() override;
-
-	virtual void PostLogin(APlayerController* NewPlayer) override;
 	
 };

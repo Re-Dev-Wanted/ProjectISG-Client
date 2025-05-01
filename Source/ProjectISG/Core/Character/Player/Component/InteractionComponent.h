@@ -20,11 +20,16 @@ public:
 
 	void SetIsInteractive(const bool NewIsInteractive);
 
-	UFUNCTION(Reliable, Server)
-	void Server_Interact(class ABaseActor* InteractActor);
+	UFUNCTION()
+	void OnChange(uint16 ItemId);
 
 	UFUNCTION(Reliable, Server)
-	void Server_Touch(class ABaseActor* InteractActor);
+	void Server_Interact(class ABaseInteractiveActor* InteractActor, AActor* 
+	Causer);
+
+	UFUNCTION(Reliable, Server)
+	void Server_Touch(class ABaseInteractiveActor* InteractActor, AActor* 
+	Causer);
 
 protected:
 	virtual void BeginPlay() override;

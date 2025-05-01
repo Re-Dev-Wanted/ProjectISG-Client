@@ -9,7 +9,6 @@ AGridManager::AGridManager()
 	bReplicates = true;
 	bAlwaysRelevant = true;
 	bNetLoadOnClient = true;
-	SetReplicates(true);
 	
 	GridComp = CreateDefaultSubobject<UGridComponent>(TEXT("GridComp"));
 }
@@ -47,7 +46,8 @@ FVector AGridManager::SnapToGrid(const FVector& Location)
 	(
 		FMath::FloorToInt(Location.X / SnapSize) * SnapSize,
 		FMath::FloorToInt(Location.Y / SnapSize) * SnapSize,
-		FMath::RoundToInt(Location.Z / SnapSize) * SnapSize
+		0.f
+		// FMath::FloorToInt(Location.Z / SnapSize) * SnapSize
 	);
 }
 
@@ -63,7 +63,8 @@ FIntVector AGridManager::WorldToGridLocation(const FVector& WorldLocation)
 	(
 		FMath::FloorToInt(WorldLocation.X / SnapSize),
 		FMath::FloorToInt(WorldLocation.Y / SnapSize),
-		FMath::RoundToInt(WorldLocation.Z / SnapSize)
+		0.f
+		// FMath::FloorToInt(WorldLocation.Z / SnapSize)
 	);
 }
 
@@ -71,8 +72,8 @@ FVector AGridManager::GridToWorldLocation(const FIntVector& GridCoord)
 {
 	return FVector
 	(
-		GridCoord.X * SnapSize + SnapSize * 0.5f,
-		GridCoord.Y * SnapSize + SnapSize * 0.5f,
+		FMath::FloorToInt(GridCoord.X * SnapSize + SnapSize * 0.5f),
+		FMath::FloorToInt(GridCoord.Y * SnapSize + SnapSize * 0.5f),
 		GridCoord.Z * SnapSize                    // 보통 Z는 그대로
 	);
 }
@@ -83,7 +84,7 @@ FVector AGridManager::GetLocationInFront(AActor* Actor, int32 Distance)
 	FVector Origin = Actor->GetActorLocation();
 
 	FVector RawTarget = Origin + Forward * Distance * SnapSize;
-	return SnapToGrid(RawTarget);
+	return SnapToGridPlacement(RawTarget);
 }
 
 FVector AGridManager::GetLocationInPointerDirection(APlayerController* PlayerController, int32 Distance)
@@ -121,20 +122,74 @@ FVector AGridManager::GetLocationInPointerDirectionPlacement(APlayerController* 
 	return FVector::ZeroVector;
 }
 
-FItemMetaInfo AGridManager::RemovePlacement(const FIntVector& GridAt)
+void AGridManager::BuildPlacement(TSubclassOf<APlacement> PlacementClass,
+	uint16 ItemId, const FVector& Pivot, const FVector& Location,
+	const FRotator& Rotation)
 {
-	FItemMetaInfo ItemMetaInfo;
-	
+	FIntVector GridCoord = FIntVector
+	(
+		FMath::FloorToInt(Pivot.X / SnapSize),
+		FMath::FloorToInt(Pivot.Y / SnapSize),
+		//FMath::FloorToInt(Pivot.Z / SnapSize)
+		0
+	);
+
+	UE_LOG(LogTemp, Warning, TEXT("Pivot %s"), *Pivot.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("Coord %s"), *GridCoord.ToString());
+
+	FActorSpawnParameters Params;
+	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	Params.bNoFail = true;
+	Params.Owner = this;
+
+	APlacement* SpawnedActor = GetWorld()->SpawnActor<APlacement>(PlacementClass, Location, Rotation, Params);
+		
+	if (!SpawnedActor)
+	{
+		return;
+	}
+
+	SpawnedActor->SetReplicates(true);
+	SpawnedActor->SetReplicatingMovement(true);
+	if (SpawnedActor->GetMeshAssetPath().IsValid())
+	{
+		SpawnedActor->SetMeshAssetPath(SpawnedActor->GetMeshAssetPath());
+		SpawnedActor->OnRep_LoadMeshAsset();  // 서버 즉시 적용
+	}
+
+	SpawnedActor->SetCachedSnapSize(SnapSize);
+	SpawnedActor->ForceNetUpdate();
+	SpawnedActor->Setup(SnapSize);
+	SpawnedActor->SetOption(false);
+
+	// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("BuildPlacement %s"), 
+	// *SpawnedActor
+	// ->GetActorNameOrLabel()));
+		
+	PlacementGridContainer.Add(GridCoord, SpawnedActor, ItemId);
+}
+
+void AGridManager::BuildPlacementAtGhost(TSubclassOf<APlacement> PlacementClass,
+	uint16 ItemId, const APlacement& Ghost)
+{
+	BuildPlacement(PlacementClass, ItemId, Ghost.GetActorPivotLocation(), Ghost.GetActorLocation(),
+						  Ghost.GetActorRotation());
+}
+
+uint16 AGridManager::RemovePlacement(const FIntVector& GridAt)
+{
 	TWeakObjectPtr<APlacement> Placement = PlacementGridContainer.GetPlacedMap().FindRef(GridAt);
 	if (Placement.IsValid())
 	{
-		ItemMetaInfo = PlacementGridContainer.Remove(Placement.Get());
+		const uint16 ItemId = PlacementGridContainer.Remove(Placement.Get());
 
 		// 가구 제거
 		Placement->Destroy();
+
+		return ItemId;
 	}
 
-	return ItemMetaInfo;
+	return 0;
 }
 
 bool AGridManager::TryGetPlacement(APlacement* Placement, FIntVector& OutGridAt, APlacement*& OutPlacement)
@@ -181,12 +236,19 @@ bool AGridManager::TryGetPlacementAt(AActor* Actor, FIntVector& OutGridAt, APlac
 	return false;
 }
 
-void AGridManager::Server_BuildPlacement_Implementation(TSubclassOf<APlacement> PlacementClass, FItemMetaInfo_Net ItemMetaInfo, FVector Pivot,
-	FVector Location, FRotator Rotation)
+void AGridManager::SetVisibleGrid(bool bIsVisible)
 {
-	FItemMetaInfo Info;
+	if (!GridComp)
+	{
+		return;
+	}
 
-	ItemMetaInfo.To(Info);
-	
-	BuildPlacement(PlacementClass, Info, Pivot, Location, Rotation);
+	GridComp->SetVisibility(bIsVisible);
+}
+ 
+void AGridManager::Server_BuildPlacement_Implementation
+(TSubclassOf<APlacement> PlacementClass, uint16 ItemId, FVector Pivot,
+                                                        FVector Location, FRotator Rotation)
+{
+	BuildPlacement(PlacementClass, ItemId, Pivot, Location, Rotation);
 }

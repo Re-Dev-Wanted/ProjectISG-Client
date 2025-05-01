@@ -8,6 +8,7 @@
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
 #include "ProjectISG/Systems/Input/Interface/InteractionInterface.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 UInteractionComponent::UInteractionComponent()
 {
@@ -31,6 +32,8 @@ void UInteractionComponent::InitializeComponent()
 
 	OwnerPlayer->OnInputBindingNotified.AddDynamic(
 		this, &ThisClass::BindingInputActions);
+
+	OwnerPlayer->OnUpdateSelectedItem.AddDynamic(this, &ThisClass::OnChange);
 }
 
 void UInteractionComponent::BindingInputActions(
@@ -44,25 +47,31 @@ void UInteractionComponent::BindingInputActions(
 	                                   &ThisClass::OnTouch);
 }
 
+void UInteractionComponent::OnChange(uint16 ItemId)
+{
+	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
+
+	const bool bIsStructure = ItemInfoData.GetItemType() != 
+	EItemType::Equipment && UItemManager::IsItemCanHousing(ItemId);
+
+	SetIsInteractive(!bIsStructure);
+}
+
 void UInteractionComponent::OnInteractive()
 {
 	if (!TargetTraceResult.GetActor())
 	{
 		return;
 	}
-	
-	IInteractionInterface* Interaction = Cast<IInteractionInterface>(
-		TargetTraceResult.GetActor());
 
-	if (!Interaction)
+	ABaseInteractiveActor* InteractActor = Cast<ABaseInteractiveActor>(TargetTraceResult.GetActor());
+
+	if (!InteractActor)
 	{
 		return;
 	}
 
-	ABaseActor* InteractActor = Cast<ABaseActor>(TargetTraceResult.GetActor());
-	Server_Interact(InteractActor);
-	
-	Interaction->OnInteractive(GetOwner());
+	Server_Interact(InteractActor, GetOwner());
 }
 
 void UInteractionComponent::OnTouch()
@@ -71,19 +80,15 @@ void UInteractionComponent::OnTouch()
 	{
 		return;
 	}
+	
+	ABaseInteractiveActor* InteractActor = Cast<ABaseInteractiveActor>(TargetTraceResult.GetActor());
 
-	IInteractionInterface* Interaction = Cast<IInteractionInterface>(
-		TargetTraceResult.GetActor());
-
-	if (!Interaction)
+	if (!InteractActor)
 	{
 		return;
 	}
-
-	ABaseActor* InteractActor = Cast<ABaseActor>(TargetTraceResult.GetActor());
-	Server_Touch(InteractActor);
 	
-	Interaction->OnTouch(GetOwner());
+	Server_Touch(InteractActor, GetOwner());
 }
 
 void UInteractionComponent::TickComponent(float DeltaTime,
@@ -116,6 +121,7 @@ void UInteractionComponent::LineTraceToFindTarget()
 
 	const AMainPlayerController* PC = PlayerCharacter->GetController<
 		AMainPlayerController>();
+	
 	if (!PC)
 	{
 		return;
@@ -128,7 +134,7 @@ void UInteractionComponent::LineTraceToFindTarget()
 			return;
 		}
 
-		const IInteractionInterface* Interaction = Cast<IInteractionInterface>(
+		const ABaseInteractiveActor* Interaction = Cast<ABaseInteractiveActor>(
 			TargetTraceResult.GetActor());
 
 		if (!Interaction)
@@ -198,37 +204,15 @@ void UInteractionComponent::SetIsInteractive(const bool NewIsInteractive)
 	}
 }
 
-void UInteractionComponent::Server_Interact_Implementation(class ABaseActor* InteractActor)
+void UInteractionComponent::Server_Interact_Implementation(class ABaseInteractiveActor* 
+InteractActor, AActor* Causer)
 {
-	if (!InteractActor || !InteractActor->IsValidLowLevel() || InteractActor->IsPendingKillPending())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Invalid crop received from client"));
-		return;
-	}
-
-	if (!InteractActor->HasAuthority())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Warning: Forged object"));
-		return;
-	}
-
 	// 정상 처리
-	InteractActor->OnInteractAction(PlayerCharacter);
+	InteractActor->OnInteractive(Causer);
 }
 
-void UInteractionComponent::Server_Touch_Implementation(class ABaseActor* InteractActor)
+void UInteractionComponent::Server_Touch_Implementation(class ABaseInteractiveActor* 
+InteractActor, AActor* Causer)
 {
-	if (!InteractActor || !InteractActor->IsValidLowLevel() || InteractActor->IsPendingKillPending())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Invalid crop received from client"));
-		return;
-	}
-
-	if (!InteractActor->HasAuthority())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Warning: Forged object"));
-		return;
-	}
-
-	InteractActor->OnTouchAction(PlayerCharacter);
+	InteractActor->OnTouch(Causer);
 }

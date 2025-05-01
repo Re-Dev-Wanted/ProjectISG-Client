@@ -11,6 +11,7 @@
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Manager/GridManager.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                       const FGameplayAbilityActorInfo* ActorInfo,
@@ -24,11 +25,13 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 	if (!Player)
 	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 		return;
 	}
 	
 	if (!Player->HasAuthority())
 	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 		return;
 	}
 
@@ -37,9 +40,10 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		FHitResult TargetResult = Player->GetInteractionComponent()->GetTargetTraceResult();
 
 		AMainPlayerState* PlayerState = Cast<AMainPlayerState>(Player->GetController()->PlayerState);
-
+		
 		if (!PlayerState)
 		{
+			EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 			return;
 		}
 	
@@ -47,14 +51,16 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 		if (!GridManager)
 		{
+			EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 			return;
 		}
 		
 		if (!TargetResult.GetActor())
 		{
+			EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 			return;
 		}
-
+		
 		if (APlacement* TargetPlacement = Cast<APlacement>(TargetResult.GetActor()))
 		{
 			FIntVector GridCoord;
@@ -62,11 +68,24 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 			if (GridManager->TryGetPlacement(TargetPlacement, GridCoord, PlacedActor))
 			{
-				FItemMetaInfo ItemMetaInfo = GridManager->RemovePlacement(GridCoord);
-				// UKismetSystemLibrary::PrintString(GetWorld(),  FString::Printf(TEXT("??? %d"), ItemMetaInfo.GetId()));
-				PlayerState->GetInventoryComponent()->AddItem(ItemMetaInfo);
+				const uint16 ItemId = GridManager->RemovePlacement(GridCoord);
+				
+				if (ItemId > 0)
+				{
+					const FString UsingType = UItemManager::GetItemUsingType(ItemId);
+
+					if (UsingType != "Disposability")
+					{
+						FItemMetaInfo ItemMetaInfo;
+						ItemMetaInfo.SetId(ItemId);
+						ItemMetaInfo.SetCurrentCount(1);
+						PlayerState->GetInventoryComponent()->AddItem(ItemMetaInfo);
+					}
+				}
 			}
 		}
+
+		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 	}
 }
 

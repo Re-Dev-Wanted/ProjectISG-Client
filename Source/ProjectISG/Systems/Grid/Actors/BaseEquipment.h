@@ -8,7 +8,7 @@
 #include "BaseEquipment.generated.h"
 
 UCLASS()
-class PROJECTISG_API ABaseEquipment : public ABaseActor, public IInteractionInterface
+class PROJECTISG_API ABaseEquipment : public ABaseActor
 {
 	GENERATED_BODY()
 
@@ -20,9 +20,4 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	class UStaticMeshComponent* MeshComp;
-
-	virtual void OnInteractive(AActor* Causer) override {}
-
-	virtual void OnInteractAction(AActor* Causer) override {}
-	
 };

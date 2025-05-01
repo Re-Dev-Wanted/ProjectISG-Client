@@ -41,6 +41,18 @@ void UInventoryComponent::InitializeItemData()
 	HammerItemMetaInfo.SetCurrentCount(1);
 
 	AddItemToInventory(4, HammerItemMetaInfo);
+
+	FItemMetaInfo HoeItemMetaInfo;
+	HoeItemMetaInfo.SetId(10);
+	HoeItemMetaInfo.SetCurrentCount(1);
+
+	AddItemToInventory(5, HoeItemMetaInfo);
+
+	FItemMetaInfo BuildItemMetaInfo2;
+	BuildItemMetaInfo2.SetId(12);
+	BuildItemMetaInfo2.SetCurrentCount(1);
+
+	AddItemToInventory(6, BuildItemMetaInfo2);
 }
 
 void UInventoryComponent::BeginPlay()

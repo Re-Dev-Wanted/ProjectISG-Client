@@ -54,76 +54,23 @@ public:
 	FVector GetLocationInPointerDirectionPlacement(APlayerController* PlayerController, FVector MeshSize,
 	                                               int32 Distance = 1);
 
-	template <class T, std::enable_if_t<std::is_base_of_v<APlacement, T>, int> = 0>
-	void BuildPlacement(TSubclassOf<T> PlacementClass, FItemMetaInfo ItemMetaInfo, const FVector& Pivot, const FVector& Location,
-	                    const FRotator& Rotation)
-	{
-		FIntVector GridCoord = FIntVector
-		(
-			FMath::FloorToInt(Pivot.X / SnapSize),
-			FMath::FloorToInt(Pivot.Y / SnapSize),
-			FMath::RoundToInt(Pivot.Z / SnapSize)
-		);
-
-		UE_LOG(LogTemp, Warning, TEXT("Pivot %s"), *Pivot.ToString());
-		UE_LOG(LogTemp, Warning, TEXT("Coord %s"), *GridCoord.ToString());
-
-		FActorSpawnParameters Params;
-		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		Params.bNoFail = true;
-		Params.Owner = this;
-
-		T* SpawnedActor = GetWorld()->SpawnActor<T>(PlacementClass, Location, Rotation,
-		                                            Params);
-		
-		if (!SpawnedActor)
-		{
-			return;
-		}
-
-		SpawnedActor->SetReplicates(true);
-		SpawnedActor->SetReplicatingMovement(true);
-
-		if (T* ClassCDO = PlacementClass->template GetDefaultObject<T>())
-		{
-			if (ClassCDO->GetMeshAssetPath().IsValid())
-			{
-				SpawnedActor->SetMeshAssetPath(ClassCDO->GetMeshAssetPath());
-				SpawnedActor->OnRep_LoadMeshAsset();  // 서버 즉시 적용
-			}
-		}
-
-		SpawnedActor->SetCachedSnapSize(SnapSize);
-		SpawnedActor->ForceNetUpdate();
-		SpawnedActor->Setup(SnapSize);
-		
-		PlacementGridContainer.Add(GridCoord, SpawnedActor, ItemMetaInfo);
-	}
-
-	template <class T, std::enable_if_t<std::is_base_of_v<APlacement, T>, int> = 0>
-	void BuildPlacementAtGhost(TSubclassOf<T> PlacementClass, FItemMetaInfo ItemMetaInfo, T* Ghost)
-	{
-		BuildPlacement<T>(PlacementClass, ItemMetaInfo, Ghost->GetActorPivotLocation(), Ghost->GetActorLocation(),
-		                  Ghost->GetActorRotation());
-	}
-
-	template <class T, std::enable_if_t<std::is_base_of_v<APlacement, T>, int> = 0>
-	void BuildPlacementInFrontOfActor(TSubclassOf<T> PlacementClass, FItemMetaInfo ItemMetaInfo, AActor* Actor, const FRotator& Rotation)
-	{
-		FVector BuildLocation = GetLocationInFront(Actor, 1);
-		BuildPlacement<T>(PlacementClass, ItemMetaInfo, BuildLocation, Rotation);
-	}
+	void BuildPlacement(TSubclassOf<APlacement> PlacementClass, uint16 ItemId, const FVector& Pivot, const FVector& Location,
+	                    const FRotator& Rotation);
+	
+	void BuildPlacementAtGhost(TSubclassOf<APlacement> PlacementClass, uint16 ItemId, const APlacement& Ghost);
 
 	UFUNCTION(Server, Reliable)
-	void Server_BuildPlacement(TSubclassOf<APlacement> PlacementClass, FItemMetaInfo_Net ItemMetaInfo, FVector Pivot, FVector Location, FRotator Rotation);
+	void Server_BuildPlacement(TSubclassOf<APlacement> PlacementClass, uint16 ItemId, FVector Pivot, FVector Location, FRotator Rotation);
 
-	FItemMetaInfo RemovePlacement(const FIntVector& GridAt);
+	uint16 RemovePlacement(const FIntVector& GridAt);
 
 	bool TryGetPlacement(APlacement* Placement, FIntVector& OutGridAt, APlacement*& OutPlacement);
 
 	bool TryGetPlacement(const FVector& Location, FIntVector& OutGridAt, APlacement*& OutPlacement);
 
 	bool TryGetPlacementAt(AActor* Actor, FIntVector& OutGridAt, APlacement*& OutPlacement);
+
+	void SetVisibleGrid(bool bIsVisible);
 
 	float GetGridWidth() const
 	{

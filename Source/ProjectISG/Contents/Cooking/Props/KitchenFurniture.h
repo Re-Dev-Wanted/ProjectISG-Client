@@ -1,8 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "ProjectISG/GAS/Common/Object/BaseActor.h"
-#include "ProjectISG/Systems/Input/Interface/InteractionInterface.h"
+#include "ProjectISG/GAS/Common/Object/BaseInteractiveActor.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "KitchenFurniture.generated.h"
 
@@ -10,8 +9,7 @@ class UCameraComponent;
 class UCookingComponent;
 
 UCLASS()
-class PROJECTISG_API AKitchenFurniture
-	: public ABaseActor, public IInteractionInterface
+class PROJECTISG_API AKitchenFurniture : public ABaseInteractiveActor
 {
 	GENERATED_BODY()
 

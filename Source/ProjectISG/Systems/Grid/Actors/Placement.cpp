@@ -7,7 +7,6 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
-#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 
@@ -24,55 +23,44 @@ APlacement::APlacement()
 	CollisionComp = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionComp"));
 	CollisionComp->SetupAttachment(AnchorComp);
 	CollisionComp->SetIsReplicated(true);
+	CollisionComp->SetCollisionObjectType(ECC_WorldStatic);
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(CollisionComp);
+	MeshComp->bRenderCustomDepth = true;
 
 	ProceduralMeshComp = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("ProceduralMeshComp"));
 	ProceduralMeshComp->SetupAttachment(CollisionComp);
 	ProceduralMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ProceduralMeshComp->SetGenerateOverlapEvents(false);
 
+	ConstructorHelpers::FObjectFinder<UMaterialInstance> Mat_Instance(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Systems/Grid/Materials/SelectBrushMaterial_Inst.SelectBrushMaterial_Inst'"));
+
+	if (Mat_Instance.Succeeded())
+	{
+		TempMaterial = Mat_Instance.Object;
+	}
+
 	bReplicates = true;
 	bAlwaysRelevant = true;
 	SetReplicatingMovement(true);
 }
 
-bool APlacement::GetCanInteractive() const
+bool APlacement::GetCanTouch() const
 {
-	return true;
-}
-
-void APlacement::OnTouchAction(AActor* Causer)
-{
-	Super::OnTouchAction(Causer);
-
-	// OnTouch(Causer);
-}
-
-void APlacement::OnInteractive(AActor* Causer)
-{
-	IInteractionInterface::OnInteractive(Causer);
-
-	//TODO: Test.. 후에 SittingPlacement로 자식클래스로 만들어서 관리
-	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
-	{
-		Player->GetInteractionComponent()->SetIsInteractive(false);
-
-		FGameplayTagContainer ActivateTag;
-		ActivateTag.AddTag(ISGGameplayTags::Building_Active_StartSitDown);
-		Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
-	}
+	return false;
 }
 
 void APlacement::OnTouch(AActor* Causer)
 {
-	IInteractionInterface::OnTouch(Causer);
+	Super::OnTouch(Causer);
 
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(Player->GetHandSlotComponent()->IsHousingHandItem()));
-		if (Player->GetHandSlotComponent()->IsHousingHandItem())
+		const FString HandItemUsingType = Player->GetHandSlotComponent()
+		->GetItemUsingType();
+		
+		if (HandItemUsingType.Equals("Deconstruct"))
 		{
 			FGameplayTagContainer ActivateTag;
 			ActivateTag.AddTag(ISGGameplayTags::Building_Active_Deconstruct);
@@ -81,17 +69,12 @@ void APlacement::OnTouch(AActor* Causer)
 	}
 }
 
-FString APlacement::GetDisplayText() const
-{
-	return TEXT("앉기");
-}
-
 void APlacement::BeginPlay()
 {
 	Super::BeginPlay();
 	
 	// 서버, 클라 구분 없이 강제 Mesh 세팅
-	UStaticMesh* Mesh = nullptr;
+	UStaticMesh* Mesh;
 	if (MeshAssetPath.IsValid())
 	{
 		Mesh = MeshAssetPath.Get();
@@ -233,15 +216,21 @@ void APlacement::Setup(float TileSize)
 	}
 }
 
-void APlacement::SetColor(bool bIsGhost, bool bIsBlock)
+void APlacement::SetOption(bool bIsGhost, bool bIsBlock) const
 {
-	if (bIsGhost && TempMaterial)
+	if (!bIsGhost)
 	{
-		CollisionComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-		CollisionComp->SetGenerateOverlapEvents(false);
-		MeshComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-		MeshComp->SetGenerateOverlapEvents(false);
-
+		ProceduralMeshComp->ClearAllMeshSections();
+		return;
+	}
+	
+	CollisionComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	CollisionComp->SetGenerateOverlapEvents(false);
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	MeshComp->SetGenerateOverlapEvents(false);
+	
+	if (TempMaterial)
+	{
 		MeshComp->SetMaterial(0, TempMaterial);
 		UMaterialInstanceDynamic* MatDynamic = MeshComp->CreateAndSetMaterialInstanceDynamic(0);
 		MatDynamic->SetVectorParameterValue("HighlightColor", bIsBlock ? FLinearColor::Red : FLinearColor::Green);
@@ -252,8 +241,7 @@ TArray<FIntVector> APlacement::GetOccupiedGrid(float SnapSize, const FIntVector&
 {
 	TArray<FIntVector> Array;
 	Occupied.Empty();
-
-
+	
 	FVector BoxExtent = CollisionComp->Bounds.BoxExtent;
 
 	float HalfSize = SnapSize * 0.5f;
