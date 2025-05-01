@@ -126,13 +126,7 @@ void AGridManager::BuildPlacement(TSubclassOf<APlacement> PlacementClass,
 	uint16 ItemId, const FVector& Pivot, const FVector& Location,
 	const FRotator& Rotation)
 {
-	FIntVector GridCoord = FIntVector
-	(
-		FMath::FloorToInt(Pivot.X / SnapSize),
-		FMath::FloorToInt(Pivot.Y / SnapSize),
-		//FMath::FloorToInt(Pivot.Z / SnapSize)
-		0
-	);
+	FIntVector GridCoord = WorldToGridLocation(Pivot);
 
 	UE_LOG(LogTemp, Warning, TEXT("Pivot %s"), *Pivot.ToString());
 	UE_LOG(LogTemp, Warning, TEXT("Coord %s"), *GridCoord.ToString());
@@ -142,7 +136,7 @@ void AGridManager::BuildPlacement(TSubclassOf<APlacement> PlacementClass,
 	Params.bNoFail = true;
 	Params.Owner = this;
 
-	APlacement* SpawnedActor = GetWorld()->SpawnActor<APlacement>(PlacementClass, Location, Rotation, Params);
+	APlacement* SpawnedActor = GetWorld()->SpawnActor<APlacement>(PlacementClass, SnapToGridPlacement(Location), Rotation, Params);
 		
 	if (!SpawnedActor)
 	{
