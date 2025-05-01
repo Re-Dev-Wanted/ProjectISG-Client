@@ -11,4 +11,8 @@ class PROJECTISG_API AHoedField : public APlacement
 
 protected:
 	virtual void BeginPlay() override;
+
+public:
+	virtual void OnTouch(AActor* Causer) override;
+	
 };

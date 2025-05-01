@@ -99,7 +99,7 @@ void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 
 		bIsBlocked = GridManager->TryGetPlacement(SnappedLocation, GridCoord, PlacedActor);
 
-		IndicateActor->SetColor(true, bIsBlocked);
+		IndicateActor->SetOption(true, bIsBlocked);
 	}
 }
 

@@ -20,6 +20,8 @@ public:
 	GETTER(FVector, MeshSize)
 	SETTER(float, CachedSnapSize)
 
+	virtual bool GetCanTouch() const override;
+	
 	virtual void OnTouch(AActor* Causer) override;
 
 protected:
@@ -64,7 +66,7 @@ public:
 
 	virtual void Setup(float TileSize);
 
-	void SetColor(bool bIsGhost, bool bIsBlock);
+	void SetOption(bool bIsGhost, bool bIsBlock = false) const;
 
 	TArray<FIntVector> GetOccupiedGrid(float SnapSize, const FIntVector& Current);
 

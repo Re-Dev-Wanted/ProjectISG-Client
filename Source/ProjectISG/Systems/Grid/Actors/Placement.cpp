@@ -46,6 +46,11 @@ APlacement::APlacement()
 	SetReplicatingMovement(true);
 }
 
+bool APlacement::GetCanTouch() const
+{
+	return false;
+}
+
 void APlacement::OnTouch(AActor* Causer)
 {
 	Super::OnTouch(Causer);
@@ -59,12 +64,7 @@ void APlacement::OnTouch(AActor* Causer)
 		{
 			FGameplayTagContainer ActivateTag;
 			ActivateTag.AddTag(ISGGameplayTags::Building_Active_Deconstruct);
-			bool DebugCheck = Player->GetAbilitySystemComponent()
-			->TryActivateAbilitiesByTag
-			(ActivateTag);
-
-			// UKismetSystemLibrary::PrintString(GetWorld(), 
-			// FString::Printf(TEXT("OnTouch %d"), DebugCheck));
+			Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
 		}
 	}
 }
@@ -74,7 +74,7 @@ void APlacement::BeginPlay()
 	Super::BeginPlay();
 	
 	// 서버, 클라 구분 없이 강제 Mesh 세팅
-	UStaticMesh* Mesh = nullptr;
+	UStaticMesh* Mesh;
 	if (MeshAssetPath.IsValid())
 	{
 		Mesh = MeshAssetPath.Get();
@@ -216,15 +216,21 @@ void APlacement::Setup(float TileSize)
 	}
 }
 
-void APlacement::SetColor(bool bIsGhost, bool bIsBlock)
+void APlacement::SetOption(bool bIsGhost, bool bIsBlock) const
 {
-	if (bIsGhost && TempMaterial)
+	if (!bIsGhost)
 	{
-		CollisionComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-		CollisionComp->SetGenerateOverlapEvents(false);
-		MeshComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-		MeshComp->SetGenerateOverlapEvents(false);
-
+		ProceduralMeshComp->ClearAllMeshSections();
+		return;
+	}
+	
+	CollisionComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	CollisionComp->SetGenerateOverlapEvents(false);
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	MeshComp->SetGenerateOverlapEvents(false);
+	
+	if (TempMaterial)
+	{
 		MeshComp->SetMaterial(0, TempMaterial);
 		UMaterialInstanceDynamic* MatDynamic = MeshComp->CreateAndSetMaterialInstanceDynamic(0);
 		MatDynamic->SetVectorParameterValue("HighlightColor", bIsBlock ? FLinearColor::Red : FLinearColor::Green);

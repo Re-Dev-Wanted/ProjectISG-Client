@@ -11,6 +11,7 @@
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Manager/GridManager.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                       const FGameplayAbilityActorInfo* ActorInfo,
@@ -68,13 +69,18 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			if (GridManager->TryGetPlacement(TargetPlacement, GridCoord, PlacedActor))
 			{
 				const uint16 ItemId = GridManager->RemovePlacement(GridCoord);
-
+				
 				if (ItemId > 0)
 				{
-					FItemMetaInfo ItemMetaInfo;
-					ItemMetaInfo.SetId(ItemId);
-					ItemMetaInfo.SetCurrentCount(1);
-					PlayerState->GetInventoryComponent()->AddItem(ItemMetaInfo);
+					const FString UsingType = UItemManager::GetItemUsingType(ItemId);
+
+					if (UsingType != "Disposability")
+					{
+						FItemMetaInfo ItemMetaInfo;
+						ItemMetaInfo.SetId(ItemId);
+						ItemMetaInfo.SetCurrentCount(1);
+						PlayerState->GetInventoryComponent()->AddItem(ItemMetaInfo);
+					}
 				}
 			}
 		}

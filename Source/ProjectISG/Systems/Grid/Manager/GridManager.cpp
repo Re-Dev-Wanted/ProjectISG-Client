@@ -162,6 +162,7 @@ void AGridManager::BuildPlacement(TSubclassOf<APlacement> PlacementClass,
 	SpawnedActor->SetCachedSnapSize(SnapSize);
 	SpawnedActor->ForceNetUpdate();
 	SpawnedActor->Setup(SnapSize);
+	SpawnedActor->SetOption(false);
 
 	// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("BuildPlacement %s"), 
 	// *SpawnedActor
