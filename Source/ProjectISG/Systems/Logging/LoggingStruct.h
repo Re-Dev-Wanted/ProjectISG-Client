@@ -9,7 +9,10 @@ struct PROJECTISG_API FDiaryLogParams
 {
 	GENERATED_BODY()
 
-	// 인게임 시간 정보
+	// 인게임 시간 정보로 따로 넣지 않아도
+	// LoggingData 메소드에서 알아서 값 부여
+	// 반대로 얘기하면 LoggingData 메소드를 통하지
+	// 않는다면, CurrentDate는 값이 없다.
 	UPROPERTY()
 	FString CurrentDate;
 

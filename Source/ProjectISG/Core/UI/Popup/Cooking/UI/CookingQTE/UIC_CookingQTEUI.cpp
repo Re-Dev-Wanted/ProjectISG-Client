@@ -13,14 +13,25 @@ void UUIC_CookingQTEUI::StartQTE(const ECookingQTEType QTEType)
 	const UUIV_CookingQTEUI* QTEUI = Cast<UUIV_CookingQTEUI>(GetView());
 
 	QTEModel->SetCurrentQTEType(QTEType);
-	QTEModel->SetQTEStatus(ECookingQTEStatus::Trying);
-	QTEModel->SetQTEScore(0);
+
+	InitializeDataToQTE();
 
 	if (QTEType == ECookingQTEType::KeyPressArray)
 	{
 		Cast<UUIC_CookingQTEKeyPressWidget>(
 			QTEUI->GetQTEKeyPress()->GetController())->StartQTE();
 	}
+}
+
+void UUIC_CookingQTEUI::InitializeDataToQTE()
+{
+	UUIM_CookingQTEUI* QTEModel = Cast<UUIM_CookingQTEUI>(GetModel());
+	const UUIV_CookingQTEUI* QTEUI = Cast<UUIV_CookingQTEUI>(GetView());
+
+	QTEModel->SetQTEStatus(ECookingQTEStatus::Trying);
+	QTEModel->SetQTEScore(0);
+
+	QTEUI->GetQTEKeyPress()->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UUIC_CookingQTEUI::SetQTEStatus(const ECookingQTEStatus QTEStatus)

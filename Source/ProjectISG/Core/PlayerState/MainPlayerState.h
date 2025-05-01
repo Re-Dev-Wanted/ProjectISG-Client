@@ -10,8 +10,8 @@ class UInventoryComponent;
 class UISGAbilitySystemComponent;
 
 UCLASS()
-class PROJECTISG_API AMainPlayerState : public APlayerState,
-                                        public IAbilitySystemInterface
+class PROJECTISG_API AMainPlayerState
+	: public APlayerState, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -28,10 +28,10 @@ public:
 	GETTER_SETTER(int32, Gold);
 
 	bool CanBuyProduct(int32 ProductPrice);
-	
+
 protected:
 	virtual void BeginPlay() override;
-
+	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UISGAbilitySystemComponent> AbilitySystemComponent;
 

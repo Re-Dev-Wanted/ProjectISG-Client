@@ -12,6 +12,11 @@ UISGAbilitySystemComponent::UISGAbilitySystemComponent()
 void UISGAbilitySystemComponent::Initialize(
 	const UISGAbilitySystemInitializeData* InitialData)
 {
+	if (!InitialData)
+	{
+		return;
+	}
+
 	if (GetIsInitialize())
 	{
 		return;
@@ -24,17 +29,16 @@ void UISGAbilitySystemComponent::Initialize(
 		{
 			for (auto Ability : InitialData->GetDefaultGameplayAbilities())
 			{
-				const UGA_BaseInputAbility* InputAbility = Ability->GetDefaultObject
-					<UGA_BaseInputAbility>();
+				const UGA_BaseInputAbility* InputAbility = Ability->
+					GetDefaultObject<UGA_BaseInputAbility>();
 				const int32 InputId = InputAbility->GetInputId() ==
-									  EAbilityInputId::Undefined
-										  ? INDEX_NONE
-										  : static_cast<int32>(InputAbility->
-											  GetInputId());
+									EAbilityInputId::Undefined
+										? INDEX_NONE
+										: static_cast<int32>(InputAbility->
+											GetInputId());
 
 				GiveAbility(FGameplayAbilitySpec(
-					Ability, InputAbility->GetAbilityLevel()
-					, InputId, this));
+					Ability, InputAbility->GetAbilityLevel(), InputId, this));
 			}
 		}
 	}

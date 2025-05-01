@@ -25,15 +25,15 @@ void UUIC_CookingQTEKeyPressWidget::StartQTE()
 
 	// 할당할 갯수는 랜덤으로 할당한다.
 	const uint8 RandomCount = FMath::RandRange(DataModel->GetMinAccessValue()
-												, DataModel->
-												GetMaxAccessValue());
+	                                           , DataModel->
+	                                           GetMaxAccessValue());
 	DataModel->SetCurrentQTEIndex(0);
 	DataModel->SetElapsedTime(0);
 
 	// Key 입력 QTE는 해당 6개의 Key로 구성되어 있다.
 	const TArray ValidKeys = {
-		ECookingQTEKey::Q, ECookingQTEKey::W, ECookingQTEKey::E
-		, ECookingQTEKey::A, ECookingQTEKey::S, ECookingQTEKey::D
+		ECookingQTEKey::Q, ECookingQTEKey::W, ECookingQTEKey::E,
+		ECookingQTEKey::A, ECookingQTEKey::S, ECookingQTEKey::D
 	};
 
 	// 새로운 키 정보 할당을 위해 새로운 배열을 만들어 값을 먼저 넣어준다.
@@ -58,6 +58,9 @@ void UUIC_CookingQTEKeyPressWidget::StartQTE()
 	// 새로 만든 배열을 복사해서 넣어준다.
 	DataModel->SetRemainQTEKeys(NewKeys);
 	DataModel->SetKeyWidgets(NewWidgets);
+
+	// 마지막 View를 공개한다.
+	UIView->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UUIC_CookingQTEKeyPressWidget::CheckQTE(const uint8 CookingQTEKey)
@@ -82,7 +85,7 @@ void UUIC_CookingQTEKeyPressWidget::CheckQTE(const uint8 CookingQTEKey)
 	const AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetView()->GetOwningPlayer());
 	UBaseUIController* QTEController = PC->GetUIManageComponent()->
-											ControllerInstances[
+	                                       ControllerInstances[
 		EUIName::Popup_CookingQTE];
 
 
@@ -110,7 +113,7 @@ void UUIC_CookingQTEKeyPressWidget::DecreaseTime(const float DeltaTime)
 	const AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetView()->GetOwningPlayer());
 	UBaseUIController* QTEController = PC->GetUIManageComponent()->
-											ControllerInstances[
+	                                       ControllerInstances[
 		EUIName::Popup_CookingQTE];
 
 	// QTE가 진행되지 않고 있다면 굳이 처리할 필요가 없다.

@@ -34,8 +34,10 @@ public:
 #pragma endregion
 
 	GETTER(TObjectPtr<UUIManageComponent>, UIManageComponent)
-	GETTER_SETTER(uint32, ClickedProductId);
-	GETTER_SETTER(uint32, ClickedInventoryItem);
+	// TODO: UI Model로 이전하는 것을 권장함.
+	GETTER_SETTER(uint32, ClickedProductId)
+	// TODO: UI Model로 이전하는 것을 권장함.
+	GETTER_SETTER(uint32, ClickedInventoryItem)
 
 protected:
 	virtual void BeginPlay() override;
@@ -46,9 +48,11 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UUIManageComponent> UIManageComponent;
 
+	// TODO: UI Model로 이전하는 것을 권장함.
 	UPROPERTY(EditAnywhere)
 	uint32 ClickedProductId;
 
+	// TODO: UI Model로 이전하는 것을 권장함.
 	UPROPERTY(EditAnywhere)
 	uint32 ClickedInventoryItem;
 };

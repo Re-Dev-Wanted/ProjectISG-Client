@@ -5,6 +5,9 @@
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Systems/Logging/LoggingEnum.h"
+#include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 #include "Task/AT_EndCookingModeCinematic.h"
 
 void UGA_EndCookingMode::ActivateAbility(
@@ -36,10 +39,12 @@ void UGA_EndCookingMode::OnEndCinematic()
 		AMainPlayerController>();
 
 	PC->PushUI(EUIName::Gameplay_MainHUD);
-
 	PC->SetIgnoreLookInput(false);
 	PC->SetViewTargetWithBlend(Player, 0.5f);
+
 	UnlockPlayer();
+
+	LoggingToEndCook();
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo,
 	           false, false);
@@ -54,4 +59,17 @@ void UGA_EndCookingMode::UnlockPlayer()
 	Player->GetInteractionComponent()->SetIsInteractive(true);
 	Player->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	Player->GetCameraComponent()->Activate();
+}
+
+void UGA_EndCookingMode::LoggingToEndCook()
+{
+	FDiaryLogParams LogParams;
+	LogParams.Location = "요리장";
+	LogParams.ActionType = ELoggingActionType::COOKING;
+	LogParams.ActionName = ELoggingActionName::finish_cooking;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+	            LoggingData(LogParams);
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 }
