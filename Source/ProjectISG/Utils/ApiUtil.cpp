@@ -1,5 +1,7 @@
 ﻿#include "ApiUtil.h"
 
+#include "HttpModule.h"
+
 TUniquePtr<FApiUtil> FApiUtil::MainAPI = nullptr;
 
 FApiUtil* FApiUtil::GetMainAPI()
@@ -8,27 +10,28 @@ FApiUtil* FApiUtil::GetMainAPI()
 	{
 		// 고유한 Unique ptr 생성
 		MainAPI = MakeUnique<FApiUtil>();
-		MainAPI->URL = TEXT("http://192.168.10.96:8016");
+		MainAPI->URL = TEXT(
+			"https://718f-221-148-189-129.ngrok-free.app/service2");
 	}
 
 	return MainAPI.Get();
 }
 
-void FApiUtil::GetApi(UObject* Caller, const FApiRequest& Request,
-                      FApiResponse& Response) const
+void FApiUtil::GetApi(UObject* Caller, const FApiRequest& Request
+					, FApiResponse& Response) const
 {
 	SendRequest(Caller, TEXT("GET"), Request, Response);
 }
 
-void FApiUtil::PostApi(UObject* Caller, const FApiRequest& Request,
-                       FApiResponse& Response) const
+void FApiUtil::PostApi(UObject* Caller, const FApiRequest& Request
+						, FApiResponse& Response) const
 {
 	SendRequest(Caller, TEXT("POST"), Request, Response);
 }
 
-void FApiUtil::SendRequest(UObject* Caller, const FString& Verb,
-                           const FApiRequest& Request,
-                           FApiResponse& Response) const
+void FApiUtil::SendRequest(UObject* Caller, const FString& Verb
+							, const FApiRequest& Request
+							, FApiResponse& Response) const
 {
 	if (Response.bIsLoading)
 	{
@@ -58,8 +61,8 @@ void FApiUtil::SendRequest(UObject* Caller, const FString& Verb,
 	{
 		HttpRequest->SetContentAsString(Request.Params);
 
-		UE_LOG(LogTemp, Display, TEXT("%s: Call Data Request: %s"),
-		       *Request.Path, *Request.Params);
+		UE_LOG(LogTemp, Display, TEXT("%s: Call Data Request: %s")
+				, *Request.Path, *Request.Params);
 	}
 
 	Response.bIsLoading = true;
@@ -72,14 +75,12 @@ void FApiUtil::SendRequest(UObject* Caller, const FString& Verb,
 
 	HttpRequest->OnProcessRequestComplete().BindLambda(
 		[WeakCaller, CapturedRequest, CapturedResponse](
-		const FHttpRequestPtr& Req,
-		const FHttpResponsePtr& Res,
-		bool bSuccess)
+		const FHttpRequestPtr& Req, const FHttpResponsePtr& Res, bool bSuccess)
 		{
 			if (!WeakCaller.IsValid())
 			{
-				UE_LOG(LogTemp, Error,
-				       TEXT("API Request caller no longer valid"));
+				UE_LOG(LogTemp, Error
+						, TEXT("API Request caller no longer valid"));
 				return;
 			}
 

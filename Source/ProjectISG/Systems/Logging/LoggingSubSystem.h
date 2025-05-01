@@ -26,12 +26,13 @@ private:
 	uint8 MaxScreenShotLogCount = 10;
 	uint8 CurrentScreenShotLogCount = 1;
 
-	FString ApiPath = TEXT("http://192.168.10.96:8016/log");
+	FString ApiPath = TEXT(
+		"https://718f-221-148-189-129.ngrok-free.app/service2/log");
 
 	void SendHttpRequest(FApiCallData& CallData);
 
-	void CreateLogDataStringForMultipart(const FDiaryLogParams& LogData,
-	                                     TArray<uint8>& Payload);
+	void CreateLogDataStringForMultipart(const FDiaryLogParams& LogData
+										, TArray<uint8>& Payload);
 
 	FString Boundary;
 

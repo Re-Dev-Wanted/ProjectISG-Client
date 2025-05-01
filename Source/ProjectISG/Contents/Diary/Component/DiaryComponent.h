@@ -23,6 +23,4 @@ protected:
 
 private:
 	FApiResponse GenerateDiaryResponse = {};
-
-	FTimerHandle TestHandle;
 };

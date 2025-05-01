@@ -20,67 +20,63 @@ UDiaryComponent::UDiaryComponent()
 void UDiaryComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	GetWorld()->GetTimerManager().SetTimer(TestHandle, this,
-	                                       &ThisClass::GenerateDiary, 3, false);
 }
 
 void UDiaryComponent::GenerateDiary()
 {
 	const ATimeManager* TimeManager = Cast<ATimeManager>(
-		UGameplayStatics::GetActorOfClass(GetWorld(),
-		                                  ATimeManager::StaticClass()));
+		UGameplayStatics::GetActorOfClass(GetWorld()
+										, ATimeManager::StaticClass()));
 
 	FGenerateDiaryRequest DiaryRequest;
 
 	DiaryRequest.session_id = GetWorld()->GetAuthGameMode<AMainGameMode>()->
-	                                      GetSessionId();
+										GetSessionId();
 	DiaryRequest.user_id = FSessionUtil::GetCurrentId(GetWorld());
 	DiaryRequest.ingame_date = TimeManager->GetDateText();
 
 	FApiRequest Request;
 	Request.Path = TEXT("/log/generate_diary");
 
-	Request.Callback.BindLambda([this](FHttpRequestPtr Req,
-	                                   FHttpResponsePtr Res,
-	                                   const bool IsSuccess)
-	{
-		const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
-			GetOwner());
-
-		AMainPlayerController* PC = Cast<AMainPlayerController>(
-			Player->GetController());
-
-		PC->PushUI(EUIName::Popup_DiaryEdit);
-
-		FString Body = Res->GetContentAsString();
-
-		TSharedPtr<FJsonObject> JsonObject;
-		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Body);
-
-		if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.
-			IsValid())
+	Request.Callback.BindLambda(
+		[this](FHttpRequestPtr Req, FHttpResponsePtr Res, const bool IsSuccess)
 		{
-			FGenerateDiaryResponse ParsedData;
+			const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+				GetOwner());
 
-			if (FJsonObjectConverter::JsonObjectToUStruct(
-				JsonObject.ToSharedRef(),
-				FGenerateDiaryResponse::StaticStruct(),
-				&ParsedData, 0, 0))
+			AMainPlayerController* PC = Cast<AMainPlayerController>(
+				Player->GetController());
+
+			PC->PushUI(EUIName::Popup_DiaryEdit);
+
+			FString Body = Res->GetContentAsString();
+
+			TSharedPtr<FJsonObject> JsonObject;
+			TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(
+				Body);
+
+			if (FJsonSerializer::Deserialize(Reader, JsonObject) && JsonObject.
+				IsValid())
 			{
-				UUIC_DiaryEditUI* DiaryEditUIController = Cast<
-					UUIC_DiaryEditUI>(
-					PC->GetUIManageComponent()->ControllerInstances[
-						EUIName::Popup_DiaryEdit]);
+				FGenerateDiaryResponse ParsedData;
 
-				DiaryEditUIController->InitializeDiaryToEdit(ParsedData);
+				if (FJsonObjectConverter::JsonObjectToUStruct(
+					JsonObject.ToSharedRef()
+					, FGenerateDiaryResponse::StaticStruct(), &ParsedData, 0
+					, 0))
+				{
+					UUIC_DiaryEditUI* DiaryEditUIController = Cast<
+						UUIC_DiaryEditUI>(
+						PC->GetUIManageComponent()->ControllerInstances[
+							EUIName::Popup_DiaryEdit]);
+
+					DiaryEditUIController->InitializeDiaryToEdit(ParsedData);
+				}
 			}
-		}
-	});
+		});
 
 	FString DataParams;
-	FJsonObjectConverter::UStructToJsonObjectString(
-		DiaryRequest, DataParams);
+	FJsonObjectConverter::UStructToJsonObjectString(DiaryRequest, DataParams);
 	Request.Params = DataParams;
 
 	FApiUtil::GetMainAPI()->PostApi(this, Request, GenerateDiaryResponse);
