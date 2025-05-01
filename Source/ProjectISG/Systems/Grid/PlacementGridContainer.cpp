@@ -1,6 +1,13 @@
 ﻿#include "PlacementGridContainer.h"
-#include "Actors/Placement.h"
-#include "Manager/GridManager.h"
+
+template<>
+struct TStructOpsTypeTraits<FPlacementGridContainer> : TStructOpsTypeTraitsBase2<FPlacementGridContainer>
+{
+	enum
+	{
+		WithNetDeltaSerializer = true
+	};
+};
 
 bool FPlacementGridContainer::NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms)
 {
@@ -23,12 +30,6 @@ void FPlacementGridContainer::Add(const FIntVector& GridCoord, APlacement* Place
 	Items.Add(Entry);
 
 	MarkItemDirty(Entry);
-
-	if (Owner)
-	{
-		// Clone Trigger
-		Owner->ForceNetUpdate();
-	}
 
 	PlacedMap.Add(GridCoord, Placement);
 }
@@ -75,12 +76,3 @@ uint16 FPlacementGridContainer::Remove(APlacement* Placement)
 
 	return ItemId;
 }
-
-// template<>
-// struct TStructOpsTypeTraits<FPlacementGridContainer> : TStructOpsTypeTraitsBase2<FPlacementGridContainer>
-// {
-// 	enum
-// 	{
-// 		WithNetDeltaSerializer = true
-// 	};
-// };
