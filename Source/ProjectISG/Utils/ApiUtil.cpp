@@ -1,6 +1,7 @@
 ﻿#include "ApiUtil.h"
 
 #include "HttpModule.h"
+#include "Interfaces/IHttpResponse.h"
 
 TUniquePtr<FApiUtil> FApiUtil::MainAPI = nullptr;
 
@@ -91,6 +92,9 @@ void FApiUtil::SendRequest(UObject* Caller, const FString& Verb
 				UE_LOG(LogTemp, Error, TEXT("알 수 없는 이유로 API Call 실패"))
 				return;
 			}
+
+			UE_LOG(LogTemp, Display, TEXT("Content Body Data: %s")
+					, *Res->GetContentAsString())
 
 			if (CapturedRequest.Callback.IsBound())
 			{

@@ -59,7 +59,7 @@ void UUIC_DiaryListUI::InitializeData()
 			UpdateDiaryPerPage(ResponseDiaryListModel->GetCurrentDiaryIndex());
 		});
 
-	FApiUtil::GetMainAPI()->GetApi(this, Request
+	FApiUtil::GetMainAPI()->PostApi(this, Request
 									, DiaryListModel->GetAllDiariesResponse);
 }
 
