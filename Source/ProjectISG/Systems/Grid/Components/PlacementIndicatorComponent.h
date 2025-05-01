@@ -31,7 +31,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = IndicatorProperties)
 	float InterpSpeed = 5.f;
-	
+
 protected:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
@@ -56,6 +56,8 @@ protected:
 	bool bIsIndicatorActive = false;
 
 	bool bIsInfiniteItem = false;
+	
+	bool bIsBlocked = false;
 
 	uint16 PlacementItemId = 0;
 

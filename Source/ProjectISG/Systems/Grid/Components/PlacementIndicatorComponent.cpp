@@ -2,7 +2,6 @@
 
 #include "EnhancedInputComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
@@ -98,15 +97,20 @@ void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 		FIntVector GridCoord;
 		APlacement* PlacedActor;
 
-		bool bIsBlock = GridManager->TryGetPlacement(SnappedLocation, GridCoord, PlacedActor);
+		bIsBlocked = GridManager->TryGetPlacement(SnappedLocation, GridCoord, PlacedActor);
 
-		IndicateActor->SetColor(true, bIsBlock);
+		IndicateActor->SetColor(true, bIsBlocked);
 	}
 }
 
 void UPlacementIndicatorComponent::Execute()
 {
 	if (!bIsIndicatorActive)
+	{
+		return;
+	}
+	
+	if (bIsBlocked)
 	{
 		return;
 	}
