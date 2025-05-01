@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BaseEquipment.h"
+#include "ProjectISG/Systems/Grid/Actors/BaseEquipment.h"
 #include "Hoe.generated.h"
 
 UCLASS()

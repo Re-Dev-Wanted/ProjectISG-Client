@@ -28,6 +28,7 @@ APlacement::APlacement()
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(CollisionComp);
+	MeshComp->bRenderCustomDepth = true;
 
 	ProceduralMeshComp = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("ProceduralMeshComp"));
 	ProceduralMeshComp->SetupAttachment(CollisionComp);
