@@ -160,7 +160,16 @@ void AGridManager::BuildPlacement(TSubclassOf<APlacement> PlacementClass,
 	// *SpawnedActor
 	// ->GetActorNameOrLabel()));
 		
-	PlacementGridContainer.Add(GridCoord, SpawnedActor, ItemId);
+	PlacementGridContainer.Add
+	(
+		GridCoord,
+		SpawnedActor,
+		ItemId,
+		[this]
+		{
+			ForceNetUpdate();
+		}
+	);
 }
 
 void AGridManager::BuildPlacementAtGhost(TSubclassOf<APlacement> PlacementClass,
@@ -175,7 +184,14 @@ uint16 AGridManager::RemovePlacement(const FIntVector& GridAt)
 	TWeakObjectPtr<APlacement> Placement = PlacementGridContainer.GetPlacedMap().FindRef(GridAt);
 	if (Placement.IsValid())
 	{
-		const uint16 ItemId = PlacementGridContainer.Remove(Placement.Get());
+		const uint16 ItemId = PlacementGridContainer.Remove
+		(
+			Placement.Get(),
+			[this]
+			{
+				ForceNetUpdate();
+			}
+		);
 
 		// 가구 제거
 		Placement->Destroy();
