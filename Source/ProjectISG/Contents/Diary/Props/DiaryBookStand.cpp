@@ -6,6 +6,8 @@
 
 ADiaryBookStand::ADiaryBookStand()
 {
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
+	Mesh->SetupAttachment(GetRootComponent());
 }
 
 void ADiaryBookStand::BeginPlay()
@@ -26,5 +28,10 @@ void ADiaryBookStand::OnInteractive(AActor* Causer)
 
 FString ADiaryBookStand::GetDisplayText() const
 {
-	return IInteractionInterface::GetDisplayText();
+	return TEXT("일기장 펼치기");
+}
+
+bool ADiaryBookStand::GetCanInteractive() const
+{
+	return true;
 }

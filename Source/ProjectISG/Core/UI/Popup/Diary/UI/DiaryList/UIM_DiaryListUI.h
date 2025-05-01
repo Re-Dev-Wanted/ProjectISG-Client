@@ -14,7 +14,7 @@ class PROJECTISG_API UUIM_DiaryListUI : public UBaseUIModel
 
 public:
 	FApiResponse GetAllDiariesResponse;
-	TArray<FGetAllDiariesResponse> DiaryList;
+	FGetAllDiariesResponse DiaryData;
 	GETTER_SETTER(uint32, CurrentDiaryIndex)
 
 private:

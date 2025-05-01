@@ -11,4 +11,17 @@ class PROJECTISG_API UUIC_DiaryListUI : public UBaseUIController
 
 public:
 	void InitializeData();
+
+	UFUNCTION()
+	void MoveToPrevPage();
+
+	UFUNCTION()
+	void MoveToNextPage();
+
+protected:
+	virtual void InitializeController(UBaseUIView* NewView
+									, UBaseUIModel* NewModel) override;
+
+private:
+	void UpdateDiaryPerPage(const int Page);
 };
