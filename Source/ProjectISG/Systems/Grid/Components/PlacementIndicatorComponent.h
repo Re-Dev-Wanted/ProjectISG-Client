@@ -55,6 +55,8 @@ protected:
 
 	bool bIsIndicatorActive = false;
 
+	bool bIsInfiniteItem = false;
+
 	uint16 PlacementItemId = 0;
 
 	UFUNCTION()

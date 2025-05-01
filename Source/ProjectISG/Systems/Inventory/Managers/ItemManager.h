@@ -15,6 +15,8 @@ public:
 	static FString GetItemUsingType(const uint16 Id);
 	static bool IsItemCanHousing(const uint16 Id);
 	static bool IsItemCanInteraction(const uint16 Id);
+	static bool IsInfiniteDurability(const uint16 Id);
+	static uint16 GetGeneratedOtherItemIdById(const uint16 Id);
 	static FName GetSocketNameById(const uint16 Id);
 
 private:

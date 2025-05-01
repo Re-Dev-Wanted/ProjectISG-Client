@@ -99,6 +99,60 @@ bool UItemManager::IsItemCanInteraction(const uint16 Id)
 	return true;
 }
 
+bool UItemManager::IsInfiniteDurability(const uint16 Id)
+{
+	const FItemInfoData ItemInfoData = GetItemInfoById(Id);
+	
+	const FString* FindData = ItemInfoData.GetConstData().Find(EConstDataKey::MaxDurability);
+
+	if (!FindData)
+	{
+		return false;
+	}
+
+	const FString FindDataRef = ItemInfoData.GetConstData().FindRef(EConstDataKey::MaxDurability);
+
+	if (FindDataRef.IsEmpty())
+	{
+		return false;
+	}
+
+	if (!FindDataRef.IsNumeric())
+	{
+		return false;
+	}
+
+	int32 Num = FCString::Atoi(*FindDataRef);
+
+	return Num < 0;
+}
+
+uint16 UItemManager::GetGeneratedOtherItemIdById(const uint16 Id)
+{
+	const FItemInfoData ItemInfoData = GetItemInfoById(Id);
+	
+	const FString* FindData = ItemInfoData.GetConstData().Find(EConstDataKey::GeneratedItemId);
+
+	if (!FindData)
+	{
+		return 0;
+	}
+
+	const FString FindDataRef = ItemInfoData.GetConstData().FindRef(EConstDataKey::GeneratedItemId);
+
+	if (FindDataRef.IsEmpty())
+	{
+		return 0;
+	}
+
+	if (!FindDataRef.IsNumeric())
+	{
+		return 0;
+	}
+
+	return FCString::Atoi(*FindDataRef);
+}
+
 FName UItemManager::GetSocketNameById(const uint16 Id)
 {
 	const FItemInfoData ItemInfoData = GetItemInfoById(Id);

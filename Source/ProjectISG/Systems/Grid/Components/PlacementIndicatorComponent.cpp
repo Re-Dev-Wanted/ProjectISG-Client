@@ -138,22 +138,18 @@ void UPlacementIndicatorComponent::Execute()
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
 
 	const TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent = Player->GetPlayerInventoryComponent();
-
-	const int SlotIndex = PlayerInventoryComponent->GetCurrentSlotIndex();
-
-	FItemMetaInfo ItemMetaInfo = PlayerState->GetInventoryComponent()->GetInventoryList()[SlotIndex];
 	
-	if (PlayerInventoryComponent->RemoveItemCurrentSlotIndex(1))
-	{
-		FItemMetaInfo_Net Info(ItemMetaInfo);
-
-		Server_Execute(IndicateActor->GetActorPivotLocation(), 
+	Server_Execute(IndicateActor->GetActorPivotLocation(),
 		IndicateActor->GetActorLocation(), IndicateActor->GetActorRotation(),
-		 IndicateActor->GetClass(), PlacementItemId);
+		IndicateActor->GetClass(), PlacementItemId);
 
-		OnDeactivate();
+	if (!bIsInfiniteItem)
+	{
+		if (PlayerInventoryComponent->RemoveItemCurrentSlotIndex(1))
+		{
+			OnDeactivate();
+		}	
 	}
-	
 }
 
 void UPlacementIndicatorComponent::ExecuteInternal(FVector Pivot, FVector Location, FRotator Rotation,
@@ -216,8 +212,36 @@ void UPlacementIndicatorComponent::OnChange(
 	
 	if (bIsIndicatorActive)
 	{
-		PlacementItemId = ItemId;
-		TSubclassOf<APlacement> PlacementClass { ActorClass };
+		// 다른 아이템을 생성하는 도구인지 판단
+		bIsInfiniteItem = UItemManager::IsInfiniteDurability(ItemId);
+		uint16 OtherItemId = 0;
+		TSubclassOf<APlacement> PlacementClass;
+
+		if (bIsInfiniteItem)
+		{
+			// 다른 아이템Id가 존재하는지 판단
+			// 없다면 해당 도구 Data에 문제가 있는것이므로 DataTable 확인
+			uint16 Id = UItemManager::GetGeneratedOtherItemIdById(ItemId);
+
+			const FItemInfoData OtherInfoData = UItemManager::GetItemInfoById(Id);
+			const bool bIsHousing = UItemManager::IsItemCanHousing(ItemId);
+
+			if (bIsHousing)
+			{
+				const TSubclassOf<AActor> OtherActorClass = OtherInfoData.GetPlaceItemActor();
+				if (OtherActorClass&& OtherActorClass->IsChildOf(APlacement::StaticClass()))
+				{
+					PlacementClass = OtherActorClass;
+					OtherItemId = Id;
+				}
+			}
+		}
+		
+		PlacementItemId = bIsInfiniteItem && OtherItemId > 0? OtherItemId : ItemId;
+		if (!PlacementClass)
+		{
+			PlacementClass = ActorClass;
+		}
 		OnActivate(PlacementClass);
 	}
 	else

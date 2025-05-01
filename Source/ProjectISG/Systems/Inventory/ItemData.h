@@ -33,7 +33,8 @@ enum class EConstDataKey : uint32
 	MaxDurability,
 	ItemUseType,
 	SocketName,
-	GameplayTag
+	GameplayTag,
+	GeneratedItemId, // 해당 아이템이 다른 아이템을 만들 경우
 };
 
 // 아이템 정보를 담아 추후 아이템을 구성할 때 사용할 요소

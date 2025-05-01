@@ -7,7 +7,6 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
-#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 
@@ -64,8 +63,8 @@ void APlacement::OnTouch(AActor* Causer)
 			->TryActivateAbilitiesByTag
 			(ActivateTag);
 
-			UKismetSystemLibrary::PrintString(GetWorld(), 
-			FString::Printf(TEXT("OnTouch %d"), DebugCheck));
+			// UKismetSystemLibrary::PrintString(GetWorld(), 
+			// FString::Printf(TEXT("OnTouch %d"), DebugCheck));
 		}
 	}
 }
