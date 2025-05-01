@@ -1,6 +1,7 @@
 #include "PlacementIndicatorComponent.h"
 
 #include "EnhancedInputComponent.h"
+#include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
@@ -38,12 +39,12 @@ void UPlacementIndicatorComponent::InitializeComponent()
 
 	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 
-	AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(GetOwner());
+	Player = Cast<AMainPlayerCharacter>(GetOwner());
 
-	OwnerPlayer->OnInputBindingNotified.AddDynamic(
+	Player->OnInputBindingNotified.AddDynamic(
 		this, &ThisClass::BindingInputActions);
 
-	OwnerPlayer->OnUpdateSelectedItem.AddDynamic(this, &ThisClass::OnChange);
+	Player->OnUpdateSelectedItem.AddDynamic(this, &ThisClass::OnChange);
 }
 
 void UPlacementIndicatorComponent::BindingInputActions(UEnhancedInputComponent* EnhancedInputComponent)
@@ -67,40 +68,8 @@ void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 	{
 		return;
 	}
-	
-	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(PlayerController->PlayerState);
 
-	if (!PlayerState)
-	{
-		return;
-	}
-	
-	AGridManager* GridManager = PlayerState->GetGridManager();
-
-	if (!GridManager)
-	{
-		return;
-	}
-
-	if (PlayerController->GetCharacter()->IsLocallyControlled())
-	{
-		FVector SnappedLocation = GridManager->GetLocationInPointerDirectionPlacement(
-			PlayerController, IndicateActor->GetMeshSize());
-
-		IndicateActor->SetActorLocation(FMath::VInterpTo(IndicateActor->GetActorLocation(), SnappedLocation,
-														  0.1f,
-														  InterpSpeed));
-		
-		IndicateActor->SetActorRotation(FMath::RInterpTo(IndicateActor->GetActorRotation(),
-		                                                  FRotator(0, GetDegrees(RotateDirection), 0), 0.1f,
-		                                                  InterpSpeed));
-		FIntVector GridCoord;
-		APlacement* PlacedActor;
-
-		bIsBlocked = GridManager->TryGetPlacement(SnappedLocation, GridCoord, PlacedActor);
-
-		IndicateActor->SetOption(true, bIsBlocked);
-	}
+	LineTrace();
 }
 
 void UPlacementIndicatorComponent::Execute()
@@ -138,8 +107,6 @@ void UPlacementIndicatorComponent::Execute()
 	{
 		return;
 	}
-	
-	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
 
 	const TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent = Player->GetPlayerInventoryComponent();
 	
@@ -178,6 +145,61 @@ void UPlacementIndicatorComponent::ExecuteInternal(FVector Pivot, FVector Locati
 	{
 		GridManager->Server_BuildPlacement(PlacementClass, ItemId, Pivot, 
 		Location, Rotation);
+	}
+}
+
+void UPlacementIndicatorComponent::LineTrace()
+{
+	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(PlayerController->PlayerState);
+
+	if (!PlayerState)
+	{
+		return;
+	}
+	
+	AGridManager* GridManager = PlayerState->GetGridManager();
+
+	if (!GridManager)
+	{
+		return;
+	}
+	
+	const TArray<AActor*> IgnoreActors;
+	const FVector OwnerStartLocation = Player->GetActorLocation();
+	const FVector OwnerEndLocation = OwnerStartLocation + Player->
+		GetCameraComponent()->GetForwardVector() * TargetRange;
+
+	const bool IsSuccess = UKismetSystemLibrary::CapsuleTraceSingle(GetWorld(),
+		OwnerStartLocation,
+		OwnerEndLocation, TargetRadius,
+		TargetRadius, TraceTypeQuery1,
+		false, IgnoreActors,
+		EDrawDebugTrace::None,
+		TargetTraceResult, true);
+
+	if (IsSuccess)
+	{
+		if (PlayerController->GetCharacter()->IsLocallyControlled())
+		{
+			// FVector SnappedLocation = GridManager->GetLocationInPointerDirectionPlacement(
+			// 	PlayerController, IndicateActor->GetMeshSize());
+
+			FVector SnappedLocation = GridManager->SnapToGridPlacement(TargetTraceResult.ImpactPoint);
+
+			IndicateActor->SetActorLocation(FMath::VInterpTo(IndicateActor->GetActorLocation(), SnappedLocation,
+															  0.1f,
+															  InterpSpeed));
+		
+			IndicateActor->SetActorRotation(FMath::RInterpTo(IndicateActor->GetActorRotation(),
+															  FRotator(0, GetDegrees(RotateDirection), 0), 0.1f,
+															  InterpSpeed));
+			FIntVector GridCoord;
+			APlacement* PlacedActor;
+
+			bIsBlocked = GridManager->TryGetPlacement(SnappedLocation, GridCoord, PlacedActor);
+
+			IndicateActor->SetOption(true, bIsBlocked);
+		}
 	}
 }
 
@@ -304,8 +326,6 @@ void UPlacementIndicatorComponent::OnActivate(
 
 void UPlacementIndicatorComponent::OnDeactivate()
 {
-	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
-	
 	if (Player && Player->IsLocallyControlled())
 	{
 		if (IndicateActor)

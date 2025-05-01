@@ -37,6 +37,9 @@ protected:
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY()
+	TObjectPtr<class AMainPlayerCharacter> Player = nullptr; 
+
+	UPROPERTY()
 	TObjectPtr<class APlacement> IndicateActor = nullptr;
 	
 	UPROPERTY()
@@ -52,6 +55,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",
 		meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInputAction> TouchAction;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Targeting",
+		meta = (AllowPrivateAccess = true))
+	uint16 TargetRange = 300;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Targeting",
+		meta = (AllowPrivateAccess = true, ClampMin = "0", ClampMax = "100"))
+	uint8 TargetRadius = 36;
+
+	UPROPERTY()
+	FHitResult TargetTraceResult;
 
 	bool bIsIndicatorActive = false;
 
@@ -74,4 +88,6 @@ protected:
 
 	UFUNCTION()
 	void ExecuteInternal(FVector Pivot, FVector Location, FRotator Rotation, TSubclassOf<APlacement> PlacementClass, uint16 ItemId);
+
+	void LineTrace();
 };

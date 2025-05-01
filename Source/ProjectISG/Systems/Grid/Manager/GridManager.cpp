@@ -1,6 +1,5 @@
 #include "GridManager.h"
 
-#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Components/GridComponent.h"
@@ -51,7 +50,8 @@ FVector AGridManager::SnapToGrid(const FVector& Location)
 	(
 		FMath::FloorToInt(Location.X / SnapSize) * SnapSize,
 		FMath::FloorToInt(Location.Y / SnapSize) * SnapSize,
-		FMath::RoundToInt(Location.Z / SnapSize) * SnapSize
+		0.f
+		// FMath::FloorToInt(Location.Z / SnapSize) * SnapSize
 	);
 }
 
@@ -67,7 +67,8 @@ FIntVector AGridManager::WorldToGridLocation(const FVector& WorldLocation)
 	(
 		FMath::FloorToInt(WorldLocation.X / SnapSize),
 		FMath::FloorToInt(WorldLocation.Y / SnapSize),
-		FMath::RoundToInt(WorldLocation.Z / SnapSize)
+		0.f
+		// FMath::FloorToInt(WorldLocation.Z / SnapSize)
 	);
 }
 
@@ -75,8 +76,8 @@ FVector AGridManager::GridToWorldLocation(const FIntVector& GridCoord)
 {
 	return FVector
 	(
-		GridCoord.X * SnapSize + SnapSize * 0.5f,
-		GridCoord.Y * SnapSize + SnapSize * 0.5f,
+		FMath::FloorToInt(GridCoord.X * SnapSize + SnapSize * 0.5f),
+		FMath::FloorToInt(GridCoord.Y * SnapSize + SnapSize * 0.5f),
 		GridCoord.Z * SnapSize                    // 보통 Z는 그대로
 	);
 }
@@ -87,7 +88,7 @@ FVector AGridManager::GetLocationInFront(AActor* Actor, int32 Distance)
 	FVector Origin = Actor->GetActorLocation();
 
 	FVector RawTarget = Origin + Forward * Distance * SnapSize;
-	return SnapToGrid(RawTarget);
+	return SnapToGridPlacement(RawTarget);
 }
 
 FVector AGridManager::GetLocationInPointerDirection(APlayerController* PlayerController, int32 Distance)
@@ -133,7 +134,8 @@ void AGridManager::BuildPlacement(TSubclassOf<APlacement> PlacementClass,
 	(
 		FMath::FloorToInt(Pivot.X / SnapSize),
 		FMath::FloorToInt(Pivot.Y / SnapSize),
-		FMath::RoundToInt(Pivot.Z / SnapSize)
+		//FMath::FloorToInt(Pivot.Z / SnapSize)
+		0
 	);
 
 	UE_LOG(LogTemp, Warning, TEXT("Pivot %s"), *Pivot.ToString());
