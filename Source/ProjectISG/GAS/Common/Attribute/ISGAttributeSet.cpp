@@ -17,7 +17,7 @@ void UISGAttributeSet::GetLifetimeReplicatedProps(
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION_NOTIFY(UISGAttributeSet, Gold, COND_None,
+	DOREPLIFETIME_CONDITION_NOTIFY(UISGAttributeSet, Mana, COND_None,
 	                               REPNOTIFY_Always);
 }
 
@@ -25,7 +25,6 @@ void UISGAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute,
                                           float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
-
 }
 
 void UISGAttributeSet::PostGameplayEffectExecute(
@@ -36,9 +35,9 @@ void UISGAttributeSet::PostGameplayEffectExecute(
 	FEffectProperties Props;
 	SetEffectProperties(Data, Props);
 
-	if (Data.EvaluatedData.Attribute == GetGoldAttribute())
+	if (Data.EvaluatedData.Attribute == GetManaAttribute())
 	{
-		//SetGold(FMath::Clamp(GetGold(), 0.f, 100.f));
+		//SetMana(FMath::Clamp(GetMana(), 0.f, 100.f));
 	}
 }
 
@@ -90,8 +89,8 @@ void UISGAttributeSet::SetEffectProperties(
 	}
 }
 
-void UISGAttributeSet::OnRep_Gold(
-	const FGameplayAttributeData OldGold) const
+void UISGAttributeSet::OnRep_Mana(
+	const FGameplayAttributeData OldMana) const
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UISGAttributeSet, Gold, OldGold);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UISGAttributeSet, Mana, OldMana);
 }

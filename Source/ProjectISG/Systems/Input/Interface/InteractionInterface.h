@@ -25,4 +25,6 @@ public:
 	virtual void OnInteractive(AActor* Causer);
 
 	virtual void OnTouch(AActor* Causer);
+
+	virtual void OnInteractiveResponse();
 };

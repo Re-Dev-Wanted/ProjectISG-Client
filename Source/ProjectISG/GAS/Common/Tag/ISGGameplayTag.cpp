@@ -83,12 +83,20 @@ namespace ISGGameplayTags
 									, "Cooking.Active.QTEEvent.KeyPressArray"
 									, "요리 관련 액티브 : QTE 이벤트 시작 - 키 연속 입력");
 
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Farming_Active_Seeding
+	                               , "Farming.Active.Seeding"
+	                               , "농사 관련 액티브 : 씨앗심기");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Farming_Active_Watering
 									, "Farming.Active.Watering"
 									, "농사 관련 액티브 : 물주기");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Farming_Active_Harvest
-									, "Farming.Active.Harvest"
-									, "농사 관련 액티브 : 수확하기");
+	                               , "Farming.Active.Harvest"
+	                               , "농사 관련 액티브 : 수확하기");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Trading_Active_OpenTradingUI
+	                               , "Trading.Active.OpenTradingUI"
+	                               , "거래 관련 : 거래 창 열기");
+
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Building_Active_Deconstruct
 									, "Building.Active.Deconstruct"
 									, "건설 관련 액티브 : 철거하기");

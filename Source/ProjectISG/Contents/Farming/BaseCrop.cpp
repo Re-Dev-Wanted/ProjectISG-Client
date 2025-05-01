@@ -9,11 +9,13 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/Time/TimeManager.h"
+#include "ProjectISG/Utils/EnumUtil.h"
 
 
 ABaseCrop::ABaseCrop()
@@ -132,9 +134,8 @@ void ABaseCrop::CheckWaterDurationTime()
 	if (CropGrowTime >= WaterDuration)
 	{
 		bIsGetWater = false;
-		
 		CanInteractive = true;
-		
+
 		CropRemainGrowTime -= CropGrowTime;
 		CropGrowTime = 0.f;
 	}
@@ -144,54 +145,50 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 {
 	IInteractionInterface::OnInteractive(Causer);
 
-	if (HasAuthority() == false || CanInteractive == false)
+	if (CanInteractive == false)
 	{
 		return;
 	}
 
-	bIsGetWater = true;
-	
+	UE_LOG(LogTemp, Warning, TEXT("작물 상호작용 함수 실행 , 로컬롤 : %s"), *FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
+
 	CanInteractive = false;
 
 	Causer->SetActorLocation(InteractionPos->GetComponentLocation());
 	Causer->SetActorRotation(InteractionPos->GetComponentRotation());
 
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
 	FGameplayTagContainer ActivateTag;
 	if (bIsMature)
 	{
 		ActivateTag.AddTag(ISGGameplayTags::Farming_Active_Harvest);
-		const AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(Causer);
-		if (player)
-		{
-			const AMainPlayerState* ps = Cast<AMainPlayerState>(
-				player->GetPlayerState());
-
-			if (ps)
-			{
-				// ps->GetInventoryComponent()->AddItem(
-				// 	UItemManager::GetInitialItemMetaDataById(CropId));
-			}
-			player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
-				ActivateTag);
-		}
-		Destroy();
+		Player->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
+		AddItem(UItemManager::GetInitialItemMetaDataById(CropId));
+		
+		Player->GetInteractionComponent()->Server_OnInteractiveResponse();
+		Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
+			ActivateTag);
 	}
 	else
 	{
 		ActivateTag.AddTag(ISGGameplayTags::Farming_Active_Watering);
-		const AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(Causer);
-		if (player)
-		{
-			player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
-				ActivateTag);
+		
+		Player->GetInteractionComponent()->Server_OnInteractiveResponse();
+		Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
+			ActivateTag);
+	}
+}
 
-			// 물주기 시작
-			bIsGetWater = true;
-			CropStartGrowDay = TimeManager->GetDay();
-			CropStartGrowTime = (TimeManager->GetHour()) + (TimeManager->
-				GetMinute() /
-				60) + (TimeManager->GetSecond() / 3600);
-		}
+void ABaseCrop::OnInteractiveResponse()
+{
+	IInteractionInterface::OnInteractiveResponse();
+	if (bIsMature == false)
+	{
+		CropIsGetWater();
+	}
+	else
+	{
+		Destroy();
 	}
 }
 
@@ -242,3 +239,13 @@ void ABaseCrop::NetMulticast_ChangeCropMeshToMature_Implementation()
 {
 	SetActorScale3D(FVector(2.0f));
 }
+
+void ABaseCrop::CropIsGetWater()
+{
+	bIsGetWater = true;
+	CropStartGrowDay = TimeManager->GetDay();
+	CropStartGrowTime = (TimeManager->GetHour()) + (TimeManager->
+		GetMinute() /
+		60) + (TimeManager->GetSecond() / 3600);
+}
+

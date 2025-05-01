@@ -46,7 +46,9 @@ void UUIManageComponent::PushWidget(const EUIName Key)
 	if (!WidgetStack.IsEmpty())
 	{
 		const EUIName LastKey = WidgetStack.Last();
-		if (ControllerInstances.Contains(LastKey))
+
+		if (WidgetLayers[Key] != EUILayer::Modal && ControllerInstances.
+			Contains(LastKey))
 		{
 			ControllerInstances[LastKey]->DisappearUI();
 		}
@@ -117,6 +119,11 @@ bool UUIManageComponent::IsPlayerInLocalControlled() const
 EUIName UUIManageComponent::GetLastStackUI() const
 {
 	return WidgetStack.Last();
+}
+
+TSubclassOf<UBaseUIView> UUIManageComponent::GetViewClasses(EUIName Key)
+{
+	return ViewClasses[Key];
 }
 
 bool UUIManageComponent::HasViewUI(const EUIName Key)
