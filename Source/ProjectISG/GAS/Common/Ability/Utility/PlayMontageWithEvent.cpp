@@ -105,7 +105,7 @@ void UPlayMontageWithEvent::Activate()
 		// Anim Montage가 다 실행되지도 않았는데 아직 실행해야할 GATask Delegate 정보가 남아있으면 Cancel 관련 Delegate를 전부 실행한다.
 		if (ShouldBroadcastAbilityTaskDelegates())
 		{
-			OnCancelled.Broadcast(FGameplayTag(), FGameplayEventData());
+			OnCancelled.Broadcast(FGameplayTag(), EventData);
 		}
 	}
 
@@ -115,7 +115,8 @@ void UPlayMontageWithEvent::Activate()
 
 UPlayMontageWithEvent* UPlayMontageWithEvent::InitialEvent(
 	UGameplayAbility* OwningAbility, FName TaskInstanceName
-	, UAnimMontage* MontageToPlay, FGameplayTagContainer EventTags, float Rate
+	, UAnimMontage* MontageToPlay, FGameplayTagContainer EventTags
+	, FGameplayEventData EventData, float Rate
 	, FName StartSection, bool bStopWhenAbilityEnds
 	, float AnimRootMotionTranslationScale)
 {
@@ -126,6 +127,7 @@ UPlayMontageWithEvent* UPlayMontageWithEvent::InitialEvent(
 
 	NewEvent->PlayAnimMontage = MontageToPlay;
 	NewEvent->Rate = Rate;
+	NewEvent->EventData = EventData;
 
 	return NewEvent;
 }
@@ -147,7 +149,7 @@ void UPlayMontageWithEvent::OnAbilityCancelled()
 	{
 		if (ShouldBroadcastAbilityTaskDelegates())
 		{
-			OnCancelled.Broadcast(FGameplayTag(), FGameplayEventData());
+			OnCancelled.Broadcast(FGameplayTag(), EventData);
 		}
 	}
 }
@@ -177,14 +179,14 @@ void UPlayMontageWithEvent::OnMontageBlendingOut(
 	{
 		if (ShouldBroadcastAbilityTaskDelegates())
 		{
-			OnInterrupted.Broadcast(FGameplayTag(), FGameplayEventData());
+			OnInterrupted.Broadcast(FGameplayTag(), EventData);
 		}
 	}
 	else
 	{
 		if (ShouldBroadcastAbilityTaskDelegates())
 		{
-			OnBlendOut.Broadcast(FGameplayTag(), FGameplayEventData());
+			OnBlendOut.Broadcast(FGameplayTag(), EventData);
 		}
 	}
 }
@@ -195,7 +197,7 @@ void UPlayMontageWithEvent::OnMontageEnded(UAnimMontage* Montage, bool bInterrup
 	{
 		if (ShouldBroadcastAbilityTaskDelegates())
 		{
-			OnCompleted.Broadcast(FGameplayTag(), FGameplayEventData());
+			OnCompleted.Broadcast(FGameplayTag(), EventData);
 		}
 	}
 

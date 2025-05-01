@@ -2,6 +2,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
+#include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
@@ -36,18 +37,73 @@ void AHoedField::OnTouch(AActor* Causer)
 
 		uint16 OtherId = UItemManager::GetGeneratedOtherItemIdById(ItemMetaInfo.GetId());
 
+		FString UsingType = UItemManager::GetItemUsingType(ItemMetaInfo.GetId());
+
+		if (UsingType == "Farming" && !PlantedCrop.IsValid())
+		{
+			FGameplayEventData EventData;
+			EventData.EventTag = ISGGameplayTags::Farming_Active_Seeding;
+			EventData.Instigator = Player;
+			EventData.Target = this;
+			
+			Player->GetAbilitySystemComponent()->HandleGameplayEvent(ISGGameplayTags::Farming_Active_Seeding, &EventData);
+
+			return;
+		}
+
 		if (OtherId > 0)
 		{
 			const FItemInfoData OtherData = UItemManager::GetItemInfoById(OtherId);
 
 			if (OtherData.GetPlaceItemActor() == GetClass())
 			{
-				FGameplayTagContainer ActivateTag;
-				ActivateTag.AddTag(ISGGameplayTags::Building_Active_Deconstruct);
-				Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
+				if (PlantedCrop.IsValid())
+				{
+					ABaseCrop* Crop = PlantedCrop.Crop.Get();
+					
+					if (Crop->GetbIsMature())
+					{
+						Crop->OnInteractive(Player);
+					}
+					else
+					{
+						// 작물 제거, 해당 작물에 해당하는 씨앗 뱉기, 인벤토리에 넣기
+						FItemMetaInfo SeedMetaInfo = UItemManager::GetInitialItemMetaDataById(PlantedCrop.CropId);
+						PS->GetInventoryComponent()->AddItem(SeedMetaInfo);
+					}
+					
+					PlantedCrop.Clear(true);
+				}
+				else
+				{
+					FGameplayTagContainer ActivateTag;
+					ActivateTag.AddTag(ISGGameplayTags::Building_Active_Deconstruct);
+					Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
+				}
 			}
 		}
 	
 	}
 }
+
+bool AHoedField::PlantCrop(FItemInfoData CropData, uint16 CropId)
+{
+	if (PlantedCrop.IsValid())
+	{
+		return false;
+	}
+	
+	ABaseCrop* Crop = GetWorld()->SpawnActor<ABaseCrop>
+	(
+		CropData.GetPlaceItemActor(),
+		GetActorLocation(),
+		FRotator::ZeroRotator
+	);
+
+	PlantedCrop.Crop = Crop;
+	PlantedCrop.CropId = CropId;
+
+	return true;
+}
+
 

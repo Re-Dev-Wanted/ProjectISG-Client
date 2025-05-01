@@ -39,6 +39,7 @@ public:
 	GETTER_SETTER(int32, CropTotalGrowDay);
 	GETTER_SETTER(int32, WaterDuration);
 	GETTER(uint16, CropId);
+	GETTER(bool, bIsMature)
 	
 	UPROPERTY(Replicated)
 	bool CanInteractive;
