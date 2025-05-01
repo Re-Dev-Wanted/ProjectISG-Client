@@ -31,6 +31,7 @@ ABaseCrop::ABaseCrop()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
 	Mesh->SetCollisionProfileName(TEXT("NoCollision"));
+	Mesh->SetRenderCustomDepth(true);
 
 	InteractionPos = CreateDefaultSubobject<USceneComponent>(
 		TEXT("InteractionPos"));
