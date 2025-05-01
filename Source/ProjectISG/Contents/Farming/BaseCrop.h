@@ -30,14 +30,18 @@ protected:
 
 	virtual FString GetDisplayText() const override;
 
+	virtual void OnInteractiveResponse() override;
+
 	UFUNCTION()
 	void UpdateGrowTimeBySleep();
 
 public:
 	GETTER_SETTER(int32, CropTotalGrowDay);
 	GETTER_SETTER(int32, WaterDuration);
-	GETTER_SETTER(uint16, CropId);
-
+	GETTER(uint16, CropId);
+	
+	UPROPERTY(Replicated)
+	bool CanInteractive;
 private:
 	void CheckGrowTime();
 
@@ -49,7 +53,8 @@ private:
 	UFUNCTION(Reliable, NetMulticast)
 	void NetMulticast_ChangeCropMeshToMature();
 
-private:
+	void CropIsGetWater();
+
 #pragma region Settings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
 		meta = (AllowPrivateAccess = true))
@@ -69,9 +74,6 @@ private:
 
 	UPROPERTY()
 	class ATimeManager* TimeManager = nullptr;
-
-	UPROPERTY(Replicated)
-	bool CanInteractive;
 	
 	UPROPERTY(Replicated)
 	FString DisplayText;
@@ -102,6 +104,4 @@ private:
 	UPROPERTY(Replicated, EditAnywhere, Category = Grow)
 	bool bIsGetWater = false;
 #pragma endregion
-
-
 };

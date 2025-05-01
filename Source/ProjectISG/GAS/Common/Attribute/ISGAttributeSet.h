@@ -69,18 +69,18 @@ public:
 
 	virtual void PostGameplayEffectExecute(
 		const struct FGameplayEffectModCallbackData& Data) override;
-	
+
 	/*
 	 * Primary Attributes
 	 */
 
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Gold,
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Mana,
 		Category = "Primary")
-	FGameplayAttributeData Gold;
-	ATTRIBUTE_ACCESSORS(UISGAttributeSet, Gold);
+	FGameplayAttributeData Mana;
+	ATTRIBUTE_ACCESSORS(UISGAttributeSet, Mana);
 
 	UFUNCTION()
-	void OnRep_Gold(const FGameplayAttributeData OldGold) const;
+	void OnRep_Mana(const FGameplayAttributeData OldMana) const;
 
 private:
 	void SetEffectProperties(const struct FGameplayEffectModCallbackData& Data,

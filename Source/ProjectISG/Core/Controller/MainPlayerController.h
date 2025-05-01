@@ -34,6 +34,8 @@ public:
 #pragma endregion
 
 	GETTER(TObjectPtr<UUIManageComponent>, UIManageComponent)
+	GETTER_SETTER(uint32, ClickedProductId);
+	GETTER_SETTER(uint32, ClickedInventoryItem);
 
 protected:
 	virtual void BeginPlay() override;
@@ -43,4 +45,10 @@ protected:
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UUIManageComponent> UIManageComponent;
+
+	UPROPERTY(EditAnywhere)
+	uint32 ClickedProductId;
+
+	UPROPERTY(EditAnywhere)
+	uint32 ClickedInventoryItem;
 };

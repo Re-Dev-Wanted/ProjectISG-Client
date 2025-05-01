@@ -30,6 +30,11 @@ public:
 	UFUNCTION(Reliable, Server)
 	void Server_Touch(class ABaseInteractiveActor* InteractActor, AActor* 
 	Causer);
+	
+	// 하드 코딩 방지를 위해 해당 actor class를 BaseActor로 받아서
+	// 따로 조건 처리를 하는게 맞아보인다.
+	UFUNCTION(Server, Reliable)
+	void Server_OnInteractiveResponse();
 
 protected:
 	virtual void BeginPlay() override;

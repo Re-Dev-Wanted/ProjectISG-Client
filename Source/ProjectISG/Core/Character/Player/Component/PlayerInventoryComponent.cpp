@@ -7,7 +7,11 @@
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
+#include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
 #include "ProjectISG/Core/UI/Popup/Inventory/UI/UIC_InventoryUI.h"
+#include "ProjectISG/Core/UI/Popup/Inventory/UI/UIV_InventoryUI.h"
+#include "ProjectISG/Core/UI/Popup/Trading/UI/UIC_TradingUI.h"
+#include "ProjectISG/Core/UI/Popup/Trading/UI/UIV_TradingUI.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
@@ -163,6 +167,28 @@ void UPlayerInventoryComponent::UpdatePlayerInventoryUI()
 		    UpdateMainSlotItemData();
 		OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI()->
 		             UpdateInventorySlotItemData();
+	}
+}
+
+void UPlayerInventoryComponent::UpdateInventorySlotItemData()
+{
+	const AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(
+		GetOwner());
+
+	const AMainPlayerController* PC = OwnerPlayer->GetController<
+		AMainPlayerController>();
+
+	UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(
+		PC->GetUIManageComponent()->ControllerInstances[
+			EUIName::Popup_TradingUI]);
+	if (TradingUIController)
+	{
+		UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(
+			TradingUIController->GetView());
+		if (TradingUIView)
+		{
+			TradingUIView->GetInventoryList()->UpdateItemData();
+		}
 	}
 }
 

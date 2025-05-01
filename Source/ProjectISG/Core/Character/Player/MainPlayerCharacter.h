@@ -72,6 +72,8 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_SetActorTransformReplicated(const FTransform& Transform);
 
+
+
 private:
 #pragma region ActorComponent
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))

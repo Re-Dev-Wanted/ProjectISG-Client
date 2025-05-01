@@ -69,6 +69,10 @@ void UInventorySlot::NativeOnDragDetected(const FGeometry& InGeometry,
 		DragDropOperation->SetOriginWidget(this);
 		DragDropOperation->SetItemIndex(Index);
 	}
+
+	// 드래그한 아이템 정보 컨트롤러에 전달
+	AMainPlayerController* PC = GetOwningPlayer<AMainPlayerController>();
+	PC->SetClickedInventoryItem(SlotItemId);
 }
 
 bool UInventorySlot::NativeOnDrop(const FGeometry& InGeometry,

@@ -4,6 +4,7 @@
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "ProjectISG/Contents/Farming/BaseCrop.h"
+#include "ProjectISG/Contents/Trading/TradingNPC.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
@@ -71,7 +72,8 @@ void UInteractionComponent::OnInteractive()
 		return;
 	}
 
-	Server_Interact(InteractActor, GetOwner());
+	//Server_Interact(InteractActor, GetOwner());
+	InteractActor->OnInteractive(GetOwner());
 }
 
 void UInteractionComponent::OnTouch()
@@ -201,6 +203,17 @@ void UInteractionComponent::SetIsInteractive(const bool NewIsInteractive)
 		}
 
 		PC->GetMainHUD()->ToggleInteractiveUI(false);
+	}
+}
+
+void UInteractionComponent::Server_OnInteractiveResponse_Implementation()
+{
+	IInteractionInterface* Interaction = Cast<IInteractionInterface>(
+		TargetTraceResult.GetActor());
+
+	if (Interaction)
+	{
+		Interaction->OnInteractiveResponse();
 	}
 }
 
