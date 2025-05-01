@@ -24,11 +24,10 @@ public:
 	class UISGAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
 	GETTER(TObjectPtr<UInventoryComponent>, InventoryComponent)
+	GETTER(TObjectPtr<class AGridManager>, GridManager)
 	GETTER_SETTER(int32, Gold);
 
 	bool CanBuyProduct(int32 ProductPrice);
-
-	GETTER_SETTER(TObjectPtr<class AGridManager>, GridManager)
 	
 protected:
 	virtual void BeginPlay() override;

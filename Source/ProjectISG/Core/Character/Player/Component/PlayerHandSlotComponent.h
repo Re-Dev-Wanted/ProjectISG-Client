@@ -16,29 +16,18 @@ class PROJECTISG_API UPlayerHandSlotComponent : public UActorComponent
 public:
 	UPlayerHandSlotComponent();
 
-	GETTER(class ABaseActor*, EmptyItem)
-
 	UFUNCTION()
-	void OnChange(TSubclassOf<AActor> ActorClass, FItemMetaInfo _ItemMetaInfo);
-	
-	void OnAttackAction(AActor* Causer);
-	
-	void OnInteractAction(AActor* Causer);
-	
-	void OnTouchAction(AActor* Causer);
+	void OnChange(uint16 ItemId);
 
+	FString GetItemUsingType();
+	
 	bool IsHousingHandItem();
 
 protected:
-	virtual void BeginPlay() override;
-
 	virtual void InitializeComponent() override;
 
-	UPROPERTY()
-	class ABaseActor* EmptyItem;
-
-	TObjectPtr<class ABaseActor> HeldItem;
+	TObjectPtr<class ABaseActor> HeldItem = nullptr;
 
 	UPROPERTY()
-	FItemMetaInfo ItemMetaInfo;
+	uint16 ItemId = 0;
 };

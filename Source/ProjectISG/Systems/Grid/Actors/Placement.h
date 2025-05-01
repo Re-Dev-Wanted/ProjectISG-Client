@@ -2,15 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ProjectISG/GAS/Common/Object/BaseActor.h"
-#include "ProjectISG/Systems/Input/Interface/InteractionInterface.h"
+#include "ProjectISG/GAS/Common/Object/BaseInteractiveActor.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "Placement.generated.h"
 
 // 그리드에 place할 모든 것들은 이것을 상속 받아야함
 
 UCLASS()
-class PROJECTISG_API APlacement : public ABaseActor, public IInteractionInterface
+class PROJECTISG_API APlacement : public ABaseInteractiveActor
 {
 	GENERATED_BODY()
 
@@ -21,15 +20,9 @@ public:
 	GETTER(FVector, MeshSize)
 	SETTER(float, CachedSnapSize)
 
-	virtual bool GetCanInteractive() const override;
-
-	virtual void OnTouchAction(AActor* Causer) override;
-
-	virtual void OnInteractive(AActor* Causer) override;
-
+	virtual bool GetCanTouch() const override;
+	
 	virtual void OnTouch(AActor* Causer) override;
-
-	virtual FString GetDisplayText() const override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -62,9 +55,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	class UProceduralMeshComponent* ProceduralMeshComp;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TMap<int32, UStaticMesh*> MeshMap;
-
 	UPROPERTY(EditAnywhere, Replicated, ReplicatedUsing = OnRep_LoadMeshAsset)
 	TSoftObjectPtr<UStaticMesh> MeshAssetPath;
 
@@ -76,7 +66,7 @@ public:
 
 	virtual void Setup(float TileSize);
 
-	void SetColor(bool bIsGhost, bool bIsBlock);
+	void SetOption(bool bIsGhost, bool bIsBlock = false) const;
 
 	TArray<FIntVector> GetOccupiedGrid(float SnapSize, const FIntVector& Current);
 

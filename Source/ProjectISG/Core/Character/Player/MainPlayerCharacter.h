@@ -24,8 +24,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInputBindingNotified,
                                             UEnhancedInputComponent*,
                                             EnhancedInputComponent);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnUpdateSelectedItem, 
-TSubclassOf<AActor>, ActorClass, FItemMetaInfo, ItemMetaInfo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpdateSelectedItem, uint16, 
+ItemId);
 
 UCLASS()
 class PROJECTISG_API AMainPlayerCharacter : public ABaseCharacter

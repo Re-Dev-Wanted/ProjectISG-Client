@@ -2,14 +2,13 @@
 
 #pragma once
 
+#include <ProjectISG/GAS/Common/Object/BaseInteractiveActor.h>
+
 #include "CoreMinimal.h"
-#include "ProjectISG/GAS/Common/Object/BaseActor.h"
-#include "ProjectISG/Systems/Input/Interface/InteractionInterface.h"
 #include "TradingNPC.generated.h"
 
 UCLASS()
-class PROJECTISG_API ATradingNPC : public ABaseActor,
-                                   public IInteractionInterface
+class PROJECTISG_API ATradingNPC : public ABaseInteractiveActor
 {
 	GENERATED_BODY()
 

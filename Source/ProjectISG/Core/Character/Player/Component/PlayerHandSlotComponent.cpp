@@ -1,20 +1,26 @@
 #include "PlayerHandSlotComponent.h"
 
-#include "PlayerInventoryComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
-#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Object/BaseActor.h"
-#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 UPlayerHandSlotComponent::UPlayerHandSlotComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
+	bWantsInitializeComponent = true;
 }
 
+void UPlayerHandSlotComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
 
-void UPlayerHandSlotComponent::OnChange(TSubclassOf<AActor> ActorClass, FItemMetaInfo _ItemMetaInfo)
+	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner()))
+	{
+		Player->OnUpdateSelectedItem.AddDynamic(this, &UPlayerHandSlotComponent::OnChange);
+	}
+}
+
+void UPlayerHandSlotComponent::OnChange(uint16 _ItemId)
 {
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
 
@@ -25,33 +31,29 @@ void UPlayerHandSlotComponent::OnChange(TSubclassOf<AActor> ActorClass, FItemMet
 
 	if (HeldItem)
 	{
-		if (HeldItem->IsAttachedTo(Player))
-		{
-			HeldItem->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		}
-
-		if (HeldItem != EmptyItem)
-		{
-			HeldItem->Destroy();
-		}
+		ABaseActor* DestroyActor = HeldItem.Get();
+		HeldItem = nullptr;
+		DestroyActor->Destroy();
+		ItemId = 0;
 	}
 
-	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemMetaInfo.GetId());
+	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(_ItemId);
 
-	const bool bIsStructure = ItemInfoData.GetItemType() != EItemType::Equipment && UItemManager::IsItemCanHousing(ItemMetaInfo.GetId());
+	const TSubclassOf<AActor> ActorClass = ItemInfoData.GetShowItemActor();
 
-	if (bIsStructure || !IsValid(ActorClass))
+	const bool bIsStructure = ItemInfoData.GetItemType() != 
+	EItemType::Equipment && UItemManager::IsItemCanHousing(_ItemId);
+
+	if (!ActorClass || bIsStructure)
 	{
-		HeldItem = EmptyItem;
-		ItemMetaInfo = FItemMetaInfo();
 		return;
 	}
 
 	AActor* Actor = GetWorld()->SpawnActor(ActorClass);
 	HeldItem = Cast<ABaseActor>(Actor);
-	ItemMetaInfo = _ItemMetaInfo;
+	ItemId = _ItemId;
 
-	const FName SocketName = UItemManager::GetSocketNameById(ItemMetaInfo.GetId());
+	const FName SocketName = UItemManager::GetSocketNameById(_ItemId);
 	
 	if (HeldItem && !SocketName.IsNone())
 	{
@@ -60,59 +62,22 @@ void UPlayerHandSlotComponent::OnChange(TSubclassOf<AActor> ActorClass, FItemMet
 	}
 }
 
-void UPlayerHandSlotComponent::OnAttackAction(AActor* Causer)
+FString UPlayerHandSlotComponent::GetItemUsingType()
 {
-	if (HeldItem)
+	if (!HeldItem)
 	{
-		HeldItem->OnAttackAction(Causer);
+		return FString();
 	}
-}
 
-void UPlayerHandSlotComponent::OnInteractAction(AActor* Causer)
-{
-	if (HeldItem)
-	{
-		HeldItem->OnInteractAction(Causer);
-	}
-}
-
-void UPlayerHandSlotComponent::OnTouchAction(AActor* Causer)
-{
-	if (HeldItem)
-	{
-		HeldItem->OnTouchAction(Causer);
-	}
-}
-
-void UPlayerHandSlotComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner()))
-	{
-		Player->OnUpdateSelectedItem.AddDynamic(this, &UPlayerHandSlotComponent::OnChange);
-	}
-}
-
-void UPlayerHandSlotComponent::InitializeComponent()
-{
-	Super::InitializeComponent();
-
-	EmptyItem = NewObject<ABaseActor>(this, TEXT("Empty"));
-	HeldItem = EmptyItem;
+	return UItemManager::GetItemUsingType(ItemId);
 }
 
 bool UPlayerHandSlotComponent::IsHousingHandItem()
 {
-	if (!HeldItem || HeldItem == EmptyItem)
+	if (!HeldItem)
 	{
 		return false;
 	}
 
-	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner()))
-	{
-		return UItemManager::IsItemCanHousing(ItemMetaInfo.GetId());
-	}
-
-	return false;
+	return UItemManager::IsItemCanHousing(ItemId);
 }

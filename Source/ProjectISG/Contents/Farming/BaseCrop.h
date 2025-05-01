@@ -3,13 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ProjectISG/GAS/Common/Object/BaseActor.h"
-#include "ProjectISG/Systems/Input/Interface/InteractionInterface.h"
+#include "ProjectISG/GAS/Common/Object/BaseInteractiveActor.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "BaseCrop.generated.h"
 
 UCLASS()
-class PROJECTISG_API ABaseCrop : public ABaseActor, public IInteractionInterface
+class PROJECTISG_API ABaseCrop : public ABaseInteractiveActor
 
 {
 	GENERATED_BODY()
@@ -18,8 +17,6 @@ public:
 	ABaseCrop();
 
 	virtual void OnInteractive(AActor* Causer) override;
-
-	virtual void OnInteractAction(AActor* Causer) override;
 
 protected:
 	virtual void BeginPlay() override;

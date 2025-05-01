@@ -1,6 +1,7 @@
 ﻿#include "GA_BaseInputAbility.h"
 #include "EnhancedInputComponent.h"
 #include "AbilitySystemComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 
 UGA_BaseInputAbility::UGA_BaseInputAbility(
@@ -133,6 +134,7 @@ void UGA_BaseInputAbility::OnAbilityInputPressed(
 	if (const AMainPlayerCharacter* Owner = Cast<
 		AMainPlayerCharacter>(ActorInfo->AvatarActor))
 	{
+		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("OnAbilityInputPressed")));
 		Owner->GetAbilitySystemComponent()->AbilityLocalInputPressed(
 			static_cast<uint8>(InputId));
 	}
