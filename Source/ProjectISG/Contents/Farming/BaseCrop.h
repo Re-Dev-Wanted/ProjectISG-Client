@@ -7,6 +7,14 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "BaseCrop.generated.h"
 
+UENUM(BlueprintType)
+enum class ECropState :uint8
+{
+	Seedling = 0,
+	Sprout = 1,
+	Mature = 2
+};
+
 UCLASS()
 class PROJECTISG_API ABaseCrop : public ABaseInteractiveActor
 
@@ -81,6 +89,9 @@ private:
 #pragma endregion
 
 #pragma region Grow
+	UPROPERTY(EditAnywhere, Category = Grow)
+	ECropState CurrentState = ECropState::Seedling;
+	
 	UPROPERTY(EditAnywhere, Category = Grow)
 	float CropStartGrowTime;
 

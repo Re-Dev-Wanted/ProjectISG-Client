@@ -19,9 +19,9 @@ struct FPlantedCrop
 	UPROPERTY()
 	uint16 CropId = 0;
 
-	void Clear(bool destory)
+	void Clear(bool Destroy)
 	{
-		if (Crop.IsValid() && destory)
+		if (Crop.IsValid() && Destroy)
 		{
 			ABaseCrop* RawActor = Crop.Get();
 			RawActor->Destroy();
@@ -43,7 +43,17 @@ class PROJECTISG_API AHoedField : public APlacement
 	GENERATED_BODY()
 
 public:
+	virtual bool GetCanTouch() const override;
+
+	virtual bool GetCanInteractive() const override;
+	
 	virtual void OnTouch(AActor* Causer) override;
+
+	virtual void OnInteractive(AActor* Causer) override;
+
+	virtual void OnInteractiveResponse() override;
+
+	virtual FString GetDisplayText() const override;
 
 	bool PlantCrop(FItemInfoData CropData, uint16 CropId);
 	

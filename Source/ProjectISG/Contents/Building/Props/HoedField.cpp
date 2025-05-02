@@ -18,6 +18,31 @@ void AHoedField::BeginPlay()
 	MeshComp->SetRenderCustomDepth(false);
 }
 
+bool AHoedField::GetCanTouch() const
+{
+	return Super::GetCanTouch();
+}
+
+bool AHoedField::GetCanInteractive() const
+{
+	return Super::GetCanInteractive();
+}
+
+void AHoedField::OnInteractive(AActor* Causer)
+{
+	Super::OnInteractive(Causer);
+}
+
+void AHoedField::OnInteractiveResponse()
+{
+	Super::OnInteractiveResponse();
+}
+
+FString AHoedField::GetDisplayText() const
+{
+	return Super::GetDisplayText();
+}
+
 // 경작된 땅은 해머로 파괴되어선 안된다
 // 만약 작물이 있다면 작물 체크
 	// ↳작물이 다 자랐다면 파밍
