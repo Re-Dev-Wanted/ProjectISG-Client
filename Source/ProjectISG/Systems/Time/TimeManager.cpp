@@ -128,7 +128,7 @@ void ATimeManager::UpdateCycleDate()
 
 void ATimeManager::RotateSun()
 {
-	float TotalMinutes = Hour * 60.0f + Minute;
+	const float TotalMinutes = Hour * 60.0f + Minute;
 
 	// 06(해 뜨는 시간) ~ 24(해 지는 시간)을 기준으로 offset을 통해 일출과 일몰 시간을 정해줌
 	float SunPitch = FMath::GetMappedRangeValueClamped(
@@ -175,7 +175,7 @@ void ATimeManager::ForceSleep()
 	{
 		// 시간을 멈춘다
 		StopTime(true);
-		
+
 		// 침대에 각 플레이어를 배정 시킨다
 		AssignBedEachPlayer();
 
@@ -187,7 +187,6 @@ void ATimeManager::ForceSleep()
 
 		// 시네마틱을 진행시킨다.
 		bSleepCinematicStart = true;
-
 	}
 }
 
@@ -276,4 +275,25 @@ void ATimeManager::ChangeTimeToForceSleepTime()
 void ATimeManager::ChangeTimeToCanSleepTime()
 {
 	Hour = 9;
+}
+
+FString ATimeManager::GetDateText() const
+{
+	FDateTime DateText(1, 1, 1, 0, 0, 0);
+	DateText += FTimespan(Day - 1, 0, 0, 0);
+
+	return DateText.ToString(TEXT("%Y.%m.%d"));
+}
+
+uint32 ATimeManager::GetTotalPlayingDay() const
+{
+	const uint32 YearToDay = (Year - 1) * 365;
+
+	uint32 MonthOfDay = 0;
+	for (int i = 1; i <= Month - 1; i++)
+	{
+		MonthOfDay += DaysInMonths[i - 1];
+	}
+
+	return YearToDay + MonthOfDay + Day;
 }

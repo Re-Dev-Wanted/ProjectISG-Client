@@ -6,6 +6,7 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerCharacter.generated.h"
 
+class UDiaryComponent;
 class UInteractionComponent;
 class UScreenShotComponent;
 class UPlayerInventoryComponent;
@@ -34,7 +35,7 @@ class PROJECTISG_API AMainPlayerCharacter : public ABaseCharacter
 
 public:
 	AMainPlayerCharacter();
-	
+
 	FOnInputBindingNotified OnInputBindingNotified;
 
 	FOnUpdateSelectedItem OnUpdateSelectedItem;
@@ -43,8 +44,8 @@ public:
 
 	GETTER(TObjectPtr<UInputMappingContext>, DefaultMappingContext)
 
+	GETTER(TObjectPtr<UScreenShotComponent>, ScreenShotComponent)
 
-	
 protected:
 	virtual void BeginPlay() override;
 
@@ -76,6 +77,9 @@ public:
 
 private:
 #pragma region ActorComponent
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UDiaryComponent> DiaryComponent;
+
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent;
 
@@ -134,5 +138,5 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Farming",
 		meta = (AllowPrivateAccess = true))
 	TObjectPtr<UAnimMontage> WateringMontage;
-#pragma endregion 
+#pragma endregion
 };
