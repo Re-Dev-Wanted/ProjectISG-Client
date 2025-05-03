@@ -7,6 +7,16 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "BaseCrop.generated.h"
 
+UENUM(BlueprintType)
+enum class ECropState :uint8
+{
+	Seedling = 0,
+	Sprout = 1,
+	Mature = 2
+};
+
+DECLARE_MULTICAST_DELEGATE(FOnDryField);
+
 UCLASS()
 class PROJECTISG_API ABaseCrop : public ABaseInteractiveActor
 
@@ -17,6 +27,10 @@ public:
 	ABaseCrop();
 
 	virtual void OnInteractive(AActor* Causer) override;
+
+	void CropIsGetWater();
+
+	void SetCurrentState(ECropState State);
 
 protected:
 	virtual void BeginPlay() override;
@@ -35,13 +49,17 @@ protected:
 	UFUNCTION()
 	void UpdateGrowTimeBySleep();
 
+	UFUNCTION()
+	void OnRep_UpdateState();
+	
 public:
+	GETTER(ECropState, CurrentState)
 	GETTER_SETTER(int32, CropTotalGrowDay);
 	GETTER_SETTER(int32, WaterDuration);
 	GETTER(uint16, CropId);
+
+	FOnDryField OnDryField;
 	
-	UPROPERTY(Replicated)
-	bool CanInteractive;
 private:
 	void CheckGrowTime();
 
@@ -52,8 +70,6 @@ private:
 
 	UFUNCTION(Reliable, NetMulticast)
 	void NetMulticast_ChangeCropMeshToMature();
-
-	void CropIsGetWater();
 
 #pragma region Settings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
@@ -67,19 +83,18 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
 		meta = (AllowPrivateAccess = true))
 	class USceneComponent* InteractionPos;
-
 	UPROPERTY(EditAnywhere, Category = Settings,
 		meta = (AllowPrivateAccess = true))
 	uint16 CropId;
 
 	UPROPERTY()
 	class ATimeManager* TimeManager = nullptr;
-	
-	UPROPERTY(Replicated)
-	FString DisplayText;
 #pragma endregion
 
 #pragma region Grow
+	UPROPERTY(ReplicatedUsing = OnRep_UpdateState)
+	ECropState CurrentState = ECropState::Seedling;
+	
 	UPROPERTY(EditAnywhere, Category = Grow)
 	float CropStartGrowTime;
 
@@ -97,10 +112,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Grow)
 	int32 WaterDuration = 0;
-
-	UPROPERTY(Replicated, EditAnywhere, Category = Grow)
-	bool bIsMature = false;
-
+	
 	UPROPERTY(Replicated, EditAnywhere, Category = Grow)
 	bool bIsGetWater = false;
 #pragma endregion

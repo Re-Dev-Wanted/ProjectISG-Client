@@ -109,10 +109,19 @@ void UPlacementIndicatorComponent::Execute()
 	}
 
 	const TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent = Player->GetPlayerInventoryComponent();
-	
-	Server_Execute(IndicateActor->GetActorPivotLocation(),
-		IndicateActor->GetActorLocation(), IndicateActor->GetActorRotation(),
-		IndicateActor->GetClass(), PlacementItemId);
+
+	if (GetOwner()->HasAuthority())
+	{
+		ExecuteInternal(IndicateActor->GetActorPivotLocation(),
+			IndicateActor->GetActorLocation(), IndicateActor->GetActorRotation(),
+			IndicateActor->GetClass(), PlacementItemId);
+	}
+	else
+	{
+		Server_Execute(IndicateActor->GetActorPivotLocation(),
+			IndicateActor->GetActorLocation(), IndicateActor->GetActorRotation(),
+			IndicateActor->GetClass(), PlacementItemId);
+	}
 
 	if (!bIsInfiniteItem)
 	{
@@ -143,8 +152,15 @@ void UPlacementIndicatorComponent::ExecuteInternal(FVector Pivot, FVector Locati
 
 	if (GridManager)
 	{
-		GridManager->Server_BuildPlacement(PlacementClass, ItemId, Pivot, 
-		Location, Rotation);
+
+		if (GetOwner()->HasAuthority())
+		{
+			GridManager->BuildPlacement(PlacementClass, ItemId, Pivot, Location, Rotation);
+		}
+		else
+		{
+			GridManager->Server_BuildPlacement(PlacementClass, ItemId, Pivot, Location, Rotation);
+		}
 	}
 }
 

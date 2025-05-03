@@ -1,10 +1,11 @@
 ﻿#include "GA_Seeding.h"
 
-#include "Kismet/KismetSystemLibrary.h"
+#include "ProjectISG/Contents/Building/Props/HoedField.h"
 #include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
+#include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 
@@ -30,14 +31,18 @@ void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	int id = Player->GetPlayerInventoryComponent()->GetCurrentSlotIndex();
 	const bool isInteraction = UItemManager::IsItemCanInteraction(
 		id);
+
+	UE_LOG(LogTemp, Warning, TEXT("씨앗 심기 check, %d"), TriggerEventData->Target == nullptr);
 	
 	if (isInteraction)
 	{
 		AT_SeedingAnim = UPlayMontageWithEvent::InitialEvent(
 			this, NAME_None,
 			Player->GetSeedingMontage(),
-			FGameplayTagContainer()
+			FGameplayTagContainer(),
+			*TriggerEventData
 		);
+		
 		AT_SeedingAnim->Activate();
 		BlockInputForMontage(true);
 		AT_SeedingAnim->OnCompleted.AddDynamic(this, &ThisClass::CreateSeed);
@@ -67,18 +72,21 @@ void UGA_Seeding::CreateSeed(FGameplayTag EventTag,
 
 	if (Player)
 	{
-		FItemInfoData itemData = UItemManager::GetItemInfoById(
-			Player->GetPlayerInventoryComponent()->GetCurrentSlotIndex());
-		FVector SpawnLocation = Player->GetActorLocation();
-		SpawnLocation.Z = 0.f;
-		FRotator SpawnRotation = FRotator::ZeroRotator;
-		GetWorld()->SpawnActor<ABaseCrop>(
-			itemData.GetPlaceItemActor(), SpawnLocation, SpawnRotation);
-		Player->GetPlayerInventoryComponent()->
-		        RemoveItemCurrentSlotIndex(1);
+		const uint16 ItemId = Player->GetPlayerInventoryComponent()->GetCurrentSlotIndex();
+		FItemInfoData itemData = UItemManager::GetItemInfoById(ItemId);
+		
+		const AActor* Target = EventData.Target.Get();
+		const AHoedField* ConstField = Cast<AHoedField>(Target);
+
+		AHoedField* HoedField = const_cast<AHoedField*>(ConstField);
+
+		if (HoedField->PlantCrop(itemData, ItemId))
+		{
+			Player->GetPlayerInventoryComponent()->
+					RemoveItemCurrentSlotIndex(1);
+		}
+		
 		BlockInputForMontage(false);
-		UE_LOG(LogTemp, Warning, TEXT("씨앗 심기, %s"),
-		       *FEnumUtil::GetClassEnumKeyAsString(Player->GetLocalRole()));
 	}
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true,
