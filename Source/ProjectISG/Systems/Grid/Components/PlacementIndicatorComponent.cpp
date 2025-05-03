@@ -159,24 +159,24 @@ void UPlacementIndicatorComponent::ExecuteInternal(FVector Pivot, FVector Locati
 		if (GetOwner()->HasAuthority())
 		{
 			GridManager->BuildPlacement(PlacementClass, ItemId, Pivot, Location, Rotation);
+
+			// Logging
+			if (UItemManager::GetItemUsingType(ItemId) != "Disposability")
+			{
+				FDiaryLogParams LogParams;
+				LogParams.Location = "건축장";
+				LogParams.ActionType = ELoggingActionType::HOUSING;
+				LogParams.ActionName = ELoggingActionName::place_housing;
+
+				GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+							LoggingData(LogParams);
+
+				GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
+			}
 		}
 		else
 		{
 			GridManager->Server_BuildPlacement(PlacementClass, ItemId, Pivot, Location, Rotation);
-		}
-
-		// Logging
-		if (UItemManager::GetItemUsingType(ItemId) != "Disposability")
-		{
-			FDiaryLogParams LogParams;
-			LogParams.Location = "건축장";
-			LogParams.ActionType = ELoggingActionType::HOUSING;
-			LogParams.ActionName = ELoggingActionName::place_housing;
-
-			GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-						LoggingData(LogParams);
-
-			GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 		}
 	}
 }
