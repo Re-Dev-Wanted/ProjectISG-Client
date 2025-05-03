@@ -5,26 +5,26 @@
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "HoedField.generated.h"
 
+struct FItemMetaInfo;
 struct FItemInfoData;
 class ABaseCrop;
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FPlantedCrop
 {
 	GENERATED_BODY()
 
 	UPROPERTY()
-	TWeakObjectPtr<ABaseCrop> Crop = nullptr;
+	ABaseCrop* Crop = nullptr;
 
 	UPROPERTY()
 	uint16 CropId = 0;
 
 	void Clear(bool Destroy)
 	{
-		if (Crop.IsValid() && Destroy)
+		if (Crop && Destroy)
 		{
-			ABaseCrop* RawActor = Crop.Get();
-			RawActor->Destroy();
+			Crop->Destroy();
 		}
 		
 		Crop = nullptr;
@@ -33,7 +33,7 @@ struct FPlantedCrop
 
 	bool IsValid() const
 	{
-		return Crop.IsValid() && CropId > 0;
+		return Crop != nullptr && CropId > 0;
 	}
 	
 };
@@ -73,7 +73,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	class UMaterialInstance* FieldMaterial;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	FPlantedCrop PlantedCrop = FPlantedCrop();
 
 	UPROPERTY(ReplicatedUsing = OnRep_UpdateState)

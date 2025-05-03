@@ -5,12 +5,14 @@
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
+#include "ProjectISG/Systems/Inventory/ItemData.h"
 
 AHoedField::AHoedField()
 {
@@ -32,6 +34,7 @@ void AHoedField::GetLifetimeReplicatedProps(
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AHoedField, IsWet);
+	DOREPLIFETIME(AHoedField, PlantedCrop);
 }
 
 bool AHoedField::GetCanTouch() const
@@ -101,7 +104,7 @@ void AHoedField::OnTouch(AActor* Causer)
 			{
 				if (PlantedCrop.IsValid())
 				{
-					ABaseCrop* Crop = PlantedCrop.Crop.Get();
+					ABaseCrop* Crop = PlantedCrop.Crop;
 					
 					if (Crop->GetCurrentState() == ECropState::Mature)
 					{
@@ -170,7 +173,7 @@ void AHoedField::UpdateState()
 	
 	if (PlantedCrop.IsValid() && IsWet)
 	{
-		ABaseCrop* Crop = PlantedCrop.Crop.Get();
+		ABaseCrop* Crop = PlantedCrop.Crop;
 		Crop->CropIsGetWater();
 	}
 }

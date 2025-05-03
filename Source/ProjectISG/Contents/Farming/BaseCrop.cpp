@@ -22,8 +22,8 @@ ABaseCrop::ABaseCrop()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
-	Super::SetReplicateMovement(true);
-
+	bAlwaysRelevant = true;
+	SetReplicatingMovement(true);
 
 	Root = CreateDefaultSubobject<UBoxComponent>(TEXT("Root"));
 	SetRootComponent(Root);

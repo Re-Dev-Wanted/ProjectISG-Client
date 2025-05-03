@@ -90,14 +90,7 @@ void UInteractionComponent::OnTouch()
 		return;
 	}
 
-	if (GetOwner()->HasAuthority())
-	{
-		InteractActor->OnTouch(GetOwner());
-	}
-	else
-	{
-		Server_Touch(InteractActor, GetOwner());
-	}
+	InteractActor->OnTouch(GetOwner());
 }
 
 void UInteractionComponent::TickComponent(float DeltaTime,
