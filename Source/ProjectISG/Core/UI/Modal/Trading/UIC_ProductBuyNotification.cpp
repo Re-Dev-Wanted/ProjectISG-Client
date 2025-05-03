@@ -16,9 +16,12 @@
 #include "ProjectISG/Core/UI/Popup/Trading/UI/UIV_TradingUI.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
+#include "ProjectISG/Systems/Logging/LoggingEnum.h"
+#include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 
 void UUIC_ProductBuyNotification::InitializeController(UBaseUIView* NewView,
-	UBaseUIModel* NewModel)
+                                                       UBaseUIModel* NewModel)
 {
 	Super::InitializeController(NewView, NewModel);
 
@@ -55,10 +58,9 @@ void UUIC_ProductBuyNotification::OnClickedBuyButton()
 		
 		if (PS->GetGold() >= ItemPrice)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("구매 전 골드 : %d"), PS->GetGold());
 			PS->SetGold(PS->GetGold() - ItemPrice);
 			TradingUIController->UpdateGoldText();
-			UE_LOG(LogTemp, Warning, TEXT("구매 후 골드 : %d"), PS->GetGold());
+			LoggingToBuyItem();
 		}
 		else
 		{
@@ -79,4 +81,17 @@ int32 UUIC_ProductBuyNotification::FindItemPrice(class UUIM_ProductBuyNotificati
 	}
 
 	return 0;
+}
+
+void UUIC_ProductBuyNotification::LoggingToBuyItem()
+{
+	FDiaryLogParams LogParams;
+	LogParams.Location = "거래장";
+	LogParams.ActionType = ELoggingActionType::TRADE;
+	LogParams.ActionName = ELoggingActionName::buy_item;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+				LoggingData(LogParams);
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 }

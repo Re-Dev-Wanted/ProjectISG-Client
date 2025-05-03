@@ -16,9 +16,12 @@
 #include "ProjectISG/Core/UI/Popup/Trading/UI/UIC_TradingUI.h"
 #include "ProjectISG/Core/UI/Popup/Trading/UI/UIM_TradingUI.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/Logging/LoggingEnum.h"
+#include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 
 void UUIC_ProductSellNotification::InitializeController(UBaseUIView* NewView,
-	UBaseUIModel* NewModel)
+                                                        UBaseUIModel* NewModel)
 {
 	Super::InitializeController(NewView, NewModel);
 
@@ -48,10 +51,9 @@ void UUIC_ProductSellNotification::OnClickedSellButton()
 		GetPlayerController()->GetPawn());
 	Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
 	
-	UE_LOG(LogTemp, Warning, TEXT("판매 전 골드 : %d"), PS->GetGold());
 	PS->SetGold(PS->GetGold() + FindItemPrice(TradingUIModel));
 	TradingUIController->UpdateGoldText();
-	UE_LOG(LogTemp, Warning, TEXT("판매 후 골드 : %d"), PS->GetGold());
+	LoggingToSellItem();
 }
 
 int32 UUIC_ProductSellNotification::FindItemPrice(class UUIM_TradingUI* TradingUIModel)
@@ -67,4 +69,17 @@ int32 UUIC_ProductSellNotification::FindItemPrice(class UUIM_TradingUI* TradingU
 	}
 
 	return 0;
+}
+
+void UUIC_ProductSellNotification::LoggingToSellItem()
+{
+	FDiaryLogParams LogParams;
+	LogParams.Location = "거래장";
+	LogParams.ActionType = ELoggingActionType::TRADE;
+	LogParams.ActionName = ELoggingActionName::sell_item;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+				LoggingData(LogParams);
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 }

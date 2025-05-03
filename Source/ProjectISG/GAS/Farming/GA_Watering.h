@@ -32,6 +32,7 @@ private:
 	UFUNCTION()
 	void OnEndWateringAnim(FGameplayTag EventTag, FGameplayEventData EventData);
 
+	void LoggingToWatering();
 private:
 	UPROPERTY()
 	class UPlayMontageWithEvent* AT_WateringAnim;

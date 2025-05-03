@@ -53,6 +53,9 @@ private:
 	bool CheckAllPlayerIsLieOnBed();
 #pragma endregion
 
+	void LoggintToMorning();
+	void LoggintToNoon();
+	void LoggintToEvening();
 public:
 	UFUNCTION(BlueprintCallable)
 	void ChangeTimeToForceSleepTime();

@@ -8,6 +8,9 @@
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
+#include "ProjectISG/Systems/Logging/LoggingEnum.h"
+#include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 
 void UGA_Watering::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -63,5 +66,19 @@ void UGA_Watering::OnEndWateringAnim(FGameplayTag EventTag, FGameplayEventData E
 	}
 	
 	BlockInputForMontage(false);
+	LoggingToWatering();
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+}
+
+void UGA_Watering::LoggingToWatering()
+{
+	FDiaryLogParams LogParams;
+	LogParams.Location = "경작지";
+	LogParams.ActionType = ELoggingActionType::FARMING;
+	LogParams.ActionName = ELoggingActionName::water_crop;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+				LoggingData(LogParams);
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 }

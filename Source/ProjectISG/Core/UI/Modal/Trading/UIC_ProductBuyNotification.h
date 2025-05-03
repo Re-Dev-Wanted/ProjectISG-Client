@@ -23,4 +23,6 @@ protected:
 
 private:
 	int32 FindItemPrice(class UUIM_ProductBuyNotification* ProductBuyNotificationModel);
+
+	void LoggingToBuyItem();
 };

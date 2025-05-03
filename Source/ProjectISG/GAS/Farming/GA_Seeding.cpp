@@ -7,6 +7,9 @@
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
+#include "ProjectISG/Systems/Logging/LoggingEnum.h"
+#include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 
 void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -87,8 +90,21 @@ void UGA_Seeding::CreateSeed(FGameplayTag EventTag,
 		}
 		
 		BlockInputForMontage(false);
+		LoggingToSeeding();
 	}
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true,
 	           false);
+}
+
+void UGA_Seeding::LoggingToSeeding()
+{
+	FDiaryLogParams LogParams;
+	LogParams.Location = "경작지";
+	LogParams.ActionType = ELoggingActionType::FARMING;
+	LogParams.ActionName = ELoggingActionName::plant_crop;
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+				LoggingData(LogParams);
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 }

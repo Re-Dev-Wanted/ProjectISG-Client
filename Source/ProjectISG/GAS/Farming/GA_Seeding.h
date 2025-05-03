@@ -22,6 +22,7 @@ private:
 	UFUNCTION()
 	void CreateSeed(FGameplayTag EventTag, FGameplayEventData EventData);
 
+	void LoggingToSeeding();
 private:
 	UPROPERTY()
 	class UPlayMontageWithEvent* AT_SeedingAnim = nullptr;

@@ -9,6 +9,9 @@
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Systems/Logging/LoggingEnum.h"
+#include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 
 
 ATimeManager::ATimeManager()
@@ -265,6 +268,45 @@ bool ATimeManager::CheckAllPlayerIsLieOnBed()
 	}
 
 	return true;
+}
+
+void ATimeManager::LoggintToMorning()
+{
+	FDiaryLogParams LogParams;
+	LogParams.Location = "전체";
+	LogParams.ActionType = ELoggingActionType::TIME_EVENT;
+	LogParams.ActionName = ELoggingActionName::morning;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+				LoggingData(LogParams);
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
+}
+
+void ATimeManager::LoggintToNoon()
+{
+	FDiaryLogParams LogParams;
+	LogParams.Location = "전체";
+	LogParams.ActionType = ELoggingActionType::TIME_EVENT;
+	LogParams.ActionName = ELoggingActionName::noon;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+				LoggingData(LogParams);
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
+}
+
+void ATimeManager::LoggintToEvening()
+{
+	FDiaryLogParams LogParams;
+	LogParams.Location = "전체";
+	LogParams.ActionType = ELoggingActionType::TIME_EVENT;
+	LogParams.ActionName = ELoggingActionName::evening;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+				LoggingData(LogParams);
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 }
 
 void ATimeManager::ChangeTimeToForceSleepTime()
