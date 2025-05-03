@@ -10,6 +10,9 @@
 #include "ProjectISG/Systems/Grid/Manager/GridManager.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
+#include "ProjectISG/Systems/Logging/LoggingEnum.h"
+#include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 
 class AMainPlayerCharacter;
 
@@ -160,6 +163,20 @@ void UPlacementIndicatorComponent::ExecuteInternal(FVector Pivot, FVector Locati
 		else
 		{
 			GridManager->Server_BuildPlacement(PlacementClass, ItemId, Pivot, Location, Rotation);
+		}
+
+		// Logging
+		if (UItemManager::GetItemUsingType(ItemId) != "Disposability")
+		{
+			FDiaryLogParams LogParams;
+			LogParams.Location = "건축장";
+			LogParams.ActionType = ELoggingActionType::HOUSING;
+			LogParams.ActionName = ELoggingActionName::place_housing;
+
+			GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+						LoggingData(LogParams);
+
+			GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 		}
 	}
 }
