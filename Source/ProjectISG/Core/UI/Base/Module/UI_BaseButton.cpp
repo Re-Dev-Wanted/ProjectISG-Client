@@ -2,7 +2,6 @@
 
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
-#include "ProjectISG/Core/ISGGameInstance.h"
 
 void UUI_BaseButton::NativePreConstruct()
 {
