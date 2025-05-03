@@ -10,8 +10,9 @@
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Popup/Trading/UI/UIC_TradingUI.h"
 #include "ProjectISG/Core/UI/Popup/Trading/UI/UIV_TradingUI.h"
-#include "ProjectISG/Core/UI/Popup/Trading/UI/ProductInfo/UIC_ProductInfoWidget.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
@@ -46,10 +47,14 @@ void UUIC_ProductBuyNotification::OnClickedBuyButton()
 		Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
 
 		int32 ItemPrice = FindItemPrice(PC);
+
+		UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Popup_TradingUI]);
+		
 		if (PS->GetGold() >= ItemPrice)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("구매 전 골드 : %d"), PS->GetGold());
 			PS->SetGold(PS->GetGold() - ItemPrice);
+			TradingUIController->UpdateGoldText();
 			UE_LOG(LogTemp, Warning, TEXT("구매 후 골드 : %d"), PS->GetGold());
 		}
 		else

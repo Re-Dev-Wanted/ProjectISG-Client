@@ -41,3 +41,12 @@ bool UUIV_TradingUI::NativeOnDrop(const FGeometry& InGeometry,
 	}
 	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 }
+
+void UUIV_TradingUI::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(
+				GetController());
+	TradingUIController->UpdateGoldText();
+}

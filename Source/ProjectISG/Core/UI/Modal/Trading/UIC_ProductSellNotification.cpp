@@ -10,7 +10,9 @@
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Popup/Inventory/UI/UIV_InventoryUI.h"
+#include "ProjectISG/Core/UI/Popup/Trading/UI/UIC_TradingUI.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 
 void UUIC_ProductSellNotification::InitializeController(UBaseUIView* NewView,
@@ -40,9 +42,12 @@ void UUIC_ProductSellNotification::OnClickedSellButton()
 	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		GetPlayerController()->GetPawn());
 	Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
+
+	UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Popup_TradingUI]);
 	
 	UE_LOG(LogTemp, Warning, TEXT("판매 전 골드 : %d"), PS->GetGold());
 	PS->SetGold(PS->GetGold() + FindItemPrice(PC));
+	TradingUIController->UpdateGoldText();
 	UE_LOG(LogTemp, Warning, TEXT("판매 후 골드 : %d"), PS->GetGold());
 }
 
