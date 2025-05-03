@@ -15,6 +15,8 @@ enum class ECropState :uint8
 	Mature = 2
 };
 
+DECLARE_MULTICAST_DELEGATE(FOnDryField);
+
 UCLASS()
 class PROJECTISG_API ABaseCrop : public ABaseInteractiveActor
 
@@ -55,6 +57,8 @@ public:
 	GETTER_SETTER(int32, CropTotalGrowDay);
 	GETTER_SETTER(int32, WaterDuration);
 	GETTER(uint16, CropId);
+
+	FOnDryField OnDryField;
 	
 private:
 	void CheckGrowTime();

@@ -35,6 +35,7 @@ struct FPlantedCrop
 	{
 		return Crop.IsValid() && CropId > 0;
 	}
+	
 };
 
 UCLASS()

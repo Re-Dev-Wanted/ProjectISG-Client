@@ -221,6 +221,7 @@ void ABaseCrop::Server_CropIsMature_Implementation()
 void ABaseCrop::NetMulticast_ChangeCropMeshToMature_Implementation()
 {
 	SetActorScale3D(FVector(2.0f));
+	OnDryField.Broadcast();
 }
 
 void ABaseCrop::CropIsGetWater()

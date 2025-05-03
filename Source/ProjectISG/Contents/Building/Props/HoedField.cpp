@@ -145,6 +145,14 @@ bool AHoedField::PlantCrop(FItemInfoData CropData, uint16 CropId)
 	PlantedCrop.Crop = Crop;
 	PlantedCrop.CropId = CropId;
 
+	Crop->OnDryField.AddLambda
+	(
+		[&]()
+		{
+			SetWet(false);
+		}
+	);
+
 	if (IsWet)
 	{
 		Crop->CropIsGetWater();
