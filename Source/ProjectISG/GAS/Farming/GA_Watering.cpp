@@ -3,6 +3,7 @@
 
 #include "GA_Watering.h"
 
+#include "ProjectISG/Contents/Building/Props/HoedField.h"
 #include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
@@ -24,7 +25,14 @@ void UGA_Watering::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 	if (!IsValid(Player)) return;
 
-	AT_WateringAnim = UPlayMontageWithEvent::InitialEvent(this, NAME_None, Player->GetWateringMontage(), FGameplayTagContainer());
+	AT_WateringAnim = UPlayMontageWithEvent::InitialEvent
+	(
+		this,
+		NAME_None,
+		Player->GetWateringMontage(),
+		FGameplayTagContainer(),
+		*TriggerEventData
+	);
 	AT_WateringAnim->Activate();
 	BlockInputForMontage(true);
 	AT_WateringAnim->OnCompleted.AddDynamic(this, &ThisClass::OnEndWateringAnim);
@@ -44,8 +52,15 @@ void UGA_Watering::OnEndWateringAnim(FGameplayTag EventTag, FGameplayEventData E
 {
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 	CurrentActorInfo->AvatarActor.Get());
-	ABaseCrop* Crop = Cast<ABaseCrop>(Player->GetInteractionComponent()->GetTargetTraceResult().GetActor());
-	Crop->CanInteractive = true;
+
+	if (EventData.Target)
+	{
+		const AActor* Target = EventData.Target.Get();
+		const AHoedField* ConstField = Cast<AHoedField>(Target);
+
+		AHoedField* HoedField = const_cast<AHoedField*>(ConstField);
+		HoedField->SetWet(true);
+	}
 	
 	BlockInputForMontage(false);
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);

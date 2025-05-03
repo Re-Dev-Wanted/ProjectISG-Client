@@ -38,15 +38,14 @@ public:
 	FOnPlayMontageWithEventNotified EventReceived;
 
 	static UPlayMontageWithEvent* InitialEvent(UGameplayAbility* OwningAbility
-																						, FName TaskInstanceName
-																						, UAnimMontage* MontageToPlay
-																						, FGameplayTagContainer EventTags
-																						, float Rate = 1.f
-																						, FName StartSection = NAME_None
-																						, bool bStopWhenAbilityEnds = false
-																						, float
-																						AnimRootMotionTranslationScale =
-																							1.f);
+												, FName TaskInstanceName
+												, UAnimMontage* MontageToPlay
+												, FGameplayTagContainer EventTags
+												, FGameplayEventData EventData = FGameplayEventData()
+												, float Rate = 1.f
+												, FName StartSection = NAME_None
+												, bool bStopWhenAbilityEnds = false
+												, float AnimRootMotionTranslationScale = 1.f);
 
 private:
 	UPROPERTY()
@@ -54,6 +53,9 @@ private:
 
 	UPROPERTY()
 	FGameplayTagContainer EventTags;
+
+	UPROPERTY()
+	FGameplayEventData EventData = FGameplayEventData();
 
 	UPROPERTY()
 	float Rate;

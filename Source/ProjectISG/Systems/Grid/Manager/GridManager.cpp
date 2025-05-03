@@ -126,13 +126,7 @@ void AGridManager::BuildPlacement(TSubclassOf<APlacement> PlacementClass,
 	uint16 ItemId, const FVector& Pivot, const FVector& Location,
 	const FRotator& Rotation)
 {
-	FIntVector GridCoord = FIntVector
-	(
-		FMath::FloorToInt(Pivot.X / SnapSize),
-		FMath::FloorToInt(Pivot.Y / SnapSize),
-		//FMath::FloorToInt(Pivot.Z / SnapSize)
-		0
-	);
+	FIntVector GridCoord = WorldToGridLocation(Pivot);
 
 	UE_LOG(LogTemp, Warning, TEXT("Pivot %s"), *Pivot.ToString());
 	UE_LOG(LogTemp, Warning, TEXT("Coord %s"), *GridCoord.ToString());
@@ -142,7 +136,7 @@ void AGridManager::BuildPlacement(TSubclassOf<APlacement> PlacementClass,
 	Params.bNoFail = true;
 	Params.Owner = this;
 
-	APlacement* SpawnedActor = GetWorld()->SpawnActor<APlacement>(PlacementClass, Location, Rotation, Params);
+	APlacement* SpawnedActor = GetWorld()->SpawnActor<APlacement>(PlacementClass, SnapToGridPlacement(Location), Rotation, Params);
 		
 	if (!SpawnedActor)
 	{
@@ -166,7 +160,16 @@ void AGridManager::BuildPlacement(TSubclassOf<APlacement> PlacementClass,
 	// *SpawnedActor
 	// ->GetActorNameOrLabel()));
 		
-	PlacementGridContainer.Add(GridCoord, SpawnedActor, ItemId);
+	PlacementGridContainer.Add
+	(
+		GridCoord,
+		SpawnedActor,
+		ItemId,
+		[this]
+		{
+			ForceNetUpdate();
+		}
+	);
 }
 
 void AGridManager::BuildPlacementAtGhost(TSubclassOf<APlacement> PlacementClass,
@@ -181,7 +184,14 @@ uint16 AGridManager::RemovePlacement(const FIntVector& GridAt)
 	TWeakObjectPtr<APlacement> Placement = PlacementGridContainer.GetPlacedMap().FindRef(GridAt);
 	if (Placement.IsValid())
 	{
-		const uint16 ItemId = PlacementGridContainer.Remove(Placement.Get());
+		const uint16 ItemId = PlacementGridContainer.Remove
+		(
+			Placement.Get(),
+			[this]
+			{
+				ForceNetUpdate();
+			}
+		);
 
 		// 가구 제거
 		Placement->Destroy();

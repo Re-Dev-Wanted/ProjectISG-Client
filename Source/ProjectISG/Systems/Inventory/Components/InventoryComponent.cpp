@@ -52,6 +52,12 @@ void UInventoryComponent::InitializeItemData()
 	BuildItemMetaInfo2.SetCurrentCount(1);
 
 	AddItemToInventory(6, BuildItemMetaInfo2);
+
+	FItemMetaInfo WateringItemMetaInfo2;
+	WateringItemMetaInfo2.SetId(13);
+	WateringItemMetaInfo2.SetCurrentCount(1);
+
+	AddItemToInventory(7, WateringItemMetaInfo2);
 }
 
 void UInventoryComponent::BeginPlay()

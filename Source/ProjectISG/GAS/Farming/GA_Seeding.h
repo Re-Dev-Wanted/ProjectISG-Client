@@ -24,5 +24,5 @@ private:
 
 private:
 	UPROPERTY()
-	class UPlayMontageWithEvent* AT_SeedingAnim;
+	class UPlayMontageWithEvent* AT_SeedingAnim = nullptr;
 };

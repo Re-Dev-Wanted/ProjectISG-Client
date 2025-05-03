@@ -14,7 +14,7 @@ bool FPlacementGridContainer::NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaPar
 	return FastArrayDeltaSerialize<FPlacementGridEntry, FPlacementGridContainer>(Items, DeltaParms, *this);
 }
 
-void FPlacementGridContainer::Add(const FIntVector& GridCoord, APlacement* Placement, uint16 ItemId)
+void FPlacementGridContainer::Add(const FIntVector& GridCoord, APlacement* Placement, uint16 ItemId, TFunction<void(void)>&& OnUpdateCallback)
 {
 	APlacement* TypedPlacement = Cast<APlacement>(Placement);
 
@@ -32,9 +32,14 @@ void FPlacementGridContainer::Add(const FIntVector& GridCoord, APlacement* Place
 	MarkItemDirty(Entry);
 
 	PlacedMap.Add(GridCoord, Placement);
+
+	if (OnUpdateCallback)
+	{
+		OnUpdateCallback();
+	}
 }
 
-uint16 FPlacementGridContainer::Remove(APlacement* Placement)
+uint16 FPlacementGridContainer::Remove(APlacement* Placement, TFunction<void(void)>&& OnUpdateCallback)
 {
 	uint16 ItemId = 0;
 
@@ -56,11 +61,15 @@ uint16 FPlacementGridContainer::Remove(APlacement* Placement)
 		}
 	}
 
+	if (IndicesToRemove.Num() == 0)
+	{
+		return 0;
+	}
+
 	// 실제 배열에서 제거
 	for (int32 Index : IndicesToRemove)
 	{
 		GetItems().RemoveAt(Index);
-		MarkArrayDirty();
 	}
 
 	// 캐시 Map도 정리
@@ -73,6 +82,11 @@ uint16 FPlacementGridContainer::Remove(APlacement* Placement)
 	}
 	
 	MarkArrayDirty();
+
+	if (OnUpdateCallback)
+	{
+		OnUpdateCallback();
+	}
 
 	return ItemId;
 }
