@@ -51,6 +51,4 @@ protected:
 	//빠른 접근용 Cache Map
 	UPROPERTY(NotReplicated)
 	TMap<FIntVector, TWeakObjectPtr<APlacement>> PlacedMap;
-
-	TMap<TWeakObjectPtr<APlacement>, TArray<FIntVector>> ReverseMap;
 };

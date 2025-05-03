@@ -2,6 +2,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
+#include "Net/UnrealNetwork.h"
 #include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
@@ -11,6 +12,13 @@
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
+AHoedField::AHoedField()
+{
+	InteractionPos = CreateDefaultSubobject<USceneComponent>(
+		TEXT("InteractionPos"));
+	InteractionPos->SetupAttachment(Root);
+}
+
 void AHoedField::BeginPlay()
 {
 	Super::BeginPlay();
@@ -18,29 +26,27 @@ void AHoedField::BeginPlay()
 	MeshComp->SetRenderCustomDepth(false);
 }
 
+void AHoedField::GetLifetimeReplicatedProps(
+	TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AHoedField, IsWet);
+}
+
 bool AHoedField::GetCanTouch() const
 {
-	return Super::GetCanTouch();
+	return !IsWet || !PlantedCrop.IsValid();
 }
 
 bool AHoedField::GetCanInteractive() const
 {
-	return Super::GetCanInteractive();
-}
-
-void AHoedField::OnInteractive(AActor* Causer)
-{
-	Super::OnInteractive(Causer);
-}
-
-void AHoedField::OnInteractiveResponse()
-{
-	Super::OnInteractiveResponse();
+	return false;
 }
 
 FString AHoedField::GetDisplayText() const
 {
-	return Super::GetDisplayText();
+	return TEXT("");
 }
 
 // 경작된 땅은 해머로 파괴되어선 안된다
@@ -60,9 +66,18 @@ void AHoedField::OnTouch(AActor* Causer)
 
 		const FItemMetaInfo ItemMetaInfo = PS->GetInventoryComponent()->GetInventoryList()[SlotIndex];
 
-		uint16 OtherId = UItemManager::GetGeneratedOtherItemIdById(ItemMetaInfo.GetId());
-
 		FString UsingType = UItemManager::GetItemUsingType(ItemMetaInfo.GetId());
+
+		if (UsingType == "Watering")
+		{
+			FGameplayEventData EventData;
+			EventData.EventTag = ISGGameplayTags::Farming_Active_Watering;
+			EventData.Instigator = Player;
+			EventData.Target = this;
+			
+			Player->GetAbilitySystemComponent()->HandleGameplayEvent(ISGGameplayTags::Farming_Active_Watering, &EventData);
+			return;
+		}
 
 		if (UsingType == "Farming" && !PlantedCrop.IsValid())
 		{
@@ -76,6 +91,8 @@ void AHoedField::OnTouch(AActor* Causer)
 			return;
 		}
 
+		uint16 OtherId = UItemManager::GetGeneratedOtherItemIdById(ItemMetaInfo.GetId());
+
 		if (OtherId > 0)
 		{
 			const FItemInfoData OtherData = UItemManager::GetItemInfoById(OtherId);
@@ -86,9 +103,9 @@ void AHoedField::OnTouch(AActor* Causer)
 				{
 					ABaseCrop* Crop = PlantedCrop.Crop.Get();
 					
-					if (Crop->GetbIsMature())
+					if (Crop->GetCurrentState() == ECropState::Mature)
 					{
-						Crop->OnInteractive(Player);
+						return;
 					}
 					else
 					{
@@ -128,7 +145,39 @@ bool AHoedField::PlantCrop(FItemInfoData CropData, uint16 CropId)
 	PlantedCrop.Crop = Crop;
 	PlantedCrop.CropId = CropId;
 
+	if (IsWet)
+	{
+		Crop->CropIsGetWater();
+	}
+
+	Crop->SetCurrentState(ECropState::Sprout);
+
 	return true;
 }
+
+void AHoedField::UpdateState()
+{
+	UMaterialInstanceDynamic* MatDynamic = MeshComp->CreateAndSetMaterialInstanceDynamic(0);
+	MatDynamic->SetScalarParameterValue("Contrast", IsWet? 2.f : 1.f);
+	
+	if (PlantedCrop.IsValid() && IsWet)
+	{
+		ABaseCrop* Crop = PlantedCrop.Crop.Get();
+		Crop->CropIsGetWater();
+	}
+}
+
+void AHoedField::OnRep_UpdateState()
+{
+	UpdateState();
+}
+
+void AHoedField::SetWet(bool Watering)
+{
+	IsWet = Watering;
+	
+	UpdateState();
+}
+
 
 

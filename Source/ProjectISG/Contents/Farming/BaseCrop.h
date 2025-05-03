@@ -26,6 +26,10 @@ public:
 
 	virtual void OnInteractive(AActor* Causer) override;
 
+	void CropIsGetWater();
+
+	void SetCurrentState(ECropState State);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -43,14 +47,15 @@ protected:
 	UFUNCTION()
 	void UpdateGrowTimeBySleep();
 
+	UFUNCTION()
+	void OnRep_UpdateState();
+	
 public:
+	GETTER(ECropState, CurrentState)
 	GETTER_SETTER(int32, CropTotalGrowDay);
 	GETTER_SETTER(int32, WaterDuration);
 	GETTER(uint16, CropId);
-	GETTER(bool, bIsMature)
 	
-	UPROPERTY(Replicated)
-	bool CanInteractive;
 private:
 	void CheckGrowTime();
 
@@ -61,8 +66,6 @@ private:
 
 	UFUNCTION(Reliable, NetMulticast)
 	void NetMulticast_ChangeCropMeshToMature();
-
-	void CropIsGetWater();
 
 #pragma region Settings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
@@ -76,20 +79,16 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
 		meta = (AllowPrivateAccess = true))
 	class USceneComponent* InteractionPos;
-
 	UPROPERTY(EditAnywhere, Category = Settings,
 		meta = (AllowPrivateAccess = true))
 	uint16 CropId;
 
 	UPROPERTY()
 	class ATimeManager* TimeManager = nullptr;
-	
-	UPROPERTY(Replicated)
-	FString DisplayText;
 #pragma endregion
 
 #pragma region Grow
-	UPROPERTY(EditAnywhere, Category = Grow)
+	UPROPERTY(ReplicatedUsing = OnRep_UpdateState)
 	ECropState CurrentState = ECropState::Seedling;
 	
 	UPROPERTY(EditAnywhere, Category = Grow)
@@ -109,10 +108,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Grow)
 	int32 WaterDuration = 0;
-
-	UPROPERTY(Replicated, EditAnywhere, Category = Grow)
-	bool bIsMature = false;
-
+	
 	UPROPERTY(Replicated, EditAnywhere, Category = Grow)
 	bool bIsGetWater = false;
 #pragma endregion

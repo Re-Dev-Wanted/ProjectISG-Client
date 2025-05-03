@@ -28,6 +28,8 @@ ABaseCrop::ABaseCrop()
 	Root = CreateDefaultSubobject<UBoxComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 
+	Root->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
 	Mesh->SetCollisionProfileName(TEXT("NoCollision"));
@@ -36,8 +38,6 @@ ABaseCrop::ABaseCrop()
 	InteractionPos = CreateDefaultSubobject<USceneComponent>(
 		TEXT("InteractionPos"));
 	InteractionPos->SetupAttachment(Root);
-
-	CanInteractive = true;
 }
 
 void ABaseCrop::BeginPlay()
@@ -52,9 +52,7 @@ void ABaseCrop::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("타임 매니저가 없습니다"));
 		return;
 	}
-
-	DisplayText = TEXT("물 주기");
-
+	
 	CropRemainGrowTime = CropTotalGrowDay * 24;
 
 	TimeManager->AddSleepTimeToCrop.AddDynamic(
@@ -66,10 +64,8 @@ void ABaseCrop::GetLifetimeReplicatedProps(
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ABaseCrop, bIsMature);
 	DOREPLIFETIME(ABaseCrop, bIsGetWater);
-	DOREPLIFETIME(ABaseCrop, CanInteractive);
-	DOREPLIFETIME(ABaseCrop, DisplayText);
+	DOREPLIFETIME(ABaseCrop, CurrentState);
 }
 
 void ABaseCrop::Tick(float DeltaTime)
@@ -80,7 +76,7 @@ void ABaseCrop::Tick(float DeltaTime)
 		return;
 	}
 
-	if (bIsGetWater && !bIsMature)
+	if (bIsGetWater && CurrentState == ECropState::Sprout)
 	{
 		CheckGrowTime();
 	}
@@ -93,17 +89,17 @@ void ABaseCrop::Tick(float DeltaTime)
 
 bool ABaseCrop::GetCanInteractive() const
 {
-	return CanInteractive;
+	return CurrentState == ECropState::Mature;
 }
 
 FString ABaseCrop::GetDisplayText() const
 {
-	return DisplayText;
+	return TEXT("수확하기");
 }
 
 void ABaseCrop::CheckGrowTime()
 {
-	if (bIsMature || bIsGetWater == false)
+	if (CurrentState == ECropState::Mature || !bIsGetWater)
 	{
 		return;
 	}
@@ -135,7 +131,6 @@ void ABaseCrop::CheckWaterDurationTime()
 	if (CropGrowTime >= WaterDuration)
 	{
 		bIsGetWater = false;
-		CanInteractive = true;
 
 		CropRemainGrowTime -= CropGrowTime;
 		CropGrowTime = 0.f;
@@ -146,51 +141,32 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 {
 	IInteractionInterface::OnInteractive(Causer);
 
-	if (CanInteractive == false)
+	if (CurrentState != ECropState::Mature)
 	{
 		return;
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("작물 상호작용 함수 실행 , 로컬롤 : %s"), *FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
 
-	CanInteractive = false;
-
 	Causer->SetActorLocation(InteractionPos->GetComponentLocation());
 	Causer->SetActorRotation(InteractionPos->GetComponentRotation());
 
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
 	FGameplayTagContainer ActivateTag;
-	if (bIsMature)
-	{
-		ActivateTag.AddTag(ISGGameplayTags::Farming_Active_Harvest);
-		Player->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
-		AddItem(UItemManager::GetInitialItemMetaDataById(CropId));
-		
-		Player->GetInteractionComponent()->Server_OnInteractiveResponse();
-		Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
-			ActivateTag);
-	}
-	else
-	{
-		ActivateTag.AddTag(ISGGameplayTags::Farming_Active_Watering);
-		
-		Player->GetInteractionComponent()->Server_OnInteractiveResponse();
-		Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
-			ActivateTag);
-	}
+	ActivateTag.AddTag(ISGGameplayTags::Farming_Active_Harvest);
+	Player->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
+	AddItem(UItemManager::GetInitialItemMetaDataById(CropId));
+	
+	Player->GetInteractionComponent()->Server_OnInteractiveResponse();
+	Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
+		ActivateTag);
 }
 
 void ABaseCrop::OnInteractiveResponse()
 {
 	IInteractionInterface::OnInteractiveResponse();
-	if (bIsMature == false)
-	{
-		CropIsGetWater();
-	}
-	else
-	{
-		Destroy();
-	}
+	
+	Destroy();
 }
 
 void ABaseCrop::UpdateGrowTimeBySleep()
@@ -211,7 +187,6 @@ void ABaseCrop::UpdateGrowTimeBySleep()
 		if (RemainWaterDuration <= TotalSleepTime)
 		{
 			bIsGetWater = false;
-			CanInteractive = true;
 			CropRemainGrowTime -= WaterDuration;
 			CropGrowTime = 0.f;
 		}
@@ -229,10 +204,17 @@ void ABaseCrop::UpdateGrowTimeBySleep()
 	}
 }
 
+void ABaseCrop::OnRep_UpdateState()
+{
+	if (CurrentState == ECropState::Mature)
+	{
+		Root->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	}
+}
+
 void ABaseCrop::Server_CropIsMature_Implementation()
 {
-	bIsMature = true;
-	DisplayText = TEXT("수확하기");
+	SetCurrentState(ECropState::Mature);
 	NetMulticast_ChangeCropMeshToMature();
 }
 
@@ -243,10 +225,25 @@ void ABaseCrop::NetMulticast_ChangeCropMeshToMature_Implementation()
 
 void ABaseCrop::CropIsGetWater()
 {
+	if (bIsGetWater)
+	{
+		return;
+	}
+	
 	bIsGetWater = true;
 	CropStartGrowDay = TimeManager->GetDay();
 	CropStartGrowTime = (TimeManager->GetHour()) + (TimeManager->
 		GetMinute() /
 		60) + (TimeManager->GetSecond() / 3600);
+}
+
+void ABaseCrop::SetCurrentState(ECropState State)
+{
+	CurrentState = State;
+
+	if (CurrentState == ECropState::Mature)
+	{
+		Root->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	}
 }
 
