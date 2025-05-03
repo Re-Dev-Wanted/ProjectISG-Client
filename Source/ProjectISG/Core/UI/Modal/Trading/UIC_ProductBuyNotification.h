@@ -22,5 +22,5 @@ protected:
 	void OnClickedBuyButton();
 
 private:
-	int32 FindItemPrice(class AMainPlayerController* PC);
+	int32 FindItemPrice(class UUIM_ProductBuyNotification* ProductBuyNotificationModel);
 };

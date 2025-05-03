@@ -22,5 +22,5 @@ protected:
 	void OnClickedSellButton();
 
 private:
-	int32 FindItemPrice(class AMainPlayerController* PC);
+	int32 FindItemPrice(class UUIM_TradingUI* TradingUIModel);
 };

@@ -11,6 +11,11 @@
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Modal/Trading/UIC_ProductSellNotification.h"
+#include "ProjectISG/Core/UI/Modal/Trading/UIM_ProductSellNotification.h"
+#include "ProjectISG/Core/UI/Popup/Trading/UI/UIC_TradingUI.h"
+#include "ProjectISG/Core/UI/Popup/Trading/UI/UIM_TradingUI.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
@@ -72,7 +77,14 @@ void UInventorySlot::NativeOnDragDetected(const FGeometry& InGeometry,
 
 	// 드래그한 아이템 정보 컨트롤러에 전달
 	AMainPlayerController* PC = GetOwningPlayer<AMainPlayerController>();
-	PC->SetClickedInventoryItem(SlotItemId);
+	UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Popup_TradingUI]);
+
+	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(TradingUIController->GetModel());
+
+	if (TradingUIController && TradingUIModel)
+	{
+		TradingUIModel->SetClickedInventoryItem(SlotItemId);
+	}
 }
 
 bool UInventorySlot::NativeOnDrop(const FGeometry& InGeometry,

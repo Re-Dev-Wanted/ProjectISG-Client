@@ -3,6 +3,7 @@
 
 #include "UIC_ProductBuyNotification.h"
 
+#include "UIM_ProductBuyNotification.h"
 #include "UIV_ProductBuyNotification.h"
 #include "Components/Button.h"
 #include "ProjectISG/Contents/Trading/TradingManager.h"
@@ -40,14 +41,16 @@ void UUIC_ProductBuyNotification::OnClickedBuyButton()
 			AMainPlayerController>();
 		PC->PopUI();
 		
+		UUIM_ProductBuyNotification* ProductBuyNotificationModel = Cast<UUIM_ProductBuyNotification>(GetModel());
+		
 		AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 		PS->GetInventoryComponent()->AddItem(
-			UItemManager::GetInitialItemMetaDataById(PC->GetClickedProductId()));
+			UItemManager::GetInitialItemMetaDataById(ProductBuyNotificationModel->GetClickedProductId()));
 
 		Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
-
-		int32 ItemPrice = FindItemPrice(PC);
-
+		
+		int32 ItemPrice = FindItemPrice(ProductBuyNotificationModel);
+		
 		UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Popup_TradingUI]);
 		
 		if (PS->GetGold() >= ItemPrice)
@@ -64,11 +67,12 @@ void UUIC_ProductBuyNotification::OnClickedBuyButton()
 	}
 }
 
-int32 UUIC_ProductBuyNotification::FindItemPrice(class AMainPlayerController* PC)
+int32 UUIC_ProductBuyNotification::FindItemPrice(class UUIM_ProductBuyNotification* ProductBuyNotificationModel)
 {
+	
 	for (int i = 0; i < UTradingManager::GetProductData().Num(); i++)
 	{
-		if (UTradingManager::GetProductData()[i].GetProductId() == PC->GetClickedProductId())
+		if (UTradingManager::GetProductData()[i].GetProductId() == ProductBuyNotificationModel->GetClickedProductId())
 		{
 			return UTradingManager::GetProductData()[i].GetProductPrice();
 		}
