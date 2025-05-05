@@ -11,6 +11,15 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSleep);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAddSleepTimeToCrop);
 
+UENUM(BlueprintType)
+enum class ETimeOfDay : uint8
+{
+	Morning,
+	Afternoon,
+	Evening,
+	Night,
+};
+
 UCLASS()
 class PROJECTISG_API ATimeManager : public AActor
 {
@@ -53,6 +62,13 @@ private:
 	bool CheckAllPlayerIsLieOnBed();
 #pragma endregion
 
+	void CheckTimeOfDay();
+	void ChangeCurrentTimeOfDay(ETimeOfDay ChangeTimeOfDay);
+	void LoggingToMorning();
+	void LoggingToAfternoon();
+	void LoggingToEvening();
+	void LoggingToNight();
+
 public:
 	UFUNCTION(BlueprintCallable)
 	void ChangeTimeToForceSleepTime();
@@ -88,6 +104,10 @@ private:
 #pragma endregion
 
 #pragma region Time
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly,
+		meta = (AllowPrivateAccess = "true"), Category = "Time")
+	ETimeOfDay CurrentTimeOfDay = ETimeOfDay::Morning;
+
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = "true"), Category = "Time")
 	float Second = 0;

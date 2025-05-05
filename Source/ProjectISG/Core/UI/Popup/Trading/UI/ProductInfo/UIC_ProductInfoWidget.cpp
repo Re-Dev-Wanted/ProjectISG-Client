@@ -10,6 +10,9 @@
 #include "Components/TextBlock.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Modal/Trading/UIC_ProductBuyNotification.h"
+#include "ProjectISG/Core/UI/Modal/Trading/UIM_ProductBuyNotification.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
@@ -47,15 +50,21 @@ void UUIC_ProductInfoWidget::OnSelectProductData()
 {
 	// 선택 하면 구매 확인 widget을 생성해서 띄운다.
 	UE_LOG(LogTemp, Warning, TEXT("구매 확인창 띄우기"));
-
-	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
-		GetPlayerController()->GetPawn());
-	if (Player)
+	
+	AMainPlayerController* PC = Cast<AMainPlayerController>(GetPlayerController());
+	if (PC)
 	{
 		uint32 ProductId = Cast<UUIM_ProductInfoWidget>(
 		GetModel())->GetProductId();
-		Player->GetController<AMainPlayerController>()->SetClickedProductId(ProductId); 
-		Player->GetController<AMainPlayerController>()->PushUI(
-			EUIName::Modal_BuyNotification);
+		PC->PushUI(EUIName::Modal_BuyNotification);
+		
+		UUIC_ProductBuyNotification* ProductBuyNotificationController =
+			Cast<UUIC_ProductBuyNotification>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Modal_BuyNotification]);
+		UUIM_ProductBuyNotification* ProductBuyNotificationModel = Cast<UUIM_ProductBuyNotification>(ProductBuyNotificationController->GetModel());
+
+		if (ProductBuyNotificationController && ProductBuyNotificationModel)
+		{
+			ProductBuyNotificationModel->SetClickedProductId(ProductId);
+		}
 	}
 }
