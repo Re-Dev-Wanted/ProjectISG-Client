@@ -13,3 +13,7 @@ void IInteractionInterface::OnTouch(AActor* Causer)
 void IInteractionInterface::OnInteractiveResponse()
 {
 }
+
+void IInteractionInterface::OnTouchResponse()
+{
+}

@@ -3,7 +3,6 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
-#include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Contents/Trading/TradingNPC.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
@@ -67,13 +66,20 @@ void UInteractionComponent::OnInteractive()
 
 	ABaseInteractiveActor* InteractActor = Cast<ABaseInteractiveActor>(TargetTraceResult.GetActor());
 
-	if (!InteractActor)
+	if (InteractActor)
+	{
+		InteractActor->OnInteractive(GetOwner());
+		return;
+	}
+
+	IInteractionInterface* InteractionInterface = Cast<IInteractionInterface>(TargetTraceResult.GetActor());
+
+	if (!InteractionInterface)
 	{
 		return;
 	}
 
-	//Server_Interact(InteractActor, GetOwner());
-	InteractActor->OnInteractive(GetOwner());
+	InteractionInterface->OnInteractive(GetOwner());
 }
 
 void UInteractionComponent::OnTouch()
@@ -85,12 +91,20 @@ void UInteractionComponent::OnTouch()
 	
 	ABaseInteractiveActor* InteractActor = Cast<ABaseInteractiveActor>(TargetTraceResult.GetActor());
 
-	if (!InteractActor)
+	if (InteractActor)
+	{
+		InteractActor->OnTouch(GetOwner());
+		return;
+	}
+
+	IInteractionInterface* InteractionInterface = Cast<IInteractionInterface>(TargetTraceResult.GetActor());
+
+	if (!InteractionInterface)
 	{
 		return;
 	}
 
-	InteractActor->OnTouch(GetOwner());
+	InteractionInterface->OnTouch(GetOwner());
 }
 
 void UInteractionComponent::TickComponent(float DeltaTime,
@@ -136,7 +150,7 @@ void UInteractionComponent::LineTraceToFindTarget()
 			return;
 		}
 
-		const ABaseInteractiveActor* Interaction = Cast<ABaseInteractiveActor>(
+		const IInteractionInterface* Interaction = Cast<IInteractionInterface>(
 			TargetTraceResult.GetActor());
 
 		if (!Interaction)
