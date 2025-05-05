@@ -23,7 +23,8 @@ public:
 	virtual void OnTouch(AActor* Causer) override;
 
 	virtual void OnTouchResponse() override;
-	
+
+protected:
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* Root = nullptr;
 	

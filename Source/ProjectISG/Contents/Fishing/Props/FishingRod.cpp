@@ -4,8 +4,6 @@
 
 #include "Bobber.h"
 #include "CableComponent.h"
-#include "FishingSpotField.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 AFishingRod::AFishingRod()
@@ -16,6 +14,7 @@ AFishingRod::AFishingRod()
 	MeshComp->SetRelativeLocation(FVector(0.f, 0.f, 5.f));
 	MeshComp->SetRelativeScale3D(FVector::OneVector * 0.3f);
 	MeshComp->SetRelativeRotation(FRotator(0.f, -90.f, 180.f));
+	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	SocketComp = CreateDefaultSubobject<USceneComponent>(TEXT("SocketComp"));
 	SocketComp->SetupAttachment(MeshComp, TEXT("ThreadSocket"));
@@ -88,6 +87,26 @@ void AFishingRod::OnEventBite()
 void AFishingRod::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+bool AFishingRod::GetCanTouch() const
+{
+	return true;
+}
+
+FString AFishingRod::GetDisplayText() const
+{
+	return TEXT("올리기");
+}
+
+void AFishingRod::OnTouch(AActor* Causer)
+{
+	Super::OnTouch(Causer);
+}
+
+void AFishingRod::OnTouchResponse()
+{
+	Super::OnTouchResponse();
 }
 
 void AFishingRod::StartCasting(FVector Destination)

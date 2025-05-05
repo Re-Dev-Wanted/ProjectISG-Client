@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "PlayerHandSlotComponent.generated.h"
+
+class AMainPlayerCharacter;
+class UInputAction;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTISG_API UPlayerHandSlotComponent : public UActorComponent
@@ -21,15 +23,35 @@ public:
 	UFUNCTION()
 	void OnChange(uint16 ItemId);
 
+	UFUNCTION()
+	void BindingInputActions(
+		UEnhancedInputComponent* EnhancedInputComponent);
+
 	FString GetItemUsingType();
 	
 	bool IsHousingHandItem();
 
+	void SetIsUseInputAction(const bool NewIsUseInputAction);
+
 protected:
 	virtual void InitializeComponent() override;
 
-	TObjectPtr<class ABaseActor> HeldItem = nullptr;
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	UFUNCTION()
+	void OnAction();
 
 	UPROPERTY()
+	TObjectPtr<AMainPlayerCharacter> Player;
+	
+	UPROPERTY()
 	uint16 ItemId = 0;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<UInputAction> TouchAction;
+
+	bool IsUseInputAction = false;
+
+	TObjectPtr<class ABaseActor> HeldItem = nullptr;
 };

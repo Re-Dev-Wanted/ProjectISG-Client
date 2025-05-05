@@ -50,6 +50,14 @@ protected:
 
 public:
 	virtual void Tick(float DeltaTime) override;
+
+	virtual bool GetCanTouch() const override;
+	
+	virtual FString GetDisplayText() const override;
+	
+	virtual void OnTouch(AActor* Causer) override;
+	
+	virtual void OnTouchResponse() override;
 	
 	void StartCasting(FVector Destination);
 };

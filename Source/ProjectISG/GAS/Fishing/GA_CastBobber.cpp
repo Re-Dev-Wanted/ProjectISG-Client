@@ -43,6 +43,9 @@ void UGA_CastBobber::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 		PC->SetIgnoreLookInput(true);
 		PC->SetIgnoreMoveInput(true);
+
+		Player->GetInteractionComponent()->SetIsInteractive(false);
+		Player->GetHandSlotComponent()->SetIsUseInputAction(true);
 	}
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);

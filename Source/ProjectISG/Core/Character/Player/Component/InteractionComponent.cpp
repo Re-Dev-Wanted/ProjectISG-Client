@@ -59,6 +59,11 @@ void UInteractionComponent::OnChange(uint16 ItemId)
 
 void UInteractionComponent::OnInteractive()
 {
+	if (!IsInteractive)
+	{
+		return;
+	}
+	
 	if (!TargetTraceResult.GetActor())
 	{
 		return;
@@ -66,7 +71,7 @@ void UInteractionComponent::OnInteractive()
 
 	ABaseInteractiveActor* InteractActor = Cast<ABaseInteractiveActor>(TargetTraceResult.GetActor());
 
-	if (InteractActor)
+	if (InteractActor && InteractActor->GetCanInteractive())
 	{
 		InteractActor->OnInteractive(GetOwner());
 		return;
@@ -74,7 +79,7 @@ void UInteractionComponent::OnInteractive()
 
 	IInteractionInterface* InteractionInterface = Cast<IInteractionInterface>(TargetTraceResult.GetActor());
 
-	if (!InteractionInterface)
+	if (!InteractionInterface || !InteractionInterface->GetCanInteractive())
 	{
 		return;
 	}
@@ -84,6 +89,11 @@ void UInteractionComponent::OnInteractive()
 
 void UInteractionComponent::OnTouch()
 {
+	if (!IsInteractive)
+	{
+		return;
+	}
+	
 	if (!TargetTraceResult.GetActor())
 	{
 		return;
@@ -91,7 +101,7 @@ void UInteractionComponent::OnTouch()
 	
 	ABaseInteractiveActor* InteractActor = Cast<ABaseInteractiveActor>(TargetTraceResult.GetActor());
 
-	if (InteractActor)
+	if (InteractActor && InteractActor->GetCanTouch())
 	{
 		InteractActor->OnTouch(GetOwner());
 		return;
@@ -99,7 +109,7 @@ void UInteractionComponent::OnTouch()
 
 	IInteractionInterface* InteractionInterface = Cast<IInteractionInterface>(TargetTraceResult.GetActor());
 
-	if (!InteractionInterface)
+	if (!InteractionInterface || !InteractionInterface->GetCanTouch())
 	{
 		return;
 	}

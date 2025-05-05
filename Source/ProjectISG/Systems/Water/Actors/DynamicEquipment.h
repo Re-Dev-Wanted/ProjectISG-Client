@@ -1,11 +1,11 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "ProjectISG/GAS/Common/Object/BaseActor.h"
+#include "ProjectISG/GAS/Common/Object/BaseInteractiveActor.h"
 #include "DynamicEquipment.generated.h"
 
 UCLASS()
-class PROJECTISG_API ADynamicEquipment : public ABaseActor
+class PROJECTISG_API ADynamicEquipment : public ABaseInteractiveActor
 {
 	GENERATED_BODY()
 
