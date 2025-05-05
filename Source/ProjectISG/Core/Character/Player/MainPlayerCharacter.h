@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Core/Character/BaseCharacter.h"
-#include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerCharacter.generated.h"
 

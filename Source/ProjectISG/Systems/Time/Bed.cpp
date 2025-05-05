@@ -1,5 +1,6 @@
 #include "Bed.h"
 
+#include "SleepManager.h"
 #include "TimeManager.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -45,7 +46,7 @@ void ABed::BeginPlay()
 		UGameplayStatics::GetActorOfClass(GetWorld(),
 		                                  ATimeManager::StaticClass()));
 
-	TimeManager->SleepDelegate.AddDynamic(this, &ABed::MovePlayerToBed);
+	TimeManager->GetSleepManager()->SleepDelegate.AddDynamic(this, &ABed::MovePlayerToBed);
 	Root->OnComponentBeginOverlap.AddDynamic(this, &ABed::OnBedBeginOverlap);
 	Root->OnComponentEndOverlap.AddDynamic(this, &ABed::OnBedEndOverlap);
 }

@@ -7,8 +7,6 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "TimeManager.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSleep);
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAddSleepTimeToCrop);
 
 UENUM(BlueprintType)
@@ -29,6 +27,9 @@ public:
 	// Sets default values for this actor's properties
 	ATimeManager();
 
+	UFUNCTION(BlueprintCallable)
+	void StopTime(bool value);
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -44,42 +45,29 @@ private:
 
 	void RotateSun();
 
-	UFUNCTION(BlueprintCallable)
-	void StopTime(bool value);
-
-	// 나중에 sleep class를 따로 만들어서 옮길 예정
-#pragma region SleepFunc
-	void Sleep();
-
-	void ForceSleep();
-
-	void SleepCinematic(float DeltaTime);
-
-	void AssignBedEachPlayer();
-
-	void ChangeAllPlayerSleepValue(bool value);
-
-	bool CheckAllPlayerIsLieOnBed();
-#pragma endregion
-
 	void CheckTimeOfDay();
+	
 	void ChangeCurrentTimeOfDay(ETimeOfDay ChangeTimeOfDay);
+
+#pragma region Log
 	void LoggingToMorning();
+	
 	void LoggingToAfternoon();
+	
 	void LoggingToEvening();
+	
 	void LoggingToNight();
+#pragma endregion 
 
 public:
-	UFUNCTION(BlueprintCallable)
-	void ChangeTimeToForceSleepTime();
-	UFUNCTION(BlueprintCallable)
-	void ChangeTimeToCanSleepTime();
+	void ChangeDayBySleep();
 
 	GETTER(int32, Day);
 	GETTER(int32, Hour);
 	GETTER(int32, Minute);
 	GETTER(float, Second);
 	GETTER(int32, TimeStoppedTime);
+	GETTER(class USleepManager*, SleepManager);
 
 	FString GetDateText() const;
 	uint32 GetTotalPlayingDay() const;
@@ -148,35 +136,18 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = "true"), Category = "Time")
 	int32 WakeUpTime = 6;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,
-		meta = (AllowPrivateAccess = "true"), Category = "Time")
-	int32 CanSleepTime = 9;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = "true"), Category = "Time")
 	int32 TimeStoppedTime = 0;
 #pragma endregion
 
 #pragma region Sleep
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,
-		meta = (AllowPrivateAccess = true), Category = Sleep)
-	bool bSleepCinematicStart = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,
-		meta = (AllowPrivateAccess = true), Category = Sleep)
-	float CinematicElapsedTime = 0.f;
-
-	// 임시 변수
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,
-		meta = (AllowPrivateAccess = true), Category = Sleep)
-	float CinematicEndTime = 3.f;
-#pragma endregion
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess), Category = Sleep)
+	class USleepManager* SleepManager = nullptr;
+#pragma endregion 
 
 public:
-	UPROPERTY()
-	FSleep SleepDelegate;
-
 	UPROPERTY()
 	FAddSleepTimeToCrop AddSleepTimeToCrop;
 };

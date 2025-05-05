@@ -3,15 +3,10 @@
 
 #include "TimeManager.h"
 
-#include "Bed.h"
-#include "GameFramework/GameStateBase.h"
-#include "Kismet/GameplayStatics.h"
+#include "SleepManager.h"
 #include "Net/UnrealNetwork.h"
-#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
-#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Systems/Logging/LoggingEnum.h"
 #include "ProjectISG/Systems/Logging/LoggingStruct.h"
-#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 
 
 ATimeManager::ATimeManager()
@@ -22,6 +17,9 @@ ATimeManager::ATimeManager()
 	SetNetAddressable();
 
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+
+	SleepManager = CreateDefaultSubobject<USleepManager>(TEXT("SleepManager"));
+	
 	SetRootComponent(Root);
 }
 
@@ -72,18 +70,11 @@ void ATimeManager::Tick(float DeltaTime)
 		return;
 	}
 
-	if (!TimeStop && !bSleepCinematicStart)
+	if (!TimeStop && !SleepManager->GetbSleepCinematicStart())
 	{
 		UpdateCycleTime(DeltaTime);
 		CheckTimeOfDay();
 		RotateSun();
-		Sleep();
-		//ForceSleep();
-	}
-	else if (bSleepCinematicStart)
-	{
-		// 시네마틱 시간 확인 함수
-		SleepCinematic(DeltaTime);
 	}
 }
 
@@ -163,116 +154,6 @@ void ATimeManager::StopTime(bool value)
 	}
 }
 
-void ATimeManager::Sleep()
-{
-	if (CheckAllPlayerIsLieOnBed() && Hour >= CanSleepTime)
-	{
-		ChangeAllPlayerSleepValue(true);
-		bSleepCinematicStart = true;
-		StopTime(true);
-	}
-}
-
-void ATimeManager::ForceSleep()
-{
-	// 강제 수면시간 저녁 11시로 하드 코딩
-	if (Hour >= 23)
-	{
-		// 시간을 멈춘다
-		StopTime(true);
-
-		// 침대에 각 플레이어를 배정 시킨다
-		AssignBedEachPlayer();
-
-		// 플레이어를 강제로 침대로 이동시킨다.
-		SleepDelegate.Broadcast();
-
-		// 플레이어 상태를 수면상태로 바꾼다
-		ChangeAllPlayerSleepValue(true);
-
-		// 시네마틱을 진행시킨다.
-		bSleepCinematicStart = true;
-	}
-}
-
-void ATimeManager::SleepCinematic(float DeltaTime)
-{
-	CinematicElapsedTime += DeltaTime;
-	if (CinematicElapsedTime >= CinematicEndTime)
-	{
-		StopTime(false);
-		AddSleepTimeToCrop.Broadcast();
-		ChangeAllPlayerSleepValue(false);
-		bSleepCinematicStart = false;
-		Hour = 6;
-		Minute = 0;
-		Second = 0;
-		Day++;
-		CinematicElapsedTime = 0.f;
-		LoggingToMorning();
-	}
-}
-
-void ATimeManager::AssignBedEachPlayer()
-{
-	// 강제 수면 시, 각 플레이어에게 침대를 배정해주는 작업
-	if (HasAuthority() == false)
-	{
-		return;
-	}
-
-	TArray<AActor*> Beds;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABed::StaticClass(),
-	                                      Beds);
-
-	int32 idx = 0;
-	AGameStateBase* GameState = GetWorld()->GetGameState();
-	for (APlayerState* PlayerState : GameState->PlayerArray)
-	{
-		ABed* bed = Cast<ABed>(Beds[idx]);
-		AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(
-			PlayerState->GetPawn());
-		if (player && bed)
-		{
-			bed->SetMainPlayer(player);
-			idx++;
-		}
-	}
-}
-
-void ATimeManager::ChangeAllPlayerSleepValue(bool value)
-{
-	AGameStateBase* GameState = GetWorld()->GetGameState();
-	for (APlayerState* PlayerState : GameState->PlayerArray)
-	{
-		AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(
-			PlayerState->GetPawn());
-		if (player)
-		{
-			player->SetbIsSleep(value);
-		}
-	}
-}
-
-bool ATimeManager::CheckAllPlayerIsLieOnBed()
-{
-	AGameStateBase* GameState = GetWorld()->GetGameState();
-	for (APlayerState* PlayerState : GameState->PlayerArray)
-	{
-		AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(
-			PlayerState->GetPawn());
-		if (player)
-		{
-			if (player->GetbLieOnBed() == false)
-			{
-				return false;
-			}
-		}
-	}
-
-	return true;
-}
-
 void ATimeManager::CheckTimeOfDay()
 {
 	if (Hour >= 6 && Hour <= 12)
@@ -311,22 +192,22 @@ void ATimeManager::ChangeCurrentTimeOfDay(ETimeOfDay ChangeTimeOfDay)
 	{
 	case ETimeOfDay::Morning:
 		{
-			CurrentTimeOfDay = ETimeOfDay::Morning;
+			CurrentTimeOfDay = ChangeTimeOfDay;
 			LoggingToMorning();
 		}
 	case ETimeOfDay::Afternoon:
 		{
-			ChangeTimeOfDay = ETimeOfDay::Afternoon;
+			CurrentTimeOfDay = ChangeTimeOfDay;
 			LoggingToAfternoon();
 		}
 	case ETimeOfDay::Evening:
 		{
-			ChangeTimeOfDay = ETimeOfDay::Evening;
+			CurrentTimeOfDay = ChangeTimeOfDay;
 			LoggingToEvening();
 		}
 	case ETimeOfDay::Night:
 		{
-			CurrentTimeOfDay = ETimeOfDay::Night;
+			CurrentTimeOfDay = ChangeTimeOfDay;
 			LoggingToNight();
 		}
 	}
@@ -360,14 +241,12 @@ void ATimeManager::LoggingToNight()
 	LogParams.ActionName = ELoggingActionName::night;
 }
 
-void ATimeManager::ChangeTimeToForceSleepTime()
+void ATimeManager::ChangeDayBySleep()
 {
-	Hour = 23;
-}
-
-void ATimeManager::ChangeTimeToCanSleepTime()
-{
-	Hour = 9;
+	Hour = 6;
+	Minute = 0;
+	Second = 0;
+	Day++;
 }
 
 FString ATimeManager::GetDateText() const
