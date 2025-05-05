@@ -21,7 +21,7 @@
 #include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 
 void UUIC_ProductBuyNotification::InitializeController(UBaseUIView* NewView,
-                                                       UBaseUIModel* NewModel)
+	UBaseUIModel* NewModel)
 {
 	Super::InitializeController(NewView, NewModel);
 
@@ -43,19 +43,23 @@ void UUIC_ProductBuyNotification::OnClickedBuyButton()
 		AMainPlayerController* PC = Player->GetController<
 			AMainPlayerController>();
 		PC->PopUI();
-		
-		UUIM_ProductBuyNotification* ProductBuyNotificationModel = Cast<UUIM_ProductBuyNotification>(GetModel());
-		
+
+		UUIM_ProductBuyNotification* ProductBuyNotificationModel = Cast<
+			UUIM_ProductBuyNotification>(GetModel());
+
 		AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 		PS->GetInventoryComponent()->AddItem(
-			UItemManager::GetInitialItemMetaDataById(ProductBuyNotificationModel->GetClickedProductId()));
+			UItemManager::GetInitialItemMetaDataById(
+				ProductBuyNotificationModel->GetClickedProductId()));
 
 		Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
-		
+
 		int32 ItemPrice = FindItemPrice(ProductBuyNotificationModel);
-		
-		UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Popup_TradingUI]);
-		
+
+		UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(
+			PC->GetUIManageComponent()->ControllerInstances[
+				EUIName::Popup_TradingUI]);
+
 		if (PS->GetGold() >= ItemPrice)
 		{
 			PS->SetGold(PS->GetGold() - ItemPrice);
@@ -69,12 +73,13 @@ void UUIC_ProductBuyNotification::OnClickedBuyButton()
 	}
 }
 
-int32 UUIC_ProductBuyNotification::FindItemPrice(class UUIM_ProductBuyNotification* ProductBuyNotificationModel)
+int32 UUIC_ProductBuyNotification::FindItemPrice(
+	class UUIM_ProductBuyNotification* ProductBuyNotificationModel)
 {
-	
 	for (int i = 0; i < UTradingManager::GetProductData().Num(); i++)
 	{
-		if (UTradingManager::GetProductData()[i].GetProductId() == ProductBuyNotificationModel->GetClickedProductId())
+		if (UTradingManager::GetProductData()[i].GetProductId() ==
+			ProductBuyNotificationModel->GetClickedProductId())
 		{
 			return UTradingManager::GetProductData()[i].GetProductPrice();
 		}
@@ -89,9 +94,4 @@ void UUIC_ProductBuyNotification::LoggingToBuyItem()
 	LogParams.Location = "거래장";
 	LogParams.ActionType = ELoggingActionType::TRADE;
 	LogParams.ActionName = ELoggingActionName::buy_item;
-
-	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-				LoggingData(LogParams);
-
-	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 }

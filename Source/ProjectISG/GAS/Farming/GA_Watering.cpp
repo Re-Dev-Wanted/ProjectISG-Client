@@ -20,13 +20,17 @@ void UGA_Watering::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                    const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	
+
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		ActorInfo->AvatarActor.Get());
-	UE_LOG(LogTemp, Warning, TEXT("물주기, %s"), *FEnumUtil::GetClassEnumKeyAsString(Player->GetLocalRole()));
+	UE_LOG(LogTemp, Warning, TEXT("물주기, %s"),
+	       *FEnumUtil::GetClassEnumKeyAsString(Player->GetLocalRole()));
 
 
-	if (!IsValid(Player)) return;
+	if (!IsValid(Player))
+	{
+		return;
+	}
 
 	AT_WateringAnim = UPlayMontageWithEvent::InitialEvent
 	(
@@ -38,7 +42,8 @@ void UGA_Watering::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	);
 	AT_WateringAnim->Activate();
 	BlockInputForMontage(true);
-	AT_WateringAnim->OnCompleted.AddDynamic(this, &ThisClass::OnEndWateringAnim);
+	AT_WateringAnim->OnCompleted.
+	                 AddDynamic(this, &ThisClass::OnEndWateringAnim);
 }
 
 void UGA_Watering::EndAbility(const FGameplayAbilitySpecHandle Handle,
@@ -51,10 +56,11 @@ void UGA_Watering::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	                  bWasCancelled);
 }
 
-void UGA_Watering::OnEndWateringAnim(FGameplayTag EventTag, FGameplayEventData EventData)
+void UGA_Watering::OnEndWateringAnim(FGameplayTag EventTag,
+                                     FGameplayEventData EventData)
 {
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
-	CurrentActorInfo->AvatarActor.Get());
+		CurrentActorInfo->AvatarActor.Get());
 
 	if (EventData.Target)
 	{
@@ -64,10 +70,11 @@ void UGA_Watering::OnEndWateringAnim(FGameplayTag EventTag, FGameplayEventData E
 		AHoedField* HoedField = const_cast<AHoedField*>(ConstField);
 		HoedField->SetWet(true);
 	}
-	
+
 	BlockInputForMontage(false);
 	LoggingToWatering();
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true,
+	           false);
 }
 
 void UGA_Watering::LoggingToWatering()
@@ -76,9 +83,4 @@ void UGA_Watering::LoggingToWatering()
 	LogParams.Location = "경작지";
 	LogParams.ActionType = ELoggingActionType::FARMING;
 	LogParams.ActionName = ELoggingActionName::water_crop;
-
-	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-				LoggingData(LogParams);
-
-	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 }

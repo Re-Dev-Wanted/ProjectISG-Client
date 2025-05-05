@@ -35,8 +35,9 @@ void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const bool isInteraction = UItemManager::IsItemCanInteraction(
 		id);
 
-	UE_LOG(LogTemp, Warning, TEXT("씨앗 심기 check, %d"), TriggerEventData->Target == nullptr);
-	
+	UE_LOG(LogTemp, Warning, TEXT("씨앗 심기 check, %d"),
+	       TriggerEventData->Target == nullptr);
+
 	if (isInteraction)
 	{
 		AT_SeedingAnim = UPlayMontageWithEvent::InitialEvent(
@@ -45,7 +46,7 @@ void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			FGameplayTagContainer(),
 			*TriggerEventData
 		);
-		
+
 		AT_SeedingAnim->Activate();
 		BlockInputForMontage(true);
 		AT_SeedingAnim->OnCompleted.AddDynamic(this, &ThisClass::CreateSeed);
@@ -75,9 +76,10 @@ void UGA_Seeding::CreateSeed(FGameplayTag EventTag,
 
 	if (Player)
 	{
-		const uint16 ItemId = Player->GetPlayerInventoryComponent()->GetCurrentSlotIndex();
+		const uint16 ItemId = Player->GetPlayerInventoryComponent()->
+		                              GetCurrentSlotIndex();
 		FItemInfoData itemData = UItemManager::GetItemInfoById(ItemId);
-		
+
 		const AActor* Target = EventData.Target.Get();
 		const AHoedField* ConstField = Cast<AHoedField>(Target);
 
@@ -86,9 +88,9 @@ void UGA_Seeding::CreateSeed(FGameplayTag EventTag,
 		if (HoedField->PlantCrop(itemData, ItemId))
 		{
 			Player->GetPlayerInventoryComponent()->
-					RemoveItemCurrentSlotIndex(1);
+			        RemoveItemCurrentSlotIndex(1);
 		}
-		
+
 		BlockInputForMontage(false);
 		LoggingToSeeding();
 	}
@@ -103,8 +105,4 @@ void UGA_Seeding::LoggingToSeeding()
 	LogParams.Location = "경작지";
 	LogParams.ActionType = ELoggingActionType::FARMING;
 	LogParams.ActionName = ELoggingActionName::plant_crop;
-	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-				LoggingData(LogParams);
-
-	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 }

@@ -43,9 +43,4 @@ void UGA_Harvest::LoggingToHarvest()
 	LogParams.Location = "경작지";
 	LogParams.ActionType = ELoggingActionType::FARMING;
 	LogParams.ActionName = ELoggingActionName::harvest_crop;
-
-	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-				LoggingData(LogParams);
-
-	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 }
