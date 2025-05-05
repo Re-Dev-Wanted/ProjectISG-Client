@@ -30,6 +30,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* PocketSocketComp;
+
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* CastingStartPoint;
 	
 	UPROPERTY(VisibleAnywhere)
 	UCableComponent* Thread;
@@ -39,4 +42,6 @@ protected:
 
 public:
 	virtual void Tick(float DeltaTime) override;
+	
+	void StartCasting(FVector Destination);
 };

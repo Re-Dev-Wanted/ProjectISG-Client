@@ -1,8 +1,11 @@
 ﻿#include "FishingSpotField.h"
 
+#include "AbilitySystemComponent.h"
+#include "Abilities/GameplayAbilityTypes.h"
 #include "Components/BoxComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
+#include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 
 AFishingSpotField::AFishingSpotField()
 {
@@ -33,7 +36,12 @@ void AFishingSpotField::OnTouch(AActor* Causer)
 
 		if (HandItemUsingType == "Fishing")
 		{
+			FGameplayEventData EventData;
+			EventData.EventTag = ISGGameplayTags::Fishing_Active_CastBobber;
+			EventData.Instigator = Player;
+			EventData.Target = this;
 			
+			Player->GetAbilitySystemComponent()->HandleGameplayEvent(ISGGameplayTags::Fishing_Active_CastBobber, &EventData);
 		}
 	}
 }

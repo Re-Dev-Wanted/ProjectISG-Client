@@ -14,8 +14,10 @@ class PROJECTISG_API ABobber : public AFloatingActor
 public:
 	ABobber();
 
+	void SuggestProjectileVelocity(const FVector& StartLocation, const FVector& EndLocation);
+
 protected:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* LineAttachPoint;
-	
+
 };

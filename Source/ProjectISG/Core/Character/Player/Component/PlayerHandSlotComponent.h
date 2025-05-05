@@ -16,6 +16,8 @@ class PROJECTISG_API UPlayerHandSlotComponent : public UActorComponent
 public:
 	UPlayerHandSlotComponent();
 
+	GETTER(TObjectPtr<class ABaseActor>, HeldItem)
+
 	UFUNCTION()
 	void OnChange(uint16 ItemId);
 

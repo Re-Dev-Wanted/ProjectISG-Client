@@ -21,6 +21,9 @@ AFishingRod::AFishingRod()
 	PocketSocketComp = CreateDefaultSubobject<USceneComponent>(TEXT("PocketSocketComp"));
 	PocketSocketComp->SetupAttachment(MeshComp, TEXT("PocketSocket"));
 
+	CastingStartPoint = CreateDefaultSubobject<USceneComponent>(TEXT("CastingStartPoint"));
+	CastingStartPoint->SetupAttachment(MeshComp);
+
 	Thread = CreateDefaultSubobject<UCableComponent>(TEXT("ThreadComp"));
 	Thread->SetupAttachment(SocketComp);
 	Thread->bAttachEnd = true;
@@ -38,6 +41,8 @@ void AFishingRod::BeginPlay()
 		Bobber = GetWorld()->SpawnActor<ABobber>(BobberFactory);
 		Bobber->SetCollisionAndPhysicsEnabled(false);
 		Bobber->AttachToComponent(PocketSocketComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+		Thread->SetAttachEndTo(Bobber, TEXT("LineAttachPoint"));
 	}
 }
 
@@ -56,3 +61,15 @@ void AFishingRod::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void AFishingRod::StartCasting(FVector Destination)
+{
+	if (!Bobber)
+	{
+		return;
+	}
+
+	Bobber->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	Bobber->SetActorLocation(CastingStartPoint->GetComponentLocation());
+	
+	Bobber->SuggestProjectileVelocity(CastingStartPoint->GetComponentLocation(),Destination);
+}
