@@ -19,7 +19,7 @@ ATimeManager::ATimeManager()
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
 	SleepManager = CreateDefaultSubobject<USleepManager>(TEXT("SleepManager"));
-	
+
 	SetRootComponent(Root);
 }
 
@@ -99,10 +99,6 @@ void ATimeManager::UpdateCycleTime(float DeltaTime)
 		Hour = 0;
 		UpdateCycleDate();
 	}
-
-	// UE_LOG(LogTemp, Warning, TEXT("localRole : %s , Day : %d, %d:%d:%f"),
-	//        *FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()), Day, Hour,
-	//        Minute, Second);
 }
 
 void ATimeManager::UpdateCycleDate()

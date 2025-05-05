@@ -52,7 +52,7 @@ void ABaseCrop::BeginPlay()
 		UE_LOG(LogTemp, Warning, TEXT("타임 매니저가 없습니다"));
 		return;
 	}
-	
+
 	CropRemainGrowTime = CropTotalGrowDay * 24;
 
 	TimeManager->AddSleepTimeToCrop.AddDynamic(
@@ -146,7 +146,8 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("작물 상호작용 함수 실행 , 로컬롤 : %s"), *FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
+	UE_LOG(LogTemp, Warning, TEXT("작물 상호작용 함수 실행 , 로컬롤 : %s"),
+	       *FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
 
 	Causer->SetActorLocation(InteractionPos->GetComponentLocation());
 	Causer->SetActorRotation(InteractionPos->GetComponentRotation());
@@ -155,17 +156,17 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 	FGameplayTagContainer ActivateTag;
 	ActivateTag.AddTag(ISGGameplayTags::Farming_Active_Harvest);
 	Player->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
-	AddItem(UItemManager::GetInitialItemMetaDataById(CropId));
-	
-	Player->GetInteractionComponent()->Server_OnInteractiveResponse();
+	        AddItem(UItemManager::GetInitialItemMetaDataById(CropId));
+
+	Player->GetInteractionComponent()->Server_OnInteractiveResponse(Causer);
 	Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
 		ActivateTag);
 }
 
-void ABaseCrop::OnInteractiveResponse()
+void ABaseCrop::OnInteractiveResponse(AActor* Causer)
 {
-	IInteractionInterface::OnInteractiveResponse();
-	
+	IInteractionInterface::OnInteractiveResponse(Causer);
+
 	Destroy();
 }
 
@@ -230,7 +231,7 @@ void ABaseCrop::CropIsGetWater()
 	{
 		return;
 	}
-	
+
 	bIsGetWater = true;
 	CropStartGrowDay = TimeManager->GetDay();
 	CropStartGrowTime = (TimeManager->GetHour()) + (TimeManager->
@@ -247,4 +248,3 @@ void ABaseCrop::SetCurrentState(ECropState State)
 		Root->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	}
 }
-

@@ -9,6 +9,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSleep);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWakeUp);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTISG_API USleepManager : public UActorComponent
 {
@@ -19,7 +21,7 @@ public:
 
 protected:
 	virtual void InitializeComponent() override;
-	
+
 	virtual void BeginPlay() override;
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
@@ -38,14 +40,18 @@ private:
 	void ChangeAllPlayerSleepValue(bool value);
 
 	bool CheckAllPlayerIsLieOnBed();
-	
+
+	void LoggingToSleep();
+
+	void LoggingToWakeUp();
+
 public:
 	GETTER(bool, bSleepCinematicStart);
 
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess), Category = Setting)
 	class ATimeManager* TimeManager;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = true), Category = Sleep)
 	bool bSleepCinematicStart = false;
@@ -54,7 +60,7 @@ private:
 		meta = (AllowPrivateAccess = true), Category = Sleep)
 	float CinematicElapsedTime = 0.f;
 
-	// 임시 변수
+	// 임시 변수, 시네마틱이 추가 되면 해당 시네마틱 시간을 가져와야함
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = true), Category = Sleep)
 	float CinematicEndTime = 3.f;
@@ -66,4 +72,7 @@ private:
 public:
 	UPROPERTY()
 	FSleep SleepDelegate;
+
+	UPROPERTY()
+	FWakeUp WakeUpDelegate;
 };

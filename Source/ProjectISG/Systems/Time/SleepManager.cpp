@@ -1,6 +1,4 @@
-﻿
-
-#include "SleepManager.h"
+﻿#include "SleepManager.h"
 
 #include "Bed.h"
 #include "TimeManager.h"
@@ -8,6 +6,8 @@
 #include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Systems/Logging/LoggingEnum.h"
+#include "ProjectISG/Systems/Logging/LoggingStruct.h"
 
 
 USleepManager::USleepManager()
@@ -15,7 +15,6 @@ USleepManager::USleepManager()
 	PrimaryComponentTick.bCanEverTick = true;
 	bWantsInitializeComponent = true;
 	SetIsReplicatedByDefault(true);
-
 }
 
 void USleepManager::InitializeComponent()
@@ -31,7 +30,6 @@ void USleepManager::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-	
 }
 
 
@@ -40,6 +38,11 @@ void USleepManager::TickComponent(float DeltaTime, ELevelTick TickType,
                                   FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (TimeManager->HasAuthority() == false)
+	{
+		return;
+	}
 
 	if (bSleepCinematicStart)
 	{
@@ -58,6 +61,7 @@ void USleepManager::Sleep()
 	{
 		ChangeAllPlayerSleepValue(true);
 		bSleepCinematicStart = true;
+		LoggingToSleep();
 		TimeManager->StopTime(true);
 	}
 }
@@ -80,6 +84,8 @@ void USleepManager::ForceSleep()
 
 		// 시네마틱을 진행시킨다.
 		bSleepCinematicStart = true;
+
+		LoggingToSleep();
 	}
 }
 
@@ -90,6 +96,9 @@ void USleepManager::SleepCinematic(float DeltaTime)
 	{
 		TimeManager->StopTime(false);
 		TimeManager->AddSleepTimeToCrop.Broadcast();
+		WakeUpDelegate.Broadcast();
+		LoggingToWakeUp();
+		
 		ChangeAllPlayerSleepValue(false);
 		bSleepCinematicStart = false;
 		TimeManager->ChangeDayBySleep();
@@ -101,7 +110,7 @@ void USleepManager::AssignBedEachPlayer()
 {
 	TArray<AActor*> Beds;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABed::StaticClass(),
-										  Beds);
+	                                      Beds);
 
 	int32 idx = 0;
 	AGameStateBase* GameState = GetWorld()->GetGameState();
@@ -141,7 +150,7 @@ bool USleepManager::CheckAllPlayerIsLieOnBed()
 			PlayerState->GetPawn());
 		if (player)
 		{
-			if (player->GetbLieOnBed() == false)
+			if (player->GetbLieInBed() == false)
 			{
 				return false;
 			}
@@ -150,3 +159,16 @@ bool USleepManager::CheckAllPlayerIsLieOnBed()
 	return true;
 }
 
+void USleepManager::LoggingToSleep()
+{
+	FDiaryLogParams LogParams;
+	LogParams.ActionType = ELoggingActionType::DAY_CYCLE;
+	LogParams.ActionName = ELoggingActionName::sleep;
+}
+
+void USleepManager::LoggingToWakeUp()
+{
+	FDiaryLogParams LogParams;
+	LogParams.ActionType = ELoggingActionType::DAY_CYCLE;
+	LogParams.ActionName = ELoggingActionName::start_day;
+}

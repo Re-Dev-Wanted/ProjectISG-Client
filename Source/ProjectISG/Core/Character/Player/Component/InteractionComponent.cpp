@@ -52,8 +52,8 @@ void UInteractionComponent::OnChange(uint16 ItemId)
 {
 	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
 
-	const bool bIsStructure = ItemInfoData.GetItemType() != 
-	EItemType::Equipment && UItemManager::IsItemCanHousing(ItemId);
+	const bool bIsStructure = ItemInfoData.GetItemType() !=
+		EItemType::Equipment && UItemManager::IsItemCanHousing(ItemId);
 
 	SetIsInteractive(!bIsStructure);
 }
@@ -65,7 +65,8 @@ void UInteractionComponent::OnInteractive()
 		return;
 	}
 
-	ABaseInteractiveActor* InteractActor = Cast<ABaseInteractiveActor>(TargetTraceResult.GetActor());
+	ABaseInteractiveActor* InteractActor = Cast<ABaseInteractiveActor>(
+		TargetTraceResult.GetActor());
 
 	if (!InteractActor)
 	{
@@ -82,8 +83,9 @@ void UInteractionComponent::OnTouch()
 	{
 		return;
 	}
-	
-	ABaseInteractiveActor* InteractActor = Cast<ABaseInteractiveActor>(TargetTraceResult.GetActor());
+
+	ABaseInteractiveActor* InteractActor = Cast<ABaseInteractiveActor>(
+		TargetTraceResult.GetActor());
 
 	if (!InteractActor)
 	{
@@ -123,7 +125,7 @@ void UInteractionComponent::LineTraceToFindTarget()
 
 	const AMainPlayerController* PC = PlayerCharacter->GetController<
 		AMainPlayerController>();
-	
+
 	if (!PC)
 	{
 		return;
@@ -206,26 +208,29 @@ void UInteractionComponent::SetIsInteractive(const bool NewIsInteractive)
 	}
 }
 
-void UInteractionComponent::Server_OnInteractiveResponse_Implementation()
+void UInteractionComponent::Server_OnInteractiveResponse_Implementation(
+	class AActor* Causer)
 {
 	IInteractionInterface* Interaction = Cast<IInteractionInterface>(
 		TargetTraceResult.GetActor());
 
 	if (Interaction)
 	{
-		Interaction->OnInteractiveResponse();
+		Interaction->OnInteractiveResponse(Causer);
 	}
 }
 
-void UInteractionComponent::Server_Interact_Implementation(class ABaseInteractiveActor* 
-InteractActor, AActor* Causer)
+void UInteractionComponent::Server_Interact_Implementation(
+	class ABaseInteractiveActor*
+	InteractActor, AActor* Causer)
 {
 	// 정상 처리
 	InteractActor->OnInteractive(Causer);
 }
 
-void UInteractionComponent::Server_Touch_Implementation(class ABaseInteractiveActor* 
-InteractActor, AActor* Causer)
+void UInteractionComponent::Server_Touch_Implementation(
+	class ABaseInteractiveActor*
+	InteractActor, AActor* Causer)
 {
 	InteractActor->OnTouch(Causer);
 }

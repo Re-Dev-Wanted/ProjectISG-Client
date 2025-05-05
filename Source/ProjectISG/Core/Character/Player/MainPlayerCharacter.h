@@ -24,8 +24,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInputBindingNotified,
                                             UEnhancedInputComponent*,
                                             EnhancedInputComponent);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpdateSelectedItem, uint16, 
-ItemId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpdateSelectedItem, uint16,
+                                            ItemId);
 
 UCLASS()
 class PROJECTISG_API AMainPlayerCharacter : public ABaseCharacter
@@ -59,7 +59,7 @@ protected:
 
 public:
 	GETTER_SETTER(bool, bIsSleep)
-	GETTER_SETTER(bool, bLieOnBed)
+	GETTER_SETTER(bool, bLieInBed)
 	GETTER(TObjectPtr<UPlacementIndicatorComponent>,
 	       PlacementIndicatorComponent)
 	GETTER(TObjectPtr<UPlayerInventoryComponent>, PlayerInventoryComponent)
@@ -71,8 +71,6 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_SetActorTransformReplicated(const FTransform& Transform);
-
-
 
 private:
 #pragma region ActorComponent
@@ -129,7 +127,7 @@ private:
 	bool bIsSleep = false;
 	UPROPERTY(EditAnywhere, Category = "Sleep",
 		meta = (AllowPrivateAccess = true))
-	bool bLieOnBed = false;
+	bool bLieInBed = false;
 
 	UPROPERTY(EditAnywhere, Category = "Farming",
 		meta = (AllowPrivateAccess = true))
