@@ -3,23 +3,40 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ProjectISG/Systems/Grid/Actors/BaseEquipment.h"
+#include "ProjectISG/Systems/Water/Actors/DynamicEquipment.h"
 #include "FishingRod.generated.h"
 
+class ABobber;
+class UCableComponent;
+
 UCLASS()
-class PROJECTISG_API AFishingRod : public ABaseEquipment
+class PROJECTISG_API AFishingRod : public ADynamicEquipment
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	AFishingRod();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void Destroyed() override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<ABobber> BobberFactory;
+
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* SocketComp;
+
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* PocketSocketComp;
+	
+	UPROPERTY(VisibleAnywhere)
+	UCableComponent* Thread;
+	
+	UPROPERTY()
+	TObjectPtr<ABobber> Bobber;
+
 public:
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 };

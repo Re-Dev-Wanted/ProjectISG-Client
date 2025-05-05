@@ -17,6 +17,7 @@ class PROJECTISG_API AFloatingActor : public ABaseActor, public IBuoyantInterfac
 	GENERATED_BODY()
 
 public:
+	GETTER(TObjectPtr<UBoxComponent>, Root)
 	GETTER(TObjectPtr<UBuoyancyComponent>, BuoyancyComponent)
 	
 	AFloatingActor();
@@ -24,6 +25,8 @@ public:
 	virtual bool CanApplyBuoyancy() const override;
 	virtual float GetBuoyancyScale() const override;
 	virtual float GetActorBottomZ() const override;
+
+	virtual void SetCollisionAndPhysicsEnabled(bool bIsEnabled);
 
 protected:
 	UPROPERTY(VisibleAnywhere)

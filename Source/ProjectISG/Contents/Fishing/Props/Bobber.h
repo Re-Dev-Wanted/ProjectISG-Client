@@ -10,4 +10,12 @@ UCLASS()
 class PROJECTISG_API ABobber : public AFloatingActor
 {
 	GENERATED_BODY()
+
+public:
+	ABobber();
+
+protected:
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* LineAttachPoint;
+	
 };

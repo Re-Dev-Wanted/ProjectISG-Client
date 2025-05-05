@@ -21,7 +21,7 @@ public class ProjectISG : ModuleRules
 			"OnlineSubsystemSteam", "OnlineSubsystemUtils",
 			"Json", "JsonUtilities", "HTTP", "UMG",
 			"ProceduralMeshComponent", "MovieScene", "LevelSequence",
-			"MovieSceneTracks"
+			"MovieSceneTracks", "CableComponent"
 		});
 	}
 }

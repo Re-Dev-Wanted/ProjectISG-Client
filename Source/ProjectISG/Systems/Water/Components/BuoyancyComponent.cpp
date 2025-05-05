@@ -1,18 +1,12 @@
 ﻿
 #include "BuoyancyComponent.h"
 
-#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Systems/Water/Interfaces/BuoyantInterface.h"
 
 UBuoyancyComponent::UBuoyancyComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-	// bWantsInitializeComponent = true;
-}
-
-void UBuoyancyComponent::BeginPlay()
-{
-	Super::BeginPlay();
+	bWantsInitializeComponent = true;
 }
 
 void UBuoyancyComponent::TickComponent(float DeltaTime, ELevelTick TickType,

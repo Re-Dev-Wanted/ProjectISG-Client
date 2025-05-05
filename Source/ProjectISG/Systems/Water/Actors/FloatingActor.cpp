@@ -13,6 +13,8 @@ AFloatingActor::AFloatingActor()
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	MeshComponent->SetupAttachment(Root);
+	MeshComponent->bRenderCustomDepth = true;
+	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	BuoyancyComponent = CreateDefaultSubobject<UBuoyancyComponent>(TEXT("BuoyancyComponent"));
 }
@@ -35,5 +37,13 @@ float AFloatingActor::GetActorBottomZ() const
 	GetActorBounds(true, Origin, Extent);
 	
 	return Origin.Z - Extent.Z;
+}
+
+void AFloatingActor::SetCollisionAndPhysicsEnabled(bool bIsEnabled)
+{
+	ECollisionEnabled::Type CollisionEnabledType = bIsEnabled? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision;
+	Root->SetCollisionEnabled(CollisionEnabledType);
+
+	Root->SetSimulatePhysics(bIsEnabled);
 }
 

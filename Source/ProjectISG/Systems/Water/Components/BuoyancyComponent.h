@@ -18,8 +18,6 @@ public:
 	UBuoyancyComponent();
 
 protected:
-	virtual void BeginPlay() override;
-
 	float WaterLevel = 0.f;
 
 	bool IsInWater = false;
