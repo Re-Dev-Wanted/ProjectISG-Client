@@ -55,6 +55,7 @@ void UBuoyancyComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 		float VelocityZ = Root->GetPhysicsLinearVelocity().Z;
 		float UpwardResistance = FMath::Clamp(1.0f - VelocityZ / MaxRiseVelocity, 0.f, 1.f);
 		float ForceZ = FMath::Clamp(Depth * BuoyancyStrength * Scale * UpwardResistance, 0.f, MaxBuoyancyForce);
+
 		Root->AddForce(FVector(0, 0, ForceZ));
 	}
 

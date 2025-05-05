@@ -36,3 +36,14 @@ void ABobber::SuggestProjectileVelocity(const FVector& StartLocation, const FVec
 		UGameplayStatics::PredictProjectilePath(this, PredictParams, result);
 	}
 }
+
+void ABobber::OnBite()
+{
+	if (!Root->IsSimulatingPhysics())
+	{
+		return;
+	}
+
+	FVector Impulse = FVector::DownVector * ImpulseStrength;
+	Root->AddImpulse(Impulse);
+}

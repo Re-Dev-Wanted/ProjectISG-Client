@@ -6,6 +6,7 @@
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 
 class AMainPlayerState;
 
@@ -37,6 +38,11 @@ void UGA_CastBobber::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	if (AFishingRod* FishingRod = Cast<AFishingRod>(Equipment))
 	{
 		FishingRod->StartCasting(TargetTraceResult.ImpactPoint);
+
+		AMainPlayerController* PC = Player->GetController<AMainPlayerController>();
+
+		PC->SetIgnoreLookInput(true);
+		PC->SetIgnoreMoveInput(true);
 	}
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);

@@ -11,6 +11,8 @@
 class UBoxComponent;
 class UBuoyancyComponent;
 
+DECLARE_DYNAMIC_DELEGATE(FOnEnterWater);
+
 UCLASS()
 class PROJECTISG_API AFloatingActor : public ABaseActor, public IBuoyantInterface
 {
@@ -19,14 +21,18 @@ class PROJECTISG_API AFloatingActor : public ABaseActor, public IBuoyantInterfac
 public:
 	GETTER(TObjectPtr<UBoxComponent>, Root)
 	GETTER(TObjectPtr<UBuoyancyComponent>, BuoyancyComponent)
-	
+
 	AFloatingActor();
+
+	FOnEnterWater OnEnterWater;
 
 	virtual bool CanApplyBuoyancy() const override;
 	virtual float GetBuoyancyScale() const override;
 	virtual float GetActorBottomZ() const override;
 
 	virtual void SetCollisionAndPhysicsEnabled(bool bIsEnabled);
+
+	virtual void EnterWater();
 
 protected:
 	UPROPERTY(VisibleAnywhere)

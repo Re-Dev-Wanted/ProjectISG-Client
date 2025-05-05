@@ -4,6 +4,8 @@
 
 #include "Bobber.h"
 #include "CableComponent.h"
+#include "FishingSpotField.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 AFishingRod::AFishingRod()
@@ -39,6 +41,7 @@ void AFishingRod::BeginPlay()
 	if (!Bobber)
 	{
 		Bobber = GetWorld()->SpawnActor<ABobber>(BobberFactory);
+		Bobber->OnEnterWater.BindDynamic(this, &AFishingRod::OnStartFishing);
 		Bobber->SetCollisionAndPhysicsEnabled(false);
 		Bobber->AttachToComponent(PocketSocketComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
@@ -54,6 +57,32 @@ void AFishingRod::Destroyed()
 	{
 		Bobber->Destroy();
 	}
+}
+
+void AFishingRod::OnStartFishing()
+{
+	float WaitTime = FMath::RandRange(3.f, 7.f);
+	
+	GetWorld()->
+	GetTimerManager()
+	.SetTimer
+	(
+		FishingTimerHandle,
+		this,
+		&AFishingRod::OnEventBite,
+		WaitTime,
+		false
+	);
+}
+
+void AFishingRod::OnEventBite()
+{
+	if (!Bobber)
+	{
+		return;
+	}
+
+	Bobber->OnBite();
 }
 
 void AFishingRod::Tick(float DeltaTime)

@@ -22,6 +22,14 @@ protected:
 
 	virtual void Destroyed() override;
 
+	UFUNCTION()
+	void OnStartFishing();
+
+	UFUNCTION()
+	void OnEventBite();
+
+	FTimerHandle FishingTimerHandle;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<ABobber> BobberFactory;
 

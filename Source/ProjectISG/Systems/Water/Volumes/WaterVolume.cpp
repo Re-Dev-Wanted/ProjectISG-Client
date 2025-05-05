@@ -52,7 +52,7 @@ void AWaterVolume::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 	if (AFloatingActor* Actor = Cast<AFloatingActor>(OtherActor))
 	{
 		FloatingActors.Add(Actor);
-		Actor->GetBuoyancyComponent()->SetIsInWater(true);
+		Actor->EnterWater();
 	}
 }
 

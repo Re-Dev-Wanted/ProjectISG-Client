@@ -47,3 +47,13 @@ void AFloatingActor::SetCollisionAndPhysicsEnabled(bool bIsEnabled)
 	Root->SetSimulatePhysics(bIsEnabled);
 }
 
+void AFloatingActor::EnterWater()
+{
+	BuoyancyComponent->SetIsInWater(true);
+
+	if (OnEnterWater.IsBound())
+	{
+		OnEnterWater.Execute();
+	}
+}
+

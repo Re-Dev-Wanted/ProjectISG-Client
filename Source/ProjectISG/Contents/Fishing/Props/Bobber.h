@@ -16,8 +16,12 @@ public:
 
 	void SuggestProjectileVelocity(const FVector& StartLocation, const FVector& EndLocation);
 
+	void OnBite();
+
 protected:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* LineAttachPoint;
 
+	UPROPERTY(EditAnywhere)
+	float ImpulseStrength = 20000.f;
 };
