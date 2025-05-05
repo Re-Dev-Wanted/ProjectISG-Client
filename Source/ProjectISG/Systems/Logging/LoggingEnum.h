@@ -23,8 +23,9 @@ enum class ELoggingActionName : uint8
 
 	// TIME_EVENT
 	morning,
-	noon,
+	afternoon,
 	evening,
+	night,
 
 	// INVENTORY
 	pickup_item,

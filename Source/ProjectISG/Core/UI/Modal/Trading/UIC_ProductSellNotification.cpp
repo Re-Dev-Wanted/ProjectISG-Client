@@ -10,8 +10,14 @@
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Popup/Inventory/UI/UIV_InventoryUI.h"
+#include "ProjectISG/Core/UI/Popup/Trading/UI/UIC_TradingUI.h"
+#include "ProjectISG/Core/UI/Popup/Trading/UI/UIM_TradingUI.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/Logging/LoggingEnum.h"
+#include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 
 void UUIC_ProductSellNotification::InitializeController(UBaseUIView* NewView,
 	UBaseUIModel* NewModel)
@@ -33,28 +39,47 @@ void UUIC_ProductSellNotification::OnClickedSellButton()
 		GetPlayerController());
 	PC->PopUI();
 
+	UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(
+		PC->GetUIManageComponent()->ControllerInstances[
+			EUIName::Popup_TradingUI]);
+	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(
+		TradingUIController->GetModel());
+
 	AMainPlayerState* PS = GetPlayerController()->GetPlayerState<
 		AMainPlayerState>();
-	PS->GetInventoryComponent()->RemoveItem(PC->GetClickedInventoryItem(), 1);
+	PS->GetInventoryComponent()->RemoveItem(
+		TradingUIModel->GetClickedInventoryItem(), 1);
 
 	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		GetPlayerController()->GetPawn());
 	Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
-	
-	UE_LOG(LogTemp, Warning, TEXT("판매 전 골드 : %d"), PS->GetGold());
-	PS->SetGold(PS->GetGold() + FindItemPrice(PC));
-	UE_LOG(LogTemp, Warning, TEXT("판매 후 골드 : %d"), PS->GetGold());
+
+	PS->SetGold(PS->GetGold() + FindItemPrice(TradingUIModel));
+	TradingUIController->UpdateGoldText();
+	LoggingToSellItem();
 }
 
-int32 UUIC_ProductSellNotification::FindItemPrice(class AMainPlayerController* PC)
+int32 UUIC_ProductSellNotification::FindItemPrice(
+	class UUIM_TradingUI* TradingUIModel)
 {
+	// 상품 데이터 테이블에 없으면 0원 처리 한다.
+
 	for (int i = 0; i < UTradingManager::GetProductData().Num(); i++)
 	{
-		if (UTradingManager::GetProductData()[i].GetProductId() == PC->GetClickedInventoryItem())
+		if (UTradingManager::GetProductData()[i].GetProductId() ==
+			TradingUIModel->GetClickedInventoryItem())
 		{
 			return UTradingManager::GetProductData()[i].GetProductPrice();
 		}
 	}
 
 	return 0;
+}
+
+void UUIC_ProductSellNotification::LoggingToSellItem()
+{
+	FDiaryLogParams LogParams;
+	LogParams.Location = "거래장";
+	LogParams.ActionType = ELoggingActionType::TRADE;
+	LogParams.ActionName = ELoggingActionName::sell_item;
 }

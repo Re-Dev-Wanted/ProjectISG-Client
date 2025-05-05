@@ -4,10 +4,13 @@
 #include "UIC_TradingUI.h"
 
 #include "EnhancedInputComponent.h"
-#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "UIV_TradingUI.h"
+#include "Components/TextBlock.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 
 
+class AMainPlayerState;
 class AMainPlayerCharacter;
 
 void UUIC_TradingUI::BindInputAction(UEnhancedInputComponent* InputComponent)
@@ -20,12 +23,20 @@ void UUIC_TradingUI::BindInputAction(UEnhancedInputComponent* InputComponent)
 
 void UUIC_TradingUI::OnCloseTradingUI()
 {
-	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
-		GetPlayerController()->GetPawn());
-	if (Player)
+	AMainPlayerController* PC = Cast<AMainPlayerController>(GetPlayerController());
+	PC->PopUI();
+	PC->PushUI(EUIName::Gameplay_MainHUD);
+}
+
+void UUIC_TradingUI::UpdateGoldText()
+{
+	AMainPlayerController* PC = Cast<AMainPlayerController>(GetPlayerController());
+	AMainPlayerState* PS = PC->GetPlayerState<AMainPlayerState>();
+	UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
+
+	if (PC && PS && TradingUIView)
 	{
-		AMainPlayerController* PC = Player->GetController<AMainPlayerController>(); 
-		PC->PopUI();
-		PC->PushUI(EUIName::Gameplay_MainHUD);
+		FString Str = FString::Printf(TEXT("Gold : %d"), PS->GetGold());
+		TradingUIView->GetGoldText()->SetText(FText::FromString(Str)); 
 	}
 }

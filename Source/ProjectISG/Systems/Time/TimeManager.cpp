@@ -9,6 +9,9 @@
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Systems/Logging/LoggingEnum.h"
+#include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 
 
 ATimeManager::ATimeManager()
@@ -27,6 +30,7 @@ void ATimeManager::GetLifetimeReplicatedProps(
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(ATimeManager, CurrentTimeOfDay);
 	DOREPLIFETIME(ATimeManager, Second);
 	DOREPLIFETIME(ATimeManager, Minute);
 	DOREPLIFETIME(ATimeManager, Hour);
@@ -71,6 +75,7 @@ void ATimeManager::Tick(float DeltaTime)
 	if (!TimeStop && !bSleepCinematicStart)
 	{
 		UpdateCycleTime(DeltaTime);
+		CheckTimeOfDay();
 		RotateSun();
 		Sleep();
 		//ForceSleep();
@@ -204,6 +209,7 @@ void ATimeManager::SleepCinematic(float DeltaTime)
 		Second = 0;
 		Day++;
 		CinematicElapsedTime = 0.f;
+		LoggingToMorning();
 	}
 }
 
@@ -265,6 +271,93 @@ bool ATimeManager::CheckAllPlayerIsLieOnBed()
 	}
 
 	return true;
+}
+
+void ATimeManager::CheckTimeOfDay()
+{
+	if (Hour >= 6 && Hour <= 12)
+	{
+		if (CurrentTimeOfDay != ETimeOfDay::Morning)
+		{
+			ChangeCurrentTimeOfDay(ETimeOfDay::Morning);
+		}
+	}
+	else if (Hour > 12 && Hour <= 18)
+	{
+		if (CurrentTimeOfDay != ETimeOfDay::Afternoon)
+		{
+			ChangeCurrentTimeOfDay(ETimeOfDay::Afternoon);
+		}
+	}
+	else if (Hour > 18 && Hour < 24)
+	{
+		if (CurrentTimeOfDay != ETimeOfDay::Evening)
+		{
+			ChangeCurrentTimeOfDay(ETimeOfDay::Evening);
+		}
+	}
+	else
+	{
+		if (CurrentTimeOfDay != ETimeOfDay::Night)
+		{
+			ChangeCurrentTimeOfDay(ETimeOfDay::Night);
+		}
+	}
+}
+
+void ATimeManager::ChangeCurrentTimeOfDay(ETimeOfDay ChangeTimeOfDay)
+{
+	switch (ChangeTimeOfDay)
+	{
+	case ETimeOfDay::Morning:
+		{
+			CurrentTimeOfDay = ETimeOfDay::Morning;
+			LoggingToMorning();
+		}
+	case ETimeOfDay::Afternoon:
+		{
+			ChangeTimeOfDay = ETimeOfDay::Afternoon;
+			LoggingToAfternoon();
+		}
+	case ETimeOfDay::Evening:
+		{
+			ChangeTimeOfDay = ETimeOfDay::Evening;
+			LoggingToEvening();
+		}
+	case ETimeOfDay::Night:
+		{
+			CurrentTimeOfDay = ETimeOfDay::Night;
+			LoggingToNight();
+		}
+	}
+}
+
+void ATimeManager::LoggingToMorning()
+{
+	FDiaryLogParams LogParams;
+	LogParams.ActionType = ELoggingActionType::TIME_EVENT;
+	LogParams.ActionName = ELoggingActionName::morning;
+}
+
+void ATimeManager::LoggingToAfternoon()
+{
+	FDiaryLogParams LogParams;
+	LogParams.ActionType = ELoggingActionType::TIME_EVENT;
+	LogParams.ActionName = ELoggingActionName::afternoon;
+}
+
+void ATimeManager::LoggingToEvening()
+{
+	FDiaryLogParams LogParams;
+	LogParams.ActionType = ELoggingActionType::TIME_EVENT;
+	LogParams.ActionName = ELoggingActionName::evening;
+}
+
+void ATimeManager::LoggingToNight()
+{
+	FDiaryLogParams LogParams;
+	LogParams.ActionType = ELoggingActionType::TIME_EVENT;
+	LogParams.ActionName = ELoggingActionName::night;
 }
 
 void ATimeManager::ChangeTimeToForceSleepTime()

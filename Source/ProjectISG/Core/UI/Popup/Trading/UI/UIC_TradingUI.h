@@ -22,4 +22,7 @@ class PROJECTISG_API UUIC_TradingUI : public UBaseUIController
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Input"
 		, meta = (AllowPrivateAccess = true, EditCondition = "IsInputAccess"))
 	class UInputAction* CloseTradingUI;
+
+public:
+	void UpdateGoldText();
 };

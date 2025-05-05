@@ -7,6 +7,9 @@
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
+#include "ProjectISG/Systems/Logging/LoggingEnum.h"
+#include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 
 void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -32,8 +35,9 @@ void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const bool isInteraction = UItemManager::IsItemCanInteraction(
 		id);
 
-	UE_LOG(LogTemp, Warning, TEXT("씨앗 심기 check, %d"), TriggerEventData->Target == nullptr);
-	
+	UE_LOG(LogTemp, Warning, TEXT("씨앗 심기 check, %d"),
+	       TriggerEventData->Target == nullptr);
+
 	if (isInteraction)
 	{
 		AT_SeedingAnim = UPlayMontageWithEvent::InitialEvent(
@@ -42,7 +46,7 @@ void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			FGameplayTagContainer(),
 			*TriggerEventData
 		);
-		
+
 		AT_SeedingAnim->Activate();
 		BlockInputForMontage(true);
 		AT_SeedingAnim->OnCompleted.AddDynamic(this, &ThisClass::CreateSeed);
@@ -72,9 +76,10 @@ void UGA_Seeding::CreateSeed(FGameplayTag EventTag,
 
 	if (Player)
 	{
-		const uint16 ItemId = Player->GetPlayerInventoryComponent()->GetCurrentSlotIndex();
+		const uint16 ItemId = Player->GetPlayerInventoryComponent()->
+		                              GetCurrentSlotIndex();
 		FItemInfoData itemData = UItemManager::GetItemInfoById(ItemId);
-		
+
 		const AActor* Target = EventData.Target.Get();
 		const AHoedField* ConstField = Cast<AHoedField>(Target);
 
@@ -83,12 +88,21 @@ void UGA_Seeding::CreateSeed(FGameplayTag EventTag,
 		if (HoedField->PlantCrop(itemData, ItemId))
 		{
 			Player->GetPlayerInventoryComponent()->
-					RemoveItemCurrentSlotIndex(1);
+			        RemoveItemCurrentSlotIndex(1);
 		}
-		
+
 		BlockInputForMontage(false);
+		LoggingToSeeding();
 	}
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true,
 	           false);
+}
+
+void UGA_Seeding::LoggingToSeeding()
+{
+	FDiaryLogParams LogParams;
+	LogParams.Location = "경작지";
+	LogParams.ActionType = ELoggingActionType::FARMING;
+	LogParams.ActionName = ELoggingActionName::plant_crop;
 }

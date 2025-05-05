@@ -17,11 +17,14 @@ class PROJECTISG_API UUIV_TradingUI : public UBaseUIView
 public:
 	GETTER(class UUIV_ProductListWidget*, ProductList);
 	GETTER(class UInventoryList*, InventoryList);
+	GETTER(class UTextBlock*, GoldText);
 
 protected:
 	virtual bool NativeOnDrop(const FGeometry& InGeometry,
 	                          const FDragDropEvent& InDragDropEvent,
 	                          UDragDropOperation* InOperation) override;
+
+	virtual void NativeConstruct() override;
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -32,4 +35,7 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	class UUIV_ProductListWidget* ProductList;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* GoldText;
 };
