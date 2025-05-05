@@ -6,6 +6,7 @@
 #include "UIV_CookingRecipeUI.h"
 #include "Components/Button.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/Base/Module/UI_BaseButton.h"
 #include "ProjectISG/Core/UI/Popup/Cooking/Module/SelectedFoodDetail/UIC_SelectedFoodDetailWidget.h"
 #include "ProjectISG/Core/UI/Popup/Cooking/Module/SelectedFoodDetail/UIV_SelectedFoodDetailWidget.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
@@ -19,7 +20,7 @@ void UUIC_CookingRecipeUI::AppearUI(const EUILayer Layer)
 	const bool IsShowSelectedRecipe = Cast<UUIM_CookingRecipeUI>(GetModel())->
 		GetSelectedRecipe() != INDEX_NONE;
 
-	CookingRecipeUI->GetCookingButton()->OnClicked.AddDynamic(
+	CookingRecipeUI->GetCookingButton()->Get()->OnClicked.AddDynamic(
 		this, &ThisClass::StartCooking);
 	CookingRecipeUI->GetSelectedFoodDetail()->SetVisibility(
 		IsShowSelectedRecipe
