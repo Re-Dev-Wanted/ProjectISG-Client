@@ -9,6 +9,9 @@
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
+#include "ProjectISG/Systems/Logging/LoggingEnum.h"
+#include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 
 APlacement::APlacement()
 {
@@ -65,6 +68,17 @@ void APlacement::OnTouch(AActor* Causer)
 			FGameplayTagContainer ActivateTag;
 			ActivateTag.AddTag(ISGGameplayTags::Building_Active_Deconstruct);
 			Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
+
+			//Logging
+			FDiaryLogParams LogParams;
+			LogParams.Location = "건축장";
+			LogParams.ActionType = ELoggingActionType::HOUSING;
+			LogParams.ActionName = ELoggingActionName::remove_housing;
+
+			GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+						LoggingData(LogParams);
+
+			GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 		}
 	}
 }
