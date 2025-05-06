@@ -37,7 +37,7 @@ void UGA_CastBobber::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 	if (AFishingRod* FishingRod = Cast<AFishingRod>(Equipment))
 	{
-		FishingRod->StartCasting(TargetTraceResult.ImpactPoint);
+		FishingRod->StartCasting(ActorInfo->AvatarActor.Get(), TargetTraceResult.ImpactPoint);
 
 		AMainPlayerController* PC = Player->GetController<AMainPlayerController>();
 

@@ -23,7 +23,7 @@ void ABobber::SuggestProjectileVelocity(const FVector& StartLocation, const FVec
 		StartLocation,
 		EndLocation,
 		GetWorld()->GetGravityZ(),
-		0.3f
+		0.75f
 	);
 
 	if (bSuggest)

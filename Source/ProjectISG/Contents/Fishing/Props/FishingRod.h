@@ -73,7 +73,7 @@ public:
 	
 	virtual void OnTouchResponse() override;
 	
-	void StartCasting(FVector Destination);
+	void StartCasting(AActor* Causer, FVector Destination);
 
 	void ReelInLine(AActor* Causer);
 
@@ -84,7 +84,7 @@ public:
 	float WaitTimeMax = 7.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ClampMax = 1.f), Category = FishingSettings)
-	float BitingCheckDelayTime = 0.5f;
+	float BitingCheckDelayTime = 0.25f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ClampMin = 0.5f, ClampMax = 2.f), Category = FishingSettings)
 	float BitingTime = 1.f;

@@ -175,7 +175,7 @@ void AFishingRod::OnTouchResponse()
 	Super::OnTouchResponse();
 }
 
-void AFishingRod::StartCasting(FVector Destination)
+void AFishingRod::StartCasting(AActor* Causer, FVector Destination)
 {
 	if (!Bobber)
 	{
@@ -184,8 +184,10 @@ void AFishingRod::StartCasting(FVector Destination)
 
 	Bobber->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	Bobber->SetActorLocation(CastingStartPoint->GetComponentLocation());
+
+	FVector EndLocation = Destination + Causer->GetActorForwardVector() * 100.f;
 	
-	Bobber->SuggestProjectileVelocity(CastingStartPoint->GetComponentLocation(),Destination);
+	Bobber->SuggestProjectileVelocity(CastingStartPoint->GetComponentLocation(), EndLocation);
 }
 
 void AFishingRod::ReelInLine(AActor* Causer)
