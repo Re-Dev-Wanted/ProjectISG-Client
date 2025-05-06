@@ -41,10 +41,10 @@ float AFloatingActor::GetActorBottomZ() const
 
 void AFloatingActor::SetCollisionAndPhysicsEnabled(bool bIsEnabled)
 {
+	Root->SetSimulatePhysics(bIsEnabled);
+
 	ECollisionEnabled::Type CollisionEnabledType = bIsEnabled? ECollisionEnabled::QueryAndPhysics : ECollisionEnabled::NoCollision;
 	Root->SetCollisionEnabled(CollisionEnabledType);
-
-	Root->SetSimulatePhysics(bIsEnabled);
 }
 
 void AFloatingActor::EnterWater()

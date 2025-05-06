@@ -110,4 +110,8 @@ namespace ISGGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Fishing_Active_CastBobber
 									, "Fishing.Active.CastBobber"
 									, "낚시 관련 액티브 : 낚시 찌 던지기");
+	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Fishing_Active_ReelInLine
+									, "Fishing.Active.ReelInLine"
+									, "낚시 관련 액티브 : 낚시 줄 감기");
 }

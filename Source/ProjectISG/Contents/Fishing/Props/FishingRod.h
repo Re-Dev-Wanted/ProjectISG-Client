@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Systems/Water/Actors/DynamicEquipment.h"
+#include "ProjectISG/Utils/MacroUtil.h"
 #include "FishingRod.generated.h"
 
 class ABobber;
@@ -17,6 +18,8 @@ class PROJECTISG_API AFishingRod : public ADynamicEquipment
 public:
 	AFishingRod();
 
+	GETTER(bool, IsBiteFish)
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -28,7 +31,13 @@ protected:
 	UFUNCTION()
 	void OnEventBite();
 
-	FTimerHandle FishingTimerHandle;
+	UFUNCTION()
+	void OnEventRealBite();
+	
+	UFUNCTION()
+	void OnEventFinish();
+
+	TArray<FTimerHandle> TimerHandles;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<ABobber> BobberFactory;
@@ -37,7 +46,7 @@ protected:
 	USceneComponent* SocketComp;
 
 	UPROPERTY(VisibleAnywhere)
-	USceneComponent* PocketSocketComp;
+	USceneComponent* PocketSocketComp; 
 
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* CastingStartPoint;
@@ -47,6 +56,8 @@ protected:
 	
 	UPROPERTY()
 	TObjectPtr<ABobber> Bobber;
+
+	bool IsBiteFish = false;
 
 public:
 	virtual void Tick(float DeltaTime) override;
@@ -60,4 +71,19 @@ public:
 	virtual void OnTouchResponse() override;
 	
 	void StartCasting(FVector Destination);
+
+	void ReelIn();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ClampMin = 3.f, ClampMax = 5.f), Category = FishingSettings)
+	float WaitTimeMin = 3.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ClampMin = 5.f, ClampMax = 20.f), Category = FishingSettings)
+	float WaitTimeMax = 7.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ClampMax = 1.f), Category = FishingSettings)
+	float BitingCheckDelayTime = 0.5f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ClampMin = 0.5f, ClampMax = 2.f), Category = FishingSettings)
+	float BitingTime = 1.f;
+	
 };

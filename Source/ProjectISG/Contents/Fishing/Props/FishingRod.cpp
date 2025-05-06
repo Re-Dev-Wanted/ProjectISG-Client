@@ -2,8 +2,13 @@
 
 #include "FishingRod.h"
 
+#include "AbilitySystemComponent.h"
 #include "Bobber.h"
 #include "CableComponent.h"
+#include "Abilities/GameplayAbilityTypes.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 
 // Sets default values
 AFishingRod::AFishingRod()
@@ -46,6 +51,10 @@ void AFishingRod::BeginPlay()
 
 		Thread->SetAttachEndTo(Bobber, TEXT("LineAttachPoint"));
 	}
+
+	TimerHandles.Add(FTimerHandle());
+	TimerHandles.Add(FTimerHandle());
+	TimerHandles.Add(FTimerHandle());
 }
 
 void AFishingRod::Destroyed()
@@ -60,13 +69,13 @@ void AFishingRod::Destroyed()
 
 void AFishingRod::OnStartFishing()
 {
-	float WaitTime = FMath::RandRange(3.f, 7.f);
+	float WaitTime = FMath::RandRange(WaitTimeMin, WaitTimeMax);
 	
 	GetWorld()->
 	GetTimerManager()
 	.SetTimer
 	(
-		FishingTimerHandle,
+		TimerHandles[0],
 		this,
 		&AFishingRod::OnEventBite,
 		WaitTime,
@@ -82,6 +91,39 @@ void AFishingRod::OnEventBite()
 	}
 
 	Bobber->OnBite();
+
+	GetWorld()->
+	GetTimerManager()
+	.SetTimer
+	(
+		TimerHandles[1],
+		this,
+		&AFishingRod::OnEventRealBite,
+		BitingCheckDelayTime,
+		false
+	);
+	
+}
+
+void AFishingRod::OnEventRealBite()
+{
+	IsBiteFish = true;
+	
+	GetWorld()->
+	GetTimerManager()
+	.SetTimer
+	(
+		TimerHandles[2],
+		this,
+		&AFishingRod::OnEventFinish,
+		BitingTime,
+		false
+	);
+}
+
+void AFishingRod::OnEventFinish()
+{
+	IsBiteFish = false;
 }
 
 void AFishingRod::Tick(float DeltaTime)
@@ -102,6 +144,24 @@ FString AFishingRod::GetDisplayText() const
 void AFishingRod::OnTouch(AActor* Causer)
 {
 	Super::OnTouch(Causer);
+
+	UKismetSystemLibrary::PrintString(GetWorld(),TEXT("AFishingRod::OnTouch"));
+
+	if (IsBiteFish)
+	{
+		// 물고기를 찌에 걸기
+		UKismetSystemLibrary::PrintString(GetWorld(),TEXT("물고기 잡음"));
+	}
+
+	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
+	{
+		FGameplayEventData EventData;
+		EventData.EventTag = ISGGameplayTags::Fishing_Active_ReelInLine;
+		EventData.Instigator = Player;
+		EventData.Target = this;
+			
+		Player->GetAbilitySystemComponent()->HandleGameplayEvent(ISGGameplayTags::Fishing_Active_ReelInLine, &EventData);
+	}
 }
 
 void AFishingRod::OnTouchResponse()
@@ -120,4 +180,25 @@ void AFishingRod::StartCasting(FVector Destination)
 	Bobber->SetActorLocation(CastingStartPoint->GetComponentLocation());
 	
 	Bobber->SuggestProjectileVelocity(CastingStartPoint->GetComponentLocation(),Destination);
+}
+
+void AFishingRod::ReelIn()
+{
+	if (!Bobber)
+	{
+		return;
+	}
+
+	UKismetSystemLibrary::PrintString(GetWorld(),TEXT("낚시 끝"));
+
+	for (FTimerHandle Handle : TimerHandles)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(Handle);
+		Handle.Invalidate();
+	}
+	
+	Bobber->SetCollisionAndPhysicsEnabled(false);
+	Bobber->AttachToComponent(PocketSocketComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+	OnEventFinish();
 }
