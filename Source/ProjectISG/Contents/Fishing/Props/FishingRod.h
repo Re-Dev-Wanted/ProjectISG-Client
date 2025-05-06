@@ -37,7 +37,7 @@ protected:
 	void OnEventRealBite();
 	
 	UFUNCTION()
-	void OnEventFinish();
+	void OnEventFinish(bool bLoop);
 
 	TArray<FTimerHandle> TimerHandles;
 
@@ -65,8 +65,6 @@ protected:
 	FFishData FishData;
 
 public:
-	virtual void Tick(float DeltaTime) override;
-
 	virtual bool GetCanTouch() const override;
 	
 	virtual FString GetDisplayText() const override;

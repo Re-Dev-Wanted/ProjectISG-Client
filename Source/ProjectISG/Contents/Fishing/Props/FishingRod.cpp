@@ -16,7 +16,7 @@
 
 AFishingRod::AFishingRod()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	MeshComp->SetRelativeLocation(FVector(0.f, 0.f, 5.f));
 	MeshComp->SetRelativeScale3D(FVector::OneVector * 0.3f);
@@ -112,28 +112,35 @@ void AFishingRod::OnEventBite()
 void AFishingRod::OnEventRealBite()
 {
 	IsBiteFish = true;
+
+	TWeakObjectPtr<AFishingRod> WeakThis = this;
 	
 	GetWorld()->
 	GetTimerManager()
 	.SetTimer
 	(
 		TimerHandles[2],
-		this,
-		&AFishingRod::OnEventFinish,
+		[WeakThis] ()
+		{
+			if (WeakThis.IsValid())
+			{
+				WeakThis->OnEventFinish(true);
+			}
+		},
 		BitingTime,
 		false
 	);
 }
 
-void AFishingRod::OnEventFinish()
+void AFishingRod::OnEventFinish(bool bLoop)
 {
 	IsBiteFish = false;
 	FishData = FFishData();
-}
 
-void AFishingRod::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
+	if (bLoop)
+	{
+		OnStartFishing();
+	}
 }
 
 bool AFishingRod::GetCanTouch() const
@@ -215,5 +222,5 @@ void AFishingRod::ReelInLine(AActor* Causer)
 	Bobber->SetCollisionAndPhysicsEnabled(false);
 	Bobber->AttachToComponent(PocketSocketComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
-	OnEventFinish();
+	OnEventFinish(false);
 }
