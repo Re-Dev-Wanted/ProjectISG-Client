@@ -46,4 +46,15 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = 5.f, ClampMax = 20.f, AllowPrivateAccess = true))
 	float WaitTimeMax = 5.f;
+
+public:
+	float GetWaitTime() const
+	{
+		return FMath::RandRange(WaitTimeMin, WaitTimeMax);
+	}
+
+	bool IsValid() const
+	{
+		return Id > 0 && ItemId > 0;
+	}
 };

@@ -41,7 +41,8 @@ void UGA_ReelInLine::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	if (const AFishingRod* ConstActor = Cast<AFishingRod>(TriggerEventData->Target))
 	{
 		AFishingRod* FishingRod = const_cast<AFishingRod*>(ConstActor);
-		FishingRod->ReelIn();
+		
+		FishingRod->ReelInLine(ActorInfo->AvatarActor.Get());
 	}
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);

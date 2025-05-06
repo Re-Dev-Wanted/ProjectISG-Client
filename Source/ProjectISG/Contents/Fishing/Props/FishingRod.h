@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ProjectISG/Contents/Fishing/FishData.h"
 #include "ProjectISG/Systems/Water/Actors/DynamicEquipment.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "FishingRod.generated.h"
@@ -19,6 +20,7 @@ public:
 	AFishingRod();
 
 	GETTER(bool, IsBiteFish)
+	GETTER(FFishData, FishData)
 
 protected:
 	virtual void BeginPlay() override;
@@ -59,6 +61,9 @@ protected:
 
 	bool IsBiteFish = false;
 
+	// 지금 낚시대에 물고 있는 물고기 데이터
+	FFishData FishData;
+
 public:
 	virtual void Tick(float DeltaTime) override;
 
@@ -72,7 +77,7 @@ public:
 	
 	void StartCasting(FVector Destination);
 
-	void ReelIn();
+	void ReelInLine(AActor* Causer);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ClampMin = 3.f, ClampMax = 5.f), Category = FishingSettings)
 	float WaitTimeMin = 3.f;

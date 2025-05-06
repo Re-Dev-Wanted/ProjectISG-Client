@@ -7,13 +7,15 @@
 #include "CableComponent.h"
 #include "Abilities/GameplayAbilityTypes.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "ProjectISG/Contents/Fishing/Managers/FishingManager.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
+#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
-// Sets default values
 AFishingRod::AFishingRod()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	MeshComp->SetRelativeLocation(FVector(0.f, 0.f, 5.f));
@@ -69,7 +71,9 @@ void AFishingRod::Destroyed()
 
 void AFishingRod::OnStartFishing()
 {
-	float WaitTime = FMath::RandRange(WaitTimeMin, WaitTimeMax);
+	//TODO: 물고기를 여기에서 정하지만 옮길 수도 있음
+	FishData = UFishingManager::GetRandomData();
+	float WaitTime = FishData.GetWaitTime();
 	
 	GetWorld()->
 	GetTimerManager()
@@ -124,6 +128,7 @@ void AFishingRod::OnEventRealBite()
 void AFishingRod::OnEventFinish()
 {
 	IsBiteFish = false;
+	FishData = FFishData();
 }
 
 void AFishingRod::Tick(float DeltaTime)
@@ -145,13 +150,7 @@ void AFishingRod::OnTouch(AActor* Causer)
 {
 	Super::OnTouch(Causer);
 
-	UKismetSystemLibrary::PrintString(GetWorld(),TEXT("AFishingRod::OnTouch"));
-
-	if (IsBiteFish)
-	{
-		// 물고기를 찌에 걸기
-		UKismetSystemLibrary::PrintString(GetWorld(),TEXT("물고기 잡음"));
-	}
+	// UKismetSystemLibrary::PrintString(GetWorld(),TEXT("AFishingRod::OnTouch"));
 
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
@@ -182,19 +181,35 @@ void AFishingRod::StartCasting(FVector Destination)
 	Bobber->SuggestProjectileVelocity(CastingStartPoint->GetComponentLocation(),Destination);
 }
 
-void AFishingRod::ReelIn()
+void AFishingRod::ReelInLine(AActor* Causer)
 {
 	if (!Bobber)
 	{
 		return;
 	}
 
-	UKismetSystemLibrary::PrintString(GetWorld(),TEXT("낚시 끝"));
-
 	for (FTimerHandle Handle : TimerHandles)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(Handle);
 		Handle.Invalidate();
+	}
+
+	if (IsBiteFish && FishData.IsValid())
+	{
+		// UKismetSystemLibrary::PrintString(GetWorld(), TEXT("물고기 잡음!"));
+		
+		const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
+		
+		if (Player)
+		{
+			AMainPlayerState* PlayerState = Cast<AMainPlayerState>(Player->GetController()->PlayerState);
+
+			if (PlayerState)
+			{
+				FItemMetaInfo FishMetaInfo = UItemManager::GetInitialItemMetaDataById(FishData.GetItemId());
+				PlayerState->GetInventoryComponent()->AddItem(FishMetaInfo);
+			}
+		}
 	}
 	
 	Bobber->SetCollisionAndPhysicsEnabled(false);
