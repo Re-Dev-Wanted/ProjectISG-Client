@@ -58,6 +58,12 @@ void UInventoryComponent::InitializeItemData()
 	WateringItemMetaInfo2.SetCurrentCount(1);
 
 	AddItemToInventory(7, WateringItemMetaInfo2);
+
+	FItemMetaInfo FishingRodMetaInfo;
+	FishingRodMetaInfo.SetId(14);
+	FishingRodMetaInfo.SetCurrentCount(1);
+
+	AddItemToInventory(8, FishingRodMetaInfo);
 }
 
 void UInventoryComponent::BeginPlay()

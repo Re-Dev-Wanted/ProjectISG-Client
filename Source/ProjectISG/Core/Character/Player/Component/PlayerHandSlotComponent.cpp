@@ -1,12 +1,17 @@
 #include "PlayerHandSlotComponent.h"
 
+#include "EnhancedInputComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
 #include "ProjectISG/GAS/Common/Object/BaseActor.h"
+#include "ProjectISG/GAS/Common/Object/BaseInteractiveActor.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 UPlayerHandSlotComponent::UPlayerHandSlotComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 	bWantsInitializeComponent = true;
 }
 
@@ -14,16 +19,71 @@ void UPlayerHandSlotComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
-	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner()))
+	Player = Cast<AMainPlayerCharacter>(GetOwner());
+
+	if (Player)
 	{
+		Player->OnInputBindingNotified.AddDynamic(this, &UPlayerHandSlotComponent::BindingInputActions);
 		Player->OnUpdateSelectedItem.AddDynamic(this, &UPlayerHandSlotComponent::OnChange);
+	}
+}
+
+void UPlayerHandSlotComponent::TickComponent(float DeltaTime, enum ELevelTick TickType,
+	FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (!Player)
+	{
+		return;
+	}
+
+	if (!IsUseInputAction)
+	{
+		return;
+	}
+	
+	if (!HeldItem)
+	{
+		return;
+	}
+
+	const AMainPlayerController* PC = Player->GetController<AMainPlayerController>();
+
+	if (!PC)
+	{
+		return;
+	}
+	
+	if (ABaseInteractiveActor* InteractiveActor = Cast<ABaseInteractiveActor>(HeldItem))
+	{
+		if (InteractiveActor->GetCanTouch() && PC->GetMainHUD())
+		{
+			PC->GetMainHUD()->ToggleInteractiveUI(TEXT("RM"), InteractiveActor->GetDisplayText());
+		}
+	}
+}
+
+void UPlayerHandSlotComponent::OnAction()
+{
+	if (!IsUseInputAction)
+	{
+		return;
+	}
+	
+	if (!HeldItem)
+	{
+		return;
+	}
+
+	if (ABaseInteractiveActor* InteractiveActor = Cast<ABaseInteractiveActor>(HeldItem))
+	{
+		InteractiveActor->OnTouch(GetOwner());
 	}
 }
 
 void UPlayerHandSlotComponent::OnChange(uint16 _ItemId)
 {
-	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
-
 	if (!Player)
 	{
 		return;
@@ -62,6 +122,13 @@ void UPlayerHandSlotComponent::OnChange(uint16 _ItemId)
 	}
 }
 
+void UPlayerHandSlotComponent::BindingInputActions(UEnhancedInputComponent* EnhancedInputComponent)
+{
+	EnhancedInputComponent->BindAction(TouchAction,
+									   ETriggerEvent::Triggered, this,
+									   &UPlayerHandSlotComponent::OnAction);
+}
+
 FString UPlayerHandSlotComponent::GetItemUsingType()
 {
 	if (!HeldItem)
@@ -80,4 +147,9 @@ bool UPlayerHandSlotComponent::IsHousingHandItem()
 	}
 
 	return UItemManager::IsItemCanHousing(ItemId);
+}
+
+void UPlayerHandSlotComponent::SetIsUseInputAction(const bool NewIsUseInputAction)
+{
+	IsUseInputAction = NewIsUseInputAction;
 }

@@ -3,7 +3,6 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
-#include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Contents/Trading/TradingNPC.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
@@ -60,6 +59,11 @@ void UInteractionComponent::OnChange(uint16 ItemId)
 
 void UInteractionComponent::OnInteractive()
 {
+	if (!IsInteractive)
+	{
+		return;
+	}
+	
 	if (!TargetTraceResult.GetActor())
 	{
 		return;
@@ -67,17 +71,29 @@ void UInteractionComponent::OnInteractive()
 
 	ABaseInteractiveActor* InteractActor = Cast<ABaseInteractiveActor>(TargetTraceResult.GetActor());
 
-	if (!InteractActor)
+	if (InteractActor && InteractActor->GetCanInteractive())
+	{
+		InteractActor->OnInteractive(GetOwner());
+		return;
+	}
+
+	IInteractionInterface* InteractionInterface = Cast<IInteractionInterface>(TargetTraceResult.GetActor());
+
+	if (!InteractionInterface || !InteractionInterface->GetCanInteractive())
 	{
 		return;
 	}
 
-	//Server_Interact(InteractActor, GetOwner());
-	InteractActor->OnInteractive(GetOwner());
+	InteractionInterface->OnInteractive(GetOwner());
 }
 
 void UInteractionComponent::OnTouch()
 {
+	if (!IsInteractive)
+	{
+		return;
+	}
+	
 	if (!TargetTraceResult.GetActor())
 	{
 		return;
@@ -85,12 +101,20 @@ void UInteractionComponent::OnTouch()
 	
 	ABaseInteractiveActor* InteractActor = Cast<ABaseInteractiveActor>(TargetTraceResult.GetActor());
 
-	if (!InteractActor)
+	if (InteractActor && InteractActor->GetCanTouch())
+	{
+		InteractActor->OnTouch(GetOwner());
+		return;
+	}
+
+	IInteractionInterface* InteractionInterface = Cast<IInteractionInterface>(TargetTraceResult.GetActor());
+
+	if (!InteractionInterface || !InteractionInterface->GetCanTouch())
 	{
 		return;
 	}
 
-	InteractActor->OnTouch(GetOwner());
+	InteractionInterface->OnTouch(GetOwner());
 }
 
 void UInteractionComponent::TickComponent(float DeltaTime,
@@ -136,7 +160,7 @@ void UInteractionComponent::LineTraceToFindTarget()
 			return;
 		}
 
-		const ABaseInteractiveActor* Interaction = Cast<ABaseInteractiveActor>(
+		const IInteractionInterface* Interaction = Cast<IInteractionInterface>(
 			TargetTraceResult.GetActor());
 
 		if (!Interaction)
