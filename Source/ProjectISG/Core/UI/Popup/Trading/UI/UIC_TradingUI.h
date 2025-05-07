@@ -25,4 +25,7 @@ class PROJECTISG_API UUIC_TradingUI : public UBaseUIController
 
 public:
 	void UpdateGoldText();
+
+	UFUNCTION()
+	void DetectDragItem(uint16 ItemId);
 };
