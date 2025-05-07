@@ -8,6 +8,9 @@ ABobber::ABobber()
 	LineAttachPoint = CreateDefaultSubobject<USceneComponent>(TEXT("LineAttachPoint"));
 	LineAttachPoint->SetupAttachment(RootComponent);
 
+	FishMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FishMesh"));
+	FishMesh->SetupAttachment(RootComponent);
+
 	Root->SetSimulatePhysics(false);
 }
 
@@ -37,7 +40,7 @@ void ABobber::SuggestProjectileVelocity(const FVector& StartLocation, const FVec
 	}
 }
 
-void ABobber::OnBite()
+void ABobber::OnBite(TSoftObjectPtr<USkeletalMesh> Fish)
 {
 	if (!Root->IsSimulatingPhysics())
 	{
@@ -46,4 +49,14 @@ void ABobber::OnBite()
 
 	FVector Impulse = FVector::DownVector * ImpulseStrength;
 	Root->AddImpulse(Impulse);
+
+	FishMesh->SetSkeletalMesh(Fish.Get());
+}
+
+void ABobber::RemoveFish()
+{
+	if (FishMesh)
+	{
+		FishMesh->SetSkeletalMesh(nullptr);
+	}
 }

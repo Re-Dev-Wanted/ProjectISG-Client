@@ -94,7 +94,7 @@ void AFishingRod::OnEventBite()
 		return;
 	}
 
-	Bobber->OnBite();
+	Bobber->OnBite(FishData.GetMesh());
 
 	GetWorld()->
 	GetTimerManager()
@@ -136,6 +136,11 @@ void AFishingRod::OnEventFinish(bool bLoop)
 {
 	IsBiteFish = false;
 	FishData = FFishData();
+
+	if (Bobber)
+	{
+		Bobber->RemoveFish();
+	}
 
 	if (bLoop)
 	{
