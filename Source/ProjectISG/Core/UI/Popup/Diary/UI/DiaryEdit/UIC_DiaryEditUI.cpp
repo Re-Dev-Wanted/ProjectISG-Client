@@ -65,7 +65,7 @@ void UUIC_DiaryEditUI::OnClickToSaveDiary()
 	                                              GetText().ToString();
 
 	FApiRequest Request;
-	Request.Path = TEXT("/log/save_diary");
+	Request.Path = TEXT("/diary/save_diary");
 
 	Request.Callback.BindLambda([this](FHttpRequestPtr Req,
 	                                   FHttpResponsePtr Res,
