@@ -41,7 +41,5 @@ struct PROJECTISG_API FEquipCookingToolToActParams
 {
 	USceneComponent* AttachPoint = nullptr;
 
-	FName SocketName;
-
 	ECookingTool CookingTool = ECookingTool::None;
 };

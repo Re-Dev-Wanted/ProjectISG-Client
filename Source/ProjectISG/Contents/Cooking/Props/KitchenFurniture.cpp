@@ -84,17 +84,17 @@ void AKitchenFurniture::EquipCookingToolToAct(
 		{
 			FryPanMesh->AttachToComponent(Params.AttachPoint,
 			                              FAttachmentTransformRules::SnapToTargetIncludingScale,
-			                              Params.SocketName);
+			                              TEXT("hand_r"));
 			break;
 		}
 	case ECookingTool::Wok:
 		{
 			ScoopMesh->AttachToComponent(Params.AttachPoint,
 			                             FAttachmentTransformRules::SnapToTargetIncludingScale,
-			                             Params.SocketName);
+			                             TEXT("hand_l"));
 			WokMesh->AttachToComponent(Params.AttachPoint,
 			                           FAttachmentTransformRules::SnapToTargetIncludingScale,
-			                           Params.SocketName);
+			                           TEXT("hand_r"));
 			break;
 		}
 	default:
