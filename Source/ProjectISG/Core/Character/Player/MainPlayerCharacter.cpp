@@ -6,6 +6,7 @@
 #include "Component/PlayerHandSlotComponent.h"
 #include "Component/PlayerInventoryComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "ProjectISG/Contents/Diary/Component/DiaryComponent.h"
 #include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
@@ -103,6 +104,15 @@ void AMainPlayerCharacter::InitializeAbilitySystem()
 
 		// 이후 Ability 시스템 관련 Delegate 연동 처리를 진행한다.
 	}
+}
+
+void AMainPlayerCharacter::GetLifetimeReplicatedProps(
+	TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, bIsSleep);
+	DOREPLIFETIME(ThisClass, bLieInBed);
 }
 
 void AMainPlayerCharacter::SetupPlayerInputComponent(

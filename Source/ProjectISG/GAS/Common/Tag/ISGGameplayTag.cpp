@@ -114,4 +114,8 @@ namespace ISGGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Fishing_Active_ReelInLine
 									, "Fishing.Active.ReelInLine"
 									, "낚시 관련 액티브 : 낚시 줄 감기");
+									
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Sleeping_Active_LieInBed
+									   , "Sleeping.Active.LieInBed"
+									   , "수면 관련 액티브 : 눕기");
 }
