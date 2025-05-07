@@ -7,6 +7,7 @@
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "Task/AT_StartFishingCinematic.h"
 
 class AMainPlayerState;
 
@@ -45,6 +46,11 @@ void UGA_CastBobber::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		PC->SetIgnoreMoveInput(true);
 
 		Player->GetInteractionComponent()->SetIsInteractive(false);
+
+		AT_StartFishingCinematic = UAT_StartFishingCinematic::InitialEvent(this, StartFishingCinematic);
+		AT_StartFishingCinematic->OnStartFishingCinematicEndNotified.AddDynamic(this, &UGA_CastBobber::OnEndCinematic);
+		AT_StartFishingCinematic->ReadyForActivation();
+		return;
 	}
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
@@ -72,4 +78,9 @@ void UGA_CastBobber::EndAbility(const FGameplayAbilitySpecHandle Handle, const F
 	);
 	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+}
+
+void UGA_CastBobber::OnEndCinematic()
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
