@@ -6,7 +6,6 @@
 #include "ProjectISG/Contents/Diary/DiaryStruct.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
-#include "ProjectISG/Core/GameMode/MainGameMode.h"
 #include "ProjectISG/Core/GameMode/MainGameState.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Popup/Diary/UI/DiaryEdit/UIC_DiaryEditUI.h"

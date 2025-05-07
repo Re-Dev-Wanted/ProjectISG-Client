@@ -4,10 +4,10 @@
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
 #include "UIV_DiaryListUI.generated.h"
 
+class UUI_HttpImage;
 class UButton;
 class UMultiLineEditableTextBox;
 class UTextBlock;
-class UImage;
 
 UCLASS()
 class PROJECTISG_API UUIV_DiaryListUI : public UBaseUIView
@@ -19,6 +19,7 @@ public:
 	GETTER(TObjectPtr<UMultiLineEditableTextBox>, DiaryDescription)
 	GETTER(TObjectPtr<UButton>, PrevButton)
 	GETTER(TObjectPtr<UButton>, NextButton)
+	GETTER(TObjectPtr<UUI_HttpImage>, DiaryImage)
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -32,4 +33,7 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> NextButton;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UUI_HttpImage> DiaryImage;
 };
