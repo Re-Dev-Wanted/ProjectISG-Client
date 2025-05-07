@@ -3,6 +3,14 @@
 
 #include "GA_LieInBed.h"
 
+#include "AbilitySystemComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
+#include "ProjectISG/Systems/Time/SleepManager.h"
+#include "ProjectISG/Systems/Time/TimeManager.h"
+#include "ProjectISG/Utils/EnumUtil.h"
+
 void UGA_LieInBed::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                    const FGameplayAbilityActorInfo* ActorInfo,
                                    const FGameplayAbilityActivationInfo
@@ -11,7 +19,26 @@ void UGA_LieInBed::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	UE_LOG(LogTemp, Warning, TEXT("침대에 눕기"));
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		ActorInfo->AvatarActor.Get());
+	if (!IsValid(Player))
+	{
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("침대에 눕기, %s"),
+	       *FEnumUtil::GetClassEnumKeyAsString(Player->GetLocalRole()));
+
+	AT_LyingAnim = UPlayMontageWithEvent::InitialEvent
+	(
+		this,
+		NAME_None,
+		Player->GetLyingMontage(),
+		FGameplayTagContainer(),
+		*TriggerEventData);
+
+	AT_LyingAnim->Activate();
+	BlockInputForMontage(true);
 	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 }
 

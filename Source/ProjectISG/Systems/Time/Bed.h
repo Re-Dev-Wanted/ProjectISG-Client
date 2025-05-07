@@ -44,7 +44,10 @@ private:
 	void NetMulticast_MovePlayerToBed();
 
 	UFUNCTION()
-	void MovePlayerToWakeUpPos();
+	void ActivateWakeUp();
+
+	UFUNCTION()
+	void OpenDiary();
 
 public:
 	SETTER(class AMainPlayerCharacter*, MainPlayer);
@@ -66,7 +69,7 @@ private:
 		meta = (AllowPrivateAccess = true))
 	class ATimeManager* TimeManager;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Setting,
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = Setting,
 		meta = (AllowPrivateAccess = true))
 	class AMainPlayerCharacter* MainPlayer;
 

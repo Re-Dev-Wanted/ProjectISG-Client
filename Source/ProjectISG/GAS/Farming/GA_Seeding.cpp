@@ -27,10 +27,6 @@ void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 
-	if (Player->HasAuthority() == false)
-	{
-		return;
-	}
 	int id = Player->GetPlayerInventoryComponent()->GetCurrentSlotIndex();
 	const bool isInteraction = UItemManager::IsItemCanInteraction(
 		id);
@@ -40,22 +36,49 @@ void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 	if (isInteraction)
 	{
-		AT_SeedingAnim = UPlayMontageWithEvent::InitialEvent(
-			this, NAME_None,
-			Player->GetSeedingMontage(),
-			FGameplayTagContainer(),
-			*TriggerEventData
-		);
+		if (Player)
+		{
+			const uint16 ItemId = Player->GetPlayerInventoryComponent()->
+			                              GetCurrentSlotIndex();
+			FItemInfoData itemData = UItemManager::GetItemInfoById(ItemId);
 
-		AT_SeedingAnim->Activate();
-		BlockInputForMontage(true);
-		AT_SeedingAnim->OnCompleted.AddDynamic(this, &ThisClass::CreateSeed);
+			const AActor* Target = TriggerEventData->Target.Get();
+			const AHoedField* ConstField = Cast<AHoedField>(Target);
+
+			AHoedField* HoedField = const_cast<AHoedField*>(ConstField);
+
+			if (HoedField->PlantCrop(itemData, ItemId))
+			{
+				Player->GetPlayerInventoryComponent()->
+				        RemoveItemCurrentSlotIndex(1);
+			}
+
+			LoggingToSeeding();
+		}
+
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo,
+		           true,
+		           false);
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("상호작용 아이템 아님"));
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
-	}
+
+	// if (isInteraction)
+	// {
+	// 	AT_SeedingAnim = UPlayMontageWithEvent::InitialEvent(
+	// 		this, NAME_None,
+	// 		Player->GetSeedingMontage(),
+	// 		FGameplayTagContainer(),
+	// 		*TriggerEventData
+	// 	);
+	//
+	// 	AT_SeedingAnim->Activate();
+	// 	BlockInputForMontage(true);
+	// 	AT_SeedingAnim->OnCompleted.AddDynamic(this, &ThisClass::CreateSeed);
+	// }
+	// else
+	// {
+	// 	UE_LOG(LogTemp, Warning, TEXT("상호작용 아이템 아님"));
+	// 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+	// }
 }
 
 void UGA_Seeding::EndAbility(const FGameplayAbilitySpecHandle Handle,
