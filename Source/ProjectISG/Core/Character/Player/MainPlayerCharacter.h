@@ -57,6 +57,9 @@ protected:
 
 	virtual void InitializeAbilitySystem() override;
 
+	virtual void GetLifetimeReplicatedProps(
+		TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
 public:
 	GETTER_SETTER(bool, bIsSleep)
 	GETTER_SETTER(bool, bLieInBed)
@@ -122,10 +125,10 @@ private:
 
 	// 장진혁
 #pragma region JJH
-	UPROPERTY(EditAnywhere, Category = "Sleep",
+	UPROPERTY(Replicated, EditAnywhere, Category = "Sleep",
 		meta = (AllowPrivateAccess = true))
 	bool bIsSleep = false;
-	UPROPERTY(EditAnywhere, Category = "Sleep",
+	UPROPERTY(Replicated, EditAnywhere, Category = "Sleep",
 		meta = (AllowPrivateAccess = true))
 	bool bLieInBed = false;
 

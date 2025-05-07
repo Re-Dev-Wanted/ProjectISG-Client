@@ -29,7 +29,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void StopTime(bool value);
-	
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -45,19 +45,18 @@ private:
 
 	void RotateSun();
 
-	void CheckTimeOfDay();
-	
-	void ChangeCurrentTimeOfDay(ETimeOfDay ChangeTimeOfDay);
+	UFUNCTION()
+	void OnRep_CurrentTimeOfDay();
 
 #pragma region Log
 	void LoggingToMorning();
-	
+
 	void LoggingToAfternoon();
-	
+
 	void LoggingToEvening();
-	
+
 	void LoggingToNight();
-#pragma endregion 
+#pragma endregion
 
 public:
 	void ChangeDayBySleep();
@@ -92,7 +91,8 @@ private:
 #pragma endregion
 
 #pragma region Time
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly,
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentTimeOfDay, EditAnywhere,
+		BlueprintReadOnly,
 		meta = (AllowPrivateAccess = "true"), Category = "Time")
 	ETimeOfDay CurrentTimeOfDay = ETimeOfDay::Morning;
 
@@ -136,16 +136,17 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = "true"), Category = "Time")
 	int32 WakeUpTime = 6;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = "true"), Category = "Time")
 	int32 TimeStoppedTime = 0;
 #pragma endregion
 
 #pragma region Sleep
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess), Category = Sleep)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess),
+		Category = Sleep)
 	class USleepManager* SleepManager = nullptr;
-#pragma endregion 
+#pragma endregion
 
 public:
 	UPROPERTY()

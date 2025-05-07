@@ -26,7 +26,7 @@ public:
 	GETTER(TObjectPtr<UInventoryComponent>, InventoryComponent)
 	GETTER(TObjectPtr<class AGridManager>, GridManager)
 	GETTER_SETTER(int32, Gold);
-
+	
 	bool CanBuyProduct(int32 ProductPrice);
 
 protected:

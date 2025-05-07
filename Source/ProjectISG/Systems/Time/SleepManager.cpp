@@ -5,9 +5,12 @@
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Systems/Logging/LoggingEnum.h"
 #include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
+#include "ProjectISG/Utils/EnumUtil.h"
 
 
 USleepManager::USleepManager()
@@ -15,6 +18,7 @@ USleepManager::USleepManager()
 	PrimaryComponentTick.bCanEverTick = true;
 	bWantsInitializeComponent = true;
 	SetIsReplicatedByDefault(true);
+	SetNetAddressable();
 }
 
 void USleepManager::InitializeComponent()
@@ -23,13 +27,20 @@ void USleepManager::InitializeComponent()
 	TimeManager = Cast<ATimeManager>(GetOwner());
 }
 
+void USleepManager::GetLifetimeReplicatedProps(
+	TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, bSleepCinematicStart);
+}
+
 
 // Called when the game starts
 void USleepManager::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// ...
+	
 }
 
 
@@ -39,11 +50,11 @@ void USleepManager::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (TimeManager->HasAuthority() == false)
+	if (GetOwner()->HasAuthority() == false)
 	{
 		return;
 	}
-
+	
 	if (bSleepCinematicStart)
 	{
 		SleepCinematic(DeltaTime);
@@ -57,11 +68,14 @@ void USleepManager::TickComponent(float DeltaTime, ELevelTick TickType,
 
 void USleepManager::Sleep()
 {
-	if (CheckAllPlayerIsLieOnBed() && TimeManager->GetHour() >= CanSleepTime)
+	if (CheckAllPlayerIsLieInBed() && TimeManager->GetHour() >= CanSleepTime)
 	{
 		ChangeAllPlayerSleepValue(true);
+		if (bSleepCinematicStart == false)
+		{
+			LoggingToSleep();
+		}
 		bSleepCinematicStart = true;
-		LoggingToSleep();
 		TimeManager->StopTime(true);
 	}
 }
@@ -83,26 +97,47 @@ void USleepManager::ForceSleep()
 		ChangeAllPlayerSleepValue(true);
 
 		// 시네마틱을 진행시킨다.
+		if (bSleepCinematicStart == false)
+		{
+			LoggingToSleep();
+		}
+		
 		bSleepCinematicStart = true;
-
-		LoggingToSleep();
 	}
 }
 
 void USleepManager::SleepCinematic(float DeltaTime)
 {
 	CinematicElapsedTime += DeltaTime;
+
 	if (CinematicElapsedTime >= CinematicEndTime)
 	{
 		TimeManager->StopTime(false);
 		TimeManager->AddSleepTimeToCrop.Broadcast();
 		WakeUpDelegate.Broadcast();
-		LoggingToWakeUp();
-		
+		if (bSleepCinematicStart)
+		{
+			LoggingToWakeUp();
+		}
+
 		ChangeAllPlayerSleepValue(false);
-		bSleepCinematicStart = false;
+		ChangeAllPlayerLieInBedValue(false);
 		TimeManager->ChangeDayBySleep();
+
+		bSleepCinematicStart = false;
 		CinematicElapsedTime = 0.f;
+	}
+}
+
+void USleepManager::OnRep_SleepCinematicStart()
+{
+	if (bSleepCinematicStart)
+	{
+		LoggingToSleep();
+	}
+	else
+	{
+		LoggingToWakeUp();
 	}
 }
 
@@ -141,7 +176,21 @@ void USleepManager::ChangeAllPlayerSleepValue(bool value)
 	}
 }
 
-bool USleepManager::CheckAllPlayerIsLieOnBed()
+void USleepManager::ChangeAllPlayerLieInBedValue(bool value)
+{
+	AGameStateBase* GameState = GetWorld()->GetGameState();
+	for (APlayerState* PlayerState : GameState->PlayerArray)
+	{
+		AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(
+			PlayerState->GetPawn());
+		if (player)
+		{
+			player->SetbLieInBed(value);
+		}
+	}
+}
+
+bool USleepManager::CheckAllPlayerIsLieInBed()
 {
 	AGameStateBase* GameState = GetWorld()->GetGameState();
 	for (APlayerState* PlayerState : GameState->PlayerArray)
@@ -161,14 +210,27 @@ bool USleepManager::CheckAllPlayerIsLieOnBed()
 
 void USleepManager::LoggingToSleep()
 {
+	UE_LOG(LogTemp, Warning, TEXT("sleep, localrole : %s"),
+	       *FEnumUtil::GetClassEnumKeyAsString(TimeManager->GetLocalRole()));
 	FDiaryLogParams LogParams;
+
 	LogParams.ActionType = ELoggingActionType::DAY_CYCLE;
 	LogParams.ActionName = ELoggingActionName::sleep;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+	            LoggingData(LogParams);
 }
 
 void USleepManager::LoggingToWakeUp()
 {
+	UE_LOG(LogTemp, Warning, TEXT("wakeup, localrole : %s"),
+	       *FEnumUtil::GetClassEnumKeyAsString(TimeManager->GetLocalRole()));
 	FDiaryLogParams LogParams;
 	LogParams.ActionType = ELoggingActionType::DAY_CYCLE;
 	LogParams.ActionName = ELoggingActionName::start_day;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+	            LoggingData(LogParams);
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 }

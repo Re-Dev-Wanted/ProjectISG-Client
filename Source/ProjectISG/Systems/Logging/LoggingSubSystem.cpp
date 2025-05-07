@@ -2,7 +2,10 @@
 
 #include "HttpModule.h"
 #include "Interfaces/IHttpRequest.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/GameMode/MainGameMode.h"
+#include "ProjectISG/Core/GameMode/MainGameState.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 #include "ProjectISG/Utils/SessionUtil.h"
 
@@ -118,7 +121,7 @@ void ULoggingSubSystem::CreateLogDataStringForMultipart(
 	// 필수 필드 추가
 	AddTextField(
 		TEXT("session_id"),
-		GetWorld()->GetAuthGameMode<AMainGameMode>()->GetSessionId(), true);
+		GetWorld()->GetGameState<AMainGameState>()->GetSessionId(), true);
 	AddTextField(TEXT("user_id"), FSessionUtil::GetCurrentId(GetWorld()),
 	             false);
 	AddTextField(TEXT("timestamp"), FDateTime::Now().ToString(), false);

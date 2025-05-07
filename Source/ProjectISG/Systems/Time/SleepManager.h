@@ -7,6 +7,8 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "SleepManager.generated.h"
 
+struct FDiaryLogParams;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSleep);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWakeUp);
@@ -22,6 +24,9 @@ public:
 protected:
 	virtual void InitializeComponent() override;
 
+	virtual void GetLifetimeReplicatedProps(
+		TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
 	virtual void BeginPlay() override;
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
@@ -35,11 +40,16 @@ private:
 
 	void SleepCinematic(float DeltaTime);
 
+	UFUNCTION()
+	void OnRep_SleepCinematicStart();
+
 	void AssignBedEachPlayer();
 
 	void ChangeAllPlayerSleepValue(bool value);
 
-	bool CheckAllPlayerIsLieOnBed();
+	void ChangeAllPlayerLieInBedValue(bool value);
+
+	bool CheckAllPlayerIsLieInBed();
 
 	void LoggingToSleep();
 
@@ -52,7 +62,7 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess), Category = Setting)
 	class ATimeManager* TimeManager;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+	UPROPERTY(ReplicatedUsing = OnRep_SleepCinematicStart, EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = true), Category = Sleep)
 	bool bSleepCinematicStart = false;
 
@@ -63,7 +73,7 @@ private:
 	// 임시 변수, 시네마틱이 추가 되면 해당 시네마틱 시간을 가져와야함
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = true), Category = Sleep)
-	float CinematicEndTime = 3.f;
+	float CinematicEndTime = 10.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = "true"), Category = Sleep)

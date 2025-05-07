@@ -7,7 +7,11 @@
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Systems/Logging/LoggingEnum.h"
 #include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
+#include "ProjectISG/Utils/EnumUtil.h"
 
+
+class ULoggingSubSystem;
 
 ATimeManager::ATimeManager()
 {
@@ -65,16 +69,52 @@ void ATimeManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (HasAuthority() == false)
-	{
-		return;
-	}
-
 	if (!TimeStop && !SleepManager->GetbSleepCinematicStart())
 	{
-		UpdateCycleTime(DeltaTime);
-		CheckTimeOfDay();
-		RotateSun();
+		if (HasAuthority())
+		{
+			UpdateCycleTime(DeltaTime);
+			RotateSun();
+
+			ETimeOfDay PreviousTimeOfDay = CurrentTimeOfDay; // 변경 전 상태 저장
+			if (Hour >= 6 && Hour <= 12)
+			{
+				CurrentTimeOfDay = ETimeOfDay::Morning;
+			}
+			else if (Hour > 12 && Hour <= 18)
+			{
+				CurrentTimeOfDay = ETimeOfDay::Afternoon;
+			}
+			else if (Hour > 18 && Hour < 24)
+			{
+				CurrentTimeOfDay = ETimeOfDay::Evening;
+			}
+			else
+			{
+				CurrentTimeOfDay = ETimeOfDay::Night;
+			}
+
+			if (PreviousTimeOfDay != CurrentTimeOfDay)
+			{
+				switch (CurrentTimeOfDay)
+				{
+				case ETimeOfDay::Morning:
+					LoggingToMorning();
+					break;
+				case ETimeOfDay::Afternoon:
+					LoggingToAfternoon();
+					break;
+				case ETimeOfDay::Evening:
+					LoggingToEvening();
+					break;
+				case ETimeOfDay::Night:
+					LoggingToNight();
+					break;
+				default:
+					break;
+				}
+			}
+		}
 	}
 }
 
@@ -150,91 +190,78 @@ void ATimeManager::StopTime(bool value)
 	}
 }
 
-void ATimeManager::CheckTimeOfDay()
+void ATimeManager::OnRep_CurrentTimeOfDay()
 {
-	if (Hour >= 6 && Hour <= 12)
+	switch (CurrentTimeOfDay)
 	{
-		if (CurrentTimeOfDay != ETimeOfDay::Morning)
-		{
-			ChangeCurrentTimeOfDay(ETimeOfDay::Morning);
-		}
-	}
-	else if (Hour > 12 && Hour <= 18)
-	{
-		if (CurrentTimeOfDay != ETimeOfDay::Afternoon)
-		{
-			ChangeCurrentTimeOfDay(ETimeOfDay::Afternoon);
-		}
-	}
-	else if (Hour > 18 && Hour < 24)
-	{
-		if (CurrentTimeOfDay != ETimeOfDay::Evening)
-		{
-			ChangeCurrentTimeOfDay(ETimeOfDay::Evening);
-		}
-	}
-	else
-	{
-		if (CurrentTimeOfDay != ETimeOfDay::Night)
-		{
-			ChangeCurrentTimeOfDay(ETimeOfDay::Night);
-		}
+	case ETimeOfDay::Morning:
+		LoggingToMorning();
+		break;
+	case ETimeOfDay::Afternoon:
+		LoggingToAfternoon();
+		break;
+	case ETimeOfDay::Evening:
+		LoggingToEvening();
+		break;
+	case ETimeOfDay::Night:
+		LoggingToNight();
+		break;
+	default:
+		break;
 	}
 }
 
-void ATimeManager::ChangeCurrentTimeOfDay(ETimeOfDay ChangeTimeOfDay)
-{
-	switch (ChangeTimeOfDay)
-	{
-	case ETimeOfDay::Morning:
-		{
-			CurrentTimeOfDay = ChangeTimeOfDay;
-			LoggingToMorning();
-		}
-	case ETimeOfDay::Afternoon:
-		{
-			CurrentTimeOfDay = ChangeTimeOfDay;
-			LoggingToAfternoon();
-		}
-	case ETimeOfDay::Evening:
-		{
-			CurrentTimeOfDay = ChangeTimeOfDay;
-			LoggingToEvening();
-		}
-	case ETimeOfDay::Night:
-		{
-			CurrentTimeOfDay = ChangeTimeOfDay;
-			LoggingToNight();
-		}
-	}
-}
 
 void ATimeManager::LoggingToMorning()
 {
+	UE_LOG(LogTemp, Warning, TEXT("morning, localrole : %s"),
+	       *FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
+
 	FDiaryLogParams LogParams;
 	LogParams.ActionType = ELoggingActionType::TIME_EVENT;
 	LogParams.ActionName = ELoggingActionName::morning;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+	            LoggingData(LogParams);
 }
 
 void ATimeManager::LoggingToAfternoon()
 {
+	UE_LOG(LogTemp, Warning, TEXT("afternoon, localrole : %s"),
+	       *FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
+
 	FDiaryLogParams LogParams;
 	LogParams.ActionType = ELoggingActionType::TIME_EVENT;
 	LogParams.ActionName = ELoggingActionName::afternoon;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+	            LoggingData(LogParams);
 }
 
 void ATimeManager::LoggingToEvening()
 {
+	UE_LOG(LogTemp, Warning, TEXT("evening, localrole : %s"),
+	       *FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
+
 	FDiaryLogParams LogParams;
 	LogParams.ActionType = ELoggingActionType::TIME_EVENT;
 	LogParams.ActionName = ELoggingActionName::evening;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+	            LoggingData(LogParams);
 }
 
 void ATimeManager::LoggingToNight()
 {
+	UE_LOG(LogTemp, Warning, TEXT("night, localrole : %s"),
+	       *FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
+
 	FDiaryLogParams LogParams;
 	LogParams.ActionType = ELoggingActionType::TIME_EVENT;
 	LogParams.ActionName = ELoggingActionName::night;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+	            LoggingData(LogParams);
 }
 
 void ATimeManager::ChangeDayBySleep()
