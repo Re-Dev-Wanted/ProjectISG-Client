@@ -19,9 +19,10 @@ public class ProjectISG : ModuleRules
 			"GameplayAbilities", "GameplayTags", "GameplayTasks",
 			"OnlineSubsystem", "OnlineSubsystemNull",
 			"OnlineSubsystemSteam", "OnlineSubsystemUtils",
-			"Json", "JsonUtilities", "HTTP", "UMG",
-			"ProceduralMeshComponent", "MovieScene", "LevelSequence",
-			"MovieSceneTracks", "CableComponent"
+			"Json", "JsonUtilities", "HTTP", "UMG", "Slate",
+			"SlateCore", "ProceduralMeshComponent", "MovieScene",
+			"LevelSequence", "MovieSceneTracks", "CableComponent",
+			"ImageWrapper"
 		});
 	}
 }
