@@ -36,3 +36,12 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	ECookingTool CookingTool = ECookingTool::None;
 };
+
+struct PROJECTISG_API FEquipCookingToolToActParams
+{
+	USceneComponent* AttachPoint = nullptr;
+
+	FName SocketName;
+
+	ECookingTool CookingTool = ECookingTool::None;
+};

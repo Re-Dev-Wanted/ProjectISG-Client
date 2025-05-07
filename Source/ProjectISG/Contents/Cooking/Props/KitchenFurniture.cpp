@@ -3,6 +3,7 @@
 #include "GameplayTagContainer.h"
 #include "Camera/CameraComponent.h"
 #include "AbilitySystemComponent.h"
+#include "ProjectISG/Contents/Cooking/CookingStruct.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
@@ -19,6 +20,19 @@ AKitchenFurniture::AKitchenFurniture()
 	KitchenCameraComponent = CreateDefaultSubobject<UCameraComponent>(
 		"Kitchen Camera Component");
 	KitchenCameraComponent->SetupAttachment(Mesh);
+
+
+	FryPanMesh = CreateDefaultSubobject<UStaticMeshComponent>(
+		"Fry Pan Mesh");
+	FryPanMesh->SetupAttachment(GetRootComponent());
+
+	ScoopMesh = CreateDefaultSubobject<UStaticMeshComponent>(
+		"Scoop Mesh");
+	ScoopMesh->SetupAttachment(GetRootComponent());
+
+	WokMesh = CreateDefaultSubobject<UStaticMeshComponent>(
+		"Wok Mesh");
+	WokMesh->SetupAttachment(GetRootComponent());
 }
 
 bool AKitchenFurniture::GetCanInteractive() const
@@ -58,5 +72,34 @@ void AKitchenFurniture::OnInteractive(AActor* Causer)
 		ActivateTag.AddTag(ISGGameplayTags::Cooking_Active_StartCooking);
 		Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
 			ActivateTag);
+	}
+}
+
+void AKitchenFurniture::EquipCookingToolToAct(
+	const FEquipCookingToolToActParams& Params)
+{
+	switch (Params.CookingTool)
+	{
+	case ECookingTool::FryingPan:
+		{
+			FryPanMesh->AttachToComponent(Params.AttachPoint,
+			                              FAttachmentTransformRules::SnapToTargetIncludingScale,
+			                              Params.SocketName);
+			break;
+		}
+	case ECookingTool::Wok:
+		{
+			ScoopMesh->AttachToComponent(Params.AttachPoint,
+			                             FAttachmentTransformRules::SnapToTargetIncludingScale,
+			                             Params.SocketName);
+			WokMesh->AttachToComponent(Params.AttachPoint,
+			                           FAttachmentTransformRules::SnapToTargetIncludingScale,
+			                           Params.SocketName);
+			break;
+		}
+	default:
+		{
+			break;
+		}
 	}
 }
