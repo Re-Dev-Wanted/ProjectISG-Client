@@ -17,7 +17,7 @@ public:
 
 private:
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UImage> Image;
+	TObjectPtr<UImage> HttpImage;
 
 	TObjectPtr<UTexture2D> LoadTextureFromImageData(
 		const TArray<uint8>& ImageData);

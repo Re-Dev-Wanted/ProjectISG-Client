@@ -16,7 +16,7 @@ void UUI_HttpImage::SetImagePath(const FString& ImageUrl)
 	}
 
 	FApiRequest Request;
-	Request.Path = ImageUrl;
+	Request.Path = TEXT("/diary/render_image/") + ImageUrl;
 	Request.Callback.BindLambda([this](FHttpRequestPtr Req,
 	                                   FHttpResponsePtr Res,
 	                                   const bool IsSuccess)
@@ -39,7 +39,7 @@ void UUI_HttpImage::SetImagePath(const FString& ImageUrl)
 		Brush.SetResourceObject(Texture);
 		Brush.ImageSize = FVector2D(Texture->GetSizeX(), Texture->GetSizeY());
 
-		Image->SetBrush(Brush); // YourImageWidget은 UImage* 타입이어야 함
+		HttpImage->SetBrush(Brush);
 	});
 
 	FApiUtil::GetMainAPI()->GetApi(this, Request, ImageApiResponse);

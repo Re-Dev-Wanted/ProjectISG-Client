@@ -69,7 +69,7 @@ struct PROJECTISG_API FDiaryData
 	FString content;
 
 	UPROPERTY()
-	FString best_screenshot_path;
+	FString best_screenshot_filename;
 };
 
 USTRUCT()
