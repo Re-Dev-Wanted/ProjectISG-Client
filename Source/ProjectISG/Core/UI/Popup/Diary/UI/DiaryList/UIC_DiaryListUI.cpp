@@ -11,6 +11,7 @@
 #include "ProjectISG/Core/GameMode/MainGameState.h"
 #include "ProjectISG/Utils/ApiUtil.h"
 #include "ProjectISG/Utils/SessionUtil.h"
+#include "ProjectISG/Core/UI/Base/Module/UI_HttpImage.h"
 
 void UUIC_DiaryListUI::InitializeController(UBaseUIView* NewView
                                             , UBaseUIModel* NewModel)
@@ -81,7 +82,7 @@ void UUIC_DiaryListUI::MoveToNextPage()
 {
 	UUIM_DiaryListUI* DiaryListModel = Cast<UUIM_DiaryListUI>(GetModel());
 
-	if (DiaryListModel->GetCurrentDiaryIndex() + 1 < DiaryListModel->DiaryData.
+	if (DiaryListModel->GetCurrentDiaryIndex() + 1 >= DiaryListModel->DiaryData.
 		diaries.Num())
 	{
 		return;
@@ -103,7 +104,7 @@ void UUIC_DiaryListUI::UpdateDiaryPerPage(const int Page)
 
 	DiaryListView->GetDiaryDayText()->SetText(FText::FromString(InGameDate));
 	DiaryListView->GetDiaryDescription()->SetText(FText::FromString(Content));
-
+	DiaryListView->GetDiaryImage()->SetImagePath(BestScreenShot);
 
 	// 최소 페이지에 도달한 경우 이전 버튼 미노출 처리
 	if (Page == 0)
