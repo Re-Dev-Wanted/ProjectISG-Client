@@ -25,6 +25,11 @@ void UUIC_DiaryEditUI::AppearUI(const EUILayer Layer)
 		this, &ThisClass::OnClickToSaveDiary);
 }
 
+void UUIC_DiaryEditUI::DisappearUI()
+{
+	Super::DisappearUI();
+}
+
 void UUIC_DiaryEditUI::InitializeDiaryToEdit(
 	const FGenerateDiaryResponse& Diary)
 {
@@ -51,8 +56,9 @@ void UUIC_DiaryEditUI::OnClickToSaveDiary()
 		                                  ATimeManager::StaticClass()));
 
 	FSaveDiaryRequest DiaryRequest;
-	
-	DiaryRequest.session_id = GetWorld()->GetGameState<AMainGameState>()->GetSessionId();
+
+	DiaryRequest.session_id = GetWorld()->GetGameState<AMainGameState>()->
+	                                      GetSessionId();
 	DiaryRequest.user_id = FSessionUtil::GetCurrentId(GetWorld());
 	DiaryRequest.ingame_date = TimeManager->GetDateText();
 	DiaryRequest.diary_content = DiaryEditUIView->GetDiaryDescription()->

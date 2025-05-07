@@ -19,7 +19,7 @@ AMainPlayerController::AMainPlayerController()
 void AMainPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	ConsoleCommand(TEXT("showdebug abilitysystem"));
+	// ConsoleCommand(TEXT("showdebug abilitysystem"));
 
 	if (IsLocalController())
 	{

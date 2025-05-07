@@ -40,7 +40,6 @@ void USleepManager::GetLifetimeReplicatedProps(
 void USleepManager::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 
@@ -54,7 +53,7 @@ void USleepManager::TickComponent(float DeltaTime, ELevelTick TickType,
 	{
 		return;
 	}
-	
+
 	if (bSleepCinematicStart)
 	{
 		SleepCinematic(DeltaTime);
@@ -73,6 +72,7 @@ void USleepManager::Sleep()
 		ChangeAllPlayerSleepValue(true);
 		if (bSleepCinematicStart == false)
 		{
+			OpenDiaryDelegate.Broadcast();
 			LoggingToSleep();
 		}
 		bSleepCinematicStart = true;
@@ -101,7 +101,7 @@ void USleepManager::ForceSleep()
 		{
 			LoggingToSleep();
 		}
-		
+
 		bSleepCinematicStart = true;
 	}
 }
@@ -137,6 +137,7 @@ void USleepManager::OnRep_SleepCinematicStart()
 	}
 	else
 	{
+		WakeUpDelegate.Broadcast();
 		LoggingToWakeUp();
 	}
 }

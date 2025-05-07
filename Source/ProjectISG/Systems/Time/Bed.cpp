@@ -7,9 +7,11 @@
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "ProjectISG/Contents/Diary/Component/DiaryComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
+#include "ProjectISG/Utils/EnumUtil.h"
 
 ABed::ABed()
 {
@@ -57,7 +59,9 @@ void ABed::BeginPlay()
 	TimeManager->GetSleepManager()->SleepDelegate.AddDynamic(
 		this, &ABed::MovePlayerToBed);
 	TimeManager->GetSleepManager()->WakeUpDelegate.AddDynamic(
-		this, &ABed::MovePlayerToWakeUpPos);
+		this, &ABed::ActivateWakeUp);
+	TimeManager->GetSleepManager()->OpenDiaryDelegate.AddDynamic(
+		this, &ABed::OpenDiary);
 }
 
 void ABed::GetLifetimeReplicatedProps(
@@ -66,6 +70,7 @@ void ABed::GetLifetimeReplicatedProps(
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, CanInteractive);
+	DOREPLIFETIME(ThisClass, MainPlayer);
 }
 
 void ABed::Tick(float DeltaTime)
@@ -75,16 +80,20 @@ void ABed::Tick(float DeltaTime)
 
 void ABed::OnInteractive(AActor* Causer)
 {
-	Super::OnInteractive(Causer);
+	IInteractionInterface::OnInteractive(Causer);
 
+	UE_LOG(LogTemp, Warning, TEXT("침대 상호작용 함수 실행 , 로컬롤 : %s"),
+	       *FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
 
-	FGameplayTagContainer ActivateTag;
-	ActivateTag.AddTag(ISGGameplayTags::Sleeping_Active_LieInBed);
-
-	CanInteractive = false;
+	FGameplayEventData EventPayload;
+	EventPayload.EventTag = ISGGameplayTags::Sleeping_Active_LieInBed;
+	EventPayload.Instigator = Player;
+	EventPayload.Target = this;
+	Player->GetAbilitySystemComponent()->HandleGameplayEvent(
+		EventPayload.EventTag, &EventPayload);
 	Player->GetInteractionComponent()->Server_OnInteractiveResponse(Causer);
-	Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
+	CanInteractive = false;
 }
 
 void ABed::OnInteractiveResponse(AActor* Causer)
@@ -117,7 +126,7 @@ void ABed::MovePlayerToBed()
 {
 	if (MainPlayer)
 	{
-		MainPlayer->SetActorLocation(GetActorLocation());
+		MainPlayer->SetActorLocation(WakeUpPos->GetComponentLocation());
 	}
 }
 
@@ -131,10 +140,25 @@ void ABed::NetMulticast_MovePlayerToBed_Implementation()
 	MovePlayerToBed();
 }
 
-void ABed::MovePlayerToWakeUpPos()
+void ABed::ActivateWakeUp()
 {
 	if (MainPlayer)
 	{
-		MainPlayer->SetActorLocation(WakeUpPos->GetComponentLocation());
+		UE_LOG(LogTemp, Warning, TEXT("침대에 누운 플레이어 로컬롤 : %s"),
+		       *FEnumUtil::GetClassEnumKeyAsString(MainPlayer->GetLocalRole()));
+		FGameplayEventData EventPayload;
+		EventPayload.EventTag = ISGGameplayTags::Sleeping_Active_WakeUp;
+		EventPayload.Instigator = MainPlayer;
+		EventPayload.Target = this;
+		MainPlayer->GetAbilitySystemComponent()->HandleGameplayEvent(
+			EventPayload.EventTag, &EventPayload);
+	}
+}
+
+void ABed::OpenDiary()
+{
+	if (MainPlayer)
+	{
+		MainPlayer->GetDiaryComponent()->GenerateDiary();
 	}
 }

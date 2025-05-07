@@ -17,6 +17,8 @@ public:
 protected:
 	virtual void AppearUI(const EUILayer Layer) override;
 
+	virtual void DisappearUI() override;
+
 private:
 	UFUNCTION()
 	void OnClickToSaveDiary();
