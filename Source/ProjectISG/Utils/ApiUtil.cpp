@@ -12,7 +12,7 @@ FApiUtil* FApiUtil::GetMainAPI()
 		// 고유한 Unique ptr 생성
 		MainAPI = MakeUnique<FApiUtil>();
 		MainAPI->URL = TEXT(
-			"https://718f-221-148-189-129.ngrok-free.app/service2");
+			"https://919e-221-148-189-129.ngrok-free.app/service2");
 	}
 
 	return MainAPI.Get();

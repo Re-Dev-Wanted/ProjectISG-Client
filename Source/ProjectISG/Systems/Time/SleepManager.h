@@ -13,6 +13,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSleep);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWakeUp);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOpenDiary);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTISG_API USleepManager : public UActorComponent
 {
@@ -57,12 +59,14 @@ private:
 
 public:
 	GETTER(bool, bSleepCinematicStart);
+	GETTER(float, CinematicEndTime);
 
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess), Category = Setting)
 	class ATimeManager* TimeManager;
 
-	UPROPERTY(ReplicatedUsing = OnRep_SleepCinematicStart, EditAnywhere, BlueprintReadWrite,
+	UPROPERTY(ReplicatedUsing = OnRep_SleepCinematicStart, EditAnywhere,
+		BlueprintReadWrite,
 		meta = (AllowPrivateAccess = true), Category = Sleep)
 	bool bSleepCinematicStart = false;
 
@@ -73,7 +77,7 @@ private:
 	// 임시 변수, 시네마틱이 추가 되면 해당 시네마틱 시간을 가져와야함
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = true), Category = Sleep)
-	float CinematicEndTime = 10.f;
+	float CinematicEndTime = 999.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = "true"), Category = Sleep)
@@ -85,4 +89,7 @@ public:
 
 	UPROPERTY()
 	FWakeUp WakeUpDelegate;
+
+	UPROPERTY()
+	FOpenDiary OpenDiaryDelegate;
 };

@@ -65,12 +65,15 @@ public:
 	GETTER_SETTER(bool, bLieInBed)
 	GETTER(TObjectPtr<UPlacementIndicatorComponent>,
 	       PlacementIndicatorComponent)
+	GETTER(TObjectPtr<UDiaryComponent>, DiaryComponent)
 	GETTER(TObjectPtr<UPlayerInventoryComponent>, PlayerInventoryComponent)
 	GETTER(TObjectPtr<UInteractionComponent>, InteractionComponent)
 	GETTER(TObjectPtr<UPlayerHandSlotComponent>, HandSlotComponent)
 
 	GETTER(TObjectPtr<UAnimMontage>, SeedingMontage)
 	GETTER(TObjectPtr<UAnimMontage>, WateringMontage)
+	GETTER(TObjectPtr<UAnimMontage>, LyingMontage)
+	GETTER(TObjectPtr<UAnimMontage>, WakeUpMontage)
 
 	UFUNCTION(Server, Reliable)
 	void Server_SetActorTransformReplicated(const FTransform& Transform);
@@ -128,15 +131,25 @@ private:
 	UPROPERTY(Replicated, EditAnywhere, Category = "Sleep",
 		meta = (AllowPrivateAccess = true))
 	bool bIsSleep = false;
+
 	UPROPERTY(Replicated, EditAnywhere, Category = "Sleep",
 		meta = (AllowPrivateAccess = true))
 	bool bLieInBed = false;
 
-	UPROPERTY(EditAnywhere, Category = "Farming",
+	UPROPERTY(EditAnywhere, Category = "Animation",
 		meta = (AllowPrivateAccess = true))
 	TObjectPtr<UAnimMontage> SeedingMontage;
-	UPROPERTY(EditAnywhere, Category = "Farming",
+
+	UPROPERTY(EditAnywhere, Category = "Animation",
 		meta = (AllowPrivateAccess = true))
 	TObjectPtr<UAnimMontage> WateringMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Animation",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<UAnimMontage> LyingMontage;
+
+	UPROPERTY(EditAnywhere, Category = "Animation",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<UAnimMontage> WakeUpMontage;
 #pragma endregion
 };

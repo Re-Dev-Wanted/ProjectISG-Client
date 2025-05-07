@@ -27,4 +27,8 @@ protected:
 	                        const FGameplayAbilityActivationInfo ActivationInfo,
 	                        bool bReplicateEndAbility,
 	                        bool bWasCancelled) override;
+
+private:
+	UPROPERTY()
+	class UPlayMontageWithEvent* AT_LyingAnim = nullptr;
 };
