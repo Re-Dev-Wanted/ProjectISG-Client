@@ -190,7 +190,7 @@ void AFishingRod::StartCasting(AActor* Causer, FVector Destination)
 	Bobber->SuggestProjectileVelocity(CastingStartPoint->GetComponentLocation(), EndLocation);
 }
 
-void AFishingRod::ReelInLine(AActor* Causer)
+void AFishingRod::ReelInLine()
 {
 	if (!Bobber)
 	{
@@ -202,7 +202,13 @@ void AFishingRod::ReelInLine(AActor* Causer)
 		GetWorld()->GetTimerManager().ClearTimer(Handle);
 		Handle.Invalidate();
 	}
+	
+	Bobber->SetCollisionAndPhysicsEnabled(false);
+	Bobber->AttachToComponent(PocketSocketComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+}
 
+void AFishingRod::OnEndReelInLine(AActor* Causer)
+{
 	if (IsBiteFish && FishData.IsValid())
 	{
 		// UKismetSystemLibrary::PrintString(GetWorld(), TEXT("물고기 잡음!"));
@@ -220,9 +226,6 @@ void AFishingRod::ReelInLine(AActor* Causer)
 			}
 		}
 	}
-	
-	Bobber->SetCollisionAndPhysicsEnabled(false);
-	Bobber->AttachToComponent(PocketSocketComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
 	OnEventFinish(false);
 }

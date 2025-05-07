@@ -75,7 +75,9 @@ public:
 	
 	void StartCasting(AActor* Causer, FVector Destination);
 
-	void ReelInLine(AActor* Causer);
+	void ReelInLine();
+
+	void OnEndReelInLine(AActor* Causer);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ClampMin = 3.f, ClampMax = 5.f), Category = FishingSettings)
 	float WaitTimeMin = 3.f;
