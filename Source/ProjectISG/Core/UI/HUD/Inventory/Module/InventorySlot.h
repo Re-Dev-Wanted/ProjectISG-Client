@@ -10,6 +10,8 @@ class UBorder;
 class UOverlay;
 class UTextBlock;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventorySlotDragDetected, uint16, ItemId);
+
 UCLASS()
 class PROJECTISG_API UInventorySlot : public UUserWidget
 {
@@ -19,6 +21,8 @@ public:
 	SETTER(uint16, Index);
 	void SetSlotInfo(const FItemMetaInfo& ItemMetaInfo);
 	void SetSelected(const bool IsSelected) const;
+
+	FOnInventorySlotDragDetected OnInventorySlotDragDetected;
 
 protected:
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry,

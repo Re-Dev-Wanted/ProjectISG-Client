@@ -20,6 +20,7 @@ void UInventoryList::NativePreConstruct()
 	{
 		UInventorySlot* NewSlot = CreateWidget<UInventorySlot>(
 			this, InventorySlotClass);
+		
 		NewSlot->SetPadding(4);
 
 		InventoryList->AddChildToGrid(NewSlot, i / ListColumn, i % ListColumn);
@@ -41,6 +42,8 @@ void UInventoryList::UpdateItemData()
 		UInventorySlot* NewSlot = CreateWidget<UInventorySlot>(
 			this, InventorySlotClass);
 		NewSlot->SetPadding(4);
+		
+		NewSlot->OnInventorySlotDragDetected.AddDynamic(this, &UInventoryList::OnDragItemDetected);
 
 		InventoryList->AddChildToGrid(NewSlot, (i - StartIndex) / ListColumn,
 		                              (i - StartIndex) % ListColumn);
@@ -62,4 +65,12 @@ void UInventoryList::SelectSlot(const uint16 Prev, const uint16 Next)
 	const UInventorySlot* NextSelectedSlot = Cast<UInventorySlot>(
 		InventoryList->GetChildAt(Next));
 	NextSelectedSlot->SetSelected(true);
+}
+
+void UInventoryList::OnDragItemDetected(uint16 ItemId)
+{
+	if (OnDragDetectedNotified.IsBound())
+	{
+		OnDragDetectedNotified.Broadcast(ItemId);
+	}
 }

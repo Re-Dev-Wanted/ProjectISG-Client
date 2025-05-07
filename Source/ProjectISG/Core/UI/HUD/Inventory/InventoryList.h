@@ -7,6 +7,8 @@
 class UGridPanel;
 class UInventorySlot;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDragDetectedNotified, uint16, ItemId);
+
 UCLASS()
 class PROJECTISG_API UInventoryList : public UUserWidget
 {
@@ -15,6 +17,11 @@ class PROJECTISG_API UInventoryList : public UUserWidget
 public:
 	void UpdateItemData();
 	void SelectSlot(const uint16 Prev, const uint16 Next);
+
+	UFUNCTION()
+	void OnDragItemDetected(uint16 ItemId);
+
+	FOnDragDetectedNotified OnDragDetectedNotified;
 
 protected:
 	virtual void NativePreConstruct() override;
