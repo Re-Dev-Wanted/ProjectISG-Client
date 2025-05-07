@@ -2,6 +2,7 @@
 
 #include "EnhancedInputComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
@@ -18,6 +19,8 @@ UPlayerHandSlotComponent::UPlayerHandSlotComponent()
 void UPlayerHandSlotComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
+
+	SetIsReplicatedByDefault(true);
 
 	Player = Cast<AMainPlayerCharacter>(GetOwner());
 
@@ -82,6 +85,13 @@ void UPlayerHandSlotComponent::OnAction()
 	}
 }
 
+void UPlayerHandSlotComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UPlayerHandSlotComponent, HeldItem);
+}
+
 void UPlayerHandSlotComponent::OnChange(uint16 _ItemId)
 {
 	if (!Player)
@@ -110,6 +120,8 @@ void UPlayerHandSlotComponent::OnChange(uint16 _ItemId)
 	}
 
 	AActor* Actor = GetWorld()->SpawnActor(ActorClass);
+	Actor->SetReplicates(true);
+	Actor->SetReplicateMovement(true);
 	HeldItem = Cast<ABaseActor>(Actor);
 	ItemId = _ItemId;
 

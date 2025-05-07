@@ -18,6 +18,7 @@ public:
 	
 	GETTER_SETTER(TSoftObjectPtr<UStaticMesh>, MeshAssetPath)
 	GETTER(FVector, MeshSize)
+	GETTER(USceneComponent*, InteractStartPoint)
 	SETTER(float, CachedSnapSize)
 
 	virtual bool GetCanTouch() const override;
@@ -60,6 +61,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	class UMaterialInstance* TempMaterial;
+
+	UPROPERTY(EditAnywhere)
+	class USceneComponent* InteractStartPoint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FIntVector> Occupied;

@@ -20,6 +20,8 @@ public:
 
 	GETTER(TObjectPtr<class ABaseActor>, HeldItem)
 
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
 	UFUNCTION()
 	void OnChange(uint16 ItemId);
 
@@ -53,5 +55,6 @@ protected:
 
 	bool IsUseInputAction = false;
 
+	UPROPERTY(Replicated)
 	TObjectPtr<class ABaseActor> HeldItem = nullptr;
 };
