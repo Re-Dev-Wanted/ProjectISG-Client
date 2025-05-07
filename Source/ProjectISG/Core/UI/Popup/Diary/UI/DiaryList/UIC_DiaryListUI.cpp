@@ -9,6 +9,7 @@
 #include "Interfaces/IHttpResponse.h"
 #include "ProjectISG/Contents/Diary/DiaryStruct.h"
 #include "ProjectISG/Core/GameMode/MainGameMode.h"
+#include "ProjectISG/Core/GameMode/MainGameState.h"
 #include "ProjectISG/Utils/ApiUtil.h"
 #include "ProjectISG/Utils/SessionUtil.h"
 
@@ -33,8 +34,7 @@ void UUIC_DiaryListUI::InitializeData()
 	UUIM_DiaryListUI* DiaryListModel = Cast<UUIM_DiaryListUI>(GetModel());
 
 	FGetAllDiariesRequest GetAllDiariesRequest;
-	GetAllDiariesRequest.session_id = GetWorld()->GetAuthGameMode<
-		AMainGameMode>()->GetSessionId();
+	GetAllDiariesRequest.session_id = GetWorld()->GetGameState<AMainGameState>()->GetSessionId();
 	GetAllDiariesRequest.user_id = FSessionUtil::GetCurrentId(GetWorld());
 
 	FApiRequest Request;

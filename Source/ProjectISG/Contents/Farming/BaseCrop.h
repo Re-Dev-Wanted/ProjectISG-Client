@@ -44,14 +44,14 @@ protected:
 
 	virtual FString GetDisplayText() const override;
 
-	virtual void OnInteractiveResponse() override;
+	virtual void OnInteractiveResponse(AActor* Causer) override;
 
 	UFUNCTION()
 	void UpdateGrowTimeBySleep();
 
 	UFUNCTION()
 	void OnRep_UpdateState();
-	
+
 public:
 	GETTER(ECropState, CurrentState)
 	GETTER_SETTER(int32, CropTotalGrowDay);
@@ -59,7 +59,7 @@ public:
 	GETTER(uint16, CropId);
 
 	FOnDryField OnDryField;
-	
+
 private:
 	void CheckGrowTime();
 
@@ -94,7 +94,7 @@ private:
 #pragma region Grow
 	UPROPERTY(ReplicatedUsing = OnRep_UpdateState)
 	ECropState CurrentState = ECropState::Seedling;
-	
+
 	UPROPERTY(EditAnywhere, Category = Grow)
 	float CropStartGrowTime;
 
@@ -112,7 +112,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Grow)
 	int32 WaterDuration = 0;
-	
+
 	UPROPERTY(Replicated, EditAnywhere, Category = Grow)
 	bool bIsGetWater = false;
 #pragma endregion

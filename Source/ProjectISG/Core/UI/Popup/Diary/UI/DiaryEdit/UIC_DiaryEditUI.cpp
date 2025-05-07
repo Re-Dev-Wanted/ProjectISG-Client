@@ -11,6 +11,7 @@
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/GameMode/MainGameMode.h"
+#include "ProjectISG/Core/GameMode/MainGameState.h"
 #include "ProjectISG/Systems/Time/TimeManager.h"
 #include "ProjectISG/Utils/ApiUtil.h"
 #include "ProjectISG/Utils/SessionUtil.h"
@@ -50,9 +51,8 @@ void UUIC_DiaryEditUI::OnClickToSaveDiary()
 		                                  ATimeManager::StaticClass()));
 
 	FSaveDiaryRequest DiaryRequest;
-
-	DiaryRequest.session_id = GetWorld()->GetAuthGameMode<AMainGameMode>()->
-	                                      GetSessionId();
+	
+	DiaryRequest.session_id = GetWorld()->GetGameState<AMainGameState>()->GetSessionId();
 	DiaryRequest.user_id = FSessionUtil::GetCurrentId(GetWorld());
 	DiaryRequest.ingame_date = TimeManager->GetDateText();
 	DiaryRequest.diary_content = DiaryEditUIView->GetDiaryDescription()->

@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Core/Character/BaseCharacter.h"
-#include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerCharacter.generated.h"
 
@@ -25,8 +24,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInputBindingNotified,
                                             UEnhancedInputComponent*,
                                             EnhancedInputComponent);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpdateSelectedItem, uint16, 
-ItemId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpdateSelectedItem, uint16,
+                                            ItemId);
 
 UCLASS()
 class PROJECTISG_API AMainPlayerCharacter : public ABaseCharacter
@@ -58,9 +57,12 @@ protected:
 
 	virtual void InitializeAbilitySystem() override;
 
+	virtual void GetLifetimeReplicatedProps(
+		TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
 public:
 	GETTER_SETTER(bool, bIsSleep)
-	GETTER_SETTER(bool, bLieOnBed)
+	GETTER_SETTER(bool, bLieInBed)
 	GETTER(TObjectPtr<UPlacementIndicatorComponent>,
 	       PlacementIndicatorComponent)
 	GETTER(TObjectPtr<UPlayerInventoryComponent>, PlayerInventoryComponent)
@@ -72,8 +74,6 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_SetActorTransformReplicated(const FTransform& Transform);
-
-
 
 private:
 #pragma region ActorComponent
@@ -125,12 +125,12 @@ private:
 
 	// 장진혁
 #pragma region JJH
-	UPROPERTY(EditAnywhere, Category = "Sleep",
+	UPROPERTY(Replicated, EditAnywhere, Category = "Sleep",
 		meta = (AllowPrivateAccess = true))
 	bool bIsSleep = false;
-	UPROPERTY(EditAnywhere, Category = "Sleep",
+	UPROPERTY(Replicated, EditAnywhere, Category = "Sleep",
 		meta = (AllowPrivateAccess = true))
-	bool bLieOnBed = false;
+	bool bLieInBed = false;
 
 	UPROPERTY(EditAnywhere, Category = "Farming",
 		meta = (AllowPrivateAccess = true))
