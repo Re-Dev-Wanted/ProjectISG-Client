@@ -51,15 +51,16 @@ void UUIC_DiaryEditUI::OnClickToSaveDiary()
 		                                  ATimeManager::StaticClass()));
 
 	FSaveDiaryRequest DiaryRequest;
-	
-	DiaryRequest.session_id = GetWorld()->GetGameState<AMainGameState>()->GetSessionId();
+
+	DiaryRequest.session_id = GetWorld()->GetGameState<AMainGameState>()->
+	                                      GetSessionId();
 	DiaryRequest.user_id = FSessionUtil::GetCurrentId(GetWorld());
 	DiaryRequest.ingame_date = TimeManager->GetDateText();
 	DiaryRequest.diary_content = DiaryEditUIView->GetDiaryDescription()->
 	                                              GetText().ToString();
 
 	FApiRequest Request;
-	Request.Path = TEXT("/log/save_diary");
+	Request.Path = TEXT("/diary/save_diary");
 
 	Request.Callback.BindLambda([this](FHttpRequestPtr Req,
 	                                   FHttpResponsePtr Res,

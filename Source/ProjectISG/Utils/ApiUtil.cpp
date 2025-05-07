@@ -12,27 +12,27 @@ FApiUtil* FApiUtil::GetMainAPI()
 		// 고유한 Unique ptr 생성
 		MainAPI = MakeUnique<FApiUtil>();
 		MainAPI->URL = TEXT(
-			"https://718f-221-148-189-129.ngrok-free.app/service2");
+			"https://919e-221-148-189-129.ngrok-free.app/service2");
 	}
 
 	return MainAPI.Get();
 }
 
 void FApiUtil::GetApi(UObject* Caller, const FApiRequest& Request
-					, FApiResponse& Response) const
+                      , FApiResponse& Response) const
 {
 	SendRequest(Caller, TEXT("GET"), Request, Response);
 }
 
 void FApiUtil::PostApi(UObject* Caller, const FApiRequest& Request
-						, FApiResponse& Response) const
+                       , FApiResponse& Response) const
 {
 	SendRequest(Caller, TEXT("POST"), Request, Response);
 }
 
 void FApiUtil::SendRequest(UObject* Caller, const FString& Verb
-							, const FApiRequest& Request
-							, FApiResponse& Response) const
+                           , const FApiRequest& Request
+                           , FApiResponse& Response) const
 {
 	if (Response.bIsLoading)
 	{
@@ -63,7 +63,7 @@ void FApiUtil::SendRequest(UObject* Caller, const FString& Verb
 		HttpRequest->SetContentAsString(Request.Params);
 
 		UE_LOG(LogTemp, Display, TEXT("%s: Call Data Request: %s")
-				, *Request.Path, *Request.Params);
+		       , *Request.Path, *Request.Params);
 	}
 
 	Response.bIsLoading = true;
@@ -81,7 +81,7 @@ void FApiUtil::SendRequest(UObject* Caller, const FString& Verb
 			if (!WeakCaller.IsValid())
 			{
 				UE_LOG(LogTemp, Error
-						, TEXT("API Request caller no longer valid"));
+				       , TEXT("API Request caller no longer valid"));
 				return;
 			}
 
@@ -94,7 +94,7 @@ void FApiUtil::SendRequest(UObject* Caller, const FString& Verb
 			}
 
 			UE_LOG(LogTemp, Display, TEXT("Content Body Data: %s")
-					, *Res->GetContentAsString())
+			       , *Res->GetContentAsString())
 
 			if (CapturedRequest.Callback.IsBound())
 			{

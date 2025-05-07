@@ -14,7 +14,7 @@
 #include "ProjectISG/Utils/SessionUtil.h"
 
 void UUIC_DiaryListUI::InitializeController(UBaseUIView* NewView
-											, UBaseUIModel* NewModel)
+                                            , UBaseUIModel* NewModel)
 {
 	Super::InitializeController(NewView, NewModel);
 
@@ -34,17 +34,18 @@ void UUIC_DiaryListUI::InitializeData()
 	UUIM_DiaryListUI* DiaryListModel = Cast<UUIM_DiaryListUI>(GetModel());
 
 	FGetAllDiariesRequest GetAllDiariesRequest;
-	GetAllDiariesRequest.session_id = GetWorld()->GetGameState<AMainGameState>()->GetSessionId();
+	GetAllDiariesRequest.session_id = GetWorld()->GetGameState<AMainGameState>()
+	                                            ->GetSessionId();
 	GetAllDiariesRequest.user_id = FSessionUtil::GetCurrentId(GetWorld());
 
 	FApiRequest Request;
-	Request.Path = "/log/get_all_diaries";
+	Request.Path = "/diary/get_all_diaries";
 	FJsonObjectConverter::UStructToJsonObjectString(
 		GetAllDiariesRequest, Request.Params);
 
 	Request.Callback.BindLambda(
 		[this](FHttpRequestPtr Request, FHttpResponsePtr Response
-				, const bool IsSuccess)
+		       , const bool IsSuccess)
 		{
 			UUIM_DiaryListUI* ResponseDiaryListModel = Cast<UUIM_DiaryListUI>(
 				GetModel());
@@ -60,7 +61,7 @@ void UUIC_DiaryListUI::InitializeData()
 		});
 
 	FApiUtil::GetMainAPI()->PostApi(this, Request
-									, DiaryListModel->GetAllDiariesResponse);
+	                                , DiaryListModel->GetAllDiariesResponse);
 }
 
 void UUIC_DiaryListUI::MoveToPrevPage()
@@ -91,10 +92,12 @@ void UUIC_DiaryListUI::UpdateDiaryPerPage(const int Page)
 
 	DiaryListView->GetDiaryDayText()->SetText(FText::FromString(InGameDate));
 	DiaryListView->GetDiaryDescription()->SetText(FText::FromString(Content));
+
 	DiaryListView->GetPrevButton()->SetVisibility(
 		DiaryListModel->DiaryData.diaries.Num() - 1 <= Page
 			? ESlateVisibility::Hidden
 			: ESlateVisibility::Visible);
+
 	DiaryListView->GetNextButton()->SetVisibility(
 		DiaryListModel->DiaryData.diaries.Num() - 1 >= Page
 			? ESlateVisibility::Hidden

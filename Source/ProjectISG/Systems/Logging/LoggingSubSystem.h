@@ -27,12 +27,12 @@ private:
 	uint8 CurrentScreenShotLogCount = 1;
 
 	FString ApiPath = TEXT(
-		"https://718f-221-148-189-129.ngrok-free.app/service2/log");
+		"https://919e-221-148-189-129.ngrok-free.app/service2/log");
 
 	void SendHttpRequest(FApiCallData& CallData);
 
 	void CreateLogDataStringForMultipart(const FDiaryLogParams& LogData
-										, TArray<uint8>& Payload);
+	                                     , TArray<uint8>& Payload);
 
 	FString Boundary;
 

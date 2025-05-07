@@ -27,16 +27,17 @@ void UDiaryComponent::GenerateDiary()
 {
 	const ATimeManager* TimeManager = Cast<ATimeManager>(
 		UGameplayStatics::GetActorOfClass(GetWorld()
-										, ATimeManager::StaticClass()));
+		                                  , ATimeManager::StaticClass()));
 
 	FGenerateDiaryRequest DiaryRequest;
-	
-	DiaryRequest.session_id = GetWorld()->GetGameState<AMainGameState>()->GetSessionId();
+
+	DiaryRequest.session_id = GetWorld()->GetGameState<AMainGameState>()->
+	                                      GetSessionId();
 	DiaryRequest.user_id = FSessionUtil::GetCurrentId(GetWorld());
 	DiaryRequest.ingame_date = TimeManager->GetDateText();
 
 	FApiRequest Request;
-	Request.Path = TEXT("/log/generate_diary");
+	Request.Path = TEXT("/diary/generate_diary");
 
 	Request.Callback.BindLambda(
 		[this](FHttpRequestPtr Req, FHttpResponsePtr Res, const bool IsSuccess)
