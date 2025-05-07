@@ -13,10 +13,13 @@
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
+#include "ProjectISG/Systems/Logging/LoggingEnum.h"
+#include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 
 AFishingRod::AFishingRod()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	MeshComp->SetRelativeLocation(FVector(0.f, 0.f, 5.f));
 	MeshComp->SetRelativeScale3D(FVector::OneVector * 0.3f);
@@ -94,7 +97,7 @@ void AFishingRod::OnEventBite()
 		return;
 	}
 
-	Bobber->OnBite();
+	Bobber->OnBite(FishData.GetMesh());
 
 	GetWorld()->
 	GetTimerManager()
@@ -112,28 +115,69 @@ void AFishingRod::OnEventBite()
 void AFishingRod::OnEventRealBite()
 {
 	IsBiteFish = true;
+
+	BiteLogging();
+
+	TWeakObjectPtr<AFishingRod> WeakThis = this;
 	
 	GetWorld()->
 	GetTimerManager()
 	.SetTimer
 	(
 		TimerHandles[2],
-		this,
-		&AFishingRod::OnEventFinish,
+		[WeakThis] ()
+		{
+			if (WeakThis.IsValid())
+			{
+				WeakThis->OnEventFinish(true);
+			}
+		},
 		BitingTime,
 		false
 	);
 }
 
-void AFishingRod::OnEventFinish()
+void AFishingRod::OnEventFinish(bool bLoop)
 {
 	IsBiteFish = false;
 	FishData = FFishData();
+
+	if (Bobber)
+	{
+		Bobber->RemoveFish();
+	}
+
+	if (bLoop)
+	{
+		OnStartFishing();
+	}
 }
 
-void AFishingRod::Tick(float DeltaTime)
+void AFishingRod::BiteLogging()
 {
-	Super::Tick(DeltaTime);
+	FDiaryLogParams LogParams;
+	LogParams.Location = TEXT("연못");
+	LogParams.ActionType = ELoggingActionType::FISHING;
+	LogParams.ActionName = ELoggingActionName::hook_bite;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+				LoggingData(LogParams);
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
+}
+
+void AFishingRod::FinishLogging(bool bSuccess)
+{
+	FDiaryLogParams LogParams;
+	LogParams.Location = TEXT("연못");
+	LogParams.ActionType = ELoggingActionType::FISHING;
+	LogParams.ActionName = ELoggingActionName::finish_fishing;
+	LogParams.Detail = bSuccess? TEXT("물고기를 낚았다!") : TEXT("물고기를 낚지 못했다.");
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+				LoggingData(LogParams);
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 }
 
 bool AFishingRod::GetCanTouch() const
@@ -168,7 +212,7 @@ void AFishingRod::OnTouchResponse()
 	Super::OnTouchResponse();
 }
 
-void AFishingRod::StartCasting(FVector Destination)
+void AFishingRod::StartCasting(AActor* Causer, FVector Destination)
 {
 	if (!Bobber)
 	{
@@ -177,11 +221,13 @@ void AFishingRod::StartCasting(FVector Destination)
 
 	Bobber->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	Bobber->SetActorLocation(CastingStartPoint->GetComponentLocation());
+
+	FVector EndLocation = Destination + Causer->GetActorForwardVector() * 100.f;
 	
-	Bobber->SuggestProjectileVelocity(CastingStartPoint->GetComponentLocation(),Destination);
+	Bobber->SuggestProjectileVelocity(CastingStartPoint->GetComponentLocation(), EndLocation);
 }
 
-void AFishingRod::ReelInLine(AActor* Causer)
+void AFishingRod::ReelInLine()
 {
 	if (!Bobber)
 	{
@@ -193,7 +239,13 @@ void AFishingRod::ReelInLine(AActor* Causer)
 		GetWorld()->GetTimerManager().ClearTimer(Handle);
 		Handle.Invalidate();
 	}
+	
+	Bobber->SetCollisionAndPhysicsEnabled(false);
+	Bobber->AttachToComponent(PocketSocketComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+}
 
+void AFishingRod::OnEndReelInLine(AActor* Causer)
+{
 	if (IsBiteFish && FishData.IsValid())
 	{
 		// UKismetSystemLibrary::PrintString(GetWorld(), TEXT("물고기 잡음!"));
@@ -210,10 +262,10 @@ void AFishingRod::ReelInLine(AActor* Causer)
 				PlayerState->GetInventoryComponent()->AddItem(FishMetaInfo);
 			}
 		}
-	}
-	
-	Bobber->SetCollisionAndPhysicsEnabled(false);
-	Bobber->AttachToComponent(PocketSocketComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
-	OnEventFinish();
+	}
+
+	FinishLogging(IsBiteFish);
+
+	OnEventFinish(false);
 }

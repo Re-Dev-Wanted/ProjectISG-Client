@@ -16,11 +16,16 @@ public:
 
 	void SuggestProjectileVelocity(const FVector& StartLocation, const FVector& EndLocation);
 
-	void OnBite();
+	void OnBite(TSoftObjectPtr<USkeletalMesh> Fish);
+
+	void RemoveFish();
 
 protected:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* LineAttachPoint;
+
+	UPROPERTY(VisibleAnywhere)
+	USkeletalMeshComponent* FishMesh;
 
 	UPROPERTY(EditAnywhere)
 	float ImpulseStrength = 20000.f;

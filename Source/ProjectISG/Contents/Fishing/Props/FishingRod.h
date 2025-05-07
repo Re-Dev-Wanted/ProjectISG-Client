@@ -37,7 +37,7 @@ protected:
 	void OnEventRealBite();
 	
 	UFUNCTION()
-	void OnEventFinish();
+	void OnEventFinish(bool bLoop);
 
 	TArray<FTimerHandle> TimerHandles;
 
@@ -64,9 +64,10 @@ protected:
 	// 지금 낚시대에 물고 있는 물고기 데이터
 	FFishData FishData;
 
+	void BiteLogging();
+	
+	void FinishLogging(bool bSuccess);
 public:
-	virtual void Tick(float DeltaTime) override;
-
 	virtual bool GetCanTouch() const override;
 	
 	virtual FString GetDisplayText() const override;
@@ -75,9 +76,11 @@ public:
 	
 	virtual void OnTouchResponse() override;
 	
-	void StartCasting(FVector Destination);
+	void StartCasting(AActor* Causer, FVector Destination);
 
-	void ReelInLine(AActor* Causer);
+	void ReelInLine();
+
+	void OnEndReelInLine(AActor* Causer);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ClampMin = 3.f, ClampMax = 5.f), Category = FishingSettings)
 	float WaitTimeMin = 3.f;
@@ -86,7 +89,7 @@ public:
 	float WaitTimeMax = 7.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ClampMax = 1.f), Category = FishingSettings)
-	float BitingCheckDelayTime = 0.5f;
+	float BitingCheckDelayTime = 0.25f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ClampMin = 0.5f, ClampMax = 2.f), Category = FishingSettings)
 	float BitingTime = 1.f;
