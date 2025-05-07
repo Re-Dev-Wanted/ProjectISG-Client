@@ -64,6 +64,9 @@ protected:
 	// 지금 낚시대에 물고 있는 물고기 데이터
 	FFishData FishData;
 
+	void BiteLogging();
+	
+	void FinishLogging(bool bSuccess);
 public:
 	virtual bool GetCanTouch() const override;
 	

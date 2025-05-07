@@ -13,6 +13,9 @@
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
+#include "ProjectISG/Systems/Logging/LoggingEnum.h"
+#include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 
 AFishingRod::AFishingRod()
 {
@@ -113,6 +116,8 @@ void AFishingRod::OnEventRealBite()
 {
 	IsBiteFish = true;
 
+	BiteLogging();
+
 	TWeakObjectPtr<AFishingRod> WeakThis = this;
 	
 	GetWorld()->
@@ -146,6 +151,33 @@ void AFishingRod::OnEventFinish(bool bLoop)
 	{
 		OnStartFishing();
 	}
+}
+
+void AFishingRod::BiteLogging()
+{
+	FDiaryLogParams LogParams;
+	LogParams.Location = TEXT("연못");
+	LogParams.ActionType = ELoggingActionType::FISHING;
+	LogParams.ActionName = ELoggingActionName::hook_bite;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+				LoggingData(LogParams);
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
+}
+
+void AFishingRod::FinishLogging(bool bSuccess)
+{
+	FDiaryLogParams LogParams;
+	LogParams.Location = TEXT("연못");
+	LogParams.ActionType = ELoggingActionType::FISHING;
+	LogParams.ActionName = ELoggingActionName::finish_fishing;
+	LogParams.Detail = bSuccess? TEXT("물고기를 낚았다!") : TEXT("물고기를 낚지 못했다.");
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+				LoggingData(LogParams);
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 }
 
 bool AFishingRod::GetCanTouch() const
@@ -230,7 +262,10 @@ void AFishingRod::OnEndReelInLine(AActor* Causer)
 				PlayerState->GetInventoryComponent()->AddItem(FishMetaInfo);
 			}
 		}
+
 	}
+
+	FinishLogging(IsBiteFish);
 
 	OnEventFinish(false);
 }

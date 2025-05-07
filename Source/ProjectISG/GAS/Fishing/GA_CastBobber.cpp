@@ -7,6 +7,9 @@
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Systems/Logging/LoggingEnum.h"
+#include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 #include "Task/AT_StartFishingCinematic.h"
 
 class AMainPlayerState;
@@ -50,6 +53,9 @@ void UGA_CastBobber::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		AT_StartFishingCinematic = UAT_StartFishingCinematic::InitialEvent(this, StartFishingCinematic);
 		AT_StartFishingCinematic->OnStartFishingCinematicEndNotified.AddDynamic(this, &UGA_CastBobber::OnEndCinematic);
 		AT_StartFishingCinematic->ReadyForActivation();
+
+		Logging();
+		
 		return;
 	}
 
@@ -83,4 +89,19 @@ void UGA_CastBobber::EndAbility(const FGameplayAbilitySpecHandle Handle, const F
 void UGA_CastBobber::OnEndCinematic()
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+}
+
+void UGA_CastBobber::Logging()
+{
+	FDiaryLogParams LogParams;
+	LogParams.Location = TEXT("연못");
+	LogParams.ActionType = ELoggingActionType::FISHING;
+	LogParams.ActionName = ELoggingActionName::cast_bait;
+	LogParams.Detail = TEXT("낚시를 시작했다.");
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+				LoggingData(LogParams);
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
+	
 }
