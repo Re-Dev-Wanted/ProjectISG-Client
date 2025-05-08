@@ -218,13 +218,17 @@ void UPlacementIndicatorComponent::LineTrace()
 			// 	PlayerController, IndicateActor->GetMeshSize());
 
 			FVector SnappedLocation = GridManager->SnapToGridPlacement(TargetTraceResult.ImpactPoint);
+			FRotator SnappedRotation = GridManager->GetSnappedRotation
+			(GetDegrees(RotateDirection));
 
 			IndicateActor->SetActorLocation(FMath::VInterpTo(IndicateActor->GetActorLocation(), SnappedLocation,
 															  0.1f,
 															  InterpSpeed));
-		
+			
 			IndicateActor->SetActorRotation(FMath::RInterpTo(IndicateActor->GetActorRotation(),
-															  FRotator(0, GetDegrees(RotateDirection), 0), 0.1f,
+															  FRotator(0, 
+															  SnappedRotation.Yaw,
+															   0), 0.1f,
 															  InterpSpeed));
 			FIntVector GridCoord;
 			APlacement* PlacedActor;
@@ -259,6 +263,8 @@ void UPlacementIndicatorComponent::OnRotate(const FInputActionValue& InputAction
 void UPlacementIndicatorComponent::OnChange(
 	uint16 ItemId)
 {
+	RotateDirection = North;
+	
 	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
 
 	const bool bIsStructure = UItemManager::IsItemCanHousing(ItemId);
