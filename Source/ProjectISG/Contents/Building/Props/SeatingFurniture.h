@@ -20,4 +20,6 @@ public:
 
 protected:
 	bool bInteractive = true;
+
+	virtual FVector GetStartInteractPoint() const override;
 };

@@ -103,6 +103,9 @@ namespace ISGGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Building_Active_StartSitDown
 									, "Building.Active.StartSitDown"
 									, "의자 관련 액티브 : 앉기 시작");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Building_Active_NotifySitDown
+									, "Building.Active.NotifySitDown"
+									, "의자 관련 액티브 : 완전히 앉은 후 Notify");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Building_Active_EndSitDown
 									, "Building.Active.EndSitDown"
 									, "의자 관련 액티브 : 앉기 종료");

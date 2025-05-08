@@ -60,3 +60,8 @@ void ABobber::RemoveFish()
 		FishMesh->SetSkeletalMesh(nullptr);
 	}
 }
+
+float ABobber::GetBuoyancyScale() const
+{
+	return 0.5f;
+}

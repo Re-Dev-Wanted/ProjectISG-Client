@@ -18,7 +18,6 @@ public:
 	
 	GETTER_SETTER(TSoftObjectPtr<UStaticMesh>, MeshAssetPath)
 	GETTER(FVector, MeshSize)
-	GETTER(USceneComponent*, InteractStartPoint)
 	SETTER(float, CachedSnapSize)
 
 	virtual bool GetCanTouch() const override;
@@ -70,7 +69,14 @@ public:
 
 	virtual void Setup(float TileSize);
 
+	virtual FVector GetStartInteractPoint() const
+	{
+		return InteractStartPoint->GetComponentLocation();
+	}
+
 	void SetOption(bool bIsGhost, bool bIsBlock = false) const;
+
+	void SetCollisionEnabled(bool bEnable) const;
 
 	TArray<FIntVector> GetOccupiedGrid(float SnapSize, const FIntVector& Current);
 

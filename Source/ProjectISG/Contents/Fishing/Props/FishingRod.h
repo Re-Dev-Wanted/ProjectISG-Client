@@ -82,11 +82,8 @@ public:
 
 	void OnEndReelInLine(AActor* Causer);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ClampMin = 3.f, ClampMax = 5.f), Category = FishingSettings)
-	float WaitTimeMin = 3.f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ClampMin = 5.f, ClampMax = 20.f), Category = FishingSettings)
-	float WaitTimeMax = 7.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FishingSettings)
+	float CastingDistance = 200.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ClampMax = 1.f), Category = FishingSettings)
 	float BitingCheckDelayTime = 0.25f;

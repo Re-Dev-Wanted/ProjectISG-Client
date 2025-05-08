@@ -240,17 +240,32 @@ void APlacement::SetOption(bool bIsGhost, bool bIsBlock) const
 		ProceduralMeshComp->ClearAllMeshSections();
 		return;
 	}
-	
-	CollisionComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	CollisionComp->SetGenerateOverlapEvents(false);
-	MeshComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-	MeshComp->SetGenerateOverlapEvents(false);
+
+	SetCollisionEnabled(false);
 	
 	if (TempMaterial)
 	{
 		MeshComp->SetMaterial(0, TempMaterial);
 		UMaterialInstanceDynamic* MatDynamic = MeshComp->CreateAndSetMaterialInstanceDynamic(0);
 		MatDynamic->SetVectorParameterValue("HighlightColor", bIsBlock ? FLinearColor::Red : FLinearColor::Green);
+	}
+}
+
+void APlacement::SetCollisionEnabled(bool bEnable) const
+{
+	if (bEnable)
+	{
+		CollisionComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
+		CollisionComp->SetGenerateOverlapEvents(true);
+		MeshComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
+		MeshComp->SetGenerateOverlapEvents(true);
+	}
+	else
+	{
+		CollisionComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+		CollisionComp->SetGenerateOverlapEvents(false);
+		MeshComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+		MeshComp->SetGenerateOverlapEvents(false);	
 	}
 }
 
