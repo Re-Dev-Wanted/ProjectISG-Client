@@ -93,12 +93,15 @@ void AKitchenFurniture::EquipCookingToolToAct(
 			ScoopMesh->SetVisibility(true);
 			ScoopMesh->AttachToComponent(Params.AttachPoint,
 			                             FAttachmentTransformRules::SnapToTargetIncludingScale,
-			                             TEXT("hand_l"));
+			                             TEXT("scoop_socket"));
+			ScoopMesh->SetRelativeRotation(FRotator::ZeroRotator);
 
 			WokMesh->SetVisibility(true);
 			WokMesh->AttachToComponent(Params.AttachPoint,
 			                           FAttachmentTransformRules::SnapToTargetIncludingScale,
-			                           TEXT("hand_r"));
+			                           TEXT("wok_socket"));
+			WokMesh->SetRelativeRotation(FRotator::ZeroRotator);
+
 			break;
 		}
 	default:
@@ -113,12 +116,15 @@ void AKitchenFurniture::UnEquipCookingToolToAct()
 	FryPanMesh->SetVisibility(false);
 	FryPanMesh->AttachToComponent(GetRootComponent(),
 	                              FAttachmentTransformRules::SnapToTargetIncludingScale);
+	FryPanMesh->SetRelativeLocation(FVector::ZeroVector);
 
 	ScoopMesh->SetVisibility(false);
 	ScoopMesh->AttachToComponent(GetRootComponent(),
 	                             FAttachmentTransformRules::SnapToTargetIncludingScale);
+	ScoopMesh->SetRelativeLocation(FVector::ZeroVector);
 
 	WokMesh->SetVisibility(false);
 	WokMesh->AttachToComponent(GetRootComponent(),
 	                           FAttachmentTransformRules::SnapToTargetIncludingScale);
+	WokMesh->SetRelativeLocation(FVector::ZeroVector);
 }
