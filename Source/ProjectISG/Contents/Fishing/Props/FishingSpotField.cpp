@@ -47,7 +47,7 @@ void AFishingSpotField::OnTouch(AActor* Causer)
 	}
 }
 
-void AFishingSpotField::OnTouchResponse()
+void AFishingSpotField::OnTouchResponse(AActor* Causer)
 {
-	IInteractionInterface::OnTouchResponse();
+	IInteractionInterface::OnTouchResponse(Causer);
 }

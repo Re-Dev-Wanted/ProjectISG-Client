@@ -74,7 +74,7 @@ public:
 	
 	virtual void OnTouch(AActor* Causer) override;
 	
-	virtual void OnTouchResponse() override;
+	virtual void OnTouchResponse(AActor* Causer) override;
 	
 	void StartCasting(AActor* Causer, FVector Destination);
 

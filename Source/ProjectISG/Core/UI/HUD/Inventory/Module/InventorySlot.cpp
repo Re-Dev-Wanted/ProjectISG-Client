@@ -173,9 +173,7 @@ void UInventorySlot::NativeOnMouseEnter(const FGeometry& InGeometry,
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
 
 	UUIC_InventoryUI* InventoryUIController = Cast<UUIC_InventoryUI>(
-		GetOwningPlayer<AMainPlayerController>()->GetUIManageComponent()->
-		                                          ControllerInstances[
-			EUIName::Popup_InventoryUI]);
+		GetOwningPlayer<AMainPlayerController>()->GetUIManageComponent()->ControllerInstances[EUIName::Popup_InventoryUI]);
 	InventoryUIController->SetItemInfoData(Index);
 
 	// TODO: 다른 전용 UI 필요하면 아래에 계속 적어도 무방

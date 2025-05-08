@@ -38,20 +38,7 @@ void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		if (Player)
 		{
-			const uint16 ItemId = Player->GetPlayerInventoryComponent()->
-			                              GetCurrentSlotIndex();
-			FItemInfoData itemData = UItemManager::GetItemInfoById(ItemId);
-
-			const AActor* Target = TriggerEventData->Target.Get();
-			const AHoedField* ConstField = Cast<AHoedField>(Target);
-
-			AHoedField* HoedField = const_cast<AHoedField*>(ConstField);
-
-			if (HoedField->PlantCrop(itemData, ItemId))
-			{
-				Player->GetPlayerInventoryComponent()->
-				        RemoveItemCurrentSlotIndex(1);
-			}
+			
 
 			LoggingToSeeding();
 		}
@@ -99,20 +86,20 @@ void UGA_Seeding::CreateSeed(FGameplayTag EventTag,
 
 	if (Player)
 	{
-		const uint16 ItemId = Player->GetPlayerInventoryComponent()->
-		                              GetCurrentSlotIndex();
-		FItemInfoData itemData = UItemManager::GetItemInfoById(ItemId);
-
-		const AActor* Target = EventData.Target.Get();
-		const AHoedField* ConstField = Cast<AHoedField>(Target);
-
-		AHoedField* HoedField = const_cast<AHoedField*>(ConstField);
-
-		if (HoedField->PlantCrop(itemData, ItemId))
-		{
-			Player->GetPlayerInventoryComponent()->
-			        RemoveItemCurrentSlotIndex(1);
-		}
+		// const uint16 ItemId = Player->GetPlayerInventoryComponent()->
+		//                               GetCurrentSlotIndex();
+		// FItemInfoData itemData = UItemManager::GetItemInfoById(ItemId);
+		//
+		// const AActor* Target = EventData.Target.Get();
+		// const AHoedField* ConstField = Cast<AHoedField>(Target);
+		//
+		// AHoedField* HoedField = const_cast<AHoedField*>(ConstField);
+		//
+		// if (HoedField->PlantCrop(itemData, ItemId))
+		// {
+		// 	Player->GetPlayerInventoryComponent()->
+		// 	        RemoveItemCurrentSlotIndex(1);
+		// }
 
 		BlockInputForMontage(false);
 		LoggingToSeeding();
