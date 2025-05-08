@@ -4,6 +4,7 @@
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
 #include "UIV_InventoryUI.generated.h"
 
+class UItemInfo;
 class UInventoryList;
 
 UCLASS()
@@ -14,6 +15,7 @@ class PROJECTISG_API UUIV_InventoryUI : public UBaseUIView
 public:
 	GETTER(TObjectPtr<UInventoryList>, InventoryList)
 	GETTER(TObjectPtr<UInventoryList>, MainSlotList)
+	GETTER(TObjectPtr<UItemInfo>, ItemInfoTooltip)
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -21,4 +23,7 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInventoryList> MainSlotList;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UItemInfo> ItemInfoTooltip;
 };
