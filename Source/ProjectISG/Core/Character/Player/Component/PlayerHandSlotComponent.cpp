@@ -62,7 +62,8 @@ void UPlayerHandSlotComponent::TickComponent(float DeltaTime, enum ELevelTick Ti
 	{
 		if (InteractiveActor->GetCanTouch() && PC->GetMainHUD())
 		{
-			PC->GetMainHUD()->ToggleInteractiveUI(TEXT("RM"), InteractiveActor->GetDisplayText());
+			PC->GetMainHUD()->ToggleInteractiveUI(TEXT("RM"), 
+			InteractiveActor->GetTouchDisplayText());
 		}
 	}
 }

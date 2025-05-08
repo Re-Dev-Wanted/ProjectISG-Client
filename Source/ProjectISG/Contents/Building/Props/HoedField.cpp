@@ -45,7 +45,7 @@ bool AHoedField::GetCanInteractive() const
 	return false;
 }
 
-FString AHoedField::GetDisplayText() const
+FString AHoedField::GetTouchDisplayText() const
 {
 	return TEXT("");
 }

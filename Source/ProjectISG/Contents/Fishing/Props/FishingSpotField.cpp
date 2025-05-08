@@ -22,7 +22,7 @@ bool AFishingSpotField::GetCanTouch() const
 	return true;
 }
 
-FString AFishingSpotField::GetDisplayText() const
+FString AFishingSpotField::GetTouchDisplayText() const
 {
 	return TEXT("낚시하기");
 }

@@ -4,7 +4,8 @@
 #include "Blueprint/UserWidget.h"
 #include "InteractiveUI.generated.h"
 
-class UTextBlock;
+class UInteractiveItemUI;
+class UVerticalBox;
 
 UCLASS()
 class PROJECTISG_API UInteractiveUI : public UUserWidget
@@ -14,10 +15,14 @@ class PROJECTISG_API UInteractiveUI : public UUserWidget
 public:
 	void SetInteractive(const FString& Key, const FString& Text) const;
 
+	void AddInteractive(const FString& Key, const FString& Text) const;
+	
+	void ClearItems();
+
 private:
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> DisplayKey;
+	TObjectPtr<UVerticalBox> VerticalView;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> DisplayText;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UInteractiveItemUI> ItemFactory;
 };

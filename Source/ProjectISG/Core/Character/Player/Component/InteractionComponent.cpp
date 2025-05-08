@@ -174,15 +174,13 @@ void UInteractionComponent::LineTraceToFindTarget()
 
 			return;
 		}
-
-		// TODO: 현재는 Interaction과 Touch 둘다 사용하는 UI는 없다
-		// 추가 개발 필요함.
+		
 		if (Interaction->GetCanInteractive())
 		{
 			if (PC->GetMainHUD())
 			{
 				PC->GetMainHUD()->ToggleInteractiveUI(
-					TEXT("F"), Interaction->GetDisplayText());
+					TEXT("F"), Interaction->GetInteractiveDisplayText());
 			}
 		}
 
@@ -190,8 +188,16 @@ void UInteractionComponent::LineTraceToFindTarget()
 		{
 			if (PC->GetMainHUD())
 			{
-				PC->GetMainHUD()->ToggleInteractiveUI(
-					TEXT("LM"), Interaction->GetDisplayText());
+				if (!Interaction->GetCanInteractive())
+				{
+					PC->GetMainHUD()->ToggleInteractiveUI(
+					TEXT("RM"), Interaction->GetTouchDisplayText());
+				}
+				else
+				{
+					PC->GetMainHUD()->AdditiveToggleInteractiveUI(
+					TEXT("RM"), Interaction->GetTouchDisplayText());
+				}
 			}
 		}
 	}

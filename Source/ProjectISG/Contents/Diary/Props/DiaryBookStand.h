@@ -14,7 +14,7 @@ public:
 
 	virtual void OnInteractive(AActor* Causer) override;
 
-	virtual FString GetDisplayText() const override;
+	virtual FString GetInteractiveDisplayText() const override;
 
 	virtual bool GetCanInteractive() const override;
 
