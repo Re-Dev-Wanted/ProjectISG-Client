@@ -59,14 +59,14 @@ void UGA_Watering::OnEndWateringAnim(FGameplayTag EventTag,
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		CurrentActorInfo->AvatarActor.Get());
 
-	if (EventData.Target)
-	{
-		const AActor* Target = EventData.Target.Get();
-		const AHoedField* ConstField = Cast<AHoedField>(Target);
-
-		AHoedField* HoedField = const_cast<AHoedField*>(ConstField);
-		HoedField->SetWet(true);
-	}
+	// if (EventData.Target)
+	// {
+	// 	const AActor* Target = EventData.Target.Get();
+	// 	const AHoedField* ConstField = Cast<AHoedField>(Target);
+	//
+	// 	AHoedField* HoedField = const_cast<AHoedField*>(ConstField);
+	// 	HoedField->SetWet(true);
+	// }
 
 	BlockInputForMontage(false);
 	LoggingToWatering();

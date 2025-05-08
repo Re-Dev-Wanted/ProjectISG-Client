@@ -134,6 +134,7 @@ void ABaseCrop::CheckWaterDurationTime()
 
 		CropRemainGrowTime -= CropGrowTime;
 		CropGrowTime = 0.f;
+		Server_FieldIsDried();
 	}
 }
 
@@ -167,6 +168,7 @@ void ABaseCrop::OnInteractiveResponse(AActor* Causer)
 {
 	IInteractionInterface::OnInteractiveResponse(Causer);
 
+	HarvestCrop.Broadcast();
 	Destroy();
 }
 
@@ -222,6 +224,16 @@ void ABaseCrop::Server_CropIsMature_Implementation()
 void ABaseCrop::NetMulticast_ChangeCropMeshToMature_Implementation()
 {
 	SetActorScale3D(FVector(2.0f));
+	OnDryField.Broadcast();
+}
+
+void ABaseCrop::Server_FieldIsDried_Implementation()
+{
+	NetMulticast_FieldIsDried();
+}
+
+void ABaseCrop::NetMulticast_FieldIsDried_Implementation()
+{
 	OnDryField.Broadcast();
 }
 

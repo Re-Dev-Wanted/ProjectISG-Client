@@ -14,7 +14,7 @@ struct FPlantedCrop
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	ABaseCrop* Crop = nullptr;
 
 	UPROPERTY()
@@ -58,6 +58,7 @@ public:
 
 	bool PlantCrop(FItemInfoData CropData, uint16 CropId);
 
+	UFUNCTION(Server, Reliable)
 	void SetWet(bool Watering);
 	
 protected:
@@ -75,7 +76,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	class UMaterialInstance* FieldMaterial;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, EditAnywhere)
 	FPlantedCrop PlantedCrop = FPlantedCrop();
 
 	UPROPERTY(ReplicatedUsing = OnRep_UpdateState)
