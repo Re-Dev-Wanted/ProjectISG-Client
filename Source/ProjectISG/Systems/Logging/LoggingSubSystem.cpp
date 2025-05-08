@@ -2,10 +2,12 @@
 
 #include "HttpModule.h"
 #include "Interfaces/IHttpRequest.h"
+#include "Kismet/GameplayStatics.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/GameMode/MainGameMode.h"
 #include "ProjectISG/Core/GameMode/MainGameState.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Systems/Time/TimeManager.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 #include "ProjectISG/Utils/SessionUtil.h"
 
@@ -38,8 +40,14 @@ void ULoggingSubSystem::Deinitialize()
 	Super::Deinitialize();
 }
 
-void ULoggingSubSystem::LoggingData(const FDiaryLogParams& Payload)
+void ULoggingSubSystem::LoggingData(FDiaryLogParams& Payload)
 {
+	// CurrentDate 강제 주입 처리
+	const ATimeManager* TimeManager = Cast<ATimeManager>(
+		UGameplayStatics::GetActorOfClass(GetWorld(),
+		                                  ATimeManager::StaticClass()));
+	Payload.CurrentDate = TimeManager->GetDateText();
+
 	if (FMath::RandRange(0, 1) > static_cast<double>(CurrentScreenShotLogCount)
 		/ MaxScreenShotLogCount)
 	{
@@ -48,6 +56,7 @@ void ULoggingSubSystem::LoggingData(const FDiaryLogParams& Payload)
 	}
 
 	CurrentScreenShotLogCount += 1;
+
 	QueueLogging(Payload);
 }
 
@@ -128,14 +137,14 @@ void ULoggingSubSystem::CreateLogDataStringForMultipart(
 	AddTextField(TEXT("ingame_datetime"), LogData.CurrentDate, false);
 	// TODO: 나중에 해당 값을 별도로 Parameter로 받던가
 	// or 외부 상태를 관리하고 가져오는 형식으로 변경해줘야 한다.
-	AddTextField(TEXT("location"), TEXT("농장"), false);
+	AddTextField(TEXT("location"), LogData.Location, false);
 	AddTextField(
 		TEXT("action_type"),
 		FEnumUtil::GetClassEnumKeyAsString(LogData.ActionType), false);
 	AddTextField(
 		TEXT("action_name"),
 		FEnumUtil::GetClassEnumKeyAsString(LogData.ActionName), false);
-	AddTextField(TEXT("detail"), TEXT("{}"), false);
+	AddTextField(TEXT("detail"), LogData.Detail, false);
 
 	// 선택적 필드 추가
 	if (!LogData.With.IsEmpty())
