@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "ProjectISG/Contents/Cooking/CookingStruct.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/GA_BaseInputAbility.h"
 #include "GA_CookingQTEAction.generated.h"
 
@@ -40,9 +41,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Options"
 		, meta = (AllowPrivateAccess = true))
-	TArray<TObjectPtr<ULevelSequence>> QTESequenceList;
+	TArray<FCookingQTESequence> QTESequenceList;
 
-	TQueue<TObjectPtr<ULevelSequence>> RemainQTEQueue;
+	TQueue<FCookingQTESequence> RemainQTEQueue;
 
 	UPROPERTY()
 	ALevelSequenceActor* LevelSequenceActor;

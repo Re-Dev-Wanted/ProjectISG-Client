@@ -18,6 +18,9 @@ public:
 	UFUNCTION()
 	void GenerateDiary();
 
+	UFUNCTION(Client, Reliable)
+	void Client_GenerateDiary();
+
 protected:
 	virtual void BeginPlay() override;
 

@@ -3,10 +3,13 @@
 #include "LevelSequenceActor.h"
 #include "ProjectISG/Contents/Cooking/CookingStruct.h"
 #include "ProjectISG/Contents/Cooking/Managers/CookingManager.h"
+#include "ProjectISG/Contents/Cooking/Props/KitchenFurniture.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Popup/Cooking/UI/CookingQTE/UIC_CookingQTEUI.h"
 #include "ProjectISG/Core/UI/Popup/Cooking/UI/CookingRecipe/UIC_CookingRecipeUI.h"
 #include "ProjectISG/Core/UI/Popup/Cooking/UI/CookingRecipe/UIM_CookingRecipeUI.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/AT_LogWithScreenShot.h"
@@ -58,8 +61,18 @@ void UGA_CookingQTEAction::ActivateAbility(
 
 void UGA_CookingQTEAction::PlayNextSequence()
 {
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		GetAvatarActorFromActorInfo());
+
+	// 새로운 시네마틱 진행 시 QTE 진행 화면 가리기
+	// 비즈니스 로직 상 모든 QTE는 시네마틱 시작 쯤부터 진행해
+	// 시네마틱 1개 종료 시점에 반드시 마무리 해야 함을 명시한다.
+	Cast<UUIC_CookingQTEUI>(
+		Player->GetController<AMainPlayerController>()->GetUIManageComponent()->
+		        ControllerInstances[EUIName::Popup_CookingQTE])->SetHiddenQTE();
+
 	AT_PlayCinematic = UAT_PlayCinematic::InitialEvent(
-		this, *RemainQTEQueue.Peek(), LevelSequenceActor);
+		this, RemainQTEQueue.Peek()->Sequence, LevelSequenceActor);
 
 	AT_PlayCinematic->OnPlayCinematicOnReadyNotified.Clear();
 	AT_PlayCinematic->OnPlayCinematicOnReadyNotified.AddDynamic(
@@ -74,8 +87,17 @@ void UGA_CookingQTEAction::PlayNextSequence()
 void UGA_CookingQTEAction::OnPlayReadySequence(
 	ALevelSequenceActor* TargetSequenceActor)
 {
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		GetAvatarActorFromActorInfo());
 	TargetSequenceActor->AddBindingByTag(FName(TEXT("Player"))
-	                                     , GetAvatarActorFromActorInfo());
+	                                     , Player);
+
+	AKitchenFurniture* KitchenFurniture = Cast<AKitchenFurniture>(
+		Player->GetInteractionComponent()->GetTargetTraceResult().GetActor());
+
+	KitchenFurniture->EquipCookingToolToAct({
+		Player->GetMesh(), RemainQTEQueue.Peek()->CookingTool
+	});
 }
 
 void UGA_CookingQTEAction::EndAbility(const FGameplayAbilitySpecHandle Handle
