@@ -3,10 +3,13 @@
 #include "AbilitySystemComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Modal/Interactive/UI/UIC_ExitInteractUI.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
@@ -83,28 +86,6 @@ void UGA_StartSitDown::NotifyMontage(FGameplayTag EventTag,
 		{
 			return;
 		}
-
-		AMainPlayerController* PlayerController = Cast<AMainPlayerController>( 
-		Player->GetController());
-		
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
-		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
-			PlayerController->GetLocalPlayer()))
-		{
-			Subsystem->RemoveMappingContext(Player->GetDefaultMappingContext());
-			Subsystem->AddMappingContext(IMC, 0);
-
-			UEnhancedInputComponent* EnhancedInputComponent = Cast<
-				UEnhancedInputComponent>(PlayerController->InputComponent);
-
-			if (!EnhancedInputComponent)
-			{
-				return;
-			}
-
-			
-			BindInputAction(EnhancedInputComponent);
-		}
 		
 		if (CurrentEventData.Target)
 		{
@@ -112,11 +93,39 @@ void UGA_StartSitDown::NotifyMontage(FGameplayTag EventTag,
 			const APlacement* ConstPlacement = Cast<APlacement>(Target);
 			ConstPlacement->SetCollisionEnabled(true);
 		}
+
+		UAbilityTask_WaitGameplayEvent* WaitEvent = 
+		UAbilityTask_WaitGameplayEvent::WaitGameplayEvent
+		(
+			this,
+			ISGGameplayTags::Interactive_Active_Exit,
+			nullptr,
+			true,
+			false
+		);
+
+		WaitEvent->EventReceived.AddDynamic(this, &UGA_StartSitDown::EndMontage);
+		WaitEvent->ReadyForActivation();
+
+		AMainPlayerController* PlayerController = Cast<AMainPlayerController>( 
+		Player->GetController());
+
+		if (PlayerController)
+		{
+			PlayerController->PushUI(EUIName::Modal_ExitInteractUI);
+
+			UUIC_ExitInteractUI* ModalUIController = 
+			Cast<UUIC_ExitInteractUI>(PlayerController->GetUIManageComponent
+			()->ControllerInstances[EUIName::Modal_ExitInteractUI]);
+
+			ModalUIController->SetUI(TEXT("X"), TEXT("나가기"));
+		}
+		
 	}
 }
 
 
-void UGA_StartSitDown::EndMontage()
+void UGA_StartSitDown::EndMontage(FGameplayEventData Payload)
 {
 	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(CurrentActorInfo->AvatarActor.Get());
 
@@ -132,40 +141,3 @@ void UGA_StartSitDown::EndMontage()
 	Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
 }
 
-void UGA_StartSitDown::OnStartedInputEvent()
-{
-	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(CurrentActorInfo->AvatarActor.Get());
-
-	if (!Player)
-	{
-		return;
-	}
-
-	AMainPlayerController* PlayerController = Cast<AMainPlayerController>( 
-		Player->GetController());
-
-	if (!PlayerController)
-	{
-		return;
-	}
-
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
-		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
-			PlayerController->GetLocalPlayer()))
-	{
-		UEnhancedInputComponent* EnhancedInputComponent = Cast<
-				UEnhancedInputComponent>(PlayerController->InputComponent);
-		
-		EnhancedInputComponent->ClearBindingValues();
-		Subsystem->RemoveMappingContext(IMC);
-	}
-	
-	EndMontage();
-}
-
-void UGA_StartSitDown::BindInputAction(
-	UEnhancedInputComponent* EnhancedInputComponent)
-{
-	EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Started, 
-	this, &UGA_StartSitDown::OnStartedInputEvent);
-}

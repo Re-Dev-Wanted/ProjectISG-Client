@@ -124,4 +124,8 @@ namespace ISGGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Sleeping_Active_WakeUp
 									   , "Sleeping.Active.WakeUp"
 									   , "수면 관련 액티브 : 일어나기");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Interactive_Active_Exit
+										, "Interactive.Active.Exit"
+										, "상호작용 상태 나가기");
 }
