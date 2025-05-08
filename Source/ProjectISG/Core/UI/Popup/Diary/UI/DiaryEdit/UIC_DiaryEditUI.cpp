@@ -8,6 +8,8 @@
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectISG/Contents/Diary/DiaryStruct.h"
+#include "ProjectISG/Contents/Diary/Component/DiaryComponent.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/GameMode/MainGameMode.h"
@@ -28,6 +30,9 @@ void UUIC_DiaryEditUI::AppearUI(const EUILayer Layer)
 void UUIC_DiaryEditUI::DisappearUI()
 {
 	Super::DisappearUI();
+
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	Player->GetDiaryComponent()->NetMulticast_ChangeWriteDiary(true, Player);
 }
 
 void UUIC_DiaryEditUI::InitializeDiaryToEdit(

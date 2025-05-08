@@ -49,6 +49,8 @@ private:
 
 	bool CheckAllPlayerIsLieInBed();
 
+	bool CheckAllPlayerWriteDiary();
+
 	void LoggingToSleep();
 
 	void LoggingToWakeUp();
@@ -72,7 +74,7 @@ private:
 	// 임시 변수, 시네마틱이 추가 되면 해당 시네마틱 시간을 가져와야함
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = true), Category = Sleep)
-	float CinematicEndTime = 999.f;
+	float CinematicEndTime = 10.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = "true"), Category = Sleep)

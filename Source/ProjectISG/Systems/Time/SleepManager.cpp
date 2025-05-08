@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "ProjectISG/Contents/Diary/Component/DiaryComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Systems/Logging/LoggingEnum.h"
 #include "ProjectISG/Systems/Logging/LoggingStruct.h"
@@ -99,7 +100,10 @@ void USleepManager::ForceSleep()
 
 void USleepManager::SleepCinematic(float DeltaTime)
 {
-	CinematicElapsedTime += DeltaTime;
+	if (CheckAllPlayerWriteDiary() == true)
+	{
+		CinematicElapsedTime += DeltaTime;
+	}
 
 	if (CinematicElapsedTime >= CinematicEndTime)
 	{
@@ -192,6 +196,24 @@ bool USleepManager::CheckAllPlayerIsLieInBed()
 		if (player)
 		{
 			if (player->GetbLieInBed() == false)
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool USleepManager::CheckAllPlayerWriteDiary()
+{
+	AGameStateBase* GameState = GetWorld()->GetGameState();
+	for (APlayerState* PlayerState : GameState->PlayerArray)
+	{
+		AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(
+			PlayerState->GetPawn());
+		if (player)
+		{
+			if (player->GetDiaryComponent()->GetbWriteDiary() == false)
 			{
 				return false;
 			}

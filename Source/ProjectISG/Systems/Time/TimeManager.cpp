@@ -223,7 +223,7 @@ bool ATimeManager::CheckTimeUI()
 	AMainPlayerController* PC = Cast<AMainPlayerController>(
 				GetWorld()->GetFirstPlayerController());
 
-	if (PC->GetUIManageComponent()->HasViewUI(EUIName::Gameplay_MainHUD))
+	if (PC && PC->GetUIManageComponent()->HasViewUI(EUIName::Gameplay_MainHUD))
 	{
 		if (TimeView == nullptr || TimeController == nullptr)
 		{
