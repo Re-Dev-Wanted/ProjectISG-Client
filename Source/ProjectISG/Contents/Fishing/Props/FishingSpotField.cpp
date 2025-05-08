@@ -19,7 +19,14 @@ AFishingSpotField::AFishingSpotField()
 
 bool AFishingSpotField::GetCanTouch() const
 {
-	return true;
+	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn()))
+	{
+		FString HandItemUsingType = Player->GetHandSlotComponent()->GetItemUsingType();
+
+		return HandItemUsingType == "Fishing";
+	}
+
+	return false;
 }
 
 FString AFishingSpotField::GetTouchDisplayText() const
