@@ -51,6 +51,8 @@ private:
 
 	bool CheckAllPlayerWriteDiary();
 
+	void ChangeAllPlayerWriteDiary(bool value);
+
 	void LoggingToSleep();
 
 	void LoggingToWakeUp();

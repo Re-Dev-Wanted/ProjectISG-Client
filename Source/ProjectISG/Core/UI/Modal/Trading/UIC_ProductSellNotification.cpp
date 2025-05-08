@@ -79,7 +79,7 @@ int32 UUIC_ProductSellNotification::FindItemPrice(
 void UUIC_ProductSellNotification::LoggingToSellItem()
 {
 	FDiaryLogParams LogParams;
-	LogParams.Location = "거래장";
+	LogParams.Location = TEXT("거래장");
 	LogParams.ActionType = ELoggingActionType::TRADE;
 	LogParams.ActionName = ELoggingActionName::sell_item;
 

@@ -125,7 +125,10 @@ void UGA_Seeding::CreateSeed(FGameplayTag EventTag,
 void UGA_Seeding::LoggingToSeeding()
 {
 	FDiaryLogParams LogParams;
-	LogParams.Location = "경작지";
+	LogParams.Location = TEXT("농장");
 	LogParams.ActionType = ELoggingActionType::FARMING;
 	LogParams.ActionName = ELoggingActionName::plant_crop;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->LoggingData(LogParams);
+
 }

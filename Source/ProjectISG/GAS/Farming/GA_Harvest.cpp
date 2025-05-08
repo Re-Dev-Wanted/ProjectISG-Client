@@ -40,7 +40,9 @@ void UGA_Harvest::EndAbility(const FGameplayAbilitySpecHandle Handle,
 void UGA_Harvest::LoggingToHarvest()
 {
 	FDiaryLogParams LogParams;
-	LogParams.Location = "경작지";
+	LogParams.Location = TEXT("농장");
 	LogParams.ActionType = ELoggingActionType::FARMING;
 	LogParams.ActionName = ELoggingActionName::harvest_crop;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->LoggingData(LogParams);
 }

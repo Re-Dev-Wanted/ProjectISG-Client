@@ -242,7 +242,6 @@ bool ATimeManager::CheckTimeUI()
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("타임 UI 컨트롤러 없음"));
 		return false;
 	}
 }

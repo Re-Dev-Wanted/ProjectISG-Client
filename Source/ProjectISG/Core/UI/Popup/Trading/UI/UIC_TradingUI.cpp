@@ -44,7 +44,7 @@ void UUIC_TradingUI::UpdateGoldText()
 
 	if (PC && PS && TradingUIView)
 	{
-		FString Str = FString::Printf(TEXT("Gold : %d"), PS->GetGold());
+		FString Str = FString::Printf(TEXT("Gold : %dG"), PS->GetGold());
 		TradingUIView->GetGoldText()->SetText(FText::FromString(Str));
 	}
 }

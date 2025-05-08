@@ -93,7 +93,7 @@ void ABed::OnInteractive(AActor* Causer)
 	Player->GetAbilitySystemComponent()->HandleGameplayEvent(
 		EventPayload.EventTag, &EventPayload);
 	Player->GetInteractionComponent()->Server_OnInteractiveResponse(Causer);
-	CanInteractive = false;
+	//CanInteractive = false;
 }
 
 void ABed::OnInteractiveResponse(AActor* Causer)
