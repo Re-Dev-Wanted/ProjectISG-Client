@@ -59,10 +59,12 @@ FVector AGridManager::SnapToGridPlacement(const FVector& Location)
 
 FIntVector AGridManager::WorldToGridLocation(const FVector& WorldLocation)
 {
+	const FVector LocalLocation = GetActorTransform().InverseTransformPosition(WorldLocation);
+	
 	return FIntVector
 	(
-		FMath::FloorToInt(WorldLocation.X / SnapSize),
-		FMath::FloorToInt(WorldLocation.Y / SnapSize),
+		FMath::FloorToInt(LocalLocation.X / SnapSize),
+		FMath::FloorToInt(LocalLocation.Y / SnapSize),
 		0.f
 		// FMath::FloorToInt(WorldLocation.Z / SnapSize)
 	);
@@ -70,12 +72,14 @@ FIntVector AGridManager::WorldToGridLocation(const FVector& WorldLocation)
 
 FVector AGridManager::GridToWorldLocation(const FIntVector& GridCoord)
 {
-	return FVector
+	const FVector LocalLocation = FVector
 	(
 		FMath::FloorToInt(GridCoord.X * SnapSize + SnapSize * 0.5f),
 		FMath::FloorToInt(GridCoord.Y * SnapSize + SnapSize * 0.5f),
 		GridCoord.Z * SnapSize                    // 보통 Z는 그대로
 	);
+
+	return GetActorTransform().TransformPosition(LocalLocation);
 }
 
 FVector AGridManager::GetLocationInFront(AActor* Actor, int32 Distance)
