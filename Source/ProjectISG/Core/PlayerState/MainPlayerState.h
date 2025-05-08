@@ -26,20 +26,20 @@ public:
 	GETTER(TObjectPtr<UInventoryComponent>, InventoryComponent)
 	GETTER(TObjectPtr<class AGridManager>, GridManager)
 	GETTER_SETTER(int32, Gold);
-	
+
 	bool CanBuyProduct(int32 ProductPrice);
 
 protected:
 	virtual void BeginPlay() override;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UISGAbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY()
-	TObjectPtr<class UISGAttributeSet> AttributeSet;
+	TObjectPtr<UISGAttributeSet> AttributeSet;
 
 	UPROPERTY()
-	TObjectPtr<class AGridManager> GridManager;
+	TObjectPtr<AGridManager> GridManager;
 
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))

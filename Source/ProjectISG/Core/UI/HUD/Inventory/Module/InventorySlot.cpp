@@ -11,6 +11,8 @@
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Popup/Inventory/UI/UIC_InventoryUI.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
@@ -72,7 +74,7 @@ void UInventorySlot::NativeOnDragDetected(const FGeometry& InGeometry,
 
 	if (OnInventorySlotDragDetected.IsBound())
 	{
-		OnInventorySlotDragDetected.Broadcast(SlotItemId);	
+		OnInventorySlotDragDetected.Broadcast(SlotItemId);
 	}
 }
 
@@ -170,12 +172,24 @@ void UInventorySlot::NativeOnMouseEnter(const FGeometry& InGeometry,
 {
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
 
-	GetOwningPlayer<AMainPlayerController>()->ShowItemInfo(Index);
+	UUIC_InventoryUI* InventoryUIController = Cast<UUIC_InventoryUI>(
+		GetOwningPlayer<AMainPlayerController>()->GetUIManageComponent()->
+		                                          ControllerInstances[
+			EUIName::Popup_InventoryUI]);
+	InventoryUIController->SetItemInfoData(Index);
+
+	// TODO: 다른 전용 UI 필요하면 아래에 계속 적어도 무방
 }
 
 void UInventorySlot::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseLeave(InMouseEvent);
 
-	GetOwningPlayer<AMainPlayerController>()->RemoveItemInfo();
+	UUIC_InventoryUI* InventoryUIController = Cast<UUIC_InventoryUI>(
+		GetOwningPlayer<AMainPlayerController>()->GetUIManageComponent()->
+		                                          ControllerInstances[
+			EUIName::Popup_InventoryUI]);
+	InventoryUIController->ClearItemInfoData();
+
+	// TODO: 다른 전용 UI 필요하면 아래에 계속 적어도 무방
 }

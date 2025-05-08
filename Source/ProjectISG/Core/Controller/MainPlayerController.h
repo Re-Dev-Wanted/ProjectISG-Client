@@ -23,8 +23,6 @@ public:
 	AMainPlayerController();
 
 	void OpenInventory();
-	void ShowItemInfo(const uint16 InventoryIndex) const;
-	void RemoveItemInfo() const;
 	void PushUI(const EUIName UIName);
 	void PopUI();
 
