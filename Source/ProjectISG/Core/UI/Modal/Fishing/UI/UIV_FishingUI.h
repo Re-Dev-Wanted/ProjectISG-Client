@@ -14,6 +14,7 @@ class PROJECTISG_API UUIV_FishingUI : public UBaseUIView
 
 public:
 	GETTER(UInteractiveItemUI*, InteractiveUI)
+	GETTER(UImage*, CatchMarker)
 
 protected:
 	UPROPERTY(meta = (BindWidget))

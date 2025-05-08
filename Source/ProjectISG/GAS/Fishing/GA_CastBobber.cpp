@@ -7,6 +7,8 @@
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Modal/Fishing/UI/UIC_FishingUI.h"
 #include "ProjectISG/Systems/Logging/LoggingEnum.h"
 #include "ProjectISG/Systems/Logging/LoggingStruct.h"
 #include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
@@ -70,6 +72,29 @@ void UGA_CastBobber::EndAbility(const FGameplayAbilitySpecHandle Handle, const F
 
 void UGA_CastBobber::OnEndCinematic()
 {
+
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>
+		(CurrentActorInfo->AvatarActor.Get());
+
+	if (!Player)
+	{
+		return;
+	}
+
+	AMainPlayerController* PlayerController = Cast<AMainPlayerController>( 
+		Player->GetController());
+
+	if (PlayerController)
+	{
+		PlayerController->PushUI(EUIName::Modal_FishingUI);
+
+		UUIC_FishingUI* ModalUIController = 
+		Cast<UUIC_FishingUI>(PlayerController->GetUIManageComponent
+		()->ControllerInstances[EUIName::Modal_FishingUI]);
+
+		ModalUIController->SetUI(false, TEXT("RM"), TEXT("회수하기"));
+	}
+	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 

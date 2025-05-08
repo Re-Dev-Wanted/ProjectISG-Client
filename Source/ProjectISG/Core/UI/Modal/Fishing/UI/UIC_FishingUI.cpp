@@ -5,6 +5,7 @@
 #include "UIM_FishingUI.h"
 #include "UIV_FishingUI.h"
 #include "Abilities/GameplayAbilityTypes.h"
+#include "Components/Image.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/UI/HUD/Interactive/InteractiveItemUI.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
@@ -13,6 +14,7 @@ void UUIC_FishingUI::SetUI(bool bIsActive, const FString& Key, const FString& Te
 {
 	const UUIV_FishingUI* FishingView = Cast<UUIV_FishingUI>(GetView());
 	FishingView->GetInteractiveUI()->SetInteractive(Key, Text);
+	FishingView->GetCatchMarker()->SetVisibility(bIsActive? ESlateVisibility::Visible : ESlateVisibility::Hidden);
 
 	UUIM_FishingUI* FishingUIModel = Cast<UUIM_FishingUI>(GetModel());
 	FishingUIModel->SetIsActive(bIsActive);

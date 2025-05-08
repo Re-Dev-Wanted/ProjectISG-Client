@@ -22,17 +22,18 @@ void UGA_ReelInLine::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 	if (!Player)
 	{
+		return;
+	}
+
+	TObjectPtr<ABaseActor> HeldItem = Player->GetHandSlotComponent()->GetHeldItem();
+
+	if (!HeldItem)
+	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 		return;
 	}
 
-	if (!TriggerEventData->Target)
-	{
-		OnEndCinematic();
-		return;
-	}
-
-	if (const AFishingRod* ConstActor = Cast<AFishingRod>(TriggerEventData->Target))
+	if (const AFishingRod* ConstActor = Cast<AFishingRod>(HeldItem))
 	{
 		AFishingRod* FishingRod = const_cast<AFishingRod*>(ConstActor);
 		
@@ -90,8 +91,16 @@ void UGA_ReelInLine::OnEndCinematic()
 
 	PC->SetIgnoreLookInput(false);
 	PC->SetIgnoreMoveInput(false);
+
+	TObjectPtr<ABaseActor> HeldItem = Player->GetHandSlotComponent()->GetHeldItem();
+
+	if (!HeldItem)
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		return;
+	}
 	
-	if (const AFishingRod* ConstActor = Cast<AFishingRod>(CurrentEventData.Target))
+	if (const AFishingRod* ConstActor = Cast<AFishingRod>(HeldItem))
 	{
 		AFishingRod* FishingRod = const_cast<AFishingRod*>(ConstActor);
 

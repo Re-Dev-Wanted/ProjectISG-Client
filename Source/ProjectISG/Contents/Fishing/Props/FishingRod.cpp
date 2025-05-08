@@ -12,7 +12,10 @@
 #include "Misc/MapErrors.h"
 #include "ProjectISG/Contents/Fishing/Managers/FishingManager.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Modal/Fishing/UI/UIC_FishingUI.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
@@ -122,6 +125,13 @@ void AFishingRod::OnEventRealBite()
 
 	BiteLogging();
 
+	const AMainPlayerController* PC = Cast<AMainPlayerController>(GetWorld()->GetFirstPlayerController());
+
+	UUIC_FishingUI* ModalUIController = 
+		Cast<UUIC_FishingUI>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Modal_FishingUI]);
+
+	ModalUIController->SetUI(true, TEXT("RM"), TEXT("물었다!"));
+
 	TWeakObjectPtr<AFishingRod> WeakThis = this;
 	
 	GetWorld()->
@@ -145,6 +155,13 @@ void AFishingRod::OnEventFinish(bool bLoop)
 {
 	IsBiteFish = false;
 	FishData = FFishData();
+
+	const AMainPlayerController* PC = Cast<AMainPlayerController>(GetWorld()->GetFirstPlayerController());
+
+	UUIC_FishingUI* ModalUIController = 
+		Cast<UUIC_FishingUI>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Modal_FishingUI]);
+
+	ModalUIController->SetUI(false, TEXT("RM"), TEXT("회수하기"));
 
 	if (Bobber)
 	{
