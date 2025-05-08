@@ -52,6 +52,9 @@ struct PROJECTISG_API FGenerateDiaryResponse
 
 	UPROPERTY()
 	FString diary;
+
+	UPROPERTY()
+	FString best_screenshot_filename;
 };
 
 USTRUCT()

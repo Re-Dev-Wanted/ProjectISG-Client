@@ -12,7 +12,7 @@
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
-#include "ProjectISG/Core/GameMode/MainGameMode.h"
+#include "ProjectISG/Core/UI/Base/Module/UI_HttpImage.h"
 #include "ProjectISG/Core/GameMode/MainGameState.h"
 #include "ProjectISG/Systems/Time/TimeManager.h"
 #include "ProjectISG/Utils/ApiUtil.h"
@@ -31,7 +31,8 @@ void UUIC_DiaryEditUI::DisappearUI()
 {
 	Super::DisappearUI();
 
-	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		GetWorld()->GetFirstPlayerController()->GetPawn());
 	Player->GetDiaryComponent()->NetMulticast_ChangeWriteDiary(true, Player);
 }
 
@@ -48,6 +49,8 @@ void UUIC_DiaryEditUI::InitializeDiaryToEdit(
 		FText::FromString(FString::FromInt(TimeManager->GetTotalPlayingDay())));
 	DiaryEditUIView->GetDiaryDescription()->SetText(
 		FText::FromString(Diary.diary));
+	DiaryEditUIView->GetGeneratedImage()->SetImagePath(
+		Diary.best_screenshot_filename);
 }
 
 void UUIC_DiaryEditUI::OnClickToSaveDiary()
