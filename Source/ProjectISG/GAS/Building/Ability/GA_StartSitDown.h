@@ -17,12 +17,6 @@ class PROJECTISG_API UGA_StartSitDown : public UGA_BaseInputAbility
 public:
 	UPROPERTY(EditDefaultsOnly, Category = AnimMontage)
 	TObjectPtr<UAnimMontage> StartSitDownMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = InputBinding)
-	TObjectPtr<UInputAction> InputAction;
-
-	UPROPERTY(EditDefaultsOnly, Category = InputBinding)
-	TObjectPtr<UInputMappingContext> IMC;
 	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -30,17 +24,12 @@ protected:
 	
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
-
+	
 	UFUNCTION()
 	void NotifyMontage(FGameplayTag EventTag, FGameplayEventData EventData);
 
 	UFUNCTION()
-	void EndMontage();
-
-	UFUNCTION()
-	void OnStartedInputEvent();
-
-	void BindInputAction(UEnhancedInputComponent* EnhancedInputComponent);
+	void EndMontage(FGameplayEventData Payload);
 
 	UPROPERTY()
 	class UPlayMontageWithEvent* AT_StartMontageEvent;
