@@ -1,6 +1,8 @@
 ﻿#include "Bobber.h"
 
 #include "Components/BoxComponent.h"
+#include "Engine/AssetManager.h"
+#include "Engine/StreamableManager.h"
 #include "Kismet/GameplayStatics.h"
 
 ABobber::ABobber()
@@ -50,7 +52,28 @@ void ABobber::OnBite(TSoftObjectPtr<USkeletalMesh> Fish)
 	FVector Impulse = FVector::DownVector * ImpulseStrength;
 	Root->AddImpulse(Impulse);
 
-	FishMesh->SetSkeletalMesh(Fish.Get());
+	FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
+
+	TWeakObjectPtr<ABobber> WeakThis = this;
+
+	Streamable.RequestAsyncLoad
+	(
+		Fish.ToSoftObjectPath(), 
+		FStreamableDelegate::CreateLambda
+		(
+			[WeakThis, Fish]()
+			{
+				if (WeakThis.IsValid() && Fish.IsValid())
+				{
+					USkeletalMesh* LoadedMesh = Fish.Get();
+					if (LoadedMesh)
+					{
+						WeakThis->FishMesh->SetSkeletalMesh(LoadedMesh);
+					}
+				}
+			}
+		)
+	);
 }
 
 void ABobber::RemoveFish()

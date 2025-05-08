@@ -26,15 +26,9 @@ public:
 	UFUNCTION()
 	void OnChange(uint16 ItemId);
 
-	UFUNCTION()
-	void BindingInputActions(
-		UEnhancedInputComponent* EnhancedInputComponent);
-
 	FString GetItemUsingType();
 	
 	bool IsHousingHandItem();
-
-	void SetIsUseInputAction(const bool NewIsUseInputAction);
 
 	UFUNCTION(Server, Reliable)
 	void Server_ChangeItemId(uint16 ChangeItemId);
@@ -44,23 +38,12 @@ public:
 
 protected:
 	virtual void InitializeComponent() override;
-
-	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	UFUNCTION()
-	void OnAction();
-
+	
 	UPROPERTY()
 	TObjectPtr<AMainPlayerCharacter> Player;
 	
 	UPROPERTY(Replicated, EditAnywhere)
 	uint16 ItemId = 0;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",
-		meta = (AllowPrivateAccess = true))
-	TObjectPtr<UInputAction> TouchAction;
-
-	bool IsUseInputAction = false;
 
 	UPROPERTY(Replicated)
 	TObjectPtr<class ABaseActor> HeldItem = nullptr;

@@ -90,9 +90,7 @@ void UGA_ReelInLine::OnEndCinematic()
 
 	PC->SetIgnoreLookInput(false);
 	PC->SetIgnoreMoveInput(false);
-
-	Player->GetHandSlotComponent()->SetIsUseInputAction(false);
-
+	
 	if (const AFishingRod* ConstActor = Cast<AFishingRod>(CurrentEventData.Target))
 	{
 		AFishingRod* FishingRod = const_cast<AFishingRod*>(ConstActor);

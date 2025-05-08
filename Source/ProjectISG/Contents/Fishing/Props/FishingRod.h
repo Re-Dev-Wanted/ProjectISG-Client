@@ -68,14 +68,6 @@ protected:
 	
 	void FinishLogging(bool bSuccess);
 public:
-	virtual bool GetCanTouch() const override;
-	
-	virtual FString GetTouchDisplayText() const override;
-	
-	virtual void OnTouch(AActor* Causer) override;
-	
-	virtual void OnTouchResponse(AActor* Causer) override;
-	
 	void StartCasting(AActor* Causer, FVector Destination);
 
 	void ReelInLine();

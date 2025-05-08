@@ -6,7 +6,10 @@
 #include "Bobber.h"
 #include "CableComponent.h"
 #include "Abilities/GameplayAbilityTypes.h"
+#include "Engine/AssetManager.h"
+#include "Engine/StreamableManager.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Misc/MapErrors.h"
 #include "ProjectISG/Contents/Fishing/Managers/FishingManager.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
@@ -97,6 +100,7 @@ void AFishingRod::OnEventBite()
 		return;
 	}
 
+
 	Bobber->OnBite(FishData.GetMesh());
 
 	GetWorld()->
@@ -180,37 +184,37 @@ void AFishingRod::FinishLogging(bool bSuccess)
 	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 }
 
-bool AFishingRod::GetCanTouch() const
-{
-	return true;
-}
-
-FString AFishingRod::GetTouchDisplayText() const
-{
-	return TEXT("올리기");
-}
-
-void AFishingRod::OnTouch(AActor* Causer)
-{
-	Super::OnTouch(Causer);
-
-	// UKismetSystemLibrary::PrintString(GetWorld(),TEXT("AFishingRod::OnTouch"));
-
-	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
-	{
-		FGameplayEventData EventData;
-		EventData.EventTag = ISGGameplayTags::Fishing_Active_ReelInLine;
-		EventData.Instigator = Player;
-		EventData.Target = this;
-			
-		Player->GetAbilitySystemComponent()->HandleGameplayEvent(ISGGameplayTags::Fishing_Active_ReelInLine, &EventData);
-	}
-}
-
-void AFishingRod::OnTouchResponse(AActor* Causer)
-{
-	Super::OnTouchResponse(Causer);
-}
+// bool AFishingRod::GetCanTouch() const
+// {
+// 	return false;
+// }
+//
+// FString AFishingRod::GetTouchDisplayText() const
+// {
+// 	return TEXT("올리기");
+// }
+//
+// void AFishingRod::OnTouch(AActor* Causer)
+// {
+// 	Super::OnTouch(Causer);
+//
+// 	// UKismetSystemLibrary::PrintString(GetWorld(),TEXT("AFishingRod::OnTouch"));
+//
+// 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
+// 	{
+// 		FGameplayEventData EventData;
+// 		EventData.EventTag = ISGGameplayTags::Fishing_Active_ReelInLine;
+// 		EventData.Instigator = Player;
+// 		EventData.Target = this;
+// 			
+// 		Player->GetAbilitySystemComponent()->HandleGameplayEvent(ISGGameplayTags::Fishing_Active_ReelInLine, &EventData);
+// 	}
+// }
+//
+// void AFishingRod::OnTouchResponse(AActor* Causer)
+// {
+// 	Super::OnTouchResponse(Causer);
+// }
 
 void AFishingRod::StartCasting(AActor* Causer, FVector Destination)
 {

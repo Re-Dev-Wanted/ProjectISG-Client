@@ -65,24 +65,6 @@ void UGA_CastBobber::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 void UGA_CastBobber::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(ActorInfo->AvatarActor.Get());
-	
-	if (!Player)
-	{
-		Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-		return;
-	}
-
-	GetWorld()->
-	GetTimerManager()
-	.SetTimerForNextTick
-	(
-		[Player]()
-		{
-			Player->GetHandSlotComponent()->SetIsUseInputAction(true);
-		}
-	);
-	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
