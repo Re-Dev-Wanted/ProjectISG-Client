@@ -43,6 +43,10 @@ private:
 
 	void UpdateCycleDate();
 
+	void UpdateTimeOfDay(ETimeOfDay TOD);
+
+	bool CheckTimeUI();
+
 	void RotateSun();
 
 	UFUNCTION()
@@ -147,6 +151,20 @@ private:
 		Category = Sleep)
 	class USleepManager* SleepManager = nullptr;
 #pragma endregion
+
+#pragma region UI
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Time")
+	class UUIV_Time* TimeView = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Time")
+	class UUIC_Time* TimeController = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = "Time")
+	class UUIM_Time* TimeModel = nullptr;
+#pragma endregion 
 
 public:
 	UPROPERTY()

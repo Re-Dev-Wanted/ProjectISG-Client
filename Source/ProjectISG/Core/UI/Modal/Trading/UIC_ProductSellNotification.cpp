@@ -82,4 +82,7 @@ void UUIC_ProductSellNotification::LoggingToSellItem()
 	LogParams.Location = "거래장";
 	LogParams.ActionType = ELoggingActionType::TRADE;
 	LogParams.ActionName = ELoggingActionName::sell_item;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+	            LoggingData(LogParams);
 }

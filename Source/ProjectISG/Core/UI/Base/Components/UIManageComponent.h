@@ -27,7 +27,7 @@ public:
 
 	bool HasViewUI(const EUIName Key);
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	TMap<EUIName, TObjectPtr<UBaseUIController>> ControllerInstances;
 
 private:

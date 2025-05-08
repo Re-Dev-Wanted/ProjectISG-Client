@@ -94,4 +94,7 @@ void UUIC_ProductBuyNotification::LoggingToBuyItem()
 	LogParams.Location = "거래장";
 	LogParams.ActionType = ELoggingActionType::TRADE;
 	LogParams.ActionName = ELoggingActionName::buy_item;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+	            LoggingData(LogParams);
 }
