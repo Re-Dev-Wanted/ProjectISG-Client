@@ -13,10 +13,8 @@ UFUNCTION(BlueprintCallable) \
 FORCEINLINE void Set##varName(type val) { varName = val; }
 
 #define GETTER_SETTER(type, varName) \
-UFUNCTION(BlueprintCallable) \
-FORCEINLINE type Get##varName() const { return varName; } \
-UFUNCTION(BlueprintCallable) \
-FORCEINLINE void Set##varName(type val) { varName = val; }
+GETTER(type, varName) \
+SETTER(type, varName)
 
 #define GETTER_TEMPLATE(baseType, varName) \
 template <typename T, std::enable_if_t<std::is_base_of_v<baseType, T>, int>  = 0> \

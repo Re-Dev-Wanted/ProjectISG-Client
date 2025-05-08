@@ -4,6 +4,7 @@
 
 #include "CookingStruct.generated.h"
 
+class ULevelSequence;
 enum class ECookingTool : uint8;
 
 USTRUCT(BlueprintType)
@@ -34,5 +35,29 @@ private:
 	TMap<uint16, uint8> RecipeData;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	ECookingTool CookingTool = ECookingTool::None;
+};
+
+USTRUCT(BlueprintType)
+struct PROJECTISG_API FEquipCookingToolToActParams
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	USceneComponent* AttachPoint = nullptr;
+
+	UPROPERTY()
+	ECookingTool CookingTool = ECookingTool::None;
+};
+
+USTRUCT(BlueprintType)
+struct PROJECTISG_API FCookingQTESequence
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULevelSequence> Sequence;
+
+	UPROPERTY(EditDefaultsOnly)
 	ECookingTool CookingTool = ECookingTool::None;
 };

@@ -1,10 +1,12 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "ProjectISG/Contents/Cooking/CookingStruct.h"
 #include "ProjectISG/GAS/Common/Object/BaseInteractiveActor.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "KitchenFurniture.generated.h"
 
+enum class ECookingTool : uint8;
 class UCameraComponent;
 class UCookingComponent;
 
@@ -24,6 +26,10 @@ public:
 
 	virtual FString GetDisplayText() const override;
 
+	void EquipCookingToolToAct(const FEquipCookingToolToActParams& Params);
+
+	void UnEquipCookingToolToAct();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -36,4 +42,13 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> KitchenCameraComponent;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UStaticMeshComponent> FryPanMesh;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UStaticMeshComponent> ScoopMesh;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UStaticMeshComponent> WokMesh;
 };
