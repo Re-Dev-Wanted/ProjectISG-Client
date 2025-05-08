@@ -19,6 +19,7 @@ public:
 	UPlayerHandSlotComponent();
 
 	GETTER(TObjectPtr<class ABaseActor>, HeldItem)
+	GETTER(uint16, ItemId)
 
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -35,6 +36,12 @@ public:
 
 	void SetIsUseInputAction(const bool NewIsUseInputAction);
 
+	UFUNCTION(Server, Reliable)
+	void Server_ChangeItemId(uint16 ChangeItemId);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_ChangeItemId(uint16 ChangeItemId);
+
 protected:
 	virtual void InitializeComponent() override;
 
@@ -46,7 +53,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<AMainPlayerCharacter> Player;
 	
-	UPROPERTY()
+	UPROPERTY(Replicated, EditAnywhere)
 	uint16 ItemId = 0;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",

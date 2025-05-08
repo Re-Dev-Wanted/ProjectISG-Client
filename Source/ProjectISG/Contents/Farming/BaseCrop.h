@@ -16,6 +16,7 @@ enum class ECropState :uint8
 };
 
 DECLARE_MULTICAST_DELEGATE(FOnDryField);
+DECLARE_MULTICAST_DELEGATE(FHarvestCrop);
 
 UCLASS()
 class PROJECTISG_API ABaseCrop : public ABaseInteractiveActor
@@ -60,6 +61,7 @@ public:
 
 	FOnDryField OnDryField;
 
+	FHarvestCrop HarvestCrop;
 private:
 	void CheckGrowTime();
 
@@ -70,6 +72,12 @@ private:
 
 	UFUNCTION(Reliable, NetMulticast)
 	void NetMulticast_ChangeCropMeshToMature();
+
+	UFUNCTION(Server, Reliable)
+	void Server_FieldIsDried();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_FieldIsDried();
 
 #pragma region Settings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
@@ -108,10 +116,10 @@ private:
 	int32 CropRemainGrowTime = 0;
 
 	UPROPERTY(EditAnywhere, Category = Grow)
-	int32 CropTotalGrowDay = 0;
+	int32 CropTotalGrowDay = 1;
 
 	UPROPERTY(EditAnywhere, Category = Grow)
-	int32 WaterDuration = 0;
+	int32 WaterDuration = 12;
 
 	UPROPERTY(Replicated, EditAnywhere, Category = Grow)
 	bool bIsGetWater = false;

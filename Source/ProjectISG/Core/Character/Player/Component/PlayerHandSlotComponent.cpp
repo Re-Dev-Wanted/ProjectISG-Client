@@ -91,6 +91,7 @@ void UPlayerHandSlotComponent::GetLifetimeReplicatedProps(TArray<class FLifetime
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UPlayerHandSlotComponent, HeldItem);
+	DOREPLIFETIME(UPlayerHandSlotComponent, ItemId);
 }
 
 void UPlayerHandSlotComponent::OnChange(uint16 _ItemId)
@@ -105,7 +106,8 @@ void UPlayerHandSlotComponent::OnChange(uint16 _ItemId)
 		ABaseActor* DestroyActor = HeldItem.Get();
 		HeldItem = nullptr;
 		DestroyActor->Destroy();
-		ItemId = 0;
+		//ItemId = 0;
+		Server_ChangeItemId(0);
 	}
 
 	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(_ItemId);
@@ -124,7 +126,8 @@ void UPlayerHandSlotComponent::OnChange(uint16 _ItemId)
 	Actor->SetReplicates(true);
 	Actor->SetReplicateMovement(true);
 	HeldItem = Cast<ABaseActor>(Actor);
-	ItemId = _ItemId;
+	//ItemId = _ItemId;
+	Server_ChangeItemId(_ItemId);
 
 	const FName SocketName = UItemManager::GetSocketNameById(_ItemId);
 	
@@ -165,4 +168,16 @@ bool UPlayerHandSlotComponent::IsHousingHandItem()
 void UPlayerHandSlotComponent::SetIsUseInputAction(const bool NewIsUseInputAction)
 {
 	IsUseInputAction = NewIsUseInputAction;
+}
+
+void UPlayerHandSlotComponent::Server_ChangeItemId_Implementation(
+	uint16 ChangeItemId)
+{
+	NetMulticast_ChangeItemId(ChangeItemId);
+}
+
+void UPlayerHandSlotComponent::NetMulticast_ChangeItemId_Implementation(
+	uint16 ChangeItemId)
+{
+	ItemId = ChangeItemId;
 }

@@ -64,21 +64,20 @@ void AHoedField::OnTouch(AActor* Causer)
 
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
-		
-		Player->GetInteractionComponent()->Server_OnTouchResponse(Causer);
-
-		UE_LOG(LogTemp, Warning, TEXT("상호작용 들어옴, 플레이어 로컬롤 : %s"), *FEnumUtil::GetClassEnumKeyAsString(Player->GetLocalRole()));
-
 
 		int SlotIndex = Player->GetPlayerInventoryComponent()->GetCurrentSlotIndex();
-
+		
 		const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 		
 		const FItemMetaInfo ItemMetaInfo = PS->GetInventoryComponent()->GetInventoryList()[SlotIndex];
 
-		FString UsingType = UItemManager::GetItemUsingType(ItemMetaInfo.GetId());
+		//FString UsingType = UItemManager::GetItemUsingType(ItemMetaInfo.GetId());
+		
+		const uint16 ItemId = Player->GetHandSlotComponent()->GetItemId();
+		FItemInfoData itemData = UItemManager::GetItemInfoById(ItemId);
+		FString UsingType = UItemManager::GetItemUsingType(ItemId);
 
-		if (UsingType == "Watering")
+		if (UsingType == "Watering" && PlantedCrop.IsValid())
 		{
 			FGameplayEventData EventData;
 			EventData.EventTag = ISGGameplayTags::Farming_Active_Watering;
@@ -86,6 +85,8 @@ void AHoedField::OnTouch(AActor* Causer)
 			EventData.Target = this;
 			
 			Player->GetAbilitySystemComponent()->HandleGameplayEvent(ISGGameplayTags::Farming_Active_Watering, &EventData);
+			
+			Player->GetInteractionComponent()->Server_OnTouchResponse(Causer);
 			return;
 		}
 
@@ -97,8 +98,8 @@ void AHoedField::OnTouch(AActor* Causer)
 			EventData.Target = this;
 			
 			Player->GetAbilitySystemComponent()->HandleGameplayEvent(ISGGameplayTags::Farming_Active_Seeding, &EventData);
-			UE_LOG(LogTemp, Warning, TEXT("씨앗심기 어빌리티 실행, 플레이어 로컬롤 %s"), *FEnumUtil::GetClassEnumKeyAsString(Player->GetLocalRole()));
 		
+			Player->GetInteractionComponent()->Server_OnTouchResponse(Causer);
 			Player->GetPlayerInventoryComponent()->RemoveItemCurrentSlotIndex(1);
 
 			return;
@@ -144,10 +145,24 @@ void AHoedField::OnTouchResponse(AActor* Causer)
 {
 	Super::OnTouchResponse(Causer);
 	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
-	const uint16 ItemId = Player->GetPlayerInventoryComponent()->
-										  GetCurrentSlotIndex();
+	const uint16 ItemId = Player->GetHandSlotComponent()->GetItemId();
+										  
 	FItemInfoData itemData = UItemManager::GetItemInfoById(ItemId);
-	PlantCrop(itemData, ItemId);
+	FString UsingType = UItemManager::GetItemUsingType(ItemId);
+
+	UE_LOG(LogTemp, Warning, TEXT("서버실행 슬롯 아이템 타입 %s"), *UsingType);
+
+	if (UsingType == "Farming" && !PlantedCrop.IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("씨앗심기 (서버)"));
+		PlantCrop(itemData, ItemId);
+	}
+
+	if (UsingType == "Watering" && PlantedCrop.IsValid())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("물주기 (서버)"));
+		SetWet(true);
+	}
 }
 
 bool AHoedField::PlantCrop(FItemInfoData CropData, uint16 CropId)
@@ -172,6 +187,14 @@ bool AHoedField::PlantCrop(FItemInfoData CropData, uint16 CropId)
 		[&]()
 		{
 			SetWet(false);
+		}
+	);
+
+	Crop->HarvestCrop.AddLambda
+	(
+		[this]()
+		{
+			PlantedCrop.Clear(true);
 		}
 	);
 
@@ -202,7 +225,7 @@ void AHoedField::OnRep_UpdateState()
 	UpdateState();
 }
 
-void AHoedField::SetWet(bool Watering)
+void AHoedField::SetWet_Implementation(bool Watering)
 {
 	IsWet = Watering;
 	
