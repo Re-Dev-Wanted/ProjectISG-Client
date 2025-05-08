@@ -6,6 +6,7 @@
 
 class UInteractiveUI;
 class UInventoryList;
+class UUIV_Time;
 
 UCLASS()
 class PROJECTISG_API UUIV_MainHUD : public UBaseUIView
@@ -15,6 +16,7 @@ class PROJECTISG_API UUIV_MainHUD : public UBaseUIView
 public:
 	GETTER(TObjectPtr<UInventoryList>, MainSlotList)
 	GETTER(TObjectPtr<UInteractiveUI>, InteractiveUI)
+	GETTER(TObjectPtr<UUIV_Time>, TimeUI)
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -22,4 +24,7 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInteractiveUI> InteractiveUI;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UUIV_Time> TimeUI;
 };

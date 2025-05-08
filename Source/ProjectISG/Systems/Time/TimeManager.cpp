@@ -2,6 +2,13 @@
 
 #include "SleepManager.h"
 #include "Net/UnrealNetwork.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
+#include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIV_MainHUD.h"
+#include "ProjectISG/Core/UI/HUD/Time/UIC_Time.h"
+#include "ProjectISG/Core/UI/HUD/Time/UIM_Time.h"
+#include "ProjectISG/Core/UI/HUD/Time/UIV_Time.h"
 #include "ProjectISG/Systems/Logging/LoggingEnum.h"
 #include "ProjectISG/Systems/Logging/LoggingStruct.h"
 #include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
@@ -71,6 +78,20 @@ void ATimeManager::Tick(float DeltaTime)
 		if (HasAuthority())
 		{
 			UpdateCycleTime(DeltaTime);
+			// 서버 시간 UI 업데이트
+			if (CheckTimeUI())
+			{
+				if (TimeController->GetbInitialized() == false)
+				{
+					TimeController->UpdateDayText(Day, Month);
+					TimeController->UpdateTimeImage(TimeModel->GetMorningIcon());
+					TimeController->SetbInitialized(true);
+				}
+				else
+				{
+					TimeController->UpdateTimeText(Hour, Minute);
+				}
+			}
 			RotateSun();
 
 			ETimeOfDay PreviousTimeOfDay = CurrentTimeOfDay; // 변경 전 상태 저장
@@ -82,7 +103,7 @@ void ATimeManager::Tick(float DeltaTime)
 			{
 				CurrentTimeOfDay = ETimeOfDay::Afternoon;
 			}
-			else if (Hour > 18 && Hour < 24)
+			else if (Hour > 18 && Hour < 21)
 			{
 				CurrentTimeOfDay = ETimeOfDay::Evening;
 			}
@@ -93,22 +114,23 @@ void ATimeManager::Tick(float DeltaTime)
 
 			if (PreviousTimeOfDay != CurrentTimeOfDay)
 			{
-				switch (CurrentTimeOfDay)
+				UpdateTimeOfDay(CurrentTimeOfDay);
+			}
+		}
+		else
+		{
+			// 클라이언트 시간 UI 업데이트
+			if (CheckTimeUI())
+			{
+				if (TimeController->GetbInitialized() == false)
 				{
-				case ETimeOfDay::Morning:
-					LoggingToMorning();
-					break;
-				case ETimeOfDay::Afternoon:
-					LoggingToAfternoon();
-					break;
-				case ETimeOfDay::Evening:
-					LoggingToEvening();
-					break;
-				case ETimeOfDay::Night:
-					LoggingToNight();
-					break;
-				default:
-					break;
+					TimeController->UpdateDayText(Day, Month);
+					TimeController->UpdateTimeImage(TimeModel->GetMorningIcon());
+					TimeController->SetbInitialized(true);
+				}
+				else
+				{
+					TimeController->UpdateTimeText(Hour, Minute);
 				}
 			}
 		}
@@ -153,6 +175,76 @@ void ATimeManager::UpdateCycleDate()
 		Month = 1;
 		Year++;
 	}
+
+	if (CheckTimeUI())
+	{
+		TimeController->UpdateDayText(Day, Month);
+	}
+}
+
+void ATimeManager::UpdateTimeOfDay(ETimeOfDay TOD)
+{
+	if (CheckTimeUI())
+	{
+		switch (TOD)
+		{
+		case ETimeOfDay::Morning:
+			{
+				LoggingToMorning();
+				TimeController->UpdateTimeImage(TimeModel->GetMorningIcon());
+				break;
+			}
+		case ETimeOfDay::Afternoon:
+			{
+				LoggingToAfternoon();
+				TimeController->UpdateTimeImage(TimeModel->GetAfternoonIcon());
+				break;
+			}
+		case ETimeOfDay::Evening:
+			{
+				LoggingToEvening();
+				TimeController->UpdateTimeImage(TimeModel->GetEveningIcon());
+				break;
+			}
+		case ETimeOfDay::Night:
+			{
+				LoggingToNight();
+				TimeController->UpdateTimeImage(TimeModel->GetNightIcon());
+				break;
+			}
+		default:
+			break;
+		}
+	}
+}
+
+bool ATimeManager::CheckTimeUI()
+{
+	AMainPlayerController* PC = Cast<AMainPlayerController>(
+				GetWorld()->GetFirstPlayerController());
+
+	if (PC && PC->GetUIManageComponent()->HasViewUI(EUIName::Gameplay_MainHUD))
+	{
+		if (TimeView == nullptr || TimeController == nullptr)
+		{
+			UUIC_MainHUD* MainHUDController = Cast<UUIC_MainHUD>(
+				PC->GetUIManageComponent()->ControllerInstances[
+					EUIName::Gameplay_MainHUD]);
+			UUIV_MainHUD* MainHUDView = Cast<
+				UUIV_MainHUD>(MainHUDController->GetView());
+				
+			TimeView = MainHUDView->GetTimeUI();
+			TimeController = Cast<UUIC_Time>(TimeView->GetController());
+			TimeModel = Cast<UUIM_Time>(TimeController->GetModel());
+		}
+
+		return true;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("타임 UI 컨트롤러 없음"));
+		return false;
+	}
 }
 
 void ATimeManager::RotateSun()
@@ -189,25 +281,8 @@ void ATimeManager::StopTime(bool value)
 
 void ATimeManager::OnRep_CurrentTimeOfDay()
 {
-	switch (CurrentTimeOfDay)
-	{
-	case ETimeOfDay::Morning:
-		LoggingToMorning();
-		break;
-	case ETimeOfDay::Afternoon:
-		LoggingToAfternoon();
-		break;
-	case ETimeOfDay::Evening:
-		LoggingToEvening();
-		break;
-	case ETimeOfDay::Night:
-		LoggingToNight();
-		break;
-	default:
-		break;
-	}
+	UpdateTimeOfDay(CurrentTimeOfDay);
 }
-
 
 void ATimeManager::LoggingToMorning()
 {
