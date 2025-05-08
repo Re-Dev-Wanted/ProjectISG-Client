@@ -98,8 +98,6 @@ void UGA_CookingQTEAction::OnPlayReadySequence(
 	KitchenFurniture->EquipCookingToolToAct({
 		Player->GetMesh(), RemainQTEQueue.Peek()->CookingTool
 	});
-
-	UE_LOG(LogTemp, Display, TEXT("하이하이"))
 }
 
 void UGA_CookingQTEAction::EndAbility(const FGameplayAbilitySpecHandle Handle

@@ -11,7 +11,7 @@ class PROJECTISG_API ULoggingSubSystem : public UGameInstanceSubsystem
 	GENERATED_BODY()
 
 public:
-	void LoggingData(const FDiaryLogParams& Payload);
+	void LoggingData(FDiaryLogParams& Payload);
 	void SendLoggingNow(const FDiaryLogParams& Payload);
 	void QueueLogging(const FDiaryLogParams& Payload);
 

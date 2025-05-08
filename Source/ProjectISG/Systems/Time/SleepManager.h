@@ -1,6 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
@@ -27,9 +25,7 @@ protected:
 	virtual void InitializeComponent() override;
 
 	virtual void GetLifetimeReplicatedProps(
-		TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
-
-	virtual void BeginPlay() override;
+		TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction*
@@ -59,7 +55,6 @@ private:
 
 public:
 	GETTER(bool, bSleepCinematicStart);
-	GETTER(float, CinematicEndTime);
 
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess), Category = Setting)
