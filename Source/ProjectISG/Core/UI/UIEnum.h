@@ -25,5 +25,5 @@ enum class EUIName: uint32
 	Gameplay_MainHUD, Popup_InventoryUI, Popup_CookingRecipeUI,
 	Popup_CookingQTE, Popup_TradingUI, Modal_BuyNotification,
 	Modal_SellNotification, Popup_DiaryEdit, Popup_DiaryList,
-	Modal_ExitInteractUI
+	Modal_ExitInteractUI, Modal_FishingUI
 };

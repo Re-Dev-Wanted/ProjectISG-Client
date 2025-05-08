@@ -7,6 +7,8 @@
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Modal/Fishing/UI/UIC_FishingUI.h"
 #include "ProjectISG/Systems/Logging/LoggingEnum.h"
 #include "ProjectISG/Systems/Logging/LoggingStruct.h"
 #include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
@@ -65,29 +67,34 @@ void UGA_CastBobber::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 void UGA_CastBobber::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(ActorInfo->AvatarActor.Get());
-	
-	if (!Player)
-	{
-		Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-		return;
-	}
-
-	GetWorld()->
-	GetTimerManager()
-	.SetTimerForNextTick
-	(
-		[Player]()
-		{
-			Player->GetHandSlotComponent()->SetIsUseInputAction(true);
-		}
-	);
-	
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 void UGA_CastBobber::OnEndCinematic()
 {
+
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>
+		(CurrentActorInfo->AvatarActor.Get());
+
+	if (!Player)
+	{
+		return;
+	}
+
+	AMainPlayerController* PlayerController = Cast<AMainPlayerController>( 
+		Player->GetController());
+
+	if (PlayerController)
+	{
+		PlayerController->PushUI(EUIName::Modal_FishingUI);
+
+		UUIC_FishingUI* ModalUIController = 
+		Cast<UUIC_FishingUI>(PlayerController->GetUIManageComponent
+		()->ControllerInstances[EUIName::Modal_FishingUI]);
+
+		ModalUIController->SetUI(false, TEXT("RM"), TEXT("회수하기"));
+	}
+	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }
 

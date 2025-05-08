@@ -26,63 +26,7 @@ void UPlayerHandSlotComponent::InitializeComponent()
 
 	if (Player)
 	{
-		Player->OnInputBindingNotified.AddDynamic(this, &UPlayerHandSlotComponent::BindingInputActions);
 		Player->OnUpdateSelectedItem.AddDynamic(this, &UPlayerHandSlotComponent::OnChange);
-	}
-}
-
-void UPlayerHandSlotComponent::TickComponent(float DeltaTime, enum ELevelTick TickType,
-	FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (!Player)
-	{
-		return;
-	}
-
-	if (!IsUseInputAction)
-	{
-		return;
-	}
-	
-	if (!HeldItem)
-	{
-		return;
-	}
-
-	const AMainPlayerController* PC = Player->GetController<AMainPlayerController>();
-
-	if (!PC)
-	{
-		return;
-	}
-	
-	if (ABaseInteractiveActor* InteractiveActor = Cast<ABaseInteractiveActor>(HeldItem))
-	{
-		if (InteractiveActor->GetCanTouch() && PC->GetMainHUD())
-		{
-			PC->GetMainHUD()->ToggleInteractiveUI(TEXT("RM"), 
-			InteractiveActor->GetTouchDisplayText());
-		}
-	}
-}
-
-void UPlayerHandSlotComponent::OnAction()
-{
-	if (!IsUseInputAction)
-	{
-		return;
-	}
-	
-	if (!HeldItem)
-	{
-		return;
-	}
-
-	if (ABaseInteractiveActor* InteractiveActor = Cast<ABaseInteractiveActor>(HeldItem))
-	{
-		InteractiveActor->OnTouch(GetOwner());
 	}
 }
 
@@ -138,13 +82,6 @@ void UPlayerHandSlotComponent::OnChange(uint16 _ItemId)
 	}
 }
 
-void UPlayerHandSlotComponent::BindingInputActions(UEnhancedInputComponent* EnhancedInputComponent)
-{
-	EnhancedInputComponent->BindAction(TouchAction,
-									   ETriggerEvent::Triggered, this,
-									   &UPlayerHandSlotComponent::OnAction);
-}
-
 FString UPlayerHandSlotComponent::GetItemUsingType()
 {
 	if (!HeldItem)
@@ -163,11 +100,6 @@ bool UPlayerHandSlotComponent::IsHousingHandItem()
 	}
 
 	return UItemManager::IsItemCanHousing(ItemId);
-}
-
-void UPlayerHandSlotComponent::SetIsUseInputAction(const bool NewIsUseInputAction)
-{
-	IsUseInputAction = NewIsUseInputAction;
 }
 
 void UPlayerHandSlotComponent::Server_ChangeItemId_Implementation(

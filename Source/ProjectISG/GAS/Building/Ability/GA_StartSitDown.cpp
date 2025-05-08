@@ -78,7 +78,6 @@ void UGA_StartSitDown::NotifyMontage(FGameplayTag EventTag,
 {
 	if (EventTag == ISGGameplayTags::Building_Active_NotifySitDown)
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("NotifyMontage"));
 		const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>
 		(CurrentActorInfo->AvatarActor.Get());
 

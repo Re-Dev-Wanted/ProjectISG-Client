@@ -6,10 +6,16 @@
 #include "Bobber.h"
 #include "CableComponent.h"
 #include "Abilities/GameplayAbilityTypes.h"
+#include "Engine/AssetManager.h"
+#include "Engine/StreamableManager.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Misc/MapErrors.h"
 #include "ProjectISG/Contents/Fishing/Managers/FishingManager.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Modal/Fishing/UI/UIC_FishingUI.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
@@ -97,6 +103,7 @@ void AFishingRod::OnEventBite()
 		return;
 	}
 
+
 	Bobber->OnBite(FishData.GetMesh());
 
 	GetWorld()->
@@ -117,6 +124,13 @@ void AFishingRod::OnEventRealBite()
 	IsBiteFish = true;
 
 	BiteLogging();
+
+	const AMainPlayerController* PC = Cast<AMainPlayerController>(GetWorld()->GetFirstPlayerController());
+
+	UUIC_FishingUI* ModalUIController = 
+		Cast<UUIC_FishingUI>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Modal_FishingUI]);
+
+	ModalUIController->SetUI(true, TEXT("RM"), TEXT("물었다!"));
 
 	TWeakObjectPtr<AFishingRod> WeakThis = this;
 	
@@ -141,6 +155,13 @@ void AFishingRod::OnEventFinish(bool bLoop)
 {
 	IsBiteFish = false;
 	FishData = FFishData();
+
+	const AMainPlayerController* PC = Cast<AMainPlayerController>(GetWorld()->GetFirstPlayerController());
+
+	UUIC_FishingUI* ModalUIController = 
+		Cast<UUIC_FishingUI>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Modal_FishingUI]);
+
+	ModalUIController->SetUI(false, TEXT("RM"), TEXT("회수하기"));
 
 	if (Bobber)
 	{
@@ -180,37 +201,37 @@ void AFishingRod::FinishLogging(bool bSuccess)
 	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 }
 
-bool AFishingRod::GetCanTouch() const
-{
-	return true;
-}
-
-FString AFishingRod::GetTouchDisplayText() const
-{
-	return TEXT("올리기");
-}
-
-void AFishingRod::OnTouch(AActor* Causer)
-{
-	Super::OnTouch(Causer);
-
-	// UKismetSystemLibrary::PrintString(GetWorld(),TEXT("AFishingRod::OnTouch"));
-
-	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
-	{
-		FGameplayEventData EventData;
-		EventData.EventTag = ISGGameplayTags::Fishing_Active_ReelInLine;
-		EventData.Instigator = Player;
-		EventData.Target = this;
-			
-		Player->GetAbilitySystemComponent()->HandleGameplayEvent(ISGGameplayTags::Fishing_Active_ReelInLine, &EventData);
-	}
-}
-
-void AFishingRod::OnTouchResponse(AActor* Causer)
-{
-	Super::OnTouchResponse(Causer);
-}
+// bool AFishingRod::GetCanTouch() const
+// {
+// 	return false;
+// }
+//
+// FString AFishingRod::GetTouchDisplayText() const
+// {
+// 	return TEXT("올리기");
+// }
+//
+// void AFishingRod::OnTouch(AActor* Causer)
+// {
+// 	Super::OnTouch(Causer);
+//
+// 	// UKismetSystemLibrary::PrintString(GetWorld(),TEXT("AFishingRod::OnTouch"));
+//
+// 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
+// 	{
+// 		FGameplayEventData EventData;
+// 		EventData.EventTag = ISGGameplayTags::Fishing_Active_ReelInLine;
+// 		EventData.Instigator = Player;
+// 		EventData.Target = this;
+// 			
+// 		Player->GetAbilitySystemComponent()->HandleGameplayEvent(ISGGameplayTags::Fishing_Active_ReelInLine, &EventData);
+// 	}
+// }
+//
+// void AFishingRod::OnTouchResponse(AActor* Causer)
+// {
+// 	Super::OnTouchResponse(Causer);
+// }
 
 void AFishingRod::StartCasting(AActor* Causer, FVector Destination)
 {
