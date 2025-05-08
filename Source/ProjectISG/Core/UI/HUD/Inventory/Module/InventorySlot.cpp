@@ -172,13 +172,15 @@ void UInventorySlot::NativeOnMouseEnter(const FGeometry& InGeometry,
 {
 	Super::NativeOnMouseEnter(InGeometry, InMouseEvent);
 
+	const auto ControllerInstances = GetOwningPlayer<AMainPlayerController>()->
+	                                 GetUIManageComponent()->
+	                                 ControllerInstances;
 
-	if (UBaseUIController* UIController = GetOwningPlayer<
-			AMainPlayerController>()->GetUIManageComponent()->
-			                          ControllerInstances.FindRef(
-				                          EUIName::Popup_InventoryUI))
+	if (ControllerInstances.Contains(EUIName::Popup_InventoryUI))
 	{
-		Cast<UUIC_InventoryUI>(UIController)->SetItemInfoData(Index);
+		Cast<UUIC_InventoryUI>(
+				ControllerInstances[EUIName::Popup_InventoryUI])->
+			SetItemInfoData(Index);
 	}
 
 	// TODO: 다른 전용 UI 필요하면 아래에 계속 적어도 무방
@@ -188,11 +190,16 @@ void UInventorySlot::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 {
 	Super::NativeOnMouseLeave(InMouseEvent);
 
-	UUIC_InventoryUI* InventoryUIController = Cast<UUIC_InventoryUI>(
-		GetOwningPlayer<AMainPlayerController>()->GetUIManageComponent()->
-		                                          ControllerInstances[
-			EUIName::Popup_InventoryUI]);
-	InventoryUIController->ClearItemInfoData();
+	const auto ControllerInstances = GetOwningPlayer<AMainPlayerController>()->
+	                                 GetUIManageComponent()->
+	                                 ControllerInstances;
+
+	if (ControllerInstances.Contains(EUIName::Popup_InventoryUI))
+	{
+		Cast<UUIC_InventoryUI>(
+				ControllerInstances[EUIName::Popup_InventoryUI])->
+			ClearItemInfoData();
+	}
 
 	// TODO: 다른 전용 UI 필요하면 아래에 계속 적어도 무방
 }
