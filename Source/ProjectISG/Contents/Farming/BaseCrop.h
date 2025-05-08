@@ -42,7 +42,7 @@ protected:
 
 	virtual bool GetCanInteractive() const override;
 
-	virtual FString GetDisplayText() const override;
+	virtual FString GetInteractiveDisplayText() const override;
 
 	virtual void OnInteractiveResponse(AActor* Causer) override;
 

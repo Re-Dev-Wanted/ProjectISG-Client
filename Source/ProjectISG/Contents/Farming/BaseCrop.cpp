@@ -92,7 +92,7 @@ bool ABaseCrop::GetCanInteractive() const
 	return CurrentState == ECropState::Mature;
 }
 
-FString ABaseCrop::GetDisplayText() const
+FString ABaseCrop::GetInteractiveDisplayText() const
 {
 	return TEXT("수확하기");
 }

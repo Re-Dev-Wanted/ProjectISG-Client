@@ -70,7 +70,7 @@ protected:
 public:
 	virtual bool GetCanTouch() const override;
 	
-	virtual FString GetDisplayText() const override;
+	virtual FString GetTouchDisplayText() const override;
 	
 	virtual void OnTouch(AActor* Causer) override;
 	

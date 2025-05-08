@@ -19,8 +19,10 @@ class PROJECTISG_API IInteractionInterface
 public:
 	virtual bool GetCanInteractive() const { return false; }
 	virtual bool GetCanTouch() const { return false; }
-	virtual FString GetDisplayText() const { return TEXT(""); }
-	virtual FString GetDisplayKey() const { return TEXT(""); }
+	virtual FString GetInteractiveDisplayText() const { return TEXT(""); }
+	virtual FString GetInteractiveDisplayKey() const { return TEXT(""); }
+	virtual FString GetTouchDisplayText() const { return TEXT(""); }
+	virtual FString GetTouchDisplayKey() const { return TEXT(""); }
 
 	virtual void OnInteractive(AActor* Causer);
 

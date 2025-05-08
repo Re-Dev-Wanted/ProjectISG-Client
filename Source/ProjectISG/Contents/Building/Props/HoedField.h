@@ -52,9 +52,9 @@ public:
 	
 	virtual void OnTouch(AActor* Causer) override;
 
+	virtual FString GetTouchDisplayText() const override;
+	
 	virtual void OnTouchResponse(AActor* Causer) override;
-
-	virtual FString GetDisplayText() const override;
 
 	bool PlantCrop(FItemInfoData CropData, uint16 CropId);
 

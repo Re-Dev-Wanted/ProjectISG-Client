@@ -21,4 +21,7 @@ public:
 	void ToggleInteractiveUI(const bool IsShow);
 	void ToggleInteractiveUI(const FString& DisplayKey,
 	                         const FString& DisplayText);
+
+	void AdditiveToggleInteractiveUI(const FString& DisplayKey,
+							 const FString& DisplayText);
 };

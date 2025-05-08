@@ -6,6 +6,7 @@
 #include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
@@ -47,7 +48,7 @@ bool AHoedField::GetCanInteractive() const
 	return false;
 }
 
-FString AHoedField::GetDisplayText() const
+FString AHoedField::GetTouchDisplayText() const
 {
 	return TEXT("");
 }
@@ -97,10 +98,7 @@ void AHoedField::OnTouch(AActor* Causer)
 			
 			Player->GetAbilitySystemComponent()->HandleGameplayEvent(ISGGameplayTags::Farming_Active_Seeding, &EventData);
 			UE_LOG(LogTemp, Warning, TEXT("씨앗심기 어빌리티 실행, 플레이어 로컬롤 %s"), *FEnumUtil::GetClassEnumKeyAsString(Player->GetLocalRole()));
-			
-			
-			
-			
+		
 			Player->GetPlayerInventoryComponent()->RemoveItemCurrentSlotIndex(1);
 
 			return;

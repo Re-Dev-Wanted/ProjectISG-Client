@@ -25,7 +25,7 @@ protected:
 
 	virtual bool GetCanInteractive() const override;
 
-	virtual FString GetDisplayText() const override;
+	virtual FString GetInteractiveDisplayText() const override;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
