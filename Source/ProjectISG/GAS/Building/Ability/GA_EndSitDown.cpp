@@ -42,21 +42,6 @@ void UGA_EndSitDown::EndMontage(FGameplayTag EventTag, FGameplayEventData EventD
 	{
 		return;
 	}
-
-	AMainPlayerController* PlayerController = Cast<AMainPlayerController>( 
-		Player->GetController());
-
-	if (!PlayerController)
-	{
-		return;
-	}
-
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
-		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
-			PlayerController->GetLocalPlayer()))
-	{
-		Subsystem->AddMappingContext(Player->GetDefaultMappingContext(), 0);
-	}
 	
 	Player->GetController()->SetIgnoreLookInput(false);
 	Player->GetController()->SetIgnoreMoveInput(false);
