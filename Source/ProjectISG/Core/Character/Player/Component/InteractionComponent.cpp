@@ -250,6 +250,18 @@ void UInteractionComponent::Server_OnInteractiveResponse_Implementation(
 	}
 }
 
+void UInteractionComponent::Server_OnTouchResponse_Implementation(
+	class AActor* Causer)
+{
+	IInteractionInterface* Interaction = Cast<IInteractionInterface>(
+		TargetTraceResult.GetActor());
+
+	if (Interaction)
+	{
+		Interaction->OnTouchResponse(Causer);
+	}
+}
+
 void UInteractionComponent::Server_Interact_Implementation(
 	class ABaseInteractiveActor*
 	InteractActor, AActor* Causer)

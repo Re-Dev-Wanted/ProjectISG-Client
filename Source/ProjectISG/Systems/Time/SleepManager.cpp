@@ -52,7 +52,7 @@ void USleepManager::TickComponent(float DeltaTime, ELevelTick TickType,
 	else
 	{
 		Sleep();
-		ForceSleep();
+		//ForceSleep();
 	}
 }
 
@@ -115,6 +115,7 @@ void USleepManager::SleepCinematic(float DeltaTime)
 			LoggingToWakeUp();
 		}
 
+		ChangeAllPlayerWriteDiary(false);
 		ChangeAllPlayerSleepValue(false);
 		ChangeAllPlayerLieInBedValue(false);
 		TimeManager->ChangeDayBySleep();
@@ -134,6 +135,7 @@ void USleepManager::OnRep_SleepCinematicStart()
 	{
 		WakeUpDelegate.Broadcast();
 		LoggingToWakeUp();
+		ChangeAllPlayerWriteDiary(false);
 	}
 }
 
@@ -222,12 +224,25 @@ bool USleepManager::CheckAllPlayerWriteDiary()
 	return true;
 }
 
+void USleepManager::ChangeAllPlayerWriteDiary(bool value)
+{
+	AGameStateBase* GameState = GetWorld()->GetGameState();
+	for (APlayerState* PlayerState : GameState->PlayerArray)
+	{
+		AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(
+			PlayerState->GetPawn());
+		if (player)
+		{
+			player->GetDiaryComponent()->SetbWriteDiary(value);
+		}
+	}
+}
+
 void USleepManager::LoggingToSleep()
 {
 	UE_LOG(LogTemp, Warning, TEXT("sleep, localrole : %s"),
 	       *FEnumUtil::GetClassEnumKeyAsString(TimeManager->GetLocalRole()));
 	FDiaryLogParams LogParams;
-
 	LogParams.ActionType = ELoggingActionType::DAY_CYCLE;
 	LogParams.ActionName = ELoggingActionName::sleep;
 

@@ -5,6 +5,7 @@
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
@@ -12,6 +13,7 @@
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
+#include "ProjectISG/Utils/EnumUtil.h"
 
 AHoedField::AHoedField()
 {
@@ -62,10 +64,16 @@ void AHoedField::OnTouch(AActor* Causer)
 
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
+		
+		Player->GetInteractionComponent()->Server_OnTouchResponse(Causer);
+
+		UE_LOG(LogTemp, Warning, TEXT("상호작용 들어옴, 플레이어 로컬롤 : %s"), *FEnumUtil::GetClassEnumKeyAsString(Player->GetLocalRole()));
+
+
 		int SlotIndex = Player->GetPlayerInventoryComponent()->GetCurrentSlotIndex();
 
 		const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
-
+		
 		const FItemMetaInfo ItemMetaInfo = PS->GetInventoryComponent()->GetInventoryList()[SlotIndex];
 
 		FString UsingType = UItemManager::GetItemUsingType(ItemMetaInfo.GetId());
@@ -89,6 +97,9 @@ void AHoedField::OnTouch(AActor* Causer)
 			EventData.Target = this;
 			
 			Player->GetAbilitySystemComponent()->HandleGameplayEvent(ISGGameplayTags::Farming_Active_Seeding, &EventData);
+			UE_LOG(LogTemp, Warning, TEXT("씨앗심기 어빌리티 실행, 플레이어 로컬롤 %s"), *FEnumUtil::GetClassEnumKeyAsString(Player->GetLocalRole()));
+		
+			Player->GetPlayerInventoryComponent()->RemoveItemCurrentSlotIndex(1);
 
 			return;
 		}
@@ -126,8 +137,17 @@ void AHoedField::OnTouch(AActor* Causer)
 				}
 			}
 		}
-	
 	}
+}
+
+void AHoedField::OnTouchResponse(AActor* Causer)
+{
+	Super::OnTouchResponse(Causer);
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
+	const uint16 ItemId = Player->GetPlayerInventoryComponent()->
+										  GetCurrentSlotIndex();
+	FItemInfoData itemData = UItemManager::GetItemInfoById(ItemId);
+	PlantCrop(itemData, ItemId);
 }
 
 bool AHoedField::PlantCrop(FItemInfoData CropData, uint16 CropId)

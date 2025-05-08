@@ -8,6 +8,7 @@
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
 #include "ProjectISG/Systems/Logging/LoggingEnum.h"
 #include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 
 void UGA_Watering::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -76,7 +77,10 @@ void UGA_Watering::OnEndWateringAnim(FGameplayTag EventTag,
 void UGA_Watering::LoggingToWatering()
 {
 	FDiaryLogParams LogParams;
-	LogParams.Location = "경작지";
+	LogParams.Location = TEXT("농장");
 	LogParams.ActionType = ELoggingActionType::FARMING;
 	LogParams.ActionName = ELoggingActionName::water_crop;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->LoggingData(LogParams);
+
 }

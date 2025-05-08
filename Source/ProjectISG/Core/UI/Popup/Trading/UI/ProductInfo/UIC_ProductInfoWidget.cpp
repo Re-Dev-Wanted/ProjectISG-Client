@@ -1,4 +1,5 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "UIC_ProductInfoWidget.h"
@@ -8,6 +9,7 @@
 #include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "ProjectISG/Contents/Trading/TradingManager.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
@@ -44,6 +46,19 @@ void UUIC_ProductInfoWidget::SetProductInfo(const uint32 ProductId)
 	ProductInfoWidget->GetProductThumbnail()->SetBrushFromTexture(Thumbnail);
 	ProductInfoWidget->GetProductName()->SetText(
 		FText::FromString(ItemInfoData.GetDisplayName()));
+
+	int32 ProductPrice = 0;
+	for (int i = 0; i < UTradingManager::GetProductData().Num(); i++)
+	{
+		if (UTradingManager::GetProductData()[i].GetProductId() == ProductId)
+		{
+			ProductPrice = UTradingManager::GetProductData()[i].GetProductPrice();
+			break;
+		}
+	}
+
+	FString Str = FString::Printf(TEXT("%dG"), ProductPrice);
+	ProductInfoWidget->GetProductPrice()->SetText(FText::FromString(Str));
 }
 
 void UUIC_ProductInfoWidget::OnSelectProductData()

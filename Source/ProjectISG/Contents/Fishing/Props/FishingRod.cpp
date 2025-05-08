@@ -207,9 +207,9 @@ void AFishingRod::OnTouch(AActor* Causer)
 	}
 }
 
-void AFishingRod::OnTouchResponse()
+void AFishingRod::OnTouchResponse(AActor* Causer)
 {
-	Super::OnTouchResponse();
+	Super::OnTouchResponse(Causer);
 }
 
 void AFishingRod::StartCasting(AActor* Causer, FVector Destination)

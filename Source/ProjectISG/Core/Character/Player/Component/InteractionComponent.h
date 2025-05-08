@@ -36,6 +36,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_OnInteractiveResponse(class AActor* Causer);
 
+	UFUNCTION(Server, Reliable)
+	void Server_OnTouchResponse(class AActor* Causer);
+
 protected:
 	virtual void BeginPlay() override;
 

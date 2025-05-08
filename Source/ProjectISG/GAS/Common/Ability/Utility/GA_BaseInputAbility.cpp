@@ -100,6 +100,7 @@ void UGA_BaseInputAbility::BlockInputForMontage(bool value)
 	if (Player)
 	{
 		Player->GetController()->SetIgnoreLookInput(value);
+		Player->GetController()->SetIgnoreMoveInput(value);
 	}
 }
 

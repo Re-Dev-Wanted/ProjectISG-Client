@@ -18,6 +18,7 @@ public:
 	GETTER(class UButton*, ProductSelectButton);
 	GETTER(class UImage*, ProductThumbnail);
 	GETTER(class UTextBlock*, ProductName);
+	GETTER(class UTextBlock*, ProductPrice);
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -28,4 +29,7 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* ProductName;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* ProductPrice;
 };

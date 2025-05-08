@@ -91,7 +91,7 @@ int32 UUIC_ProductBuyNotification::FindItemPrice(
 void UUIC_ProductBuyNotification::LoggingToBuyItem()
 {
 	FDiaryLogParams LogParams;
-	LogParams.Location = "거래장";
+	LogParams.Location = TEXT("거래장");
 	LogParams.ActionType = ELoggingActionType::TRADE;
 	LogParams.ActionName = ELoggingActionName::buy_item;
 
