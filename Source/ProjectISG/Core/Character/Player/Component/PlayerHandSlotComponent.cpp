@@ -20,7 +20,7 @@ void UPlayerHandSlotComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
-	SetIsReplicatedByDefault(true);
+	SetIsReplicated(true);
 
 	Player = Cast<AMainPlayerCharacter>(GetOwner());
 

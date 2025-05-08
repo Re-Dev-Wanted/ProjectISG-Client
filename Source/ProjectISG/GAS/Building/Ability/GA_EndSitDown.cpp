@@ -2,8 +2,10 @@
 
 #include "GA_EndSitDown.h"
 
+#include "EnhancedInputSubsystems.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
 
 void UGA_EndSitDown::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -35,6 +37,26 @@ void UGA_EndSitDown::EndAbility(const FGameplayAbilitySpecHandle Handle, const F
 void UGA_EndSitDown::EndMontage(FGameplayTag EventTag, FGameplayEventData EventData)
 {
 	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(CurrentActorInfo->AvatarActor.Get());
+	
+	if (!Player)
+	{
+		return;
+	}
+
+	AMainPlayerController* PlayerController = Cast<AMainPlayerController>( 
+		Player->GetController());
+
+	if (!PlayerController)
+	{
+		return;
+	}
+
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
+		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
+			PlayerController->GetLocalPlayer()))
+	{
+		Subsystem->AddMappingContext(Player->GetDefaultMappingContext(), 0);
+	}
 	
 	Player->GetController()->SetIgnoreLookInput(false);
 	Player->GetController()->SetIgnoreMoveInput(false);

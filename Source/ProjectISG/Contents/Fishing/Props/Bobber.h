@@ -21,6 +21,8 @@ public:
 	void RemoveFish();
 
 protected:
+	virtual float GetBuoyancyScale() const override;
+	
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* LineAttachPoint;
 

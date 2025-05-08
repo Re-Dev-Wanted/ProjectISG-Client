@@ -33,3 +33,13 @@ FString ASeatingFurniture::GetDisplayText() const
 	return TEXT("앉기");
 }
 
+FVector ASeatingFurniture::GetStartInteractPoint() const
+{
+	if (MeshComp && MeshComp->DoesSocketExist(TEXT("SitSocket")))
+	{
+		return MeshComp->GetSocketLocation(TEXT("SitSocket"));
+	}
+
+	return Super::GetStartInteractPoint();
+}
+

@@ -347,9 +347,9 @@ void ATimeManager::ChangeDayBySleep()
 FString ATimeManager::GetDateText() const
 {
 	FDateTime DateText(1, 1, 1, 0, 0, 0);
-	DateText += FTimespan(Day - 1, 0, 0, 0);
+	DateText += FTimespan(Day - 1, Hour, Minute, Second);
 
-	return DateText.ToString(TEXT("%Y.%m.%d"));
+	return DateText.ToString();
 }
 
 uint32 ATimeManager::GetTotalPlayingDay() const

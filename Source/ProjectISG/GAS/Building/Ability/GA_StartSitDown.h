@@ -7,6 +7,8 @@
 #include "GA_StartSitDown.generated.h"
 
 
+class UInputMappingContext;
+
 UCLASS()
 class PROJECTISG_API UGA_StartSitDown : public UGA_BaseInputAbility
 {
@@ -15,6 +17,12 @@ class PROJECTISG_API UGA_StartSitDown : public UGA_BaseInputAbility
 public:
 	UPROPERTY(EditDefaultsOnly, Category = AnimMontage)
 	TObjectPtr<UAnimMontage> StartSitDownMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = InputBinding)
+	TObjectPtr<UInputAction> InputAction;
+
+	UPROPERTY(EditDefaultsOnly, Category = InputBinding)
+	TObjectPtr<UInputMappingContext> IMC;
 	
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
@@ -24,8 +32,16 @@ protected:
 		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 	UFUNCTION()
-	void EndMontage(FGameplayTag EventTag, FGameplayEventData EventData);
-	
+	void NotifyMontage(FGameplayTag EventTag, FGameplayEventData EventData);
+
+	UFUNCTION()
+	void EndMontage();
+
+	UFUNCTION()
+	void OnStartedInputEvent();
+
+	void BindInputAction(UEnhancedInputComponent* EnhancedInputComponent);
+
 	UPROPERTY()
 	class UPlayMontageWithEvent* AT_StartMontageEvent;
 	
