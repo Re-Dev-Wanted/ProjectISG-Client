@@ -157,8 +157,21 @@ void ABed::ActivateWakeUp()
 
 void ABed::OpenDiary()
 {
-	if (MainPlayer)
+	if (!MainPlayer)
+	{
+		return;
+	}
+
+	// 모든 침대에 대한 대응이 서버에서 발생하기 때문에
+	// 로컬 컨트롤 상태 = 서버에서 통제중인 플레이어 이므로
+	// 바로 함수 호출을 해도 문제가 없다.
+	if (MainPlayer->IsLocallyControlled())
 	{
 		MainPlayer->GetDiaryComponent()->GenerateDiary();
+	}
+	else
+	{
+		// 그 외에는 Client 로 RPC 함수를 호출해서 실행시켜준다.
+		MainPlayer->GetDiaryComponent()->Client_GenerateDiary();
 	}
 }

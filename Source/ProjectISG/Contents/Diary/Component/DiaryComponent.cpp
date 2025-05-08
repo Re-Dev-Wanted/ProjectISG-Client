@@ -24,6 +24,11 @@ void UDiaryComponent::BeginPlay()
 
 void UDiaryComponent::GenerateDiary()
 {
+	if (!GetOwner()->GetInstigatorController()->IsLocalController())
+	{
+		return;
+	}
+
 	const ATimeManager* TimeManager = Cast<ATimeManager>(
 		UGameplayStatics::GetActorOfClass(GetWorld()
 		                                  , ATimeManager::StaticClass()));
@@ -51,7 +56,7 @@ void UDiaryComponent::GenerateDiary()
 
 			FString Body = Res->GetContentAsString();
 
-			TSharedPtr<FJsonObject> JsonObject; 
+			TSharedPtr<FJsonObject> JsonObject;
 			TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(
 				Body);
 
@@ -80,4 +85,9 @@ void UDiaryComponent::GenerateDiary()
 	Request.Params = DataParams;
 
 	FApiUtil::GetMainAPI()->PostApi(this, Request, GenerateDiaryResponse);
+}
+
+void UDiaryComponent::Client_GenerateDiary_Implementation()
+{
+	GenerateDiary();
 }
