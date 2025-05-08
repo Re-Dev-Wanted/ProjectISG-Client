@@ -93,29 +93,3 @@ void AMainPlayerController::OpenInventory()
 
 	UIManageComponent->PushWidget(EUIName::Popup_InventoryUI);
 }
-
-void AMainPlayerController::ShowItemInfo(const uint16 InventoryIndex) const
-{
-	const FItemMetaInfo ItemMetaInfo = GetPlayerState<AMainPlayerState>()->
-	                                   GetInventoryComponent()->
-	                                   GetInventoryList()[
-		InventoryIndex];
-
-	if (ItemMetaInfo.GetId() == 0)
-	{
-	}
-
-	// UIManageComponent->PushWidget(EUIName::Modal_ItemInfo);
-
-	// UItemInfo* ItemInfoWidget = Cast<UItemInfo>(
-	// 	UIManageComponent->WidgetInstances[EUIName::Modal_ItemInfo]);
-	// ItemInfoWidget->ShowItemData(ItemMetaInfo);
-}
-
-void AMainPlayerController::RemoveItemInfo() const
-{
-	// if (UIManageComponent->GetLastStackUI() == EUIName::Modal_ItemInfo)
-	// {
-	// 	UIManageComponent->PopWidget();
-	// }
-}

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
+#include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "UIC_InventoryUI.generated.h"
 
 class UInputAction;
@@ -12,9 +13,15 @@ class PROJECTISG_API UUIC_InventoryUI : public UBaseUIController
 	GENERATED_BODY()
 
 public:
+	virtual void AppearUI(const EUILayer Layer) override;
+
 	void UpdateMainSlotItemData() const;
 
 	void UpdateInventorySlotItemData() const;
+
+	void SetItemInfoData(const uint8 InventoryIndex);
+
+	void ClearItemInfoData();
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",
