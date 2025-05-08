@@ -84,7 +84,8 @@ void ATimeManager::Tick(float DeltaTime)
 				if (TimeController->GetbInitialized() == false)
 				{
 					TimeController->UpdateDayText(Day, Month);
-					TimeController->UpdateTimeImage(TimeModel->GetMorningIcon());
+					TimeController->
+						UpdateTimeImage(TimeModel->GetMorningIcon());
 					TimeController->SetbInitialized(true);
 				}
 				else
@@ -125,7 +126,8 @@ void ATimeManager::Tick(float DeltaTime)
 				if (TimeController->GetbInitialized() == false)
 				{
 					TimeController->UpdateDayText(Day, Month);
-					TimeController->UpdateTimeImage(TimeModel->GetMorningIcon());
+					TimeController->
+						UpdateTimeImage(TimeModel->GetMorningIcon());
 					TimeController->SetbInitialized(true);
 				}
 				else
@@ -221,7 +223,7 @@ void ATimeManager::UpdateTimeOfDay(ETimeOfDay TOD)
 bool ATimeManager::CheckTimeUI()
 {
 	AMainPlayerController* PC = Cast<AMainPlayerController>(
-				GetWorld()->GetFirstPlayerController());
+		GetWorld()->GetFirstPlayerController());
 
 	if (PC && PC->GetUIManageComponent()->HasViewUI(EUIName::Gameplay_MainHUD))
 	{
@@ -232,7 +234,7 @@ bool ATimeManager::CheckTimeUI()
 					EUIName::Gameplay_MainHUD]);
 			UUIV_MainHUD* MainHUDView = Cast<
 				UUIV_MainHUD>(MainHUDController->GetView());
-				
+
 			TimeView = MainHUDView->GetTimeUI();
 			TimeController = Cast<UUIC_Time>(TimeView->GetController());
 			TimeModel = Cast<UUIM_Time>(TimeController->GetModel());
@@ -240,11 +242,8 @@ bool ATimeManager::CheckTimeUI()
 
 		return true;
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("타임 UI 컨트롤러 없음"));
-		return false;
-	}
+
+	return false;
 }
 
 void ATimeManager::RotateSun()
