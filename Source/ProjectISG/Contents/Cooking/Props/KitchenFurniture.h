@@ -28,6 +28,8 @@ public:
 
 	void EquipCookingToolToAct(const FEquipCookingToolToActParams& Params);
 
+	void UnEquipCookingToolToAct();
+
 protected:
 	virtual void BeginPlay() override;
 

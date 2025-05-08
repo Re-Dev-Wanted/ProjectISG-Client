@@ -82,6 +82,7 @@ void AKitchenFurniture::EquipCookingToolToAct(
 	{
 	case ECookingTool::FryingPan:
 		{
+			FryPanMesh->SetVisibility(true);
 			FryPanMesh->AttachToComponent(Params.AttachPoint,
 			                              FAttachmentTransformRules::SnapToTargetIncludingScale,
 			                              TEXT("hand_r"));
@@ -89,9 +90,12 @@ void AKitchenFurniture::EquipCookingToolToAct(
 		}
 	case ECookingTool::Wok:
 		{
+			ScoopMesh->SetVisibility(true);
 			ScoopMesh->AttachToComponent(Params.AttachPoint,
 			                             FAttachmentTransformRules::SnapToTargetIncludingScale,
 			                             TEXT("hand_l"));
+
+			WokMesh->SetVisibility(true);
 			WokMesh->AttachToComponent(Params.AttachPoint,
 			                           FAttachmentTransformRules::SnapToTargetIncludingScale,
 			                           TEXT("hand_r"));
@@ -102,4 +106,19 @@ void AKitchenFurniture::EquipCookingToolToAct(
 			break;
 		}
 	}
+}
+
+void AKitchenFurniture::UnEquipCookingToolToAct()
+{
+	FryPanMesh->SetVisibility(false);
+	FryPanMesh->AttachToComponent(GetRootComponent(),
+	                              FAttachmentTransformRules::SnapToTargetIncludingScale);
+
+	ScoopMesh->SetVisibility(false);
+	ScoopMesh->AttachToComponent(GetRootComponent(),
+	                             FAttachmentTransformRules::SnapToTargetIncludingScale);
+
+	WokMesh->SetVisibility(false);
+	WokMesh->AttachToComponent(GetRootComponent(),
+	                           FAttachmentTransformRules::SnapToTargetIncludingScale);
 }

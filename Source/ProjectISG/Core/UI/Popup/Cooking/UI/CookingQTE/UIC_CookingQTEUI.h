@@ -16,6 +16,7 @@ class PROJECTISG_API UUIC_CookingQTEUI : public UBaseUIController
 
 public:
 	void StartQTE(const ECookingQTEType QTEType);
+	void SetHiddenQTE();
 	void SetQTEStatus(const ECookingQTEStatus QTEStatus);
 	bool IsPlayerQTETrying();
 
