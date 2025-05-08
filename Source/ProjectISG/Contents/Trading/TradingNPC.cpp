@@ -65,7 +65,7 @@ bool ATradingNPC::GetCanInteractive() const
 	return CanInteractive;
 }
 
-FString ATradingNPC::GetDisplayText() const
+FString ATradingNPC::GetInteractiveDisplayText() const
 {
 	return TEXT("거래하기");
 }

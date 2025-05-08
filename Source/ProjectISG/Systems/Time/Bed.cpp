@@ -112,7 +112,7 @@ void ABed::OnInteractiveResponse(AActor* Causer)
 	}
 }
 
-FString ABed::GetDisplayText() const
+FString ABed::GetInteractiveDisplayText() const
 {
 	return TEXT("눕기");
 }

@@ -35,6 +35,8 @@ void UUIC_MainHUD::ToggleInteractiveUI(const bool IsShow)
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 
+	MainHUDView->GetInteractiveUI()->ClearItems();
+
 	MainHUDView->GetInteractiveUI()->SetVisibility(IsShow
 		                                               ? ESlateVisibility::SelfHitTestInvisible
 		                                               : ESlateVisibility::Hidden);
@@ -48,4 +50,17 @@ void UUIC_MainHUD::ToggleInteractiveUI(const FString& DisplayKey,
 	MainHUDView->GetInteractiveUI()->SetInteractive(DisplayKey, DisplayText);
 	MainHUDView->GetInteractiveUI()->SetVisibility(
 		ESlateVisibility::SelfHitTestInvisible);
+}
+
+void UUIC_MainHUD::AdditiveToggleInteractiveUI(const FString& DisplayKey,
+	const FString& DisplayText)
+{
+	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
+	
+	if (MainHUDView->GetInteractiveUI()->GetVisibility() == ESlateVisibility::Hidden)
+	{
+		return;
+	}
+
+	MainHUDView->GetInteractiveUI()->AddInteractive(DisplayKey, DisplayText);
 }

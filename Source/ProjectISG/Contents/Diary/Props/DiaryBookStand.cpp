@@ -26,7 +26,7 @@ void ADiaryBookStand::OnInteractive(AActor* Causer)
 	PC->PushUI(EUIName::Popup_DiaryList);
 }
 
-FString ADiaryBookStand::GetDisplayText() const
+FString ADiaryBookStand::GetInteractiveDisplayText() const
 {
 	return TEXT("일기장 펼치기");
 }

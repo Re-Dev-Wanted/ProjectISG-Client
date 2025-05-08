@@ -24,7 +24,7 @@ public:
 
 	virtual bool GetCanInteractive() const override;
 
-	virtual FString GetDisplayText() const override;
+	virtual FString GetInteractiveDisplayText() const override;
 
 	void EquipCookingToolToAct(const FEquipCookingToolToActParams& Params);
 

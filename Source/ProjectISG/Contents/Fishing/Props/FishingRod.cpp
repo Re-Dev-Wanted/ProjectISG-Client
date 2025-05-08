@@ -185,7 +185,7 @@ bool AFishingRod::GetCanTouch() const
 	return true;
 }
 
-FString AFishingRod::GetDisplayText() const
+FString AFishingRod::GetTouchDisplayText() const
 {
 	return TEXT("올리기");
 }

@@ -5,6 +5,7 @@
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
@@ -45,7 +46,7 @@ bool AHoedField::GetCanInteractive() const
 	return false;
 }
 
-FString AHoedField::GetDisplayText() const
+FString AHoedField::GetTouchDisplayText() const
 {
 	return TEXT("");
 }

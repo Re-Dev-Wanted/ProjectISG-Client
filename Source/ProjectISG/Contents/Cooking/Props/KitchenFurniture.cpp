@@ -40,7 +40,7 @@ bool AKitchenFurniture::GetCanInteractive() const
 	return true;
 }
 
-FString AKitchenFurniture::GetDisplayText() const
+FString AKitchenFurniture::GetInteractiveDisplayText() const
 {
 	return TEXT("요리하기");
 }
