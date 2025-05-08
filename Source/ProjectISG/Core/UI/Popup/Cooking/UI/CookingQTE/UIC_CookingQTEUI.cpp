@@ -23,6 +23,12 @@ void UUIC_CookingQTEUI::StartQTE(const ECookingQTEType QTEType)
 	}
 }
 
+void UUIC_CookingQTEUI::SetHiddenQTE()
+{
+	const UUIV_CookingQTEUI* QTEUI = Cast<UUIV_CookingQTEUI>(GetView());
+	QTEUI->GetQTEKeyPress()->SetVisibility(ESlateVisibility::Hidden);
+}
+
 void UUIC_CookingQTEUI::InitializeDataToQTE()
 {
 	UUIM_CookingQTEUI* QTEModel = Cast<UUIM_CookingQTEUI>(GetModel());

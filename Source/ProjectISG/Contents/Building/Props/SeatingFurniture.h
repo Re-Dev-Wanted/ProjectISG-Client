@@ -17,4 +17,7 @@ public:
 	virtual bool GetCanInteractive() const override;
 
 	virtual FString GetDisplayText() const override;
+
+protected:
+	bool bInteractive = true;
 };

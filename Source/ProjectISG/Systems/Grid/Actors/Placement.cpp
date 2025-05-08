@@ -37,6 +37,9 @@ APlacement::APlacement()
 	ProceduralMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ProceduralMeshComp->SetGenerateOverlapEvents(false);
 
+	InteractStartPoint = CreateDefaultSubobject<USceneComponent>(TEXT("InteractStartPoint"));
+	InteractStartPoint->SetupAttachment(MeshComp);
+
 	ConstructorHelpers::FObjectFinder<UMaterialInstance> Mat_Instance(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Systems/Grid/Materials/SelectBrushMaterial_Inst.SelectBrushMaterial_Inst'"));
 
 	if (Mat_Instance.Succeeded())

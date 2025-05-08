@@ -81,4 +81,11 @@ public:
 	{
 		return Columns * SnapSize;
 	}
+
+	FRotator GetSnappedRotation(float Degrees) const
+	{
+		const float Yaw = GetActorRotation().Yaw;
+
+		return FRotator(0.f, Yaw + Degrees, 0.f);
+	}
 };

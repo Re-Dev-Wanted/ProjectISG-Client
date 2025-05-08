@@ -12,7 +12,6 @@
 #include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 
-
 USleepManager::USleepManager()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -28,22 +27,13 @@ void USleepManager::InitializeComponent()
 }
 
 void USleepManager::GetLifetimeReplicatedProps(
-	TArray<class FLifetimeProperty>& OutLifetimeProps) const
+	TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, bSleepCinematicStart);
 }
 
-
-// Called when the game starts
-void USleepManager::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-
-// Called every frame
 void USleepManager::TickComponent(float DeltaTime, ELevelTick TickType,
                                   FActorComponentTickFunction* ThisTickFunction)
 {
@@ -75,6 +65,7 @@ void USleepManager::Sleep()
 			OpenDiaryDelegate.Broadcast();
 			LoggingToSleep();
 		}
+
 		bSleepCinematicStart = true;
 		TimeManager->StopTime(true);
 	}

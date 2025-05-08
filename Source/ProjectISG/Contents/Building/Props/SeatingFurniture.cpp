@@ -14,15 +14,18 @@ void ASeatingFurniture::OnInteractive(AActor* Causer)
 	{
 		Player->GetInteractionComponent()->SetIsInteractive(false);
 
-		FGameplayTagContainer ActivateTag;
-		ActivateTag.AddTag(ISGGameplayTags::Building_Active_StartSitDown);
-		Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
+		FGameplayEventData EventData;
+		EventData.EventTag = ISGGameplayTags::Building_Active_StartSitDown;
+		EventData.Instigator = Player;
+		EventData.Target = this;
+		
+		Player->GetAbilitySystemComponent()->HandleGameplayEvent(ISGGameplayTags::Building_Active_StartSitDown, &EventData);
 	}
 }
 
 bool ASeatingFurniture::GetCanInteractive() const
 {
-	return true;
+	return bInteractive;
 }
 
 FString ASeatingFurniture::GetDisplayText() const
