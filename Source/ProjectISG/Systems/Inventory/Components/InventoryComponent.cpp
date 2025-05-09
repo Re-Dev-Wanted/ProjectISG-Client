@@ -23,6 +23,12 @@ void UInventoryComponent::InitializeItemData()
 
 	InventoryList[1] = NewItemMetaInfo2;
 
+	FItemMetaInfo BuildItemMetaInfo;
+	BuildItemMetaInfo.SetId(2);
+	BuildItemMetaInfo.SetCurrentCount(1);
+
+	AddItemToInventory(2, BuildItemMetaInfo);
+
 	FItemMetaInfo CropItemMetaInfo;
 	CropItemMetaInfo.SetId(3);
 	CropItemMetaInfo.SetCurrentCount(2);
