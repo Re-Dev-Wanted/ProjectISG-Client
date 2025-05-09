@@ -71,6 +71,8 @@ public:
 
 	virtual void Setup(float TileSize);
 
+	void SetGuide(float TileSize);
+
 	void SetOption(bool bIsGhost, bool bIsBlock = false) const;
 
 	void SetCollisionEnabled(bool bEnable) const;
@@ -85,4 +87,7 @@ public:
 	FVector GetStartInteractPoint() const;
 
 	FRotator GetStartInteractRotation() const;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_SetCollisionEnabled(bool bEnable) const;
 };

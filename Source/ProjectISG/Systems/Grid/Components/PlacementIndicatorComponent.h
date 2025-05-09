@@ -4,6 +4,7 @@
 #include "InputActionValue.h"
 #include "Components/ActorComponent.h"
 #include "ProjectISG/Systems/Grid/PlacementData.h"
+#include "ProjectISG/Utils/MacroUtil.h"
 #include "PlacementIndicatorComponent.generated.h"
 
 class UInputAction;
@@ -28,6 +29,8 @@ public:
 
 	UFUNCTION()
 	void OnDeactivate();
+
+	void SetIsActive(bool NewActive);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = IndicatorProperties)
 	float InterpSpeed = 5.f;
@@ -72,6 +75,8 @@ protected:
 	bool bIsInfiniteItem = false;
 	
 	bool bIsBlocked = false;
+
+	bool IsActive = true;
 
 	uint16 PlacementItemId = 0;
 

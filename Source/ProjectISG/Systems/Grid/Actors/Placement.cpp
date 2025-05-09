@@ -177,7 +177,21 @@ void APlacement::Setup(float TileSize)
 	CollisionComp->RecreatePhysicsState();
 
 	MeshSize = SnapExtent * 2.f;
+}
 
+void APlacement::SetGuide(float TileSize)
+{
+	FVector BoxExtent = CollisionComp->Bounds.BoxExtent;
+
+	float HalfSize = FMath::FloorToInt(TileSize * 0.5f);
+
+	FVector SnapExtent
+	(
+		FMath::CeilToInt(BoxExtent.X / HalfSize) * HalfSize,
+		FMath::CeilToInt(BoxExtent.Y / HalfSize) * HalfSize,
+		FMath::CeilToInt(BoxExtent.Z / HalfSize) * HalfSize
+	);
+	
 	TArray<FVector> EmptyVectorArray;
 	TArray<FVector2D> EmptyVector2DArray;
 	TArray<FColor> EmptyColorArray;
@@ -351,6 +365,11 @@ void APlacement::OnRep_LoadMeshAsset()
 			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("MeshAssetPath is invalid or not loaded"));
 		}
 	}
+}
+
+void APlacement::Multicast_SetCollisionEnabled_Implementation(bool bEnable) const
+{
+	SetCollisionEnabled(bEnable);
 }
 
 FVector APlacement::GetStartInteractPoint() const

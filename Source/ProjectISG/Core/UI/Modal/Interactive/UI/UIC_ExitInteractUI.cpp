@@ -11,13 +11,21 @@
 #include "ProjectISG/Core/UI/HUD/Interactive/InteractiveItemUI.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 
+void UUIC_ExitInteractUI::AppearUI(const EUILayer Layer)
+{
+	Super::AppearUI(Layer);
 
-void UUIC_ExitInteractUI::SetUI(const FString& Key,
-                                const FString& Text)
+	const FInputModeGameOnly InputMode;
+	GetPlayerController()->SetInputMode(InputMode);
+	GetPlayerController()->SetShowMouseCursor(false);
+}
+
+void UUIC_ExitInteractUI::SetUI(const FString& Key, const FString& Text)
 {
 	const UUIV_ExitInteractUI* InteractView = Cast<UUIV_ExitInteractUI>(GetView
 	());
 	InteractView->GetInteractiveUI()->SetInteractive(Key, Text);
+	
 }
 
 void UUIC_ExitInteractUI::BindInputAction(

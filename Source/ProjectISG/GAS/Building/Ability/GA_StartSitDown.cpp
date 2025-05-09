@@ -3,6 +3,7 @@
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
@@ -11,6 +12,7 @@
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
+#include "ProjectISG/Systems/Grid/Components/PlacementIndicatorComponent.h"
 
 void UGA_StartSitDown::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                        const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
@@ -27,22 +29,22 @@ void UGA_StartSitDown::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 	if (TriggerEventData->Target)
 	{
-		Player->bUseControllerRotationYaw = false;
-		Player->GetCharacterMovement()->bOrientRotationToMovement = true;
-
-		Player->GetController()->SetIgnoreMoveInput(false);
-		Player->GetInteractionComponent()->SetIsInteractive(false);
+		if (Player->IsLocallyControlled())
+		{
+			Player->bUseControllerRotationYaw = false;
+			Player->GetCharacterMovement()->bOrientRotationToMovement = true;
+			Player->GetInteractionComponent()->SetIsInteractive(false);
+			Player->GetPlacementIndicatorComponent()->SetIsActive(false);
+		}
 		
 		const AActor* Target = TriggerEventData->Target.Get();
 		const APlacement* ConstPlacement = Cast<APlacement>(Target);
-		ConstPlacement->SetCollisionEnabled(false);
+		ConstPlacement->Multicast_SetCollisionEnabled(false);
 
 		APlacement* Placement = const_cast<APlacement*>(ConstPlacement);
 		
 		FVector Point = Placement->GetStartInteractPoint();
 		FRotator Rotation = Placement->GetStartInteractRotation();
-		
-		FVector PlayerLocation = Player->GetActorLocation();
 		
 		Player->SetActorLocation(Point);
 		Player->GetController()->SetControlRotation(Rotation);
@@ -124,10 +126,16 @@ void UGA_StartSitDown::EndMontage(FGameplayEventData Payload)
 		return;
 	}
 	
+	const AActor* Target = CurrentEventData.Target.Get();
+	
+	FGameplayEventData EventData;
+	EventData.EventTag = ISGGameplayTags::Building_Active_EndSitDown;
+	EventData.Instigator = Player;
+	EventData.Target = Target;
+
+	Player->GetAbilitySystemComponent()->HandleGameplayEvent(ISGGameplayTags::Building_Active_EndSitDown, &EventData);
+
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 	
-	FGameplayTagContainer ActivateTag;
-	ActivateTag.AddTag(ISGGameplayTags::Building_Active_EndSitDown);
-	Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
 }
 
