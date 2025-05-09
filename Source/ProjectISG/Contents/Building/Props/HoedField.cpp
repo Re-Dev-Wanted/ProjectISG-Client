@@ -123,9 +123,12 @@ void AHoedField::OnTouch(AActor* Causer)
 					}
 					else
 					{
-						// 작물 제거, 해당 작물에 해당하는 씨앗 뱉기, 인벤토리에 넣기
-						FItemMetaInfo SeedMetaInfo = UItemManager::GetInitialItemMetaDataById(PlantedCrop.CropId);
-						PS->GetInventoryComponent()->AddItem(SeedMetaInfo);
+						if (Player->IsLocallyControlled())
+						{
+							// 작물 제거, 해당 작물에 해당하는 씨앗 뱉기, 인벤토리에 넣기
+							FItemMetaInfo SeedMetaInfo = UItemManager::GetInitialItemMetaDataById(PlantedCrop.CropId);
+							PS->GetInventoryComponent()->AddItem(SeedMetaInfo);
+						}
 					}
 					
 					PlantedCrop.Clear(true);

@@ -42,7 +42,7 @@ void ABobber::SuggestProjectileVelocity(const FVector& StartLocation, const FVec
 	}
 }
 
-void ABobber::OnBite(TSoftObjectPtr<USkeletalMesh> Fish)
+void ABobber::OnBite(USkeletalMesh* Fish)
 {
 	if (!Root->IsSimulatingPhysics())
 	{
@@ -52,28 +52,7 @@ void ABobber::OnBite(TSoftObjectPtr<USkeletalMesh> Fish)
 	FVector Impulse = FVector::DownVector * ImpulseStrength;
 	Root->AddImpulse(Impulse);
 
-	FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
-
-	TWeakObjectPtr<ABobber> WeakThis = this;
-
-	Streamable.RequestAsyncLoad
-	(
-		Fish.ToSoftObjectPath(), 
-		FStreamableDelegate::CreateLambda
-		(
-			[WeakThis, Fish]()
-			{
-				if (WeakThis.IsValid() && Fish.IsValid())
-				{
-					USkeletalMesh* LoadedMesh = Fish.Get();
-					if (LoadedMesh)
-					{
-						WeakThis->FishMesh->SetSkeletalMesh(LoadedMesh);
-					}
-				}
-			}
-		)
-	);
+	FishMesh->SetSkeletalMesh(Fish);
 }
 
 void ABobber::RemoveFish()

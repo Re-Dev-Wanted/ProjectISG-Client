@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "LoggingEnum.h"
 #include "LoggingStruct.generated.h"
 
 enum class ELoggingActionName : uint8;
@@ -23,11 +24,11 @@ struct PROJECTISG_API FDiaryLogParams
 
 	// 액션 타입
 	UPROPERTY()
-	ELoggingActionType ActionType;
+	ELoggingActionType ActionType = ELoggingActionType::NONE;
 
 	// 액션 이름
 	UPROPERTY()
-	ELoggingActionName ActionName;
+	ELoggingActionName ActionName = ELoggingActionName::none;
 
 	// 별도의 사설 데이터 구조체를 String화 시킨 값을 넣어줘야 함.
 	UPROPERTY()
@@ -70,11 +71,11 @@ struct PROJECTISG_API FDiaryLogData
 
 	// 액션 타입
 	UPROPERTY()
-	ELoggingActionType action_type;
+	ELoggingActionType action_type = ELoggingActionType::NONE;
 
 	// 액션 이름
 	UPROPERTY()
-	ELoggingActionName action_name;
+	ELoggingActionName action_name = ELoggingActionName::none;
 
 	// 별도의 사설 데이터 구조체를 String화 시킨 값을 넣어줘야 함.
 	UPROPERTY()
