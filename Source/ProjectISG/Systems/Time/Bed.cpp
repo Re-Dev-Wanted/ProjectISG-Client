@@ -96,6 +96,7 @@ void ABed::OnInteractive(AActor* Causer)
 	Player->GetAbilitySystemComponent()->HandleGameplayEvent(
 		EventPayload.EventTag, &EventPayload);
 	Player->GetInteractionComponent()->Server_OnInteractiveResponse(Causer);
+	CanInteractive = false;
 }
 
 void ABed::OnInteractiveResponse(AActor* Causer)
@@ -152,6 +153,7 @@ void ABed::ActivateWakeUp()
 		ActivateTag.AddTag(ISGGameplayTags::Sleeping_Active_WakeUp);
 		MainPlayer->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
 		NetMulticast_SetCollisionEnabled(false);
+		CanInteractive = true;
 	}
 }
 
@@ -187,6 +189,7 @@ void ABed::ActivateSleepAbility()
 		ActivateTag.AddTag(ISGGameplayTags::Sleeping_Active_LieInBed);
 		MainPlayer->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
 		NetMulticast_SetCollisionEnabled(false);
+		CanInteractive = false;
 	}
 }
 
