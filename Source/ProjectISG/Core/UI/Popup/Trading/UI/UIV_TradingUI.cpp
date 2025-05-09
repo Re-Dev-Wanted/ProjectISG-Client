@@ -5,6 +5,7 @@
 
 #include "UIC_TradingUI.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/Module/InventorySlotDragDropOperation.h"
 
 bool UUIV_TradingUI::NativeOnDrop(const FGeometry& InGeometry,
@@ -49,4 +50,16 @@ void UUIV_TradingUI::NativeConstruct()
 	UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(
 				GetController());
 	TradingUIController->UpdateGoldText();
+}
+
+void UUIV_TradingUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	if (OpenFlag == false)
+	{
+		UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(
+					GetController());
+		TradingUIController->UpdateInventory();
+		OpenFlag = true;
+	}
 }

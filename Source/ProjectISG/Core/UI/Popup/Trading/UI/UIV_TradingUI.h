@@ -18,13 +18,17 @@ public:
 	GETTER(class UUIV_ProductListWidget*, ProductList);
 	GETTER(class UInventoryList*, InventoryList);
 	GETTER(class UTextBlock*, GoldText);
-
+	SETTER(bool, OpenFlag)
+	
 protected:
 	virtual bool NativeOnDrop(const FGeometry& InGeometry,
 	                          const FDragDropEvent& InDragDropEvent,
 	                          UDragDropOperation* InOperation) override;
 
 	virtual void NativeConstruct() override;
+
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -38,4 +42,6 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* GoldText;
+
+	bool OpenFlag = false;
 };
