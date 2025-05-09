@@ -16,7 +16,7 @@ public:
 
 	void SuggestProjectileVelocity(const FVector& StartLocation, const FVector& EndLocation);
 
-	void OnBite(TSoftObjectPtr<USkeletalMesh> Fish);
+	void OnBite(USkeletalMesh* Fish);
 
 	void RemoveFish();
 

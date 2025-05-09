@@ -29,13 +29,15 @@ public:
 	FString GetItemUsingType();
 	
 	bool IsHousingHandItem();
+	
+	void ClearHand();
 
 	UFUNCTION(Server, Reliable)
 	void Server_ChangeItemId(uint16 ChangeItemId);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_ChangeItemId(uint16 ChangeItemId);
-
+	void Multicast_ChangeItemId(uint16 ChangeItemId, class ABaseActor* ChangeHeldItem);
+	
 protected:
 	virtual void InitializeComponent() override;
 	

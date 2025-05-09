@@ -63,7 +63,7 @@ struct PROJECTISG_API FDiaryData
 	GENERATED_BODY()
 
 	UPROPERTY()
-	int diary_id;
+	int diary_id = 0;
 
 	UPROPERTY()
 	FString ingame_datetime;

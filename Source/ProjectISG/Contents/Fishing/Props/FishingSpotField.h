@@ -6,6 +6,7 @@
 #include "ProjectISG/Systems/Input/Interface/InteractionInterface.h"
 #include "FishingSpotField.generated.h"
 
+class UCapsuleComponent;
 class UBoxComponent;
 
 UCLASS()
@@ -27,5 +28,8 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* Root = nullptr;
+
+	UPROPERTY(VisibleAnywhere)
+	UCapsuleComponent* BlockCollision = nullptr;
 	
 };

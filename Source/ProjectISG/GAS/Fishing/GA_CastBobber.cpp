@@ -84,7 +84,7 @@ void UGA_CastBobber::OnEndCinematic()
 	AMainPlayerController* PlayerController = Cast<AMainPlayerController>( 
 		Player->GetController());
 
-	if (PlayerController)
+	if (PlayerController && Player->IsLocallyControlled())
 	{
 		PlayerController->PushUI(EUIName::Modal_FishingUI);
 

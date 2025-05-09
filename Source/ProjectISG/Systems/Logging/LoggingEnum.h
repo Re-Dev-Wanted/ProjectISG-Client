@@ -4,6 +4,7 @@
 UENUM()
 enum class ELoggingActionType : uint8
 {
+	NONE,
 	DAY_CYCLE,
 	TIME_EVENT,
 	INVENTORY,
@@ -18,6 +19,7 @@ enum class ELoggingActionType : uint8
 UENUM()
 enum class ELoggingActionName : uint8
 {
+	none,
 	start_day,
 	sleep,
 

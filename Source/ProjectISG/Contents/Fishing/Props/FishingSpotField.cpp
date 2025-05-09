@@ -3,6 +3,8 @@
 #include "AbilitySystemComponent.h"
 #include "Abilities/GameplayAbilityTypes.h"
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "DataWrappers/ChaosVDQueryDataWrappers.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
@@ -15,6 +17,12 @@ AFishingSpotField::AFishingSpotField()
 	Root = CreateDefaultSubobject<UBoxComponent>(TEXT("Root"));
 	SetRootComponent(Root);
 	Root->SetCollisionResponseToChannel(ECC_Visibility, ECollisionResponse::ECR_Block);
+
+	BlockCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Block"));
+	BlockCollision->SetupAttachment(Root);
+	BlockCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	BlockCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	BlockCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 }
 
 bool AFishingSpotField::GetCanTouch() const

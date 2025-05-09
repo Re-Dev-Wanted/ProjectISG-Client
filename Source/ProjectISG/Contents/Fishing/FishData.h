@@ -23,7 +23,7 @@ struct PROJECTISG_API FFishData : public FTableRowBase
 
 	GETTER(uint16, Id);
 	GETTER(uint16, ItemId);
-	GETTER(TSoftObjectPtr<USkeletalMesh>, Mesh);
+	GETTER(TObjectPtr<USkeletalMesh>, Mesh);
 	GETTER(EFishGrade, Grade);
 	GETTER(float, WaitTimeMin)
 	GETTER(float, WaitTimeMax)
@@ -36,7 +36,7 @@ protected:
 	uint16 ItemId = 0;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TSoftObjectPtr<USkeletalMesh> Mesh;
+	TObjectPtr<USkeletalMesh> Mesh;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	EFishGrade Grade = EFishGrade::Common;
