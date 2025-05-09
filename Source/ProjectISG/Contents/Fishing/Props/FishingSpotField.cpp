@@ -4,9 +4,7 @@
 #include "Abilities/GameplayAbilityTypes.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "DataWrappers/ChaosVDQueryDataWrappers.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
-#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 
