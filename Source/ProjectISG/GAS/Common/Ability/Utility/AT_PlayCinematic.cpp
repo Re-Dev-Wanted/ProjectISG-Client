@@ -3,12 +3,13 @@
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
 #include "MovieSceneSequencePlaybackSettings.h"
+#include "ProjectISG/Core/Character/BaseCharacter.h"
 
 UAT_PlayCinematic* UAT_PlayCinematic::InitialEvent(UGameplayAbility* Ability
-													, ULevelSequence*
-													LevelSequence
-													, ALevelSequenceActor*
-													LevelSequenceActor)
+                                                   , ULevelSequence*
+                                                   LevelSequence
+                                                   , ALevelSequenceActor*
+                                                   LevelSequenceActor)
 {
 	UAT_PlayCinematic* NewTask = NewAbilityTask<UAT_PlayCinematic>(Ability);
 	NewTask->LevelSequence = LevelSequence;
@@ -32,10 +33,17 @@ void UAT_PlayCinematic::Activate()
 		, LevelSequenceActor);
 
 	LevelSequencePlayer->OnFinished.
-						AddDynamic(this, &ThisClass::OnEndCinematic);
+	                     AddDynamic(this, &ThisClass::OnEndCinematic);
 	OnPlayCinematicOnReadyNotified.Broadcast(LevelSequenceActor);
 
-	LevelSequencePlayer->Play();
+	if (ABaseCharacter* PlayerBase = Cast<ABaseCharacter>(GetAvatarActor()))
+	{
+		PlayerBase->PlayCinematic(LevelSequencePlayer);
+		if (PlayerBase->HasAuthority())
+		{
+			PlayerBase->Client_PlayCinematic(LevelSequencePlayer);
+		}
+	}
 }
 
 void UAT_PlayCinematic::OnEndCinematic()

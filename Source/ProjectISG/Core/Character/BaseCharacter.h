@@ -5,6 +5,8 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+class ULevelSequencePlayer;
+
 UCLASS()
 class PROJECTISG_API ABaseCharacter : public ACharacter,
                                       public IAbilitySystemInterface
@@ -15,6 +17,11 @@ public:
 	ABaseCharacter();
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	void PlayCinematic(ULevelSequencePlayer* Cinematic);
+
+	UFUNCTION(Client, Reliable)
+	void Client_PlayCinematic(ULevelSequencePlayer* Cinematic);
 
 protected:
 	virtual void BeginPlay() override;
@@ -34,13 +41,7 @@ protected:
 
 	void InitializePrimaryAttributes();
 
-	//void AddCharacterAbilities();
-
 	virtual void InitializeAbilitySystem()
 	{
-	};
-
-	// UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
-	// 	Category = "Options|GAS")
-	// TArray<TSubclassOf<class UGameplayAbility>> StartupAbilities;
+	}
 };

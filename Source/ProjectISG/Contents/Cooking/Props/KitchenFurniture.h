@@ -6,9 +6,13 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "KitchenFurniture.generated.h"
 
+class AMainPlayerCharacter;
 enum class ECookingTool : uint8;
+class ULevelSequence;
 class UCameraComponent;
 class UCookingComponent;
+class ALevelSequenceActor;
+class ULevelSequencePlayer;
 
 UCLASS()
 class PROJECTISG_API AKitchenFurniture : public ABaseInteractiveActor
@@ -30,18 +34,49 @@ public:
 
 	void UnEquipCookingToolToAct();
 
-protected:
-	virtual void BeginPlay() override;
+	void StartCookingMode();
+
+	void EndCookingMode();
 
 private:
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UStaticMeshComponent> Mesh;
+	UPROPERTY()
+	AMainPlayerCharacter* UsingCharacter;
 
+#pragma region Cinematic
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USceneComponent> KitchenStandPosition;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> KitchenCameraComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Cinematic",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<ULevelSequence> StartCookingCinematic;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Cinematic",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<ULevelSequence> EndCookingCinematic;
+
+	UPROPERTY()
+	TObjectPtr<ULevelSequencePlayer> LevelSequencePlayer;
+
+	UPROPERTY()
+	ALevelSequenceActor* LevelSequenceActor;
+
+	UFUNCTION()
+	void OnFinishStartCooking();
+
+	UFUNCTION()
+	void OnFinishEndCooking();
+
+	void LoggingStartCooking();
+
+	void LoggingEndCooking();
+#pragma endregion
+
+#pragma region Mesh
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UStaticMeshComponent> Mesh;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> FryPanMesh;
@@ -51,4 +86,5 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> WokMesh;
+#pragma endregion
 };

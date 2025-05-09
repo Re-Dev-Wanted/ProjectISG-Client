@@ -1,12 +1,16 @@
 ﻿#include "KitchenFurniture.h"
 
-#include "GameplayTagContainer.h"
 #include "Camera/CameraComponent.h"
-#include "AbilitySystemComponent.h"
+#include "LevelSequencePlayer.h"
+#include "LevelSequenceActor.h"
+#include "MovieSceneSequencePlaybackSettings.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "ProjectISG/Contents/Cooking/CookingStruct.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
-#include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
+#include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 
 AKitchenFurniture::AKitchenFurniture()
 {
@@ -20,7 +24,6 @@ AKitchenFurniture::AKitchenFurniture()
 	KitchenCameraComponent = CreateDefaultSubobject<UCameraComponent>(
 		"Kitchen Camera Component");
 	KitchenCameraComponent->SetupAttachment(Mesh);
-
 
 	FryPanMesh = CreateDefaultSubobject<UStaticMeshComponent>(
 		"Fry Pan Mesh");
@@ -37,17 +40,12 @@ AKitchenFurniture::AKitchenFurniture()
 
 bool AKitchenFurniture::GetCanInteractive() const
 {
-	return true;
+	return UsingCharacter == nullptr;
 }
 
 FString AKitchenFurniture::GetInteractiveDisplayText() const
 {
 	return TEXT("요리하기");
-}
-
-void AKitchenFurniture::BeginPlay()
-{
-	Super::BeginPlay();
 }
 
 void AKitchenFurniture::OnInteractive(AActor* Causer)
@@ -56,6 +54,8 @@ void AKitchenFurniture::OnInteractive(AActor* Causer)
 
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
+		UsingCharacter = Player;
+
 		Player->bUseControllerRotationYaw = false;
 		Player->SetActorTransform(
 			KitchenStandPosition->GetComponentTransform());
@@ -67,12 +67,72 @@ void AKitchenFurniture::OnInteractive(AActor* Causer)
 		}
 
 		Player->GetInteractionComponent()->SetIsInteractive(false);
+		Player->GetInteractionComponent()->SetSelectedInteractiveActor(this);
 
-		FGameplayTagContainer ActivateTag;
-		ActivateTag.AddTag(ISGGameplayTags::Cooking_Active_StartCooking);
-		Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
-			ActivateTag);
+		// TODO: RPC 함수 호출로 모든 곳에서 동일한
+		// 동작을 실행시켜야 한다.
+		StartCookingMode();
 	}
+}
+
+void AKitchenFurniture::StartCookingMode()
+{
+	AMainPlayerController* PC = UsingCharacter->GetController<
+		AMainPlayerController>();
+
+	FMovieSceneSequencePlaybackSettings PlaybackSettings;
+	PlaybackSettings.bAutoPlay = true;
+
+	LevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(
+		GetWorld(), StartCookingCinematic,
+		PlaybackSettings, LevelSequenceActor);
+
+	LevelSequencePlayer->OnFinished.AddDynamic(
+		this, &ThisClass::OnFinishStartCooking);
+
+	UsingCharacter->GetCharacterMovement()->DisableMovement();
+
+	PC->SetIgnoreLookInput(true);
+	PC->SetViewTargetWithBlend(this, 0.5f);
+
+	GetKitchenCameraComponent()->Activate();
+
+	LevelSequenceActor->AddBindingByTag(FName(TEXT("Player")), UsingCharacter);
+	LevelSequenceActor->AddBindingByTag(FName(TEXT("Interactive")), this);
+
+	LevelSequenceActor->SetActorTransform(UsingCharacter->GetTransform());
+
+	LevelSequencePlayer->Play();
+}
+
+void AKitchenFurniture::EndCookingMode()
+{
+	AMainPlayerController* PC = UsingCharacter->GetController<
+		AMainPlayerController>();
+
+	FMovieSceneSequencePlaybackSettings PlaybackSettings;
+	PlaybackSettings.bAutoPlay = true;
+
+	LevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(
+		GetWorld(), EndCookingCinematic,
+		PlaybackSettings, LevelSequenceActor);
+
+	LevelSequencePlayer->OnFinished.AddDynamic(
+		this, &ThisClass::OnFinishEndCooking);
+
+	UsingCharacter->GetCharacterMovement()->DisableMovement();
+
+	PC->SetIgnoreLookInput(true);
+	PC->SetViewTargetWithBlend(this, 0.5f);
+
+	GetKitchenCameraComponent()->Activate();
+
+	LevelSequenceActor->AddBindingByTag(FName(TEXT("Player")), UsingCharacter);
+	LevelSequenceActor->AddBindingByTag(FName(TEXT("Interactive")), this);
+
+	LevelSequenceActor->SetActorTransform(UsingCharacter->GetTransform());
+
+	LevelSequencePlayer->Play();
 }
 
 void AKitchenFurniture::EquipCookingToolToAct(
@@ -127,4 +187,52 @@ void AKitchenFurniture::UnEquipCookingToolToAct()
 	WokMesh->AttachToComponent(GetRootComponent(),
 	                           FAttachmentTransformRules::SnapToTargetIncludingScale);
 	WokMesh->SetRelativeLocation(FVector::ZeroVector);
+}
+
+void AKitchenFurniture::OnFinishStartCooking()
+{
+	AMainPlayerController* PC = UsingCharacter->GetController<
+		AMainPlayerController>();
+	PC->PushUI(EUIName::Popup_CookingRecipeUI);
+}
+
+void AKitchenFurniture::OnFinishEndCooking()
+{
+	AMainPlayerController* PC = UsingCharacter->GetController<
+		AMainPlayerController>();
+	PC->PushUI(EUIName::Gameplay_MainHUD);
+	PC->SetIgnoreLookInput(false);
+	PC->SetViewTargetWithBlend(UsingCharacter, 0.5f);
+
+	UsingCharacter->bUseControllerRotationYaw = true;
+	UsingCharacter->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	UsingCharacter->GetCameraComponent()->Activate();
+
+	UsingCharacter->GetInteractionComponent()->SetIsInteractive(true);
+	UsingCharacter->GetInteractionComponent()->
+	                SetSelectedInteractiveActor(nullptr);
+
+	UsingCharacter = nullptr;
+}
+
+void AKitchenFurniture::LoggingStartCooking()
+{
+	FDiaryLogParams LogParams;
+	LogParams.Location = "요리장";
+	LogParams.ActionType = ELoggingActionType::COOKING;
+	LogParams.ActionName = ELoggingActionName::start_cooking;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+	            LoggingData(LogParams);
+}
+
+void AKitchenFurniture::LoggingEndCooking()
+{
+	FDiaryLogParams LogParams;
+	LogParams.Location = "요리장";
+	LogParams.ActionType = ELoggingActionType::COOKING;
+	LogParams.ActionName = ELoggingActionName::finish_cooking;
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+	            LoggingData(LogParams);
 }

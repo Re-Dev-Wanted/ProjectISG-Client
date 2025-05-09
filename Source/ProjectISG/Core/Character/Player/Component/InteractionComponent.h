@@ -5,6 +5,7 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "InteractionComponent.generated.h"
 
+class ABaseInteractiveActor;
 class AMainPlayerCharacter;
 class UInputAction;
 
@@ -17,6 +18,7 @@ public:
 	UInteractionComponent();
 
 	GETTER(FHitResult, TargetTraceResult)
+	GETTER_SETTER(TObjectPtr<ABaseInteractiveActor>, SelectedInteractiveActor)
 
 	void SetIsInteractive(const bool NewIsInteractive);
 
@@ -24,20 +26,20 @@ public:
 	void OnChange(uint16 ItemId);
 
 	UFUNCTION(Reliable, Server)
-	void Server_Interact(class ABaseInteractiveActor* InteractActor, AActor*
+	void Server_Interact(ABaseInteractiveActor* InteractActor, AActor*
 	                     Causer);
 
 	UFUNCTION(Reliable, Server)
-	void Server_Touch(class ABaseInteractiveActor* InteractActor, AActor*
+	void Server_Touch(ABaseInteractiveActor* InteractActor, AActor*
 	                  Causer);
 
 	// 하드 코딩 방지를 위해 해당 actor class를 BaseActor로 받아서
 	// 따로 조건 처리를 하는게 맞아보인다.
 	UFUNCTION(Server, Reliable)
-	void Server_OnInteractiveResponse(class AActor* Causer);
+	void Server_OnInteractiveResponse(AActor* Causer);
 
 	UFUNCTION(Server, Reliable)
-	void Server_OnTouchResponse(class AActor* Causer);
+	void Server_OnTouchResponse(AActor* Causer);
 
 protected:
 	virtual void BeginPlay() override;
@@ -83,6 +85,11 @@ protected:
 
 	UPROPERTY()
 	FHitResult TargetTraceResult;
+
+	// 해당 변수 값의 경우 상호작용 중인 현재 액터 값을 저장하는 곳이기 때문에
+	// Trace 된다고 바로 저장하는 변수 값은 아니다. 사용에 주의할 것
+	UPROPERTY()
+	TObjectPtr<ABaseInteractiveActor> SelectedInteractiveActor;
 
 	void LineTraceToFindTarget();
 
