@@ -3,10 +3,14 @@
 #include "GA_EndSitDown.h"
 
 #include "EnhancedInputSubsystems.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
+#include "ProjectISG/Systems/Grid/Actors/Placement.h"
+#include "ProjectISG/Systems/Grid/Components/PlacementIndicatorComponent.h"
 
 void UGA_EndSitDown::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                      const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
@@ -20,7 +24,7 @@ void UGA_EndSitDown::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		NAME_None,
 		EndSitDownMontage,
 		FGameplayTagContainer(),
-		FGameplayEventData()
+		*TriggerEventData
 	);
 
 	AT_EndMontageEvent->OnCompleted.AddDynamic(this, &UGA_EndSitDown::EndMontage);
@@ -42,11 +46,22 @@ void UGA_EndSitDown::EndMontage(FGameplayTag EventTag, FGameplayEventData EventD
 	{
 		return;
 	}
+
+	if (Player->IsLocallyControlled())
+	{
+		Player->bUseControllerRotationYaw = true;
+		Player->GetCharacterMovement()->bOrientRotationToMovement = false;
+		Player->GetInteractionComponent()->SetIsInteractive(true);
+		Player->GetPlacementIndicatorComponent()->SetIsActive(true);
+	}
 	
-	Player->GetController()->SetIgnoreLookInput(false);
-	Player->GetController()->SetIgnoreMoveInput(false);
-	
-	Player->GetInteractionComponent()->SetIsInteractive(true);
+	if (EventData.Target)
+	{
+		const AActor* Target = EventData.Target.Get();
+		const APlacement* ConstPlacement = Cast<APlacement>(Target);
+		
+		ConstPlacement->Multicast_SetCollisionEnabled(true);
+	}
 	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
 }

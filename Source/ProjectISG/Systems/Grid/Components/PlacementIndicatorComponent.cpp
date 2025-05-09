@@ -62,6 +62,11 @@ void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (!IsActive)
+	{
+		return;
+	}
+
 	if (!bIsIndicatorActive)
 	{
 		return;
@@ -77,6 +82,11 @@ void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick Tic
 
 void UPlacementIndicatorComponent::Execute()
 {
+	if (!IsActive)
+	{
+		return;
+	}
+	
 	if (!bIsIndicatorActive)
 	{
 		return;
@@ -242,6 +252,11 @@ void UPlacementIndicatorComponent::LineTrace()
 
 void UPlacementIndicatorComponent::OnRotate(const FInputActionValue& InputActionValue)
 {
+	if (!IsActive)
+	{
+		return;
+	}
+		
 	if (!bIsIndicatorActive)
 	{
 		return;
@@ -359,6 +374,7 @@ void UPlacementIndicatorComponent::OnActivate(
 			IndicateActor->SetActorEnableCollision(false); // 충돌 제거
 			IndicateActor->SetActorTickEnabled(false);
 			IndicateActor->Setup(GridManager->SnapSize);
+			IndicateActor->SetGuide(GridManager->SnapSize);
 		}
 	}
 }
@@ -395,9 +411,27 @@ void UPlacementIndicatorComponent::OnDeactivate()
 	}
 }
 
+void UPlacementIndicatorComponent::SetIsActive(bool NewActive)
+{
+	IsActive = NewActive;
+	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(PlayerController->PlayerState);
+	
+	AGridManager* GridManager = PlayerState->GetGridManager();
+
+	if (GridManager)
+	{
+		GridManager->SetVisibleGrid(NewActive);
+	}
+
+	if (IndicateActor)
+	{
+		IndicateActor->SetActorHiddenInGame(!NewActive);
+	}
+}
+
 void UPlacementIndicatorComponent::Server_Execute_Implementation(FVector Pivot,
-	FVector Location, FRotator Rotation, TSubclassOf<APlacement> PlacementClass,
-	uint16 ItemId)
+                                                                 FVector Location, FRotator Rotation, TSubclassOf<APlacement> PlacementClass,
+                                                                 uint16 ItemId)
 {
 	ExecuteInternal(Pivot, Location, Rotation, PlacementClass, ItemId);
 }
