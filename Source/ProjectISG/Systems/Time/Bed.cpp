@@ -62,6 +62,8 @@ void ABed::BeginPlay()
 		this, &ABed::ActivateWakeUp);
 	TimeManager->GetSleepManager()->OpenDiaryDelegate.AddDynamic(
 		this, &ABed::OpenDiary);
+	TimeManager->GetSleepManager()->ForceSleepDelegate.AddDynamic(
+		this, &ABed::ActivateSleepAbility);
 }
 
 void ABed::GetLifetimeReplicatedProps(
@@ -84,6 +86,7 @@ void ABed::OnInteractive(AActor* Causer)
 
 	UE_LOG(LogTemp, Warning, TEXT("침대 상호작용 함수 실행 , 로컬롤 : %s"),
 	       *FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
+	
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
 
 	FGameplayEventData EventPayload;
@@ -93,7 +96,6 @@ void ABed::OnInteractive(AActor* Causer)
 	Player->GetAbilitySystemComponent()->HandleGameplayEvent(
 		EventPayload.EventTag, &EventPayload);
 	Player->GetInteractionComponent()->Server_OnInteractiveResponse(Causer);
-	//CanInteractive = false;
 }
 
 void ABed::OnInteractiveResponse(AActor* Causer)
@@ -144,14 +146,12 @@ void ABed::ActivateWakeUp()
 {
 	if (MainPlayer)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("침대에 누운 플레이어 로컬롤 : %s"),
+		UE_LOG(LogTemp, Warning, TEXT("기상 어빌리티 강제 실행 로컬롤 : %s"),
 		       *FEnumUtil::GetClassEnumKeyAsString(MainPlayer->GetLocalRole()));
-		FGameplayEventData EventPayload;
-		EventPayload.EventTag = ISGGameplayTags::Sleeping_Active_WakeUp;
-		EventPayload.Instigator = MainPlayer;
-		EventPayload.Target = this;
-		MainPlayer->GetAbilitySystemComponent()->HandleGameplayEvent(
-			EventPayload.EventTag, &EventPayload);
+		FGameplayTagContainer ActivateTag;
+		ActivateTag.AddTag(ISGGameplayTags::Sleeping_Active_WakeUp);
+		MainPlayer->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
+		NetMulticast_SetCollisionEnabled(false);
 	}
 }
 
@@ -162,6 +162,7 @@ void ABed::OpenDiary()
 		return;
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("다이어리 작성 실행"));
 	// 모든 침대에 대한 대응이 서버에서 발생하기 때문에
 	// 로컬 컨트롤 상태 = 서버에서 통제중인 플레이어 이므로
 	// 바로 함수 호출을 해도 문제가 없다.
@@ -174,4 +175,36 @@ void ABed::OpenDiary()
 		// 그 외에는 Client 로 RPC 함수를 호출해서 실행시켜준다.
 		MainPlayer->GetDiaryComponent()->Client_GenerateDiary();
 	}
+}
+
+void ABed::ActivateSleepAbility()
+{
+	if (MainPlayer)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("수면 어빌리티 강제 실행 로컬롤 : %s"),
+	   *FEnumUtil::GetClassEnumKeyAsString(MainPlayer->GetLocalRole()));
+		FGameplayTagContainer ActivateTag;
+		ActivateTag.AddTag(ISGGameplayTags::Sleeping_Active_LieInBed);
+		MainPlayer->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
+		NetMulticast_SetCollisionEnabled(false);
+	}
+}
+
+void ABed::SetCollisionEnabled(bool bEnable) const
+{
+	if (bEnable)
+	{
+		Root->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
+		Root->SetGenerateOverlapEvents(true);
+	}
+	else
+	{
+		Root->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+		Root->SetGenerateOverlapEvents(false);
+	}
+}
+
+void ABed::NetMulticast_SetCollisionEnabled_Implementation(bool bEnable)
+{
+	SetCollisionEnabled(bEnable);
 }

@@ -39,12 +39,11 @@ void USleepManager::TickComponent(float DeltaTime, ELevelTick TickType,
                                   FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 	if (GetOwner()->HasAuthority() == false)
 	{
 		return;
 	}
-
+	
 	if (bSleepCinematicStart)
 	{
 		SleepCinematic(DeltaTime);
@@ -52,7 +51,7 @@ void USleepManager::TickComponent(float DeltaTime, ELevelTick TickType,
 	else
 	{
 		Sleep();
-		//ForceSleep();
+		ForceSleep();
 	}
 }
 
@@ -81,19 +80,21 @@ void USleepManager::ForceSleep()
 
 		// 침대에 각 플레이어를 배정 시킨다
 		AssignBedEachPlayer();
-
-		// 플레이어를 강제로 침대로 이동시킨다.
-		SleepDelegate.Broadcast();
-
+	
+		// 플레이어를 침대에 누운 상태로 바꾼다.
+		ChangeAllPlayerLieInBedValue(true);
+		
 		// 플레이어 상태를 수면상태로 바꾼다
 		ChangeAllPlayerSleepValue(true);
-
-		// 시네마틱을 진행시킨다.
+		
+		// 서버의 수면 로그 보낸다.
 		if (bSleepCinematicStart == false)
 		{
+			OpenDiaryDelegate.Broadcast();
 			LoggingToSleep();
 		}
 
+		// 시네마틱을 진행시킨다.
 		bSleepCinematicStart = true;
 	}
 }
@@ -110,6 +111,7 @@ void USleepManager::SleepCinematic(float DeltaTime)
 		TimeManager->StopTime(false);
 		TimeManager->AddSleepTimeToCrop.Broadcast();
 		WakeUpDelegate.Broadcast();
+		
 		if (bSleepCinematicStart)
 		{
 			LoggingToWakeUp();
@@ -133,7 +135,6 @@ void USleepManager::OnRep_SleepCinematicStart()
 	}
 	else
 	{
-		WakeUpDelegate.Broadcast();
 		LoggingToWakeUp();
 		ChangeAllPlayerWriteDiary(false);
 	}
@@ -158,6 +159,12 @@ void USleepManager::AssignBedEachPlayer()
 			idx++;
 		}
 	}
+
+	// 플레이어를 강제로 침대로 이동시킨다.
+	SleepDelegate.Broadcast();
+
+	// 침대에 눕는 어빌리티를 실행시킨다.
+	ForceSleepDelegate.Broadcast();
 }
 
 void USleepManager::ChangeAllPlayerSleepValue(bool value)
@@ -240,8 +247,6 @@ void USleepManager::ChangeAllPlayerWriteDiary(bool value)
 
 void USleepManager::LoggingToSleep()
 {
-	UE_LOG(LogTemp, Warning, TEXT("sleep, localrole : %s"),
-	       *FEnumUtil::GetClassEnumKeyAsString(TimeManager->GetLocalRole()));
 	FDiaryLogParams LogParams;
 	LogParams.ActionType = ELoggingActionType::DAY_CYCLE;
 	LogParams.ActionName = ELoggingActionName::sleep;
@@ -252,8 +257,6 @@ void USleepManager::LoggingToSleep()
 
 void USleepManager::LoggingToWakeUp()
 {
-	UE_LOG(LogTemp, Warning, TEXT("wakeup, localrole : %s"),
-	       *FEnumUtil::GetClassEnumKeyAsString(TimeManager->GetLocalRole()));
 	FDiaryLogParams LogParams;
 	LogParams.ActionType = ELoggingActionType::DAY_CYCLE;
 	LogParams.ActionName = ELoggingActionName::start_day;

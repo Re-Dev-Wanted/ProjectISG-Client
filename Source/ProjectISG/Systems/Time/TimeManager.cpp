@@ -285,9 +285,6 @@ void ATimeManager::OnRep_CurrentTimeOfDay()
 
 void ATimeManager::LoggingToMorning()
 {
-	UE_LOG(LogTemp, Warning, TEXT("morning, localrole : %s"),
-	       *FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
-
 	FDiaryLogParams LogParams;
 	LogParams.ActionType = ELoggingActionType::TIME_EVENT;
 	LogParams.ActionName = ELoggingActionName::morning;
@@ -298,9 +295,6 @@ void ATimeManager::LoggingToMorning()
 
 void ATimeManager::LoggingToAfternoon()
 {
-	UE_LOG(LogTemp, Warning, TEXT("afternoon, localrole : %s"),
-	       *FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
-
 	FDiaryLogParams LogParams;
 	LogParams.ActionType = ELoggingActionType::TIME_EVENT;
 	LogParams.ActionName = ELoggingActionName::afternoon;
@@ -311,9 +305,6 @@ void ATimeManager::LoggingToAfternoon()
 
 void ATimeManager::LoggingToEvening()
 {
-	UE_LOG(LogTemp, Warning, TEXT("evening, localrole : %s"),
-	       *FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
-
 	FDiaryLogParams LogParams;
 	LogParams.ActionType = ELoggingActionType::TIME_EVENT;
 	LogParams.ActionName = ELoggingActionName::evening;
@@ -324,9 +315,6 @@ void ATimeManager::LoggingToEvening()
 
 void ATimeManager::LoggingToNight()
 {
-	UE_LOG(LogTemp, Warning, TEXT("night, localrole : %s"),
-	       *FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
-
 	FDiaryLogParams LogParams;
 	LogParams.ActionType = ELoggingActionType::TIME_EVENT;
 	LogParams.ActionName = ELoggingActionName::night;
