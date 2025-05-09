@@ -1,13 +1,9 @@
 #include "PlayerHandSlotComponent.h"
 
-#include "EnhancedInputComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
-#include "ProjectISG/Core/Controller/MainPlayerController.h"
-#include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
 #include "ProjectISG/GAS/Common/Object/BaseActor.h"
-#include "ProjectISG/GAS/Common/Object/BaseInteractiveActor.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 UPlayerHandSlotComponent::UPlayerHandSlotComponent()
@@ -21,7 +17,7 @@ void UPlayerHandSlotComponent::InitializeComponent()
 	Super::InitializeComponent();
 
 	SetIsReplicated(true);
-
+	
 	Player = Cast<AMainPlayerCharacter>(GetOwner());
 
 	if (Player)
@@ -44,42 +40,8 @@ void UPlayerHandSlotComponent::OnChange(uint16 _ItemId)
 	{
 		return;
 	}
-
-	if (HeldItem)
-	{
-		ABaseActor* DestroyActor = HeldItem.Get();
-		HeldItem = nullptr;
-		DestroyActor->Destroy();
-		//ItemId = 0;
-		Server_ChangeItemId(0);
-	}
-
-	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(_ItemId);
-
-	const TSubclassOf<AActor> ActorClass = ItemInfoData.GetShowItemActor();
-
-	const bool bIsStructure = ItemInfoData.GetItemType() != 
-	EItemType::Equipment && UItemManager::IsItemCanHousing(_ItemId);
-
-	if (!ActorClass || bIsStructure)
-	{
-		return;
-	}
-
-	AActor* Actor = GetWorld()->SpawnActor(ActorClass);
-	Actor->SetReplicates(true);
-	Actor->SetReplicateMovement(true);
-	HeldItem = Cast<ABaseActor>(Actor);
-	//ItemId = _ItemId;
-	Server_ChangeItemId(_ItemId);
-
-	const FName SocketName = UItemManager::GetSocketNameById(_ItemId);
 	
-	if (HeldItem && !SocketName.IsNone())
-	{
-		HeldItem->AttachToComponent(Player->GetMesh(), 
-		FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
-	}
+	Server_ChangeItemId(_ItemId);
 }
 
 FString UPlayerHandSlotComponent::GetItemUsingType()
@@ -102,14 +64,72 @@ bool UPlayerHandSlotComponent::IsHousingHandItem()
 	return UItemManager::IsItemCanHousing(ItemId);
 }
 
+void UPlayerHandSlotComponent::ClearHand()
+{
+	if (HeldItem)
+	{
+		ItemId = 0;
+		ABaseActor* DestroyActor = HeldItem.Get();
+		HeldItem = nullptr;
+		DestroyActor->Destroy();
+	}
+}
+
 void UPlayerHandSlotComponent::Server_ChangeItemId_Implementation(
 	uint16 ChangeItemId)
 {
-	NetMulticast_ChangeItemId(ChangeItemId);
+	ClearHand();
+
+	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ChangeItemId);
+
+	const TSubclassOf<AActor> ActorClass = ItemInfoData.GetShowItemActor();
+
+	const bool bIsStructure = ItemInfoData.GetItemType() != 
+	EItemType::Equipment && UItemManager::IsItemCanHousing(ChangeItemId);
+
+	if (!ActorClass || bIsStructure)
+	{
+		return;
+	}
+
+	AActor* Actor = GetWorld()->SpawnActor(ActorClass);
+	Actor->SetReplicates(true);
+	Actor->SetReplicateMovement(true);
+	HeldItem = Cast<ABaseActor>(Actor);
+
+	if (GetOwner()->HasAuthority())
+	{
+		ItemId = ChangeItemId;
+		
+		if (HeldItem)
+		{
+			const FName SocketName = UItemManager::GetSocketNameById(ItemId);
+
+			if (!SocketName.IsNone() && Player && Player->GetMesh())
+			{
+				HeldItem->AttachToComponent(Player->GetMesh(), 
+				FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+			}
+		}
+	}
+	{
+		Multicast_ChangeItemId(ChangeItemId, HeldItem);
+	}
 }
 
-void UPlayerHandSlotComponent::NetMulticast_ChangeItemId_Implementation(
-	uint16 ChangeItemId)
+void UPlayerHandSlotComponent::Multicast_ChangeItemId_Implementation(uint16 
+ChangeItemId, class ABaseActor* ChangeHeldItem)
 {
 	ItemId = ChangeItemId;
+	
+	if (ChangeHeldItem)
+	{
+		const FName SocketName = UItemManager::GetSocketNameById(ItemId);
+
+		if (!SocketName.IsNone() && Player && Player->GetMesh())
+		{
+			HeldItem->AttachToComponent(Player->GetMesh(), 
+			FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+		}
+	}
 }

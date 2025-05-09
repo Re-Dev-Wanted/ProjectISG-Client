@@ -69,17 +69,21 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			if (GridManager->TryGetPlacement(TargetPlacement, GridCoord, PlacedActor))
 			{
 				const uint16 ItemId = GridManager->RemovePlacement(GridCoord);
-				
-				if (ItemId > 0)
-				{
-					const FString UsingType = UItemManager::GetItemUsingType(ItemId);
 
-					if (UsingType != "Disposability")
+				if (Player->IsLocallyControlled())
+				{
+					// 인벤토리는 각자의 것이므로 로컬에서만 작동하게 한다.
+					if (ItemId > 0)
 					{
-						FItemMetaInfo ItemMetaInfo;
-						ItemMetaInfo.SetId(ItemId);
-						ItemMetaInfo.SetCurrentCount(1);
-						PlayerState->GetInventoryComponent()->AddItem(ItemMetaInfo);
+						const FString UsingType = UItemManager::GetItemUsingType(ItemId);
+
+						if (UsingType != "Disposability")
+						{
+							FItemMetaInfo ItemMetaInfo;
+							ItemMetaInfo.SetId(ItemId);
+							ItemMetaInfo.SetCurrentCount(1);
+							PlayerState->GetInventoryComponent()->AddItem(ItemMetaInfo);
+						}
 					}
 				}
 			}

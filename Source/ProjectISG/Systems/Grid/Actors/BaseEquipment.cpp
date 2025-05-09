@@ -11,5 +11,14 @@ ABaseEquipment::ABaseEquipment()
 	MeshComp->SetupAttachment(AnchorComp);
 
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	bReplicates = true;
+}
+
+void ABaseEquipment::BeginPlay()
+{
+	Super::BeginPlay();
+
+	SetReplicateMovement(true);
 }
 

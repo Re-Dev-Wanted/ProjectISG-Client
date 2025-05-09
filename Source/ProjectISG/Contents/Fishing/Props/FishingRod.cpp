@@ -272,7 +272,7 @@ void AFishingRod::OnEndReelInLine(AActor* Causer)
 		
 		const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
 		
-		if (Player)
+		if (Player && Player->IsLocallyControlled())
 		{
 			AMainPlayerState* PlayerState = Cast<AMainPlayerState>(Player->GetController()->PlayerState);
 

@@ -41,9 +41,7 @@ void UGA_StartSitDown::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		FVector StartLocation = FVector(Point.X, Point.Y, PlayerLocation.Z);
 		
 		Player->SetActorLocation(StartLocation, false);
-		
-		FRotator YawOnly(0.f, 180.f, 0.f);
-		Player->SetActorRotation(YawOnly);
+		Player->SetActorRotation(FRotator::ZeroRotator);
 	}
 
 	AT_StartMontageEvent = UPlayMontageWithEvent::InitialEvent
@@ -109,7 +107,7 @@ void UGA_StartSitDown::NotifyMontage(FGameplayTag EventTag,
 		AMainPlayerController* PlayerController = Cast<AMainPlayerController>( 
 		Player->GetController());
 
-		if (PlayerController)
+		if (PlayerController && Player->IsLocallyControlled())
 		{
 			PlayerController->PushUI(EUIName::Modal_ExitInteractUI);
 

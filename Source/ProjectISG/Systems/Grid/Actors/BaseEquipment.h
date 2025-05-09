@@ -12,6 +12,9 @@ class PROJECTISG_API ABaseEquipment : public ABaseActor
 public:
 	ABaseEquipment();
 
+protected:
+	virtual void BeginPlay() override;
+	
 	UPROPERTY(VisibleAnywhere)
 	class USceneComponent* AnchorComp;
 
