@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ProjectISG/GAS/Common/Object/BaseActor.h"
 #include "ProjectISG/GAS/Common/Object/BaseInteractiveActor.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "Bed.generated.h"
@@ -48,9 +47,17 @@ private:
 
 	UFUNCTION()
 	void OpenDiary();
+	
+	UFUNCTION()
+	void ActivateSleepAbility();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_SetCollisionEnabled(bool bEnable);
 
 public:
 	SETTER(class AMainPlayerCharacter*, MainPlayer);
+
+	void SetCollisionEnabled(bool bEnable) const;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Setting,

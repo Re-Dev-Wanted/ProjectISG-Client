@@ -13,6 +13,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWakeUp);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOpenDiary);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FForceSleep);
+
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTISG_API USleepManager : public UActorComponent
 {
@@ -91,4 +94,7 @@ public:
 
 	UPROPERTY()
 	FOpenDiary OpenDiaryDelegate;
+
+	UPROPERTY()
+	FForceSleep ForceSleepDelegate;
 };

@@ -7,6 +7,8 @@
 #include "UIM_TradingUI.h"
 #include "UIV_TradingUI.h"
 #include "Components/TextBlock.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
@@ -31,6 +33,9 @@ void UUIC_TradingUI::OnCloseTradingUI()
 {
 	AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetPlayerController());
+
+	UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
+	TradingUIView->SetOpenFlag(false);
 	PC->PopUI();
 	PC->PushUI(EUIName::Gameplay_MainHUD);
 }
@@ -46,6 +51,15 @@ void UUIC_TradingUI::UpdateGoldText()
 	{
 		FString Str = FString::Printf(TEXT("Gold : %dG"), PS->GetGold());
 		TradingUIView->GetGoldText()->SetText(FText::FromString(Str));
+	}
+}
+
+void UUIC_TradingUI::UpdateInventory()
+{
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetPlayerController()->GetPawn());
+	if (Player && Player->GetPlayerInventoryComponent())
+	{
+		Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
 	}
 }
 

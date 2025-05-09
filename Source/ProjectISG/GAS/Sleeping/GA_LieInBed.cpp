@@ -4,11 +4,9 @@
 #include "GA_LieInBed.h"
 
 #include "AbilitySystemComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
-#include "ProjectISG/Systems/Time/SleepManager.h"
-#include "ProjectISG/Systems/Time/TimeManager.h"
+#include "ProjectISG/Systems/Time/Bed.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 
 void UGA_LieInBed::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -26,8 +24,15 @@ void UGA_LieInBed::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("침대에 눕기, %s"),
+	UE_LOG(LogTemp, Warning, TEXT("침대에 눕기 어빌리티, %s"),
 	       *FEnumUtil::GetClassEnumKeyAsString(Player->GetLocalRole()));
+
+	if (CurrentEventData.Target)
+	{
+		const AActor* Target = CurrentEventData.Target.Get();
+		const ABed* Bed = Cast<ABed>(Target);
+		Bed->SetCollisionEnabled(false);
+	}
 
 	AT_LyingAnim = UPlayMontageWithEvent::InitialEvent
 	(
@@ -35,7 +40,7 @@ void UGA_LieInBed::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		NAME_None,
 		Player->GetLyingMontage(),
 		FGameplayTagContainer(),
-		*TriggerEventData);
+		CurrentEventData);
 
 	AT_LyingAnim->Activate();
 	BlockInputForMontage(true);
