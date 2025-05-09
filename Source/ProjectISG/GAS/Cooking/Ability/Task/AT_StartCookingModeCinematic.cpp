@@ -24,7 +24,7 @@ void UAT_StartCookingModeCinematic::Activate()
 {
 	Super::Activate();
 
-	const AMainPlayerCharacter* MainPlayerCharacter = Cast<
+	AMainPlayerCharacter* MainPlayerCharacter = Cast<
 		AMainPlayerCharacter>(GetAvatarActor());
 
 	if (!MainPlayerCharacter)
@@ -72,7 +72,12 @@ void UAT_StartCookingModeCinematic::Activate()
 
 	LevelSequenceActor->SetActorTransform(GetAvatarActor()->GetTransform());
 
-	LevelSequencePlayer->Play();
+	MainPlayerCharacter->PlayCinematic(LevelSequencePlayer);
+
+	if (MainPlayerCharacter->HasAuthority())
+	{
+		MainPlayerCharacter->Client_PlayCinematic(LevelSequencePlayer);
+	}
 }
 
 void UAT_StartCookingModeCinematic::ExternalConfirm(bool bEndTask)
