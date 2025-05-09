@@ -8,6 +8,8 @@
 
 // 그리드에 place할 모든 것들은 이것을 상속 받아야함
 
+class UArrowComponent;
+
 UCLASS()
 class PROJECTISG_API APlacement : public ABaseInteractiveActor
 {
@@ -62,17 +64,12 @@ public:
 	class UMaterialInstance* TempMaterial;
 
 	UPROPERTY(EditAnywhere)
-	class USceneComponent* InteractStartPoint;
+	USceneComponent* InteractStartPoint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FIntVector> Occupied;
 
 	virtual void Setup(float TileSize);
-
-	virtual FVector GetStartInteractPoint() const
-	{
-		return InteractStartPoint->GetComponentLocation();
-	}
 
 	void SetOption(bool bIsGhost, bool bIsBlock = false) const;
 
@@ -84,4 +81,8 @@ public:
 
 	UFUNCTION()
 	void OnRep_LoadMeshAsset();
+
+	FVector GetStartInteractPoint() const;
+
+	FRotator GetStartInteractRotation() const;
 };

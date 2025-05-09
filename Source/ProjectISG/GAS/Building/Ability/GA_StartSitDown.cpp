@@ -1,10 +1,8 @@
 ﻿#include "GA_StartSitDown.h"
 
 #include "AbilitySystemComponent.h"
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
-#include "Kismet/KismetSystemLibrary.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
@@ -29,19 +27,26 @@ void UGA_StartSitDown::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 	if (TriggerEventData->Target)
 	{
+		Player->bUseControllerRotationYaw = false;
+		Player->GetCharacterMovement()->bOrientRotationToMovement = true;
+
+		Player->GetController()->SetIgnoreMoveInput(false);
+		Player->GetInteractionComponent()->SetIsInteractive(false);
+		
 		const AActor* Target = TriggerEventData->Target.Get();
 		const APlacement* ConstPlacement = Cast<APlacement>(Target);
 		ConstPlacement->SetCollisionEnabled(false);
 
 		APlacement* Placement = const_cast<APlacement*>(ConstPlacement);
-
-		FVector Point = Placement->GetStartInteractPoint();
-		FVector PlayerLocation = Player->GetActorLocation();
-
-		FVector StartLocation = FVector(Point.X, Point.Y, PlayerLocation.Z);
 		
-		Player->SetActorLocation(StartLocation, false);
-		Player->SetActorRotation(FRotator::ZeroRotator);
+		FVector Point = Placement->GetStartInteractPoint();
+		FRotator Rotation = Placement->GetStartInteractRotation();
+		
+		FVector PlayerLocation = Player->GetActorLocation();
+		
+		Player->SetActorLocation(Point);
+		Player->GetController()->SetControlRotation(Rotation);
+		Player->SetActorRotation(Rotation);
 	}
 
 	AT_StartMontageEvent = UPlayMontageWithEvent::InitialEvent
@@ -55,11 +60,6 @@ void UGA_StartSitDown::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	
 	AT_StartMontageEvent->EventReceived.AddDynamic(this, 
 	&UGA_StartSitDown::NotifyMontage);
-	
-	Player->GetController()->SetIgnoreLookInput(true);
-	Player->GetController()->SetIgnoreMoveInput(true);
-
-	Player->GetInteractionComponent()->SetIsInteractive(false);
 
 	AT_StartMontageEvent->ReadyForActivation();
 }
@@ -82,13 +82,6 @@ void UGA_StartSitDown::NotifyMontage(FGameplayTag EventTag,
 		if (!Player)
 		{
 			return;
-		}
-		
-		if (CurrentEventData.Target)
-		{
-			const AActor* Target = CurrentEventData.Target.Get();
-			const APlacement* ConstPlacement = Cast<APlacement>(Target);
-			ConstPlacement->SetCollisionEnabled(true);
 		}
 
 		UAbilityTask_WaitGameplayEvent* WaitEvent = 
@@ -115,7 +108,7 @@ void UGA_StartSitDown::NotifyMontage(FGameplayTag EventTag,
 			Cast<UUIC_ExitInteractUI>(PlayerController->GetUIManageComponent
 			()->ControllerInstances[EUIName::Modal_ExitInteractUI]);
 
-			ModalUIController->SetUI(TEXT("X"), TEXT("나가기"));
+			ModalUIController->SetUI(TEXT("F"), TEXT("나가기"));
 		}
 		
 	}

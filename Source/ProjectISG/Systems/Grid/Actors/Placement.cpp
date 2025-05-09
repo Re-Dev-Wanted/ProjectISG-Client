@@ -26,7 +26,9 @@ APlacement::APlacement()
 	CollisionComp = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionComp"));
 	CollisionComp->SetupAttachment(AnchorComp);
 	CollisionComp->SetIsReplicated(true);
-	CollisionComp->SetCollisionObjectType(ECC_WorldStatic);
+	// CollisionComp->SetCollisionObjectType(ECC_WorldStatic);
+	CollisionComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	CollisionComp->SetGenerateOverlapEvents(false);
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComp"));
 	MeshComp->SetupAttachment(CollisionComp);
@@ -37,7 +39,8 @@ APlacement::APlacement()
 	ProceduralMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ProceduralMeshComp->SetGenerateOverlapEvents(false);
 
-	InteractStartPoint = CreateDefaultSubobject<USceneComponent>(TEXT("InteractStartPoint"));
+	InteractStartPoint = CreateDefaultSubobject<USceneComponent>(TEXT
+	("InteractStartPoint"));
 	InteractStartPoint->SetupAttachment(MeshComp);
 
 	ConstructorHelpers::FObjectFinder<UMaterialInstance> Mat_Instance(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Systems/Grid/Materials/SelectBrushMaterial_Inst.SelectBrushMaterial_Inst'"));
@@ -255,15 +258,15 @@ void APlacement::SetCollisionEnabled(bool bEnable) const
 {
 	if (bEnable)
 	{
-		CollisionComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
-		CollisionComp->SetGenerateOverlapEvents(true);
+		// CollisionComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
+		// CollisionComp->SetGenerateOverlapEvents(true);
 		MeshComp->SetCollisionEnabled(ECollisionEnabled::Type::QueryAndPhysics);
 		MeshComp->SetGenerateOverlapEvents(true);
 	}
 	else
 	{
-		CollisionComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-		CollisionComp->SetGenerateOverlapEvents(false);
+		// CollisionComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+		// CollisionComp->SetGenerateOverlapEvents(false);
 		MeshComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 		MeshComp->SetGenerateOverlapEvents(false);	
 	}
@@ -348,4 +351,24 @@ void APlacement::OnRep_LoadMeshAsset()
 			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("MeshAssetPath is invalid or not loaded"));
 		}
 	}
+}
+
+FVector APlacement::GetStartInteractPoint() const
+{
+	if (InteractStartPoint)
+	{
+		return InteractStartPoint->GetComponentLocation();
+	}
+
+	return FVector::ZeroVector;
+}
+
+FRotator APlacement::GetStartInteractRotation() const
+{
+	if (InteractStartPoint)
+	{
+		return InteractStartPoint->GetForwardVector().Rotation();
+	}
+
+	return FRotator::ZeroRotator;
 }
