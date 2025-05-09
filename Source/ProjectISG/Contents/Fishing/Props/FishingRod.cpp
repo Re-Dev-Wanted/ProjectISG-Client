@@ -103,7 +103,6 @@ void AFishingRod::OnEventBite()
 		return;
 	}
 
-
 	Bobber->OnBite(FishData.GetMesh());
 
 	GetWorld()->
