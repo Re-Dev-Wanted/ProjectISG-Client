@@ -8,8 +8,8 @@
 class ULevelSequencePlayer;
 
 UCLASS()
-class PROJECTISG_API ABaseCharacter : public ACharacter,
-                                      public IAbilitySystemInterface
+class PROJECTISG_API ABaseCharacter
+	: public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -17,11 +17,6 @@ public:
 	ABaseCharacter();
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
-	void PlayCinematic(ULevelSequencePlayer* Cinematic);
-
-	UFUNCTION(Client, Reliable)
-	void Client_PlayCinematic(ULevelSequencePlayer* Cinematic);
 
 protected:
 	virtual void BeginPlay() override;
