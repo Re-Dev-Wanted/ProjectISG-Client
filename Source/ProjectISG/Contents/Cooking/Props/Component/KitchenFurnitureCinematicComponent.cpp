@@ -29,7 +29,7 @@ void UKitchenFurnitureCinematicComponent::BeginPlay()
 }
 
 void UKitchenFurnitureCinematicComponent::StartCookingMode(
-	AMainPlayerCharacter* Target)
+	AMainPlayerCharacter* Target, const bool IsCaster)
 {
 	SelectedTarget = Target;
 
@@ -40,21 +40,22 @@ void UKitchenFurnitureCinematicComponent::StartCookingMode(
 		GetWorld(), StartCookingCinematic, PlaybackSettings
 		, LevelSequenceActor);
 
-	LevelSequencePlayer->OnFinished.AddDynamic(
-		this, &ThisClass::OnFinishStartCooking);
-
 	LevelSequenceActor->AddBindingByTag(FName(TEXT("Player")), Target);
 	LevelSequenceActor->AddBindingByTag(FName(TEXT("Interactive")), Kitchen);
 
 	LevelSequenceActor->SetActorTransform(Target->GetTransform());
 
 	// 자기 자신인 경우에 대한 설정 처리
-	if (Target->IsLocallyControlled())
+	if (IsCaster)
 	{
+		LevelSequencePlayer->OnFinished.AddDynamic(
+			this, &ThisClass::OnFinishStartCooking);
+
 		AMainPlayerController* PC = Target->GetController<
 			AMainPlayerController>();
 		Target->GetCharacterMovement()->DisableMovement();
 
+		PC->PopUI();
 		PC->SetIgnoreLookInput(true);
 		PC->SetViewTargetWithBlend(Kitchen, 0.5f);
 		Kitchen->GetKitchenCameraComponent()->Activate();
@@ -64,28 +65,21 @@ void UKitchenFurnitureCinematicComponent::StartCookingMode(
 }
 
 void UKitchenFurnitureCinematicComponent::EndCookingMode(
-	AMainPlayerCharacter* Target)
+	AMainPlayerCharacter* Target, const bool IsCaster)
 {
+	SelectedTarget = Target;
+
 	FMovieSceneSequencePlaybackSettings PlaybackSettings;
 	PlaybackSettings.bAutoPlay = true;
 
 	LevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(
 		GetWorld(), EndCookingCinematic, PlaybackSettings, LevelSequenceActor);
 
-	if (Target->IsLocallyControlled())
+	if (IsCaster)
 	{
-		AMainPlayerController* PC = Target->GetController<
-			AMainPlayerController>();
-
-		PC->SetIgnoreLookInput(true);
-		PC->SetViewTargetWithBlend(Kitchen, 0.5f);
-
-		Target->GetCharacterMovement()->DisableMovement();
-		Kitchen->GetKitchenCameraComponent()->Activate();
+		LevelSequencePlayer->OnFinished.AddDynamic(
+			this, &ThisClass::OnFinishEndCooking);
 	}
-
-	LevelSequencePlayer->OnFinished.AddDynamic(
-		this, &ThisClass::OnFinishEndCooking);
 
 	LevelSequenceActor->AddBindingByTag(FName(TEXT("Player"))
 										, Kitchen->GetUsingCharacter());
@@ -99,11 +93,6 @@ void UKitchenFurnitureCinematicComponent::EndCookingMode(
 
 void UKitchenFurnitureCinematicComponent::OnFinishStartCooking()
 {
-	if (!SelectedTarget->IsLocallyControlled())
-	{
-		return;
-	}
-
 	AMainPlayerController* PC = SelectedTarget->GetController<
 		AMainPlayerController>();
 	PC->PushUI(EUIName::Popup_CookingRecipeUI);
@@ -112,26 +101,26 @@ void UKitchenFurnitureCinematicComponent::OnFinishStartCooking()
 
 void UKitchenFurnitureCinematicComponent::OnFinishEndCooking()
 {
-	if (Kitchen->GetUsingCharacter()->IsLocallyControlled())
-	{
-		AMainPlayerController* PC = Kitchen->GetUsingCharacter()->GetController<
-			AMainPlayerController>();
-		PC->PushUI(EUIName::Gameplay_MainHUD);
-		PC->SetIgnoreLookInput(false);
-		PC->SetViewTargetWithBlend(Kitchen->GetUsingCharacter(), 0.5f);
+	AMainPlayerController* PC = SelectedTarget->GetController<
+		AMainPlayerController>();
 
-		Kitchen->GetUsingCharacter()->bUseControllerRotationYaw = true;
-		Kitchen->GetUsingCharacter()->GetCharacterMovement()->SetMovementMode(
-			MOVE_Walking);
-		Kitchen->GetUsingCharacter()->GetCameraComponent()->Activate();
+	// UI 원래대로 돌려두기
+	PC->PushUI(EUIName::Gameplay_MainHUD);
+	PC->SetIgnoreLookInput(false);
+	PC->SetViewTargetWithBlend(SelectedTarget, 0.5f);
 
-		Kitchen->GetUsingCharacter()->GetInteractionComponent()->
-				SetIsInteractive(true);
-		Kitchen->GetUsingCharacter()->GetInteractionComponent()->
-				SetSelectedInteractiveActor(nullptr);
+	// 카메라 시점 조정하기 및 움직임 처리
+	SelectedTarget->bUseControllerRotationYaw = true;
+	SelectedTarget->GetInteractionComponent()->SetIsInteractive(true);
+	SelectedTarget->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	SelectedTarget->GetCameraComponent()->Activate();
 
-		LoggingEndCooking();
-	}
+	// 상호작용 관련 롤백 처리
+	SelectedTarget->GetInteractionComponent()->SetIsInteractive(true);
+	SelectedTarget->GetInteractionComponent()->SetSelectedInteractiveActor(
+		nullptr);
+
+	LoggingEndCooking();
 
 	Kitchen->SetUsingOwner(nullptr);
 }

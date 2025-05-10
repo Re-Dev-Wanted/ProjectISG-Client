@@ -62,7 +62,7 @@ private:
 
 	void PlayCookingCinematic_Internal(AMainPlayerCharacter* Target
 										, const EKitchenFurnitureCinematicStatus
-										Status);
+										Status, const bool IsCaster);
 #pragma endregion
 
 #pragma region Mesh

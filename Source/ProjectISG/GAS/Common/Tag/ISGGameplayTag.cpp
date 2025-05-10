@@ -67,12 +67,7 @@ namespace ISGGameplayTags
 	}
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Test_Tag, "Test.Tag", "테스트용 노출 태그");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooking_Active_StartCooking
-									, "Cooking.Active.StartCooking"
-									, "요리 관련 액티브 : 요리 시작");
-	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooking_Active_EndCooking
-									, "Cooking.Active.EndCooking"
-									, "요리 관련 액티브 : 요리 종료");
+
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooking_Active_QTEAction
 									, "Cooking.Active.QTEAction"
 									, "요리 관련 액티브 : QTE 액션");
@@ -84,18 +79,18 @@ namespace ISGGameplayTags
 									, "요리 관련 액티브 : QTE 이벤트 시작 - 키 연속 입력");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Farming_Active_Seeding
-	                               , "Farming.Active.Seeding"
-	                               , "농사 관련 액티브 : 씨앗심기");
+									, "Farming.Active.Seeding"
+									, "농사 관련 액티브 : 씨앗심기");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Farming_Active_Watering
 									, "Farming.Active.Watering"
 									, "농사 관련 액티브 : 물주기");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Farming_Active_Harvest
-	                               , "Farming.Active.Harvest"
-	                               , "농사 관련 액티브 : 수확하기");
+									, "Farming.Active.Harvest"
+									, "농사 관련 액티브 : 수확하기");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Trading_Active_OpenTradingUI
-	                               , "Trading.Active.OpenTradingUI"
-	                               , "거래 관련 : 거래 창 열기");
+									, "Trading.Active.OpenTradingUI"
+									, "거래 관련 : 거래 창 열기");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Building_Active_Deconstruct
 									, "Building.Active.Deconstruct"
@@ -113,19 +108,18 @@ namespace ISGGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Fishing_Active_CastBobber
 									, "Fishing.Active.CastBobber"
 									, "낚시 관련 액티브 : 낚시 찌 던지기");
-	
+
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Fishing_Active_ReelInLine
 									, "Fishing.Active.ReelInLine"
 									, "낚시 관련 액티브 : 낚시 줄 감기");
-									
+
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Sleeping_Active_LieInBed
-									   , "Sleeping.Active.LieInBed"
-									   , "수면 관련 액티브 : 눕기");
+									, "Sleeping.Active.LieInBed"
+									, "수면 관련 액티브 : 눕기");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Sleeping_Active_WakeUp
-									   , "Sleeping.Active.WakeUp"
-									   , "수면 관련 액티브 : 일어나기");
+									, "Sleeping.Active.WakeUp"
+									, "수면 관련 액티브 : 일어나기");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Interactive_Active_Exit
-										, "Interactive.Active.Exit"
-										, "상호작용 상태 나가기");
+									, "Interactive.Active.Exit", "상호작용 상태 나가기");
 }

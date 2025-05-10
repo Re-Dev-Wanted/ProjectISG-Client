@@ -22,13 +22,13 @@ AKitchenFurniture::AKitchenFurniture()
 	KitchenCameraComponent->SetupAttachment(Mesh);
 
 	FryPanMesh = CreateDefaultSubobject<UStaticMeshComponent>("Fry Pan Mesh");
-	FryPanMesh->SetupAttachment(GetRootComponent());
+	FryPanMesh->SetupAttachment(Mesh);
 
 	ScoopMesh = CreateDefaultSubobject<UStaticMeshComponent>("Scoop Mesh");
-	ScoopMesh->SetupAttachment(GetRootComponent());
+	ScoopMesh->SetupAttachment(Mesh);
 
 	WokMesh = CreateDefaultSubobject<UStaticMeshComponent>("Wok Mesh");
-	WokMesh->SetupAttachment(GetRootComponent());
+	WokMesh->SetupAttachment(Mesh);
 
 	KitchenFurnitureCinematicComponent = CreateDefaultSubobject<
 		UKitchenFurnitureCinematicComponent>(
@@ -85,7 +85,7 @@ void AKitchenFurniture::PlayCookingCinematic(AMainPlayerCharacter* Target
 {
 	if (Target->IsLocallyControlled())
 	{
-		PlayCookingCinematic_Internal(Target, Status);
+		PlayCookingCinematic_Internal(Target, Status, true);
 	}
 
 	if (HasAuthority())
@@ -100,13 +100,21 @@ void AKitchenFurniture::PlayCookingCinematic(AMainPlayerCharacter* Target
 }
 
 void AKitchenFurniture::PlayCookingCinematic_Internal(
-	AMainPlayerCharacter* Target, const EKitchenFurnitureCinematicStatus Status)
+	AMainPlayerCharacter* Target, const EKitchenFurnitureCinematicStatus Status
+	, const bool IsCaster)
 {
 	switch (Status)
 	{
 	case EKitchenFurnitureCinematicStatus::StartCooking:
 		{
-			KitchenFurnitureCinematicComponent->StartCookingMode(Target);
+			KitchenFurnitureCinematicComponent->StartCookingMode(
+				Target, IsCaster);
+			break;
+		}
+	case EKitchenFurnitureCinematicStatus::EndCooking:
+		{
+			KitchenFurnitureCinematicComponent->
+				EndCookingMode(Target, IsCaster);
 			break;
 		}
 	default:
@@ -125,7 +133,7 @@ void AKitchenFurniture::Server_PlayCookingCinematic_Implementation(
 void AKitchenFurniture::Multicast_PlayCookingCinematic_Implementation(
 	AMainPlayerCharacter* Target, const EKitchenFurnitureCinematicStatus Status)
 {
-	PlayCookingCinematic_Internal(Target, Status);
+	PlayCookingCinematic_Internal(Target, Status, false);
 }
 
 void AKitchenFurniture::EquipCookingToolToAct(
@@ -167,17 +175,17 @@ void AKitchenFurniture::EquipCookingToolToAct(
 void AKitchenFurniture::UnEquipCookingToolToAct()
 {
 	FryPanMesh->SetVisibility(false);
-	FryPanMesh->AttachToComponent(GetRootComponent()
-								, FAttachmentTransformRules::SnapToTargetIncludingScale);
+	FryPanMesh->AttachToComponent(
+		Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale);
 	FryPanMesh->SetRelativeLocation(FVector::ZeroVector);
 
 	ScoopMesh->SetVisibility(false);
-	ScoopMesh->AttachToComponent(GetRootComponent()
-								, FAttachmentTransformRules::SnapToTargetIncludingScale);
+	ScoopMesh->AttachToComponent(
+		Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale);
 	ScoopMesh->SetRelativeLocation(FVector::ZeroVector);
 
 	WokMesh->SetVisibility(false);
-	WokMesh->AttachToComponent(GetRootComponent()
-								, FAttachmentTransformRules::SnapToTargetIncludingScale);
+	WokMesh->AttachToComponent(
+		Mesh, FAttachmentTransformRules::SnapToTargetIncludingScale);
 	WokMesh->SetRelativeLocation(FVector::ZeroVector);
 }
