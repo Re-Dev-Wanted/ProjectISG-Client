@@ -15,6 +15,8 @@ UKitchenFurnitureCinematicComponent::UKitchenFurnitureCinematicComponent()
 {
 	LevelSequenceActor = nullptr;
 	SelectedTarget = nullptr;
+
+	SetIsReplicatedByDefault(true);
 }
 
 void UKitchenFurnitureCinematicComponent::BeginPlay()
