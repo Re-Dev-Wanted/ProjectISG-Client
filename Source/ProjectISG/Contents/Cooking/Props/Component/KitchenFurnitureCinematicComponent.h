@@ -21,8 +21,8 @@ class PROJECTISG_API UKitchenFurnitureCinematicComponent
 public:
 	UKitchenFurnitureCinematicComponent();
 
-	void StartCookingMode(AMainPlayerCharacter* Target);
-	void EndCookingMode(AMainPlayerCharacter* Target);
+	void StartCookingMode(AMainPlayerCharacter* Target, const bool IsCaster);
+	void EndCookingMode(AMainPlayerCharacter* Target, const bool IsCaster);
 
 protected:
 	virtual void BeginPlay() override;

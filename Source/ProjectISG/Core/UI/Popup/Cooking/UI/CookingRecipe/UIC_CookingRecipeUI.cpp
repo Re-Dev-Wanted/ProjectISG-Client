@@ -5,6 +5,10 @@
 #include "UIM_CookingRecipeUI.h"
 #include "UIV_CookingRecipeUI.h"
 #include "Components/Button.h"
+#include "ProjectISG/Contents/Cooking/Props/KitchenFurniture.h"
+#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/Module/UI_BaseButton.h"
 #include "ProjectISG/Core/UI/Popup/Cooking/Module/SelectedFoodDetail/UIC_SelectedFoodDetailWidget.h"
@@ -63,12 +67,17 @@ void UUIC_CookingRecipeUI::BindInputAction(
 
 void UUIC_CookingRecipeUI::OnCloseCookingRecipeUI()
 {
-	FGameplayTagContainer ActivateTag;
-	ActivateTag.AddTag(ISGGameplayTags::Cooking_Active_EndCooking);
+	Cast<AMainPlayerController>(GetPlayerController())->PopUI();
 
-	GetPlayerController()->GetPlayerState<AMainPlayerState>()->
-							GetAbilitySystemComponent()->
-							TryActivateAbilitiesByTag(ActivateTag);
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		GetPlayerController()->GetPawn());
+
+	const UInteractionComponent* PlayerInteraction = Cast<AMainPlayerCharacter>(
+		GetPlayerController()->GetPawn())->GetInteractionComponent();
+
+	Cast<AKitchenFurniture>(PlayerInteraction->GetSelectedInteractiveActor())->
+		PlayCookingCinematic(
+			Player, EKitchenFurnitureCinematicStatus::EndCooking);
 }
 
 void UUIC_CookingRecipeUI::StartCooking()
