@@ -3,6 +3,12 @@
 #include "CookingEnum.generated.h"
 
 UENUM()
+enum class EKitchenFurnitureCinematicStatus : uint8
+{
+	None, StartCooking, EndCooking,
+};
+
+UENUM()
 enum class ECookingTool : uint8
 {
 	None, FryingPan, Wok
