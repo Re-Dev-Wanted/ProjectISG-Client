@@ -6,6 +6,7 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "KitchenFurniture.generated.h"
 
+class UKitchenFurnitureCinematicComponent;
 class AMainPlayerCharacter;
 enum class ECookingTool : uint8;
 class ULevelSequence;
@@ -34,14 +35,20 @@ public:
 
 	void UnEquipCookingToolToAct();
 
-	void StartCookingMode();
+	void PlayCookingCinematic(AMainPlayerCharacter* Target
+							, const EKitchenFurnitureCinematicStatus Status);
 
-	void EndCookingMode();
+	UFUNCTION(Server, Unreliable)
+	void Server_PlayCookingCinematic(AMainPlayerCharacter* Target
+									, const EKitchenFurnitureCinematicStatus
+									Status);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void Multicast_PlayCookingCinematic(AMainPlayerCharacter* Target
+										, const EKitchenFurnitureCinematicStatus
+										Status);
 
 private:
-	UPROPERTY()
-	AMainPlayerCharacter* UsingCharacter;
-
 #pragma region Cinematic
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<USceneComponent> KitchenStandPosition;
@@ -49,29 +56,13 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> KitchenCameraComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Options|Cinematic",
-		meta = (AllowPrivateAccess = true))
-	TObjectPtr<ULevelSequence> StartCookingCinematic;
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UKitchenFurnitureCinematicComponent>
+	KitchenFurnitureCinematicComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Options|Cinematic",
-		meta = (AllowPrivateAccess = true))
-	TObjectPtr<ULevelSequence> EndCookingCinematic;
-
-	UPROPERTY()
-	TObjectPtr<ULevelSequencePlayer> LevelSequencePlayer;
-
-	UPROPERTY()
-	ALevelSequenceActor* LevelSequenceActor;
-
-	UFUNCTION()
-	void OnFinishStartCooking();
-
-	UFUNCTION()
-	void OnFinishEndCooking();
-
-	void LoggingStartCooking();
-
-	void LoggingEndCooking();
+	void PlayCookingCinematic_Internal(AMainPlayerCharacter* Target
+										, const EKitchenFurnitureCinematicStatus
+										Status);
 #pragma endregion
 
 #pragma region Mesh
