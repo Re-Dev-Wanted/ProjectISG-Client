@@ -18,6 +18,7 @@ void ABaseInteractiveActor::SetUsingOwner(AMainPlayerCharacter* NewOwner)
 	}
 	else
 	{
+		SetUsingCharacter(NewOwner);
 		Server_SetUsingOwner(NewOwner);
 	}
 }

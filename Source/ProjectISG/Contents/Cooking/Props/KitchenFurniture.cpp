@@ -83,6 +83,11 @@ void AKitchenFurniture::PlayCookingCinematic(AMainPlayerCharacter* Target
 											EKitchenFurnitureCinematicStatus
 											Status)
 {
+	if (Target->IsLocallyControlled())
+	{
+		PlayCookingCinematic_Internal(Target, Status);
+	}
+
 	if (HasAuthority())
 	{
 		Multicast_PlayCookingCinematic(Target, Status);

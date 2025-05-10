@@ -126,6 +126,11 @@ void UInteractionComponent::TickComponent(float DeltaTime,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (!Cast<AMainPlayerCharacter>(GetOwner())->IsLocallyControlled())
+	{
+		return;
+	}
+	
 	if (IsInteractive)
 	{
 		LineTraceToFindTarget();
