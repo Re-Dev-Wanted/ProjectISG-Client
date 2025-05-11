@@ -233,9 +233,6 @@ void UPlacementIndicatorComponent::LineTrace()
 	{
 		if (PlayerController->GetCharacter()->IsLocallyControlled())
 		{
-			// FVector SnappedLocation = GridManager->GetLocationInPointerDirectionPlacement(
-			// 	PlayerController, IndicateActor->GetMeshSize());
-
 			FVector SnappedLocation = GridManager->SnapToGridPlacement(TargetTraceResult.ImpactPoint);
 			FRotator SnappedRotation = GridManager->GetSnappedRotation
 			(GetDegrees(RotateDirection));
@@ -250,9 +247,9 @@ void UPlacementIndicatorComponent::LineTrace()
 															   0), 0.1f,
 															  InterpSpeed));
 			FIntVector GridCoord;
-			APlacement* PlacedActor;
+			uint16 _;
 
-			bIsBlocked = GridManager->TryGetPlacement(SnappedLocation, GridCoord, PlacedActor);
+			bIsBlocked = GridManager->TryGetPlacement(SnappedLocation, GridCoord, _);
 
 			IndicateActor->SetOption(true, bIsBlocked);
 

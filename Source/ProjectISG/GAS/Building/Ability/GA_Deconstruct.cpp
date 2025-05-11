@@ -28,12 +28,6 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 		return;
 	}
-	
-	if (!Player->HasAuthority())
-	{
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
-		return;
-	}
 
 	if (Player->GetHandSlotComponent() && Player->GetInteractionComponent())
 	{
@@ -64,12 +58,12 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		if (APlacement* TargetPlacement = Cast<APlacement>(TargetResult.GetActor()))
 		{
 			FIntVector GridCoord;
-			APlacement* PlacedActor;
+			uint16 ItemId = 0;
 
-			if (GridManager->TryGetPlacement(TargetPlacement, GridCoord, PlacedActor))
+			if (GridManager->TryGetPlacement(TargetPlacement, GridCoord, ItemId))
 			{
-				const uint16 ItemId = GridManager->RemovePlacement(GridCoord);
-
+				GridManager->Server_RemovePlacement(GridCoord, ItemId);
+				
 				if (Player->IsLocallyControlled())
 				{
 					// 인벤토리는 각자의 것이므로 로컬에서만 작동하게 한다.
@@ -86,6 +80,8 @@ void UGA_Deconstruct::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 						}
 					}
 				}
+				
+				TargetPlacement->Destroy();
 			}
 		}
 
