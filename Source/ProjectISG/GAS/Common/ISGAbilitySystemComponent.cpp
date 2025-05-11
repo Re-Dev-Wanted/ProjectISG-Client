@@ -9,31 +9,44 @@ UISGAbilitySystemComponent::UISGAbilitySystemComponent()
 }
 
 
-void UISGAbilitySystemComponent::Initialize(const UISGAbilitySystemInitializeData* InitialData)
+void UISGAbilitySystemComponent::Initialize(
+	const UISGAbilitySystemInitializeData* InitialData)
 {
+	if (!InitialData)
+	{
+		return;
+	}
+
 	if (GetIsInitialize())
 	{
 		return;
 	}
-	
-	if (!InitialData->GetDefaultGameplayAbilities().IsEmpty())
+
+	// Ability는 반드시 서버 환경에서만 Give Ability를 수행해야 한다.
+	if (GetOwnerRole() == ROLE_Authority)
 	{
-		for (auto Ability : InitialData->GetDefaultGameplayAbilities())
+		if (!InitialData->GetDefaultGameplayAbilities().IsEmpty())
 		{
-			const UGA_BaseInputAbility* InputAbility = Ability->GetDefaultObject<UGA_BaseInputAbility>();
-			const int32 InputId = InputAbility->GetInputId() == EAbilityInputId::Undefined
-				? INDEX_NONE : static_cast<int32>(InputAbility->GetInputId());
-			
-			GiveAbility(FGameplayAbilitySpec(
-				Ability, InputAbility->GetAbilityLevel()
-				, InputId, this));
+			for (auto Ability : InitialData->GetDefaultGameplayAbilities())
+			{
+				const UGA_BaseInputAbility* InputAbility = Ability->
+					GetDefaultObject<UGA_BaseInputAbility>();
+				const int32 InputId = InputAbility->GetInputId() ==
+									EAbilityInputId::Undefined
+										? INDEX_NONE
+										: static_cast<int32>(InputAbility->
+											GetInputId());
+
+				GiveAbility(FGameplayAbilitySpec(
+					Ability, InputAbility->GetAbilityLevel(), InputId, this));
+			}
 		}
 	}
-	
+
 	if (!InitialData->GetDefaultGameplayTags().IsEmpty())
 	{
 		AddLooseGameplayTags(InitialData->GetDefaultGameplayTags());
 	}
-	
+
 	SetIsInitialize(true);
 }

@@ -5,8 +5,6 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "ISGAbilitySystemComponent.generated.h"
 
-class UISGAbilitySystemInitializeData;
-
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTISG_API UISGAbilitySystemComponent : public UAbilitySystemComponent
 {
@@ -15,7 +13,7 @@ class PROJECTISG_API UISGAbilitySystemComponent : public UAbilitySystemComponent
 public:
 	UISGAbilitySystemComponent();
 
-	void Initialize(const UISGAbilitySystemInitializeData* InitialData);
+	void Initialize(const class UISGAbilitySystemInitializeData* InitialData);
 
 	GETTER_SETTER(bool, IsInitialize)
 

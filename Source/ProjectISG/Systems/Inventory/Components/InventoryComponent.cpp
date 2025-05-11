@@ -2,11 +2,73 @@
 
 #include "Kismet/KismetMathLibrary.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
-#include "ProjectISG/Systems/Inventory/Manager/ItemManager.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 UInventoryComponent::UInventoryComponent()
 {
-	
+}
+
+void UInventoryComponent::InitializeItemData()
+{
+	InventoryList.SetNum(InventorySlotCount);
+
+	FItemMetaInfo NewItemMetaInfo;
+	NewItemMetaInfo.SetId(1);
+	NewItemMetaInfo.SetCurrentCount(1);
+	InventoryList[0] = NewItemMetaInfo;
+
+	FItemMetaInfo NewItemMetaInfo2;
+	NewItemMetaInfo2.SetId(1);
+	NewItemMetaInfo2.SetCurrentCount(2);
+
+	InventoryList[1] = NewItemMetaInfo2;
+
+	FItemMetaInfo BuildItemMetaInfo;
+	BuildItemMetaInfo.SetId(2);
+	BuildItemMetaInfo.SetCurrentCount(1);
+
+	AddItemToInventory(2, BuildItemMetaInfo);
+
+	FItemMetaInfo CropItemMetaInfo;
+	CropItemMetaInfo.SetId(3);
+	CropItemMetaInfo.SetCurrentCount(2);
+
+	AddItemToInventory(3, CropItemMetaInfo);
+
+	FItemMetaInfo HammerItemMetaInfo;
+	HammerItemMetaInfo.SetId(9);
+	HammerItemMetaInfo.SetCurrentCount(1);
+
+	AddItemToInventory(4, HammerItemMetaInfo);
+
+	FItemMetaInfo HoeItemMetaInfo;
+	HoeItemMetaInfo.SetId(10);
+	HoeItemMetaInfo.SetCurrentCount(1);
+
+	AddItemToInventory(5, HoeItemMetaInfo);
+
+	FItemMetaInfo BuildItemMetaInfo2;
+	BuildItemMetaInfo2.SetId(12);
+	BuildItemMetaInfo2.SetCurrentCount(1);
+
+	AddItemToInventory(6, BuildItemMetaInfo2);
+
+	FItemMetaInfo WateringItemMetaInfo2;
+	WateringItemMetaInfo2.SetId(13);
+	WateringItemMetaInfo2.SetCurrentCount(1);
+
+	AddItemToInventory(7, WateringItemMetaInfo2);
+
+	FItemMetaInfo FishingRodMetaInfo;
+	FishingRodMetaInfo.SetId(14);
+	FishingRodMetaInfo.SetCurrentCount(1);
+
+	AddItemToInventory(8, FishingRodMetaInfo);
+}
+
+void UInventoryComponent::BeginPlay()
+{
+	Super::BeginPlay();
 }
 
 bool UInventoryComponent::HasItemInInventory(const uint32 Id,
@@ -54,8 +116,8 @@ void UInventoryComponent::SwapItemInInventory(const uint16 Prev,
 uint32 UInventoryComponent::AddItemToInventory(const uint16 Index,
                                                const FItemMetaInfo& ItemInfo)
 {
-	const FItemInfoData& ItemInfoById = FItemManager::GetItemInfoById(
-		GetWorld(), ItemInfo.GetId());
+	const FItemInfoData& ItemInfoById = UItemManager::GetItemInfoById(
+		ItemInfo.GetId());
 
 	// CurrentItemCount는 우선은 총 합으로 가지고 있는 아이템 수를 의미한다.
 	const uint16 CurrentItemCount = InventoryList[Index].GetCurrentCount()
@@ -82,7 +144,7 @@ uint32 UInventoryComponent::AddItemToInventory(const uint16 Index,
 	{
 		// 이미 꽉 찬 경우여도 여분의 칸 검색을 위해
 		// 처음부터 다시 탐색해서 남은 값 들을 순차적으로 넣어준다.
-		for (int i = 0; i < GetTotalSlotCount(); i++)
+		for (int i = 0; i < GetInventorySlotCount(); i++)
 		{
 			if (RemainCount == 0)
 			{
@@ -144,15 +206,15 @@ bool UInventoryComponent::DropItem(const uint16 Index, const uint32 Count)
 // 정해진 규칙에 의거해 아이템을 순서대로 넣어둔다.
 uint32 UInventoryComponent::AddItem(const FItemMetaInfo& ItemInfo)
 {
-	const FItemInfoData& ItemInfoById = FItemManager::GetItemInfoById(
-		GetWorld(), ItemInfo.GetId());
+	const FItemInfoData& ItemInfoById = UItemManager::GetItemInfoById(
+		ItemInfo.GetId());
 
 	// 핫바에서 먼저 검색함.
 	bool bHasInventory = false;
 	// 맨 처음 값은 현재 주운 아이템의 갯수로 지정한다.
 	uint32 RemainResult = ItemInfo.GetCurrentCount();
 
-	for (int i = 0; i < GetTotalSlotCount(); i++)
+	for (int i = 0; i < GetInventorySlotCount(); i++)
 	{
 		if (InventoryList[i].GetId() == ItemInfo.GetId()
 			&& InventoryList[i].GetCurrentCount() < ItemInfoById.
@@ -166,7 +228,7 @@ uint32 UInventoryComponent::AddItem(const FItemMetaInfo& ItemInfo)
 
 	if (!bHasInventory && RemainResult > 0)
 	{
-		for (int i = 0; i < GetTotalSlotCount(); i++)
+		for (int i = 0; i < GetInventorySlotCount(); i++)
 		{
 			if (InventoryList[i].GetId() == 0)
 			{
@@ -191,7 +253,7 @@ bool UInventoryComponent::RemoveItem(const uint16 Id, const uint32 Count)
 	uint32 RemainNum = Count;
 	TArray<uint32> CanRemoveIndexList;
 
-	for (int i = 0; i < GetTotalSlotCount(); i++)
+	for (int i = 0; i < GetInventorySlotCount(); i++)
 	{
 		if (InventoryList[i].GetId() == Id)
 		{
