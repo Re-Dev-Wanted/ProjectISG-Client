@@ -5,7 +5,6 @@
 #include "ProjectISG/GAS/Common/Ability/Utility/GA_BaseInputAbility.h"
 #include "GA_CookingQTEAction.generated.h"
 
-
 class UAT_LogWithScreenShot;
 class UAT_PlayCinematic;
 class ULevelSequence;
@@ -18,17 +17,17 @@ class PROJECTISG_API UGA_CookingQTEAction : public UGA_BaseInputAbility
 
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle
-	                             , const FGameplayAbilityActorInfo* ActorInfo
-	                             , const FGameplayAbilityActivationInfo
-	                             ActivationInfo
-	                             , const FGameplayEventData*
-	                             TriggerEventData) override;
+								, const FGameplayAbilityActorInfo* ActorInfo
+								, const FGameplayAbilityActivationInfo
+								ActivationInfo
+								, const FGameplayEventData*
+								TriggerEventData) override;
 
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle
-	                        , const FGameplayAbilityActorInfo* ActorInfo
-	                        , const FGameplayAbilityActivationInfo
-	                        ActivationInfo, bool bReplicateEndAbility
-	                        , bool bWasCancelled) override;
+							, const FGameplayAbilityActorInfo* ActorInfo
+							, const FGameplayAbilityActivationInfo
+							ActivationInfo, bool bReplicateEndAbility
+							, bool bWasCancelled) override;
 
 private:
 	uint32 SelectedFoodRecipeId;
