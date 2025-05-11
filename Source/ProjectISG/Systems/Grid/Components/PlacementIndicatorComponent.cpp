@@ -255,6 +255,18 @@ void UPlacementIndicatorComponent::LineTrace()
 			bIsBlocked = GridManager->TryGetPlacement(SnappedLocation, GridCoord, PlacedActor);
 
 			IndicateActor->SetOption(true, bIsBlocked);
+
+			if (PC->GetMainHUD())
+			{
+				PC->GetMainHUD()->TogglePlacementIndicatorUI(!bIsBlocked);
+			}
+		}
+	}
+	else
+	{
+		if (PC->GetMainHUD())
+		{
+			PC->GetMainHUD()->TogglePlacementIndicatorUI(false);
 		}
 	}
 }
@@ -385,6 +397,13 @@ void UPlacementIndicatorComponent::OnActivate(
 			IndicateActor->Setup(GridManager->SnapSize);
 			IndicateActor->SetGuide(GridManager->SnapSize);
 		}
+
+		const AMainPlayerController* PC = Cast<AMainPlayerController>(PlayerController);
+
+		if (PC && PC->GetMainHUD())
+		{
+			PC->GetMainHUD()->TogglePlacementIndicatorUI(true);
+		}
 	}
 }
 
@@ -416,6 +435,13 @@ void UPlacementIndicatorComponent::OnDeactivate()
 			{
 				GridManager->SetVisibleGrid(false);
 			}
+		}
+
+		const AMainPlayerController* PC = Cast<AMainPlayerController>(PlayerController);
+
+		if (PC && PC->GetMainHUD())
+		{
+			PC->GetMainHUD()->TogglePlacementIndicatorUI(false);
 		}
 	}
 }

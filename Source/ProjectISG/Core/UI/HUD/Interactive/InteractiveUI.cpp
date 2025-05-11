@@ -3,6 +3,21 @@
 #include "InteractiveItemUI.h"
 #include "Components/VerticalBox.h"
 
+void UInteractiveUI::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	//TODO:: 위젯 따로 만들어서 세팅해야한다.
+	ExecuteInteractUI->SetInteractive(TEXT("RM"), TEXT("설치하기"));
+	LeftRotateUI->SetInteractive(TEXT("Q"), TEXT("좌회전"));
+	RightRotateUI->SetInteractive(TEXT("E"), TEXT("우회전"));
+}
+
+void UInteractiveUI::SetInteractive(bool Visible)
+{
+	VerticalView->SetVisibility(Visible? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+}
+
 void UInteractiveUI::SetInteractive(const FString& Key,
                                     const FString& Text)
 {
@@ -46,10 +61,22 @@ void UInteractiveUI::AddInteractive(const FString& Key,
 	VerticalView->AddChildToVerticalBox(NewItemUI);
 }
 
+void UInteractiveUI::SetPlacementIndicator(bool Visible, bool Rotate)
+{
+	VerticalView_Placement->SetVisibility(Visible? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
+
+	Vertical_Root->Modify();
+}
+
 void UInteractiveUI::ClearItems()
 {
 	for (UWidget* Item : VerticalView->GetAllChildren())
 	{
-		Item->SetVisibility(ESlateVisibility::Hidden);
+		Item->SetVisibility(ESlateVisibility::Collapsed);
 	}
+}
+
+bool UInteractiveUI::IsInteractiveHidden()
+{
+	return VerticalView->GetVisibility() == ESlateVisibility::Collapsed;
 }

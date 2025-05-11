@@ -13,7 +13,6 @@
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
-#include "ProjectISG/Utils/EnumUtil.h"
 
 AHoedField::AHoedField()
 {
