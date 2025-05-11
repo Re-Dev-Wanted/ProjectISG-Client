@@ -52,7 +52,7 @@ public:
 	
 	virtual void OnTouch(AActor* Causer) override;
 
-	virtual FString GetTouchDisplayText() const override;
+	virtual FString GetTouchDisplayText(AActor* Causer) const override;
 	
 	virtual void OnTouchResponse(AActor* Causer) override;
 

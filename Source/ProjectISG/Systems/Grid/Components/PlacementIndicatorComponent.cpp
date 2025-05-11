@@ -5,7 +5,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Manager/GridManager.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
@@ -211,6 +213,13 @@ void UPlacementIndicatorComponent::LineTrace()
 	const FVector OwnerStartLocation = Player->GetActorLocation();
 	const FVector OwnerEndLocation = OwnerStartLocation + Player->
 		GetCameraComponent()->GetForwardVector() * TargetRange;
+
+	const AMainPlayerController* PC = Cast<AMainPlayerController>(PlayerController);
+
+	if (!PC)
+	{
+		return;
+	}
 
 	const bool IsSuccess = UKismetSystemLibrary::CapsuleTraceSingle(GetWorld(),
 		OwnerStartLocation,

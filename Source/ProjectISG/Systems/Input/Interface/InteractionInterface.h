@@ -21,7 +21,7 @@ public:
 	virtual bool GetCanTouch() const { return false; }
 	virtual FString GetInteractiveDisplayText() const { return TEXT(""); }
 	virtual FString GetInteractiveDisplayKey() const { return TEXT(""); }
-	virtual FString GetTouchDisplayText() const { return TEXT(""); }
+	virtual FString GetTouchDisplayText(AActor* Causer) const { return TEXT(""); }
 	virtual FString GetTouchDisplayKey() const { return TEXT(""); }
 
 	virtual void OnInteractive(AActor* Causer);

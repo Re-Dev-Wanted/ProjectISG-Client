@@ -13,9 +13,9 @@ class PROJECTISG_API UInteractiveUI : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void SetInteractive(const FString& Key, const FString& Text) const;
+	void SetInteractive(const FString& Key, const FString& Text);
 
-	void AddInteractive(const FString& Key, const FString& Text) const;
+	void AddInteractive(const FString& Key, const FString& Text);
 	
 	void ClearItems();
 

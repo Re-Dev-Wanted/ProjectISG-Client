@@ -47,6 +47,7 @@ protected:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType,
 	                           FActorComponentTickFunction*
 	                           ThisTickFunction) override;
+	void ToggleInteractiveUI();
 
 #pragma region Input
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",

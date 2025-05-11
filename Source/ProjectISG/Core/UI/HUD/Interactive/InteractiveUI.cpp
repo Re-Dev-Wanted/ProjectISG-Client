@@ -4,8 +4,10 @@
 #include "Components/VerticalBox.h"
 
 void UInteractiveUI::SetInteractive(const FString& Key,
-                                    const FString& Text) const
+                                    const FString& Text)
 {
+	ClearItems();
+	
 	int32 CurrentCount =  VerticalView->GetChildrenCount();
 
 	if (CurrentCount > 0)
@@ -22,7 +24,7 @@ void UInteractiveUI::SetInteractive(const FString& Key,
 }
 
 void UInteractiveUI::AddInteractive(const FString& Key,
-	const FString& Text) const
+	const FString& Text)
 {
 	int32 CurrentCount =  VerticalView->GetChildrenCount();
 

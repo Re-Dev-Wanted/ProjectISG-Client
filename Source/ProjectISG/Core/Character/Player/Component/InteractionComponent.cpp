@@ -55,6 +55,8 @@ void UInteractionComponent::OnChange(uint16 ItemId)
 		EItemType::Equipment && UItemManager::IsItemCanHousing(ItemId);
 
 	SetIsInteractive(!bIsStructure);
+
+	ToggleInteractiveUI();
 }
 
 void UInteractionComponent::OnInteractive()
@@ -132,6 +134,62 @@ void UInteractionComponent::TickComponent(float DeltaTime,
 	}
 }
 
+void UInteractionComponent::ToggleInteractiveUI()
+{
+	const AMainPlayerController* PC = PlayerCharacter->GetController<
+		AMainPlayerController>();
+	
+	if (!IsInteractive || !TargetTraceResult.GetActor())
+	{
+		if (PC->GetMainHUD())
+		{
+			PC->GetMainHUD()->ToggleInteractiveUI(false);
+		}
+
+		return;
+	}
+
+	const IInteractionInterface* Interaction = Cast<IInteractionInterface>(
+		TargetTraceResult.GetActor());
+
+	if (!Interaction || (!Interaction->GetCanInteractive() && !Interaction->GetCanTouch()))
+	{
+		if (PC->GetMainHUD())
+		{
+			PC->GetMainHUD()->ToggleInteractiveUI(false);
+		}
+
+		return;
+	}
+		
+	if (Interaction->GetCanInteractive())
+	{
+		if (PC->GetMainHUD())
+		{
+			PC->GetMainHUD()->ToggleInteractiveUI(
+				TEXT("F"), Interaction->GetInteractiveDisplayText());
+		}
+	}
+	
+	if (Interaction->GetCanTouch())
+	{
+		if (PC->GetMainHUD())
+		{
+			if (!Interaction->GetCanInteractive())
+			{
+				PC->GetMainHUD()->ToggleInteractiveUI(
+					TEXT("RM"), Interaction->GetTouchDisplayText(GetOwner()));
+			}
+			else
+			{
+				PC->GetMainHUD()->AdditiveToggleInteractiveUI(
+					TEXT("RM"), Interaction->GetTouchDisplayText(GetOwner()));
+			}
+		}
+	}
+	
+}
+
 void UInteractionComponent::LineTraceToFindTarget()
 {
 	const TArray<AActor*> IgnoreActors;
@@ -157,49 +215,7 @@ void UInteractionComponent::LineTraceToFindTarget()
 
 	if (IsSuccess)
 	{
-		if (!TargetTraceResult.GetActor())
-		{
-			return;
-		}
-
-		const IInteractionInterface* Interaction = Cast<IInteractionInterface>(
-			TargetTraceResult.GetActor());
-
-		if (!Interaction)
-		{
-			if (PC->GetMainHUD())
-			{
-				PC->GetMainHUD()->ToggleInteractiveUI(false);
-			}
-
-			return;
-		}
-		
-		if (Interaction->GetCanInteractive())
-		{
-			if (PC->GetMainHUD())
-			{
-				PC->GetMainHUD()->ToggleInteractiveUI(
-					TEXT("F"), Interaction->GetInteractiveDisplayText());
-			}
-		}
-
-		if (Interaction->GetCanTouch())
-		{
-			if (PC->GetMainHUD())
-			{
-				if (!Interaction->GetCanInteractive())
-				{
-					PC->GetMainHUD()->ToggleInteractiveUI(
-					TEXT("RM"), Interaction->GetTouchDisplayText());
-				}
-				else
-				{
-					PC->GetMainHUD()->AdditiveToggleInteractiveUI(
-					TEXT("RM"), Interaction->GetTouchDisplayText());
-				}
-			}
-		}
+		ToggleInteractiveUI();
 	}
 	else
 	{
