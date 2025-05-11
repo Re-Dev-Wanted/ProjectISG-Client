@@ -44,8 +44,6 @@ void UGA_EndCookingMode::OnEndCinematic()
 
 	UnlockPlayer();
 
-	LoggingToEndCook();
-
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo,
 	           false, false);
 }
@@ -59,17 +57,4 @@ void UGA_EndCookingMode::UnlockPlayer()
 	Player->GetInteractionComponent()->SetIsInteractive(true);
 	Player->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	Player->GetCameraComponent()->Activate();
-}
-
-void UGA_EndCookingMode::LoggingToEndCook()
-{
-	FDiaryLogParams LogParams;
-	LogParams.Location = "요리장";
-	LogParams.ActionType = ELoggingActionType::COOKING;
-	LogParams.ActionName = ELoggingActionName::finish_cooking;
-
-	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-	            LoggingData(LogParams);
-
-	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 }
