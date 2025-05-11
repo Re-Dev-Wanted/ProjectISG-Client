@@ -8,8 +8,6 @@
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
-#include "ProjectISG/Systems/Logging/LoggingStruct.h"
-#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 
 UKitchenFurnitureCinematicComponent::UKitchenFurnitureCinematicComponent()
 {
@@ -96,7 +94,6 @@ void UKitchenFurnitureCinematicComponent::OnFinishStartCooking()
 	AMainPlayerController* PC = SelectedTarget->GetController<
 		AMainPlayerController>();
 	PC->PushUI(EUIName::Popup_CookingRecipeUI);
-	LoggingStartCooking();
 }
 
 void UKitchenFurnitureCinematicComponent::OnFinishEndCooking()
@@ -120,29 +117,5 @@ void UKitchenFurnitureCinematicComponent::OnFinishEndCooking()
 	SelectedTarget->GetInteractionComponent()->SetSelectedInteractiveActor(
 		nullptr);
 
-	LoggingEndCooking();
-
 	Kitchen->SetUsingOwner(nullptr);
-}
-
-void UKitchenFurnitureCinematicComponent::LoggingStartCooking() const
-{
-	FDiaryLogParams LogParams;
-	LogParams.Location = TEXT("요리장");
-	LogParams.ActionType = ELoggingActionType::COOKING;
-	LogParams.ActionName = ELoggingActionName::start_cooking;
-
-	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-				LoggingData(LogParams);
-}
-
-void UKitchenFurnitureCinematicComponent::LoggingEndCooking() const
-{
-	FDiaryLogParams LogParams;
-	LogParams.Location = TEXT("요리장");
-	LogParams.ActionType = ELoggingActionType::COOKING;
-	LogParams.ActionName = ELoggingActionName::finish_cooking;
-
-	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-				LoggingData(LogParams);
 }

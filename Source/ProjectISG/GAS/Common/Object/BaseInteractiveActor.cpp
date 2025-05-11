@@ -1,6 +1,7 @@
 #include "BaseInteractiveActor.h"
 
 #include "Net/UnrealNetwork.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 
 void ABaseInteractiveActor::GetLifetimeReplicatedProps(
 	TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -10,21 +11,30 @@ void ABaseInteractiveActor::GetLifetimeReplicatedProps(
 	DOREPLIFETIME(ABaseInteractiveActor, UsingCharacter)
 }
 
-void ABaseInteractiveActor::SetUsingOwner(AMainPlayerCharacter* NewOwner)
+void ABaseInteractiveActor::SetUsingOwner(AActor* NewOwner)
 {
 	if (HasAuthority())
 	{
-		SetUsingCharacter(NewOwner);
+		SetUsingOwner_Internal(NewOwner);
 	}
 	else
 	{
-		SetUsingCharacter(NewOwner);
+		SetUsingOwner_Internal(NewOwner);
 		Server_SetUsingOwner(NewOwner);
 	}
 }
 
 void ABaseInteractiveActor::Server_SetUsingOwner_Implementation(
-	AMainPlayerCharacter* NewOwner)
+	AActor* NewOwner)
 {
-	SetUsingCharacter(NewOwner);
+	SetUsingOwner_Internal(NewOwner);
+}
+
+void ABaseInteractiveActor::SetUsingOwner_Internal(AActor* NewOwner)
+{
+	SetOwner(NewOwner);
+	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(NewOwner))
+	{
+		SetUsingCharacter(Player);
+	}
 }

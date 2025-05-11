@@ -55,8 +55,4 @@ private:
 
 	UFUNCTION()
 	void OnFinishEndCooking();
-
-	void LoggingStartCooking() const;
-
-	void LoggingEndCooking() const;
 };

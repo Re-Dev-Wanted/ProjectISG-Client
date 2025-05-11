@@ -8,6 +8,19 @@ class ULevelSequence;
 enum class ECookingTool : uint8;
 
 USTRUCT(BlueprintType)
+struct PROJECTISG_API FCookingQTESequence
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<ULevelSequence> Sequence;
+
+	UPROPERTY(EditDefaultsOnly)
+	ECookingTool CookingTool = ECookingTool::None;
+};
+
+
+USTRUCT(BlueprintType)
 struct PROJECTISG_API FCookingRecipeFlow : public FTableRowBase
 {
 	GENERATED_BODY()
@@ -22,7 +35,7 @@ struct PROJECTISG_API FFoodRecipe : public FTableRowBase
 	GENERATED_BODY()
 
 	GETTER(uint32, FoodId)
-	GETTER(ECookingTool, CookingTool)
+	GETTER_REF(TArray<FCookingQTESequence>, QTESequences)
 	FORCEINLINE TMap<uint16, uint8> GetRecipeData() const { return RecipeData; }
 
 private:
@@ -35,7 +48,7 @@ private:
 	TMap<uint16, uint8> RecipeData;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	ECookingTool CookingTool = ECookingTool::None;
+	TArray<FCookingQTESequence> QTESequences;
 };
 
 USTRUCT(BlueprintType)
@@ -47,17 +60,5 @@ struct PROJECTISG_API FEquipCookingToolToActParams
 	USceneComponent* AttachPoint = nullptr;
 
 	UPROPERTY()
-	ECookingTool CookingTool = ECookingTool::None;
-};
-
-USTRUCT(BlueprintType)
-struct PROJECTISG_API FCookingQTESequence
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULevelSequence> Sequence;
-
-	UPROPERTY(EditDefaultsOnly)
 	ECookingTool CookingTool = ECookingTool::None;
 };

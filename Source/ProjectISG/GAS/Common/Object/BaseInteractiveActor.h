@@ -17,7 +17,7 @@ class PROJECTISG_API ABaseInteractiveActor
 public:
 	GETTER(TObjectPtr<AMainPlayerCharacter>, UsingCharacter)
 
-	void SetUsingOwner(AMainPlayerCharacter* NewOwner);
+	void SetUsingOwner(AActor* NewOwner);
 
 protected:
 	virtual void GetLifetimeReplicatedProps(
@@ -25,7 +25,9 @@ protected:
 
 private:
 	UFUNCTION(Server, Reliable)
-	void Server_SetUsingOwner(AMainPlayerCharacter* NewOwner);
+	void Server_SetUsingOwner(AActor* NewOwner);
+
+	void SetUsingOwner_Internal(AActor* NewOwner);
 
 	SETTER(TObjectPtr<AMainPlayerCharacter>, UsingCharacter)
 

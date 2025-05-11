@@ -5,7 +5,7 @@
 UENUM()
 enum class EKitchenFurnitureCinematicStatus : uint8
 {
-	None, StartCooking, EndCooking,
+	None, StartCooking, EndCooking, QTEAction
 };
 
 UENUM()

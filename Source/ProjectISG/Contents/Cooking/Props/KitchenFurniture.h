@@ -6,14 +6,16 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "KitchenFurniture.generated.h"
 
-class UKitchenFurnitureCinematicComponent;
-class AMainPlayerCharacter;
+class UKitchenFurnitureQTEComponent;
 enum class ECookingTool : uint8;
+
 class ULevelSequence;
 class UCameraComponent;
 class UCookingComponent;
 class ALevelSequenceActor;
 class ULevelSequencePlayer;
+class AMainPlayerCharacter;
+class UKitchenFurnitureCinematicComponent;
 
 UCLASS()
 class PROJECTISG_API AKitchenFurniture : public ABaseInteractiveActor
@@ -59,6 +61,9 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UKitchenFurnitureCinematicComponent>
 	KitchenFurnitureCinematicComponent;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UKitchenFurnitureQTEComponent> KitchenFurnitureQTEComponent;
 
 	void PlayCookingCinematic_Internal(AMainPlayerCharacter* Target
 										, const EKitchenFurnitureCinematicStatus

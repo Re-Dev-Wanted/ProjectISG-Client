@@ -2,6 +2,7 @@
 
 #include "Camera/CameraComponent.h"
 #include "Component/KitchenFurnitureCinematicComponent.h"
+#include "Component/KitchenFurnitureQTEComponent.h"
 #include "ProjectISG/Contents/Cooking/CookingStruct.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
@@ -34,6 +35,9 @@ AKitchenFurniture::AKitchenFurniture()
 		UKitchenFurnitureCinematicComponent>(
 		"Kitchen Furniture Cinematic Component");
 
+	KitchenFurnitureQTEComponent = CreateDefaultSubobject<
+		UKitchenFurnitureQTEComponent>("Kitchen Furniture QTE Component");
+
 	bReplicates = true;
 	bAlwaysRelevant = true;
 	SetReplicatingMovement(true);
@@ -56,8 +60,6 @@ void AKitchenFurniture::OnInteractive(AActor* Causer)
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
 		// RPC 함수를 위한 Owner 세팅
-		SetOwner(Player);
-
 		SetUsingOwner(Player);
 
 		Player->bUseControllerRotationYaw = false;
