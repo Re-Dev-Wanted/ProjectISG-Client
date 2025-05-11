@@ -23,15 +23,14 @@ void FPlacementGridContainer::Add(const FIntVector& GridCoord, APlacement* Place
 		return;
 	}
 
-	FPlacementGridEntry Entry;
+	FPlacementGridEntry& Entry = Items.AddDefaulted_GetRef();
+	
 	Entry.GridCoord = GridCoord;
 	Entry.Placement = TypedPlacement;
 	Entry.ItemId = ItemId;
-	Items.Add(Entry);
 
 	MarkItemDirty(Entry);
-
-	PlacedMap.Add(GridCoord, Placement);
+	MarkArrayDirty();
 
 	if (OnUpdateCallback)
 	{
@@ -39,18 +38,16 @@ void FPlacementGridContainer::Add(const FIntVector& GridCoord, APlacement* Place
 	}
 }
 
-uint16 FPlacementGridContainer::Remove(APlacement* Placement, TFunction<void(void)>&& OnUpdateCallback)
+uint16 FPlacementGridContainer::Remove(const FIntVector& GridCoord, uint16 ItemId, TFunction<void(void)>&& OnUpdateCallback)
 {
-	uint16 ItemId = 0;
-
 	// 모든 관련 좌표 제거
 	TArray<int32> IndicesToRemove;
 
 	for (int32 i = 0; i < GetItems().Num(); ++i)
 	{
-		const FPlacementGridEntry& Entry = GetItems()[i];
+		const FPlacementGridEntry& Entry = Items[i];
 
-		if (Entry.Placement == Placement)
+		if (Entry.GridCoord == GridCoord && Entry.ItemId == ItemId)
 		{
 			if (ItemId == 0)
 			{
@@ -69,16 +66,7 @@ uint16 FPlacementGridContainer::Remove(APlacement* Placement, TFunction<void(voi
 	// 실제 배열에서 제거
 	for (int32 Index : IndicesToRemove)
 	{
-		GetItems().RemoveAt(Index);
-	}
-
-	// 캐시 Map도 정리
-	for (auto It = GetPlacedMap().CreateIterator(); It; ++It)
-	{
-		if (It.Value() == Placement)
-		{
-			It.RemoveCurrent();
-		}
+		Items.RemoveAt(Index);
 	}
 	
 	MarkArrayDirty();

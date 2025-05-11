@@ -15,14 +15,14 @@ struct FPlacementGridEntry : public FFastArraySerializerItem
 	FIntVector GridCoord = FIntVector::NoneValue;
 
 	UPROPERTY()
-	TWeakObjectPtr<APlacement> Placement = nullptr;
+	TObjectPtr<APlacement> Placement = nullptr;
 
 	UPROPERTY()
 	uint16 ItemId = 0;
 
 	bool IsValid() const
 	{
-		return Placement.IsValid();
+		return Placement != nullptr;
 	}
 };
 
@@ -37,18 +37,9 @@ struct FPlacementGridContainer : public FFastArraySerializer
 
 	void Add(const FIntVector& GridCoord, APlacement* Placement, uint16 ItemId, TFunction<void(void)>&& OnUpdateCallback);
 
-	uint16 Remove(class APlacement* Placement, TFunction<void(void)>&& OnUpdateCallback);
-
-	TMap<FIntVector, TWeakObjectPtr<APlacement>> GetPlacedMap() const
-	{
-		return PlacedMap;
-	}
+	uint16 Remove(const FIntVector& GridCoord, uint16 ItemId, TFunction<void(void)>&& OnUpdateCallback);
 
 protected:
 	UPROPERTY()
 	TArray<FPlacementGridEntry> Items;
-
-	//빠른 접근용 Cache Map
-	UPROPERTY(NotReplicated)
-	TMap<FIntVector, TWeakObjectPtr<APlacement>> PlacedMap;
 };

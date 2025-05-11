@@ -86,11 +86,14 @@ void UGA_ReelInLine::OnEndCinematic()
 {
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		CurrentActorInfo->AvatarActor.Get());
-	
-	AMainPlayerController* PC = Player->GetController<AMainPlayerController>();
 
-	PC->SetIgnoreLookInput(false);
-	PC->SetIgnoreMoveInput(false);
+	if (Player->IsLocallyControlled())
+	{
+		AMainPlayerController* PC = Player->GetController<AMainPlayerController>();
+
+		PC->SetIgnoreLookInput(false);
+		PC->SetIgnoreMoveInput(false);
+	}
 
 	TObjectPtr<ABaseActor> HeldItem = Player->GetHandSlotComponent()->GetHeldItem();
 
