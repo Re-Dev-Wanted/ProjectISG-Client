@@ -24,4 +24,6 @@ public:
 
 	void AdditiveToggleInteractiveUI(const FString& DisplayKey,
 							 const FString& DisplayText);
+
+	void TogglePlacementIndicatorUI(const bool Visible);
 };

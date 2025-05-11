@@ -57,7 +57,33 @@ APlacement::APlacement()
 
 bool APlacement::GetCanTouch() const
 {
-	return false;
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+
+	if (!Player)
+	{
+		return false;
+	}
+
+	const FString HandItemUsingType = Player->GetHandSlotComponent()
+		->GetItemUsingType();
+	
+	return HandItemUsingType.Equals("Deconstruct");
+}
+
+FString APlacement::GetTouchDisplayText(AActor* Causer) const
+{
+	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
+	{
+		const FString HandItemUsingType = Player->GetHandSlotComponent()
+		->GetItemUsingType();
+		
+		if (HandItemUsingType.Equals("Deconstruct"))
+		{
+			return TEXT("철거하기");
+		}
+	}
+
+	return TEXT("");
 }
 
 void APlacement::OnTouch(AActor* Causer)

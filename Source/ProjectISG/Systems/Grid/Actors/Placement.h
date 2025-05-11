@@ -23,6 +23,8 @@ public:
 	SETTER(float, CachedSnapSize)
 
 	virtual bool GetCanTouch() const override;
+
+	virtual FString GetTouchDisplayText(AActor* Causer) const override; 
 	
 	virtual void OnTouch(AActor* Causer) override;
 

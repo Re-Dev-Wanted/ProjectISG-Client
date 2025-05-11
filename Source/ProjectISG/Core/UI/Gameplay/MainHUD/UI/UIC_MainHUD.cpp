@@ -37,9 +37,7 @@ void UUIC_MainHUD::ToggleInteractiveUI(const bool IsShow)
 
 	MainHUDView->GetInteractiveUI()->ClearItems();
 
-	MainHUDView->GetInteractiveUI()->SetVisibility(IsShow
-		                                               ? ESlateVisibility::SelfHitTestInvisible
-		                                               : ESlateVisibility::Hidden);
+	MainHUDView->GetInteractiveUI()->SetInteractive(IsShow);
 }
 
 void UUIC_MainHUD::ToggleInteractiveUI(const FString& DisplayKey,
@@ -47,9 +45,8 @@ void UUIC_MainHUD::ToggleInteractiveUI(const FString& DisplayKey,
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 
+	MainHUDView->GetInteractiveUI()->SetInteractive(true);
 	MainHUDView->GetInteractiveUI()->SetInteractive(DisplayKey, DisplayText);
-	MainHUDView->GetInteractiveUI()->SetVisibility(
-		ESlateVisibility::SelfHitTestInvisible);
 }
 
 void UUIC_MainHUD::AdditiveToggleInteractiveUI(const FString& DisplayKey,
@@ -57,10 +54,17 @@ void UUIC_MainHUD::AdditiveToggleInteractiveUI(const FString& DisplayKey,
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 	
-	if (MainHUDView->GetInteractiveUI()->GetVisibility() == ESlateVisibility::Hidden)
+	if (MainHUDView->GetInteractiveUI()->IsInteractiveHidden())
 	{
 		return;
 	}
 
 	MainHUDView->GetInteractiveUI()->AddInteractive(DisplayKey, DisplayText);
+}
+
+void UUIC_MainHUD::TogglePlacementIndicatorUI(const bool Visible)
+{
+	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
+
+	MainHUDView->GetInteractiveUI()->SetPlacementIndicator(Visible);
 }

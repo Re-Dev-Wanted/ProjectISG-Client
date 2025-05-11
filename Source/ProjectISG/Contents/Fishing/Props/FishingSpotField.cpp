@@ -35,7 +35,7 @@ bool AFishingSpotField::GetCanTouch() const
 	return false;
 }
 
-FString AFishingSpotField::GetTouchDisplayText() const
+FString AFishingSpotField::GetTouchDisplayText(AActor* Causer) const
 {
 	return TEXT("낚시하기");
 }

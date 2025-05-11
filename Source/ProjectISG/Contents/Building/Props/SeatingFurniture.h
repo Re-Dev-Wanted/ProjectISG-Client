@@ -16,8 +16,6 @@ public:
 
 	virtual bool GetCanInteractive() const override;
 
-	virtual bool GetCanTouch() const override;
-
 	virtual FString GetInteractiveDisplayText() const override;
 
 protected:

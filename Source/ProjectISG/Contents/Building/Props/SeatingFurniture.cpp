@@ -28,11 +28,6 @@ bool ASeatingFurniture::GetCanInteractive() const
 	return bInteractive;
 }
 
-bool ASeatingFurniture::GetCanTouch() const
-{
-	return true;
-}
-
 FString ASeatingFurniture::GetInteractiveDisplayText() const
 {
 	return TEXT("앉기");

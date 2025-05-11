@@ -13,7 +13,6 @@
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
-#include "ProjectISG/Utils/EnumUtil.h"
 
 AHoedField::AHoedField()
 {
@@ -40,7 +39,40 @@ void AHoedField::GetLifetimeReplicatedProps(
 
 bool AHoedField::GetCanTouch() const
 {
-	return !IsWet || !PlantedCrop.IsValid();
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+
+	if (!Player)
+	{
+		return false;
+	}
+
+	const FString HandItemUsingType = Player->GetHandSlotComponent()
+		->GetItemUsingType();
+
+	if (HandItemUsingType == "Farming")
+	{
+		return !PlantedCrop.IsValid();
+	}
+
+	if (HandItemUsingType == "Watering")
+	{
+		return !IsWet && PlantedCrop.IsValid() && PlantedCrop.Crop->GetCurrentState() != ECropState::Mature;
+	}
+
+	int SlotIndex = Player->GetPlayerInventoryComponent()->GetCurrentSlotIndex();
+		
+	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
+		
+	const FItemMetaInfo ItemMetaInfo = PS->GetInventoryComponent()->GetInventoryList()[SlotIndex];
+
+	uint16 OtherId = UItemManager::GetGeneratedOtherItemIdById(ItemMetaInfo.GetId());
+
+	if (OtherId > 0)
+	{
+		return true;
+	}
+	
+	return false;
 }
 
 bool AHoedField::GetCanInteractive() const
@@ -48,8 +80,57 @@ bool AHoedField::GetCanInteractive() const
 	return false;
 }
 
-FString AHoedField::GetTouchDisplayText() const
+FString AHoedField::GetTouchDisplayText(AActor* Causer) const
 {
+	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
+	{
+
+		int SlotIndex = Player->GetPlayerInventoryComponent()->GetCurrentSlotIndex();
+		
+		const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
+		
+		const FItemMetaInfo ItemMetaInfo = PS->GetInventoryComponent()->GetInventoryList()[SlotIndex];
+		
+		const uint16 ItemId = Player->GetHandSlotComponent()->GetItemId();
+		FItemInfoData itemData = UItemManager::GetItemInfoById(ItemId);
+		FString UsingType = UItemManager::GetItemUsingType(ItemId);
+
+		if (UsingType == "Watering" && PlantedCrop.IsValid())
+		{
+			return TEXT("물주기");
+		}
+
+		if (UsingType == "Farming" && !PlantedCrop.IsValid())
+		{
+			return FString::Printf(TEXT("%s 심기"), *itemData.GetDisplayName());
+		}
+
+		uint16 OtherId = UItemManager::GetGeneratedOtherItemIdById(ItemMetaInfo.GetId());
+
+		if (OtherId > 0)
+		{
+			const FItemInfoData OtherData = UItemManager::GetItemInfoById(OtherId);
+
+			if (OtherData.GetPlaceItemActor() == GetClass())
+			{
+				if (PlantedCrop.IsValid())
+				{
+					ABaseCrop* Crop = PlantedCrop.Crop;
+					FItemInfoData SeedInfoData = UItemManager::GetItemInfoById(PlantedCrop.CropId);
+					
+					if (Crop->GetCurrentState() != ECropState::Mature)
+					{
+						return FString::Printf(TEXT("%s 회수하기"), *SeedInfoData.GetDisplayName());
+					}
+				}
+				else
+				{
+					return TEXT("밭 제거");
+				}
+			}
+		}
+	}
+	
 	return TEXT("");
 }
 
