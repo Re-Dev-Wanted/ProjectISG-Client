@@ -13,26 +13,28 @@ void UCookingManager::Initialize()
 
 	IsInitialize = true;
 
-	const static ConstructorHelpers::FObjectFinder<UDataTable>
-		ItemInfoDataTable(TEXT(
-			"/Script/Engine.DataTable'/Game/Contents/Cooking/Data/DT_FoodRecipe.DT_FoodRecipe'"));
+	const UDataTable* ItemInfoDataTable = LoadObject<UDataTable>(
+		nullptr, TEXT(
+			"/Script/Engine.DataTable'/Game/Contents/Cooking/Data/DT_FoodRecipe.DT_FoodRecipe'")
+		, nullptr, LOAD_None, nullptr);
 
-	if (ItemInfoDataTable.Succeeded())
+	if (!ItemInfoDataTable)
 	{
-		TArray<FFoodRecipe*> TempItemInfoList;
-		ItemInfoDataTable.Object->GetAllRows<FFoodRecipe>(
-			TEXT(""), TempItemInfoList);
+		return;
+	}
 
-		for (const FFoodRecipe* InfoItem : TempItemInfoList)
+	TArray<FFoodRecipe*> TempItemInfoList;
+	ItemInfoDataTable->GetAllRows<FFoodRecipe>(TEXT(""), TempItemInfoList);
+
+	for (const FFoodRecipe* InfoItem : TempItemInfoList)
+	{
+		RecipeData.Add(*InfoItem);
+
+		if (!RecipeMapByFoodId.Find(InfoItem->GetFoodId()))
 		{
-			RecipeData.Add(*InfoItem);
-
-			if (!RecipeMapByFoodId.Find(InfoItem->GetFoodId()))
-			{
-				RecipeMapByFoodId.Add(InfoItem->GetFoodId());
-			}
-
-			RecipeMapByFoodId[InfoItem->GetFoodId()].Add(*InfoItem);
+			RecipeMapByFoodId.Add(InfoItem->GetFoodId());
 		}
+
+		RecipeMapByFoodId[InfoItem->GetFoodId()].Add(*InfoItem);
 	}
 }
