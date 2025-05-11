@@ -1,6 +1,5 @@
 ﻿#include "UIC_CookingRecipeUI.h"
 
-#include "AbilitySystemComponent.h"
 #include "EnhancedInputComponent.h"
 #include "UIM_CookingRecipeUI.h"
 #include "UIV_CookingRecipeUI.h"
@@ -9,11 +8,9 @@
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
-#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/Module/UI_BaseButton.h"
 #include "ProjectISG/Core/UI/Popup/Cooking/Module/SelectedFoodDetail/UIC_SelectedFoodDetailWidget.h"
 #include "ProjectISG/Core/UI/Popup/Cooking/Module/SelectedFoodDetail/UIV_SelectedFoodDetailWidget.h"
-#include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 
 void UUIC_CookingRecipeUI::AppearUI(const EUILayer Layer)
 {
@@ -82,10 +79,13 @@ void UUIC_CookingRecipeUI::OnCloseCookingRecipeUI()
 
 void UUIC_CookingRecipeUI::StartCooking()
 {
-	FGameplayTagContainer ActivateTag;
-	ActivateTag.AddTag(ISGGameplayTags::Cooking_Active_QTEAction);
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		GetPlayerController()->GetPawn());
 
-	GetPlayerController()->GetPlayerState<AMainPlayerState>()->
-							GetAbilitySystemComponent()->
-							TryActivateAbilitiesByTag(ActivateTag);
+	const UInteractionComponent* PlayerInteraction = Cast<AMainPlayerCharacter>(
+		GetPlayerController()->GetPawn())->GetInteractionComponent();
+
+	Cast<AKitchenFurniture>(PlayerInteraction->GetSelectedInteractiveActor())->
+		PlayCookingCinematic(
+			Player, EKitchenFurnitureCinematicStatus::QTEAction);
 }

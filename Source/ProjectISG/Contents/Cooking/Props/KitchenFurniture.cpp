@@ -119,6 +119,11 @@ void AKitchenFurniture::PlayCookingCinematic_Internal(
 				EndCookingMode(Target, IsCaster);
 			break;
 		}
+	case EKitchenFurnitureCinematicStatus::QTEAction:
+		{
+			KitchenFurnitureQTEComponent->StartQTE();
+			break;
+		}
 	default:
 		{
 			break;

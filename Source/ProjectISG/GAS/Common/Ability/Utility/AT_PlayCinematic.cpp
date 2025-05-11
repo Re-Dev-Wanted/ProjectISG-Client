@@ -34,15 +34,6 @@ void UAT_PlayCinematic::Activate()
 	LevelSequencePlayer->OnFinished.
 						AddDynamic(this, &ThisClass::OnEndCinematic);
 	OnPlayCinematicOnReadyNotified.Broadcast(LevelSequenceActor);
-
-	// if (ABaseCharacter* PlayerBase = Cast<ABaseCharacter>(GetAvatarActor()))
-	// {
-	// 	PlayerBase->PlayCinematic(LevelSequencePlayer);
-	// 	if (PlayerBase->HasAuthority())
-	// 	{
-	// 		PlayerBase->Client_PlayCinematic(LevelSequencePlayer);
-	// 	}
-	// }
 }
 
 void UAT_PlayCinematic::OnEndCinematic()
