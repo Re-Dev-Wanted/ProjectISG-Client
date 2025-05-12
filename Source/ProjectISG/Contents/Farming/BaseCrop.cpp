@@ -192,6 +192,7 @@ void ABaseCrop::UpdateGrowTimeBySleep()
 			bIsGetWater = false;
 			CropRemainGrowTime -= WaterDuration;
 			CropGrowTime = 0.f;
+			NetMulticast_FieldIsDried();
 		}
 		else
 		{

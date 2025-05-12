@@ -157,9 +157,8 @@ void ABed::ActivateWakeUp()
 		ActivateTag.AddTag(ISGGameplayTags::Sleeping_Active_WakeUp);
 		MainPlayer->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
 		NetMulticast_SetCollisionEnabled(true);
-		CanInteractive = true;
-		MainPlayer->GetInteractionComponent()->SetIsInteractive(true);
-		MainPlayer->GetPlacementIndicatorComponent()->SetIsActive(true);
+		// MainPlayer->GetInteractionComponent()->SetIsInteractive(true);
+		// MainPlayer->GetPlacementIndicatorComponent()->SetIsActive(true);
 	}
 }
 
@@ -195,9 +194,9 @@ void ABed::ActivateSleepAbility()
 		ActivateTag.AddTag(ISGGameplayTags::Sleeping_Active_LieInBed);
 		MainPlayer->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
 		NetMulticast_SetCollisionEnabled(false);
-		CanInteractive = false;
-		MainPlayer->GetInteractionComponent()->SetIsInteractive(false);
-		MainPlayer->GetPlacementIndicatorComponent()->SetIsActive(false);
+		// CanInteractive = false;
+		// MainPlayer->GetInteractionComponent()->SetIsInteractive(false);
+		// MainPlayer->GetPlacementIndicatorComponent()->SetIsActive(false);
 	}
 }
 
@@ -218,4 +217,7 @@ void ABed::SetCollisionEnabled(bool bEnable) const
 void ABed::NetMulticast_SetCollisionEnabled_Implementation(bool bEnable)
 {
 	SetCollisionEnabled(bEnable);
+	CanInteractive = bEnable;
+	MainPlayer->GetInteractionComponent()->SetIsInteractive(bEnable);
+	MainPlayer->GetPlacementIndicatorComponent()->SetIsActive(bEnable);
 }
