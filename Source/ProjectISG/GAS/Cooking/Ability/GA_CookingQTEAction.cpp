@@ -197,8 +197,11 @@ void UGA_CookingQTEAction::LoggingToEndCook()
 	LogParams.Location = TEXT("요리장");
 	LogParams.ActionType = ELoggingActionType::COOKING;
 	LogParams.ActionName = ELoggingActionName::finish_cooking;
-	LogParams.Detail = UItemManager::GetItemInfoById(Recipe.GetFoodId()).
-		GetDisplayName() + TEXT(" ") + TEXT("1개");
+
+	const FString FoodName = UItemManager::GetItemInfoById(Recipe.GetFoodId()).
+		GetDisplayName();
+
+	LogParams.Detail = FoodName + TEXT(" 1개");
 
 	AT_LogCooking->SetLogParams(LogParams);
 	AT_LogCooking->SetIsLogWithScreenShot(true);
