@@ -11,6 +11,7 @@
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
+#include "ProjectISG/Systems/Grid/Components/PlacementIndicatorComponent.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 
 ABed::ABed()
@@ -97,6 +98,9 @@ void ABed::OnInteractive(AActor* Causer)
 		EventPayload.EventTag, &EventPayload);
 	Player->GetInteractionComponent()->Server_OnInteractiveResponse(Causer);
 	CanInteractive = false;
+
+	Player->GetInteractionComponent()->SetIsInteractive(false);
+	Player->GetPlacementIndicatorComponent()->SetIsActive(false);
 }
 
 void ABed::OnInteractiveResponse(AActor* Causer)
@@ -152,8 +156,10 @@ void ABed::ActivateWakeUp()
 		FGameplayTagContainer ActivateTag;
 		ActivateTag.AddTag(ISGGameplayTags::Sleeping_Active_WakeUp);
 		MainPlayer->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
-		NetMulticast_SetCollisionEnabled(false);
+		NetMulticast_SetCollisionEnabled(true);
 		CanInteractive = true;
+		MainPlayer->GetInteractionComponent()->SetIsInteractive(true);
+		MainPlayer->GetPlacementIndicatorComponent()->SetIsActive(true);
 	}
 }
 
@@ -190,6 +196,8 @@ void ABed::ActivateSleepAbility()
 		MainPlayer->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
 		NetMulticast_SetCollisionEnabled(false);
 		CanInteractive = false;
+		MainPlayer->GetInteractionComponent()->SetIsInteractive(false);
+		MainPlayer->GetPlacementIndicatorComponent()->SetIsActive(false);
 	}
 }
 

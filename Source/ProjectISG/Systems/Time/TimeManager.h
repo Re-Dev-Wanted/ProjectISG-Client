@@ -87,7 +87,7 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = "true"), Category = "Sky")
-	int32 SunriseTime = 5;
+	int32 SunriseTime = 4;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = "true"), Category = "Sky")

@@ -51,12 +51,7 @@ void UGA_WakeUp::EndAbility(const FGameplayAbilitySpecHandle Handle,
 void UGA_WakeUp::OnCompleteWakeUpMontage(FGameplayTag EventTag,
                                          FGameplayEventData EventData)
 {
-	if (CurrentEventData.Target)
-	{
-		const AActor* Target = CurrentEventData.Target.Get();
-		const ABed* Bed = Cast<ABed>(Target);
-		Bed->SetCollisionEnabled(true);
-	}
+	UE_LOG(LogTemp, Warning, TEXT("몽타주 끝"))
 	BlockInputForMontage(false);
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo,
 	           false, false);

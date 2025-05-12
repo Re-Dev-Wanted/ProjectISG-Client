@@ -91,6 +91,7 @@ void ATimeManager::Tick(float DeltaTime)
 				else
 				{
 					TimeController->UpdateTimeText(Hour, Minute);
+					TimeController->UpdateDayText(Day, Month);
 				}
 			}
 			RotateSun();
@@ -133,6 +134,7 @@ void ATimeManager::Tick(float DeltaTime)
 				else
 				{
 					TimeController->UpdateTimeText(Hour, Minute);
+					TimeController->UpdateDayText(Day, Month);
 				}
 			}
 		}
