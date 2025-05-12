@@ -4,10 +4,12 @@
 #include "UIM_DiaryListUI.h"
 #include "UIV_DiaryListUI.h"
 #include "Components/Button.h"
+#include "EnhancedInputComponent.h"
 #include "Components/MultiLineEditableTextBox.h"
 #include "Components/TextBlock.h"
 #include "Interfaces/IHttpResponse.h"
 #include "ProjectISG/Contents/Diary/DiaryStruct.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/GameMode/MainGameState.h"
 #include "ProjectISG/Utils/ApiUtil.h"
 #include "ProjectISG/Utils/SessionUtil.h"
@@ -62,6 +64,14 @@ void UUIC_DiaryListUI::InitializeData()
 
 	FApiUtil::GetMainAPI()->PostApi(this, Request
 	                                , DiaryListModel->GetAllDiariesResponse);
+}
+
+void UUIC_DiaryListUI::BindInputAction(UEnhancedInputComponent* InputComponent)
+{
+	Super::BindInputAction(InputComponent);
+
+	InputComponent->BindAction(CloseDiaryListUI, ETriggerEvent::Triggered
+	                           , this, &ThisClass::OnCloseDiaryListUI);
 }
 
 void UUIC_DiaryListUI::MoveToPrevPage()
@@ -129,4 +139,9 @@ void UUIC_DiaryListUI::UpdateDiaryPerPage(const int Page)
 		DiaryListView->GetNextButton()->SetRenderOpacity(1);
 		DiaryListView->GetNextButton()->SetIsEnabled(true);
 	}
+}
+
+void UUIC_DiaryListUI::OnCloseDiaryListUI()
+{
+	Cast<AMainPlayerController>(GetPlayerController())->PopUI();
 }
