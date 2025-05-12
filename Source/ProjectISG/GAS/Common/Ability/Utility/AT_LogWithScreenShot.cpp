@@ -31,7 +31,10 @@ void UAT_LogWithScreenShot::Activate()
 	CaptureFrameNotified.BindLambda(
 		[this](const TArray64<uint8>& FileBinary)
 		{
-			LogParams.File = FileBinary;
+			if (!FileBinary.IsEmpty())
+			{
+				LogParams.File = FileBinary;
+			}
 
 			GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
 			            LoggingData(LogParams);

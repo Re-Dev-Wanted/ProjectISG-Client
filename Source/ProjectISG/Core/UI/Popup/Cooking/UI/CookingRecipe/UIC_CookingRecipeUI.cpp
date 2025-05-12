@@ -20,8 +20,12 @@ void UUIC_CookingRecipeUI::AppearUI(const EUILayer Layer)
 	const bool IsShowSelectedRecipe = Cast<UUIM_CookingRecipeUI>(GetModel())->
 		GetSelectedRecipe() != INDEX_NONE;
 
-	CookingRecipeUI->GetCookingButton()->Get()->OnClicked.AddDynamic(
-		this, &ThisClass::StartCooking);
+	if (!CookingRecipeUI->GetCookingButton()->Get()->OnClicked.IsBound())
+	{
+		CookingRecipeUI->GetCookingButton()->Get()->OnClicked.AddDynamic(
+			this, &ThisClass::StartCooking);
+	}
+
 	CookingRecipeUI->GetSelectedFoodDetail()->SetVisibility(
 		IsShowSelectedRecipe
 			? ESlateVisibility::Visible
@@ -58,7 +62,7 @@ void UUIC_CookingRecipeUI::BindInputAction(
 	Super::BindInputAction(InputComponent);
 
 	InputComponent->BindAction(CloseCookingRecipeUI, ETriggerEvent::Triggered
-								, this, &ThisClass::OnCloseCookingRecipeUI);
+	                           , this, &ThisClass::OnCloseCookingRecipeUI);
 }
 
 void UUIC_CookingRecipeUI::OnCloseCookingRecipeUI()
@@ -67,8 +71,8 @@ void UUIC_CookingRecipeUI::OnCloseCookingRecipeUI()
 	ActivateTag.AddTag(ISGGameplayTags::Cooking_Active_EndCooking);
 
 	GetPlayerController()->GetPlayerState<AMainPlayerState>()->
-							GetAbilitySystemComponent()->
-							TryActivateAbilitiesByTag(ActivateTag);
+	                       GetAbilitySystemComponent()->
+	                       TryActivateAbilitiesByTag(ActivateTag);
 }
 
 void UUIC_CookingRecipeUI::StartCooking()
@@ -77,6 +81,6 @@ void UUIC_CookingRecipeUI::StartCooking()
 	ActivateTag.AddTag(ISGGameplayTags::Cooking_Active_QTEAction);
 
 	GetPlayerController()->GetPlayerState<AMainPlayerState>()->
-							GetAbilitySystemComponent()->
-							TryActivateAbilitiesByTag(ActivateTag);
+	                       GetAbilitySystemComponent()->
+	                       TryActivateAbilitiesByTag(ActivateTag);
 }

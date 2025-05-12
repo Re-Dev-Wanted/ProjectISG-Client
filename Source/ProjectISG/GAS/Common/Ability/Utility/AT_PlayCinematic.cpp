@@ -1,5 +1,6 @@
 ﻿#include "AT_PlayCinematic.h"
 
+#include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
 #include "MovieSceneSequencePlaybackSettings.h"
 
@@ -21,8 +22,6 @@ void UAT_PlayCinematic::Activate()
 {
 	Super::Activate();
 
-	OnPlayCinematicPreStartNotified.Broadcast(this);
-
 	FMovieSceneSequencePlaybackSettings PlaybackSettings;
 	PlaybackSettings.bAutoPlay = true;
 
@@ -30,14 +29,20 @@ void UAT_PlayCinematic::Activate()
 		GetAvatarActor()->GetWorld(), LevelSequence, PlaybackSettings
 		, LevelSequenceActor);
 
+	LevelSequenceActor->SetReplicates(false);
 	LevelSequencePlayer->OnFinished.
 	                     AddDynamic(this, &ThisClass::OnEndCinematic);
-	OnPlayCinematicOnReadyNotified.Broadcast(LevelSequenceActor);
+	OnPlayCinematicOnReadyNotified.ExecuteIfBound(LevelSequenceActor);
 
 	LevelSequencePlayer->Play();
 }
 
 void UAT_PlayCinematic::OnEndCinematic()
 {
-	OnPlayCinematicEndNotified.Broadcast();
+	if (!OnPlayCinematicEndNotified.ExecuteIfBound())
+	{
+		UE_LOG(LogTemp, Display, TEXT("시네마틱 종료에 대한 설정 값 없음"));
+	}
+
+	LevelSequenceActor->Destroy();
 }

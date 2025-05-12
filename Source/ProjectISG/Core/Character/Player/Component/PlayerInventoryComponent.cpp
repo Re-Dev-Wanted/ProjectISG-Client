@@ -27,7 +27,7 @@ void UPlayerInventoryComponent::InitializeComponent()
 }
 
 void UPlayerInventoryComponent::GetLifetimeReplicatedProps(
-	TArray<class FLifetimeProperty>& OutLifetimeProps) const
+	TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
@@ -84,13 +84,13 @@ void UPlayerInventoryComponent::MoveHotSlot(const FInputActionValue& Value)
 
 	if (MoveToSlot < 0)
 	{
-		ChangeCurrentSlotIndex(MoveToSlot + MaxMainSlotIndex);
+		ChangeCurrentSlotIndex(MoveToSlot + MaxMainSlotIndex + 1);
 		return;
 	}
 
 	if (MoveToSlot > MaxMainSlotIndex)
 	{
-		ChangeCurrentSlotIndex(MoveToSlot - MaxMainSlotIndex);
+		ChangeCurrentSlotIndex(MoveToSlot - MaxMainSlotIndex - 1);
 		return;
 	}
 
@@ -181,6 +181,7 @@ void UPlayerInventoryComponent::UpdateInventorySlotItemData()
 	UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(
 		PC->GetUIManageComponent()->ControllerInstances[
 			EUIName::Popup_TradingUI]);
+
 	if (TradingUIController)
 	{
 		UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(
