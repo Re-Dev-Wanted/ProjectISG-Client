@@ -97,4 +97,6 @@ public:
 
 		return FRotator(0.f, Yaw + Degrees, 0.f);
 	}
+
+	bool IsEmptyGrid(const FVector& Location);
 };

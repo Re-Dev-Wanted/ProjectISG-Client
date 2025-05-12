@@ -239,7 +239,21 @@ void AGridManager::SetVisibleGrid(bool bIsVisible)
 
 	GridComp->SetVisibility(bIsVisible);
 }
- 
+
+bool AGridManager::IsEmptyGrid(const FVector& Location)
+{
+	FIntVector ToCoord = WorldToGridLocation(Location);
+
+	if (ToCoord.X < 0 || ToCoord.X >= Rows || ToCoord.Y < 0 || ToCoord.Y >= Columns)
+	{
+		return false;
+	}
+
+	uint16 ItemId = PlacedMap.FindRef(ToCoord);
+
+	return ItemId <= 0;
+}
+
 void AGridManager::Server_BuildPlacement_Implementation
 (TSubclassOf<APlacement> PlacementClass, uint16 ItemId, FVector Pivot,
                                                         FVector Location, FRotator Rotation)

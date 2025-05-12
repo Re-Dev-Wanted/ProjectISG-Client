@@ -246,10 +246,8 @@ void UPlacementIndicatorComponent::LineTrace()
 															  SnappedRotation.Yaw,
 															   0), 0.1f,
 															  InterpSpeed));
-			FIntVector GridCoord;
-			uint16 _;
 
-			bIsBlocked = GridManager->TryGetPlacement(SnappedLocation, GridCoord, _);
+			bIsBlocked = !GridManager->IsEmptyGrid(SnappedLocation);
 
 			IndicateActor->SetOption(true, bIsBlocked);
 
