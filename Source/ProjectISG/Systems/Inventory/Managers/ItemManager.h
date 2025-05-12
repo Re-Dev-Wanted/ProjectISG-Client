@@ -11,7 +11,7 @@ class UItemManager : public UObject
 public:
 	static void Initialize();
 	static FItemInfoData& GetItemInfoById(const uint16 Id);
-	static FItemMetaInfo& GetInitialItemMetaDataById(const uint16 Id);
+	static FItemMetaInfo GetInitialItemMetaDataById(const uint16 Id);
 	static FString GetItemUsingType(const uint16 Id);
 	static bool IsItemCanHousing(const uint16 Id);
 	static bool IsItemCanInteraction(const uint16 Id);

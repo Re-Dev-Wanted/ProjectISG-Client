@@ -36,7 +36,7 @@ FItemInfoData& UItemManager::GetItemInfoById(const uint16 Id)
 	return ItemInfoList[Id];
 }
 
-FItemMetaInfo& UItemManager::GetInitialItemMetaDataById(const uint16 Id)
+FItemMetaInfo UItemManager::GetInitialItemMetaDataById(const uint16 Id)
 {
 	const FItemInfoData InitialData = GetItemInfoById(Id);
 
