@@ -1,14 +1,13 @@
 ﻿#include "AT_PlayCinematic.h"
 
-#include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
 #include "MovieSceneSequencePlaybackSettings.h"
 
 UAT_PlayCinematic* UAT_PlayCinematic::InitialEvent(UGameplayAbility* Ability
-													, ULevelSequence*
-													LevelSequence
-													, ALevelSequenceActor*
-													LevelSequenceActor)
+                                                   , ULevelSequence*
+                                                   LevelSequence
+                                                   , ALevelSequenceActor*
+                                                   LevelSequenceActor)
 {
 	UAT_PlayCinematic* NewTask = NewAbilityTask<UAT_PlayCinematic>(Ability);
 	NewTask->LevelSequence = LevelSequence;
@@ -32,7 +31,7 @@ void UAT_PlayCinematic::Activate()
 		, LevelSequenceActor);
 
 	LevelSequencePlayer->OnFinished.
-						AddDynamic(this, &ThisClass::OnEndCinematic);
+	                     AddDynamic(this, &ThisClass::OnEndCinematic);
 	OnPlayCinematicOnReadyNotified.Broadcast(LevelSequenceActor);
 
 	LevelSequencePlayer->Play();
@@ -41,7 +40,4 @@ void UAT_PlayCinematic::Activate()
 void UAT_PlayCinematic::OnEndCinematic()
 {
 	OnPlayCinematicEndNotified.Broadcast();
-
-	// TODO: Pooling으로 대체할 필요 있음
-	LevelSequenceActor->Destroy();
 }

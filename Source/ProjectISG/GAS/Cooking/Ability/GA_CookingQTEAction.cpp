@@ -69,15 +69,16 @@ void UGA_CookingQTEAction::PlayNextSequence()
 	// 시네마틱 1개 종료 시점에 반드시 마무리 해야 함을 명시한다.
 	Cast<UUIC_CookingQTEUI>(
 		Player->GetController<AMainPlayerController>()->GetUIManageComponent()->
-				ControllerInstances[EUIName::Popup_CookingQTE])->SetHiddenQTE();
+		        ControllerInstances[EUIName::Popup_CookingQTE])->SetHiddenQTE();
 
 	AT_PlayCinematic = UAT_PlayCinematic::InitialEvent(
 		this, RemainQTEQueue.Peek()->Sequence, LevelSequenceActor);
 
 	AT_PlayCinematic->OnPlayCinematicOnReadyNotified.Clear();
+	AT_PlayCinematic->OnPlayCinematicEndNotified.Clear();
+
 	AT_PlayCinematic->OnPlayCinematicOnReadyNotified.AddDynamic(
 		this, &ThisClass::OnPlayReadySequence);
-	AT_PlayCinematic->OnPlayCinematicEndNotified.Clear();
 	AT_PlayCinematic->OnPlayCinematicEndNotified.AddDynamic(
 		this, &ThisClass::OnEndSequence);
 
@@ -100,13 +101,14 @@ void UGA_CookingQTEAction::OnPlayReadySequence(
 }
 
 void UGA_CookingQTEAction::EndAbility(const FGameplayAbilitySpecHandle Handle
-									, const FGameplayAbilityActorInfo* ActorInfo
-									, const FGameplayAbilityActivationInfo
-									ActivationInfo, bool bReplicateEndAbility
-									, bool bWasCancelled)
+                                      , const FGameplayAbilityActorInfo*
+                                      ActorInfo
+                                      , const FGameplayAbilityActivationInfo
+                                      ActivationInfo, bool bReplicateEndAbility
+                                      , bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility
-					, bWasCancelled);
+	                  , bWasCancelled);
 
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		GetAvatarActorFromActorInfo());
@@ -131,7 +133,7 @@ void UGA_CookingQTEAction::EndAbility(const FGameplayAbilitySpecHandle Handle
 		Recipe.GetFoodId());
 
 	Player->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
-			AddItem(NewFoodItem);
+	        AddItem(NewFoodItem);
 }
 
 void UGA_CookingQTEAction::OnEndSequence()
@@ -148,7 +150,7 @@ void UGA_CookingQTEAction::OnEndSequence()
 	if (RemainQTEQueue.IsEmpty())
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo
-					, true, false);
+		           , true, false);
 		return;
 	}
 
