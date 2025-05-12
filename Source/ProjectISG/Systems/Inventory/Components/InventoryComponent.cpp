@@ -12,58 +12,47 @@ void UInventoryComponent::InitializeItemData()
 {
 	InventoryList.SetNum(InventorySlotCount);
 
-	FItemMetaInfo NewItemMetaInfo;
-	NewItemMetaInfo.SetId(1);
-	NewItemMetaInfo.SetCurrentCount(1);
-	InventoryList[0] = NewItemMetaInfo;
-
-	FItemMetaInfo NewItemMetaInfo2;
-	NewItemMetaInfo2.SetId(1);
-	NewItemMetaInfo2.SetCurrentCount(2);
-
-	InventoryList[1] = NewItemMetaInfo2;
-
-	FItemMetaInfo BuildItemMetaInfo;
-	BuildItemMetaInfo.SetId(2);
-	BuildItemMetaInfo.SetCurrentCount(1);
-
-	AddItemToInventory(2, BuildItemMetaInfo);
-
-	FItemMetaInfo CropItemMetaInfo;
-	CropItemMetaInfo.SetId(3);
-	CropItemMetaInfo.SetCurrentCount(2);
-
-	AddItemToInventory(3, CropItemMetaInfo);
-
 	FItemMetaInfo HammerItemMetaInfo;
 	HammerItemMetaInfo.SetId(9);
 	HammerItemMetaInfo.SetCurrentCount(1);
 
-	AddItemToInventory(4, HammerItemMetaInfo);
+	AddItem(HammerItemMetaInfo);
 
 	FItemMetaInfo HoeItemMetaInfo;
 	HoeItemMetaInfo.SetId(10);
 	HoeItemMetaInfo.SetCurrentCount(1);
 
-	AddItemToInventory(5, HoeItemMetaInfo);
-
-	FItemMetaInfo BuildItemMetaInfo2;
-	BuildItemMetaInfo2.SetId(12);
-	BuildItemMetaInfo2.SetCurrentCount(1);
-
-	AddItemToInventory(6, BuildItemMetaInfo2);
+	AddItem(HoeItemMetaInfo);
 
 	FItemMetaInfo WateringItemMetaInfo2;
 	WateringItemMetaInfo2.SetId(13);
 	WateringItemMetaInfo2.SetCurrentCount(1);
 
-	AddItemToInventory(7, WateringItemMetaInfo2);
+	AddItem(WateringItemMetaInfo2);
 
 	FItemMetaInfo FishingRodMetaInfo;
 	FishingRodMetaInfo.SetId(14);
 	FishingRodMetaInfo.SetCurrentCount(1);
 
-	AddItemToInventory(8, FishingRodMetaInfo);
+	AddItem(FishingRodMetaInfo);
+
+	FItemMetaInfo BuildItemMetaInfo;
+	BuildItemMetaInfo.SetId(2);
+	BuildItemMetaInfo.SetCurrentCount(1);
+
+	AddItem(BuildItemMetaInfo);
+
+	FItemMetaInfo BuildItemMetaInfo2;
+	BuildItemMetaInfo2.SetId(12);
+	BuildItemMetaInfo2.SetCurrentCount(1);
+
+	AddItem(BuildItemMetaInfo2);
+
+	FItemMetaInfo CropItemMetaInfo;
+	CropItemMetaInfo.SetId(3);
+	CropItemMetaInfo.SetCurrentCount(2);
+
+	AddItem(CropItemMetaInfo);
 }
 
 void UInventoryComponent::BeginPlay()
