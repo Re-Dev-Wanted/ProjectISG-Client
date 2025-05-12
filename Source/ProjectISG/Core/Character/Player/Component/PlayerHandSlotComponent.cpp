@@ -65,7 +65,6 @@ FString UPlayerHandSlotComponent::GetItemUsingType()
 		return FString();
 	}
 
-	UE_LOG(LogTemp, Display, TEXT("하ㅣㅇ;: %d"), ItemId)
 	return UItemManager::GetItemUsingType(ItemId);
 }
 
