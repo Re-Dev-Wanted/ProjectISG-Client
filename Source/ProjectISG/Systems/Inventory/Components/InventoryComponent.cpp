@@ -182,7 +182,8 @@ bool UInventoryComponent::DropItem(const uint16 Index, const uint32 Count)
 		return true;
 	}
 
-	if (InventoryList[Index].GetCurrentCount() - Count < 0)
+	// Count가 더 많다라는 것은 즉 음수가 나올 가능성이 존재한다는 뜻
+	if (InventoryList[Index].GetCurrentCount() < Count)
 	{
 		return false;
 	}

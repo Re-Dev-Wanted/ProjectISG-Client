@@ -75,6 +75,7 @@ void AMainPlayerCharacter::OnRep_PlayerState()
 	InitializeAbilitySystem();
 
 	PlayerInventoryComponent->InitializePlayerInventory();
+	HandSlotComponent->InitializePlayerHandSlot();
 }
 
 void AMainPlayerCharacter::PossessedBy(AController* NewController)
@@ -84,6 +85,7 @@ void AMainPlayerCharacter::PossessedBy(AController* NewController)
 	InitializeAbilitySystem();
 
 	PlayerInventoryComponent->InitializePlayerInventory();
+	HandSlotComponent->InitializePlayerHandSlot();
 }
 
 void AMainPlayerCharacter::InitializeAbilitySystem()

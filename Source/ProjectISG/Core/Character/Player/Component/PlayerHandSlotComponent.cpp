@@ -1,10 +1,12 @@
 #include "PlayerHandSlotComponent.h"
 
-#include "Kismet/KismetSystemLibrary.h"
+#include "PlayerInventoryComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Object/BaseActor.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
+#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 
 UPlayerHandSlotComponent::UPlayerHandSlotComponent()
 {
@@ -17,21 +19,33 @@ void UPlayerHandSlotComponent::InitializeComponent()
 	Super::InitializeComponent();
 
 	SetIsReplicated(true);
-	
+
 	Player = Cast<AMainPlayerCharacter>(GetOwner());
 
 	if (Player)
 	{
-		Player->OnUpdateSelectedItem.AddDynamic(this, &UPlayerHandSlotComponent::OnChange);
+		Player->OnUpdateSelectedItem.AddDynamic(
+			this, &UPlayerHandSlotComponent::OnChange);
 	}
 }
 
-void UPlayerHandSlotComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+void UPlayerHandSlotComponent::GetLifetimeReplicatedProps(
+	TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UPlayerHandSlotComponent, HeldItem);
 	DOREPLIFETIME(UPlayerHandSlotComponent, ItemId);
+}
+
+void UPlayerHandSlotComponent::InitializePlayerHandSlot()
+{
+	const AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(
+		GetOwner());
+
+	OwnerPlayer->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()
+	           ->OnInventoryUpdateNotified.AddDynamic(
+		           this, &ThisClass::OnChangeHandItemSlot);
 }
 
 void UPlayerHandSlotComponent::OnChange(uint16 _ItemId)
@@ -40,7 +54,7 @@ void UPlayerHandSlotComponent::OnChange(uint16 _ItemId)
 	{
 		return;
 	}
-	
+
 	Server_ChangeItemId(_ItemId);
 }
 
@@ -51,6 +65,7 @@ FString UPlayerHandSlotComponent::GetItemUsingType()
 		return FString();
 	}
 
+	UE_LOG(LogTemp, Display, TEXT("하ㅣㅇ;: %d"), ItemId)
 	return UItemManager::GetItemUsingType(ItemId);
 }
 
@@ -80,12 +95,13 @@ void UPlayerHandSlotComponent::Server_ChangeItemId_Implementation(
 {
 	ClearHand();
 
-	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ChangeItemId);
+	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(
+		ChangeItemId);
 
 	const TSubclassOf<AActor> ActorClass = ItemInfoData.GetShowItemActor();
 
-	const bool bIsStructure = ItemInfoData.GetItemType() != 
-	EItemType::Equipment && UItemManager::IsItemCanHousing(ChangeItemId);
+	const bool bIsStructure = ItemInfoData.GetItemType() !=
+		EItemType::Equipment && UItemManager::IsItemCanHousing(ChangeItemId);
 
 	if (!ActorClass || bIsStructure)
 	{
@@ -100,15 +116,16 @@ void UPlayerHandSlotComponent::Server_ChangeItemId_Implementation(
 	if (GetOwner()->HasAuthority())
 	{
 		ItemId = ChangeItemId;
-		
+
 		if (HeldItem)
 		{
 			const FName SocketName = UItemManager::GetSocketNameById(ItemId);
 
 			if (!SocketName.IsNone() && Player && Player->GetMesh())
 			{
-				HeldItem->AttachToComponent(Player->GetMesh(), 
-				FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+				HeldItem->AttachToComponent(Player->GetMesh(),
+				                            FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+				                            SocketName);
 			}
 		}
 	}
@@ -117,19 +134,38 @@ void UPlayerHandSlotComponent::Server_ChangeItemId_Implementation(
 	}
 }
 
-void UPlayerHandSlotComponent::Multicast_ChangeItemId_Implementation(uint16 
-ChangeItemId, class ABaseActor* ChangeHeldItem)
+void UPlayerHandSlotComponent::Multicast_ChangeItemId_Implementation(uint16
+	ChangeItemId, class ABaseActor* ChangeHeldItem)
 {
 	ItemId = ChangeItemId;
-	
+
 	if (ChangeHeldItem)
 	{
 		const FName SocketName = UItemManager::GetSocketNameById(ItemId);
 
 		if (!SocketName.IsNone() && Player && Player->GetMesh())
 		{
-			HeldItem->AttachToComponent(Player->GetMesh(), 
-			FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+			HeldItem->AttachToComponent(Player->GetMesh(),
+			                            FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+			                            SocketName);
 		}
 	}
+}
+
+void UPlayerHandSlotComponent::OnChangeHandItemSlot()
+{
+	const AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(
+		GetOwner());
+
+	const uint32 CurrentIndex = OwnerPlayer->GetPlayerInventoryComponent()->
+	                                         GetCurrentSlotIndex();
+
+	UE_LOG(LogTemp, Display, TEXT("현재 인벤토리 Index: %d"), CurrentIndex);
+
+	const FItemMetaInfo ItemMetaInfo = OwnerPlayer->
+	                                   GetPlayerState<AMainPlayerState>()->
+	                                   GetInventoryComponent()->
+	                                   GetInventoryList()[CurrentIndex];
+
+	OnChange(ItemMetaInfo.GetId());
 }

@@ -43,24 +43,13 @@ struct PROJECTISG_API FItemInfoData : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 
-	FORCEINLINE FString GetDisplayName() const { return DisplayName; }
-	FORCEINLINE EItemType GetItemType() const { return ItemType; }
-	FORCEINLINE TSoftObjectPtr<UTexture2D> GetThumbnail() const
-	{
-		return Thumbnail;
-	}
+	GETTER(FString, DisplayName)
+	GETTER(EItemType, ItemType)
+	GETTER(TSoftObjectPtr<UTexture2D>, Thumbnail)
+	GETTER(TSubclassOf<AActor>, ShowItemActor)
+	GETTER(TSubclassOf<AActor>, PlaceItemActor)
+	GETTER(uint32, MaxItemCount);
 
-	FORCEINLINE TSubclassOf<AActor> GetShowItemActor() const
-	{
-		return ShowItemActor;
-	}
-
-	FORCEINLINE TSubclassOf<AActor> GetPlaceItemActor() const
-	{
-		return PlaceItemActor;
-	}
-
-	FORCEINLINE int GetMaxItemCount() const { return MaxItemCount; }
 	FORCEINLINE TMap<EMetaDataKey, FString> GetMetaData() const
 	{
 		return MetaData;
@@ -108,7 +97,7 @@ private:
 		meta = (AllowPrivateAccess = true,
 			ClampMin = 0, ClampMax = 1000, UIMin = 0, UIMax = 1000))
 	;
-	int MaxItemCount = 0;
+	uint32 MaxItemCount = 0;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Data",
 		meta=(AllowPrivateAccess = true))
@@ -128,7 +117,7 @@ struct PROJECTISG_API FItemMetaInfo
 	GENERATED_USTRUCT_BODY()
 
 	GETTER_SETTER(uint16, Id)
-	GETTER(int, CurrentCount)
+	GETTER(uint32, CurrentCount)
 
 	FORCEINLINE TMap<EMetaDataKey, FString> GetMetaData() const
 	{
@@ -164,7 +153,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Data", meta =
 		(ClampMin = 0, ClampMax = 1000, UIMin = 0, UIMax = 1000))
-	uint16 CurrentCount = 0;
+	uint32 CurrentCount = 0;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Data")
 	TMap<EMetaDataKey, FString> MetaData;
@@ -188,7 +177,9 @@ struct FItemMetaInfo_Net
 	UPROPERTY()
 	TArray<FString> Values;
 
-	FItemMetaInfo_Net() {}
+	FItemMetaInfo_Net()
+	{
+	}
 
 	FItemMetaInfo_Net(const FItemMetaInfo& Original)
 	{
@@ -207,7 +198,7 @@ struct FItemMetaInfo_Net
 		OutData.SetId(Id);
 		OutData.SetCurrentCount(Count);
 		TMap<EMetaDataKey, FString> MetaData;
-		
+
 		for (int32 i = 0; i < Keys.Num(); ++i)
 		{
 			MetaData.Add(Keys[i], Values[i]);
