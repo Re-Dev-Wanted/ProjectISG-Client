@@ -16,43 +16,43 @@ void UInventoryComponent::InitializeItemData()
 	HammerItemMetaInfo.SetId(9);
 	HammerItemMetaInfo.SetCurrentCount(1);
 
-	AddItem(HammerItemMetaInfo);
+	AddItemToInventory(1, HammerItemMetaInfo);
 
 	FItemMetaInfo HoeItemMetaInfo;
 	HoeItemMetaInfo.SetId(10);
 	HoeItemMetaInfo.SetCurrentCount(1);
 
-	AddItem(HoeItemMetaInfo);
+	AddItemToInventory(2, HoeItemMetaInfo);
 
 	FItemMetaInfo WateringItemMetaInfo2;
 	WateringItemMetaInfo2.SetId(13);
 	WateringItemMetaInfo2.SetCurrentCount(1);
 
-	AddItem(WateringItemMetaInfo2);
+	AddItemToInventory(3, WateringItemMetaInfo2);
 
 	FItemMetaInfo FishingRodMetaInfo;
 	FishingRodMetaInfo.SetId(14);
 	FishingRodMetaInfo.SetCurrentCount(1);
 
-	AddItem(FishingRodMetaInfo);
+	AddItemToInventory(4, FishingRodMetaInfo);
 
 	FItemMetaInfo BuildItemMetaInfo;
 	BuildItemMetaInfo.SetId(2);
 	BuildItemMetaInfo.SetCurrentCount(1);
 
-	AddItem(BuildItemMetaInfo);
+	AddItemToInventory(5, BuildItemMetaInfo);
 
 	FItemMetaInfo BuildItemMetaInfo2;
 	BuildItemMetaInfo2.SetId(12);
 	BuildItemMetaInfo2.SetCurrentCount(1);
 
-	AddItem(BuildItemMetaInfo2);
+	AddItemToInventory(6, BuildItemMetaInfo2);
 
 	FItemMetaInfo CropItemMetaInfo;
 	CropItemMetaInfo.SetId(3);
 	CropItemMetaInfo.SetCurrentCount(2);
 
-	AddItem(CropItemMetaInfo);
+	AddItemToInventory(7, CropItemMetaInfo);
 }
 
 void UInventoryComponent::BeginPlay()

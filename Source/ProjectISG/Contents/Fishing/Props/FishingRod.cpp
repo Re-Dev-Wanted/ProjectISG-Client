@@ -157,6 +157,13 @@ void AFishingRod::OnEventRealBite()
 
 void AFishingRod::OnEventFinish(bool bLoop)
 {
+
+	for (FTimerHandle Handle : TimerHandles)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(Handle);
+		Handle.Invalidate();
+	}
+	
 	IsBiteFish = false;
 	FishData = FFishData();
 
