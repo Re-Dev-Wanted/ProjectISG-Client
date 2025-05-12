@@ -103,7 +103,7 @@ void APlacement::OnTouch(AActor* Causer)
 
 			//Logging
 			FDiaryLogParams LogParams;
-			LogParams.Location = "건축장";
+			LogParams.Location = TEXT("농장");
 			LogParams.ActionType = ELoggingActionType::HOUSING;
 			LogParams.ActionName = ELoggingActionName::remove_housing;
 
