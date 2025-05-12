@@ -57,4 +57,8 @@ private:
 	// 대사 텍스트
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	FString DialogueText;
+
+	// 특정 대사 이후에 특정 예외 동작을 위한 처리로, 각 대사별 특수 모션에 대한 처리 담당
+	// UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess = true))
+	// TMap<FString, FString> QuestMetaData;
 };
