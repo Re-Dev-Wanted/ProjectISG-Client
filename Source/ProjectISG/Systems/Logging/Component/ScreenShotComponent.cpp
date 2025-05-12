@@ -61,7 +61,7 @@ void UScreenShotComponent::SaveCaptureFrameImage(const UObject* Object,
 		      IImageWrapperModule& ImageWrapperModule =
 			      FModuleManager::LoadModuleChecked<
 				      IImageWrapperModule>(FName("ImageWrapper"));
-		      TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule.
+		      const TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule.
 			      CreateImageWrapper(EImageFormat::PNG);
 
 		      // 압축
@@ -80,6 +80,10 @@ void UScreenShotComponent::SaveCaptureFrameImage(const UObject* Object,
 			                                   FDateTime::Now().ToString() +
 			                                   TEXT("-screenshot.png")));
 
-		      OnCaptureFrameNotified.Execute(CompressedData);
+		      AsyncTask(ENamedThreads::GameThread,
+		                [this, Object, OnCaptureFrameNotified, CompressedData]
+		                {
+			                OnCaptureFrameNotified.Execute(CompressedData);
+		                });
 	      });
 }

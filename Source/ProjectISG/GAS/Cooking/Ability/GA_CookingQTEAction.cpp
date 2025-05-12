@@ -74,13 +74,19 @@ void UGA_CookingQTEAction::PlayNextSequence()
 	AT_PlayCinematic = UAT_PlayCinematic::InitialEvent(
 		this, RemainQTEQueue.Peek()->Sequence, LevelSequenceActor);
 
-	AT_PlayCinematic->OnPlayCinematicOnReadyNotified.Clear();
-	AT_PlayCinematic->OnPlayCinematicEndNotified.Clear();
+	if (!AT_PlayCinematic->OnPlayCinematicOnReadyNotified.IsAlreadyBound(
+		this, &ThisClass::OnPlayReadySequence))
+	{
+		AT_PlayCinematic->OnPlayCinematicOnReadyNotified.AddDynamic(
+			this, &ThisClass::OnPlayReadySequence);
+	}
 
-	AT_PlayCinematic->OnPlayCinematicOnReadyNotified.AddDynamic(
-		this, &ThisClass::OnPlayReadySequence);
-	AT_PlayCinematic->OnPlayCinematicEndNotified.AddDynamic(
-		this, &ThisClass::OnEndSequence);
+	if (!AT_PlayCinematic->OnPlayCinematicEndNotified.IsAlreadyBound(
+		this, &ThisClass::OnEndSequence))
+	{
+		AT_PlayCinematic->OnPlayCinematicOnReadyNotified.AddDynamic(
+			this, &ThisClass::OnPlayReadySequence);
+	}
 
 	AT_PlayCinematic->ReadyForActivation();
 }
@@ -112,7 +118,13 @@ void UGA_CookingQTEAction::EndAbility(const FGameplayAbilitySpecHandle Handle
 
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		GetAvatarActorFromActorInfo());
+
 	if (!Player)
+	{
+		return;
+	}
+
+	if (!Player->IsLocallyControlled())
 	{
 		return;
 	}
@@ -147,6 +159,7 @@ void UGA_CookingQTEAction::OnEndSequence()
 	KitchenFurniture->UnEquipCookingToolToAct();
 
 	RemainQTEQueue.Pop();
+
 	if (RemainQTEQueue.IsEmpty())
 	{
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo
