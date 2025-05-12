@@ -126,16 +126,19 @@ void UPlacementIndicatorComponent::Execute()
 
 	const TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent = Player->GetPlayerInventoryComponent();
 
+	FRotator Rotation = GridManager->GetSnappedRotation
+			(GetDegrees(RotateDirection));
+
 	if (GetOwner()->HasAuthority())
 	{
 		ExecuteInternal(IndicateActor->GetActorPivotLocation(),
-			IndicateActor->GetActorLocation(), IndicateActor->GetActorRotation(),
+			IndicateActor->GetActorLocation(), Rotation,
 			IndicateActor->GetClass(), PlacementItemId);
 	}
 	else
 	{
 		Server_Execute(IndicateActor->GetActorPivotLocation(),
-			IndicateActor->GetActorLocation(), IndicateActor->GetActorRotation(),
+			IndicateActor->GetActorLocation(), Rotation,
 			IndicateActor->GetClass(), PlacementItemId);
 	}
 

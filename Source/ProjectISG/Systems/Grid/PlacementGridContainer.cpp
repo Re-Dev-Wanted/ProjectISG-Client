@@ -66,7 +66,10 @@ uint16 FPlacementGridContainer::Remove(const FIntVector& GridCoord, uint16 ItemI
 	// 실제 배열에서 제거
 	for (int32 Index : IndicesToRemove)
 	{
-		Items.RemoveAt(Index);
+		if (Index >= 0 && Index < Items.Num())
+		{
+			Items.RemoveAt(Index);
+		}
 	}
 	
 	MarkArrayDirty();
