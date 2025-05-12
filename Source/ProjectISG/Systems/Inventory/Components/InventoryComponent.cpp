@@ -12,40 +12,35 @@ void UInventoryComponent::InitializeItemData()
 {
 	InventoryList.SetNum(InventorySlotCount);
 
-	FItemMetaInfo NewItemMetaInfo;
-	NewItemMetaInfo.SetId(1);
-	NewItemMetaInfo.SetCurrentCount(1);
-	InventoryList[0] = NewItemMetaInfo;
-
-	FItemMetaInfo NewItemMetaInfo2;
-	NewItemMetaInfo2.SetId(1);
-	NewItemMetaInfo2.SetCurrentCount(2);
-
-	InventoryList[1] = NewItemMetaInfo2;
-
-	FItemMetaInfo BuildItemMetaInfo;
-	BuildItemMetaInfo.SetId(2);
-	BuildItemMetaInfo.SetCurrentCount(1);
-
-	AddItemToInventory(2, BuildItemMetaInfo);
-
-	FItemMetaInfo CropItemMetaInfo;
-	CropItemMetaInfo.SetId(3);
-	CropItemMetaInfo.SetCurrentCount(2);
-
-	AddItemToInventory(3, CropItemMetaInfo);
-
 	FItemMetaInfo HammerItemMetaInfo;
 	HammerItemMetaInfo.SetId(9);
 	HammerItemMetaInfo.SetCurrentCount(1);
 
-	AddItemToInventory(4, HammerItemMetaInfo);
+	AddItemToInventory(1, HammerItemMetaInfo);
 
 	FItemMetaInfo HoeItemMetaInfo;
 	HoeItemMetaInfo.SetId(10);
 	HoeItemMetaInfo.SetCurrentCount(1);
 
-	AddItemToInventory(5, HoeItemMetaInfo);
+	AddItemToInventory(2, HoeItemMetaInfo);
+
+	FItemMetaInfo WateringItemMetaInfo2;
+	WateringItemMetaInfo2.SetId(13);
+	WateringItemMetaInfo2.SetCurrentCount(1);
+
+	AddItemToInventory(3, WateringItemMetaInfo2);
+
+	FItemMetaInfo FishingRodMetaInfo;
+	FishingRodMetaInfo.SetId(14);
+	FishingRodMetaInfo.SetCurrentCount(1);
+
+	AddItemToInventory(4, FishingRodMetaInfo);
+
+	FItemMetaInfo BuildItemMetaInfo;
+	BuildItemMetaInfo.SetId(2);
+	BuildItemMetaInfo.SetCurrentCount(1);
+
+	AddItemToInventory(5, BuildItemMetaInfo);
 
 	FItemMetaInfo BuildItemMetaInfo2;
 	BuildItemMetaInfo2.SetId(12);
@@ -53,17 +48,11 @@ void UInventoryComponent::InitializeItemData()
 
 	AddItemToInventory(6, BuildItemMetaInfo2);
 
-	FItemMetaInfo WateringItemMetaInfo2;
-	WateringItemMetaInfo2.SetId(13);
-	WateringItemMetaInfo2.SetCurrentCount(1);
+	FItemMetaInfo CropItemMetaInfo;
+	CropItemMetaInfo.SetId(3);
+	CropItemMetaInfo.SetCurrentCount(2);
 
-	AddItemToInventory(7, WateringItemMetaInfo2);
-
-	FItemMetaInfo FishingRodMetaInfo;
-	FishingRodMetaInfo.SetId(14);
-	FishingRodMetaInfo.SetCurrentCount(1);
-
-	AddItemToInventory(8, FishingRodMetaInfo);
+	AddItemToInventory(7, CropItemMetaInfo);
 }
 
 void UInventoryComponent::BeginPlay()
@@ -182,7 +171,8 @@ bool UInventoryComponent::DropItem(const uint16 Index, const uint32 Count)
 		return true;
 	}
 
-	if (InventoryList[Index].GetCurrentCount() - Count < 0)
+	// Count가 더 많다라는 것은 즉 음수가 나올 가능성이 존재한다는 뜻
+	if (InventoryList[Index].GetCurrentCount() < Count)
 	{
 		return false;
 	}

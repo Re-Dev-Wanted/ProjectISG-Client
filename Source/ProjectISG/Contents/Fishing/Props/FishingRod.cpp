@@ -126,10 +126,15 @@ void AFishingRod::OnEventRealBite()
 
 	const AMainPlayerController* PC = Cast<AMainPlayerController>(GetWorld()->GetFirstPlayerController());
 
-	UUIC_FishingUI* ModalUIController = 
-		Cast<UUIC_FishingUI>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Modal_FishingUI]);
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(PC->GetPawn());
+	
+	if (Player->IsLocallyControlled())
+	{
+		UUIC_FishingUI* ModalUIController = 
+			Cast<UUIC_FishingUI>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Modal_FishingUI]);
 
-	ModalUIController->SetUI(true, TEXT("RM"), TEXT("물었다!"));
+		ModalUIController->SetUI(true, TEXT("RM"), TEXT("물었다!"));
+	}
 
 	TWeakObjectPtr<AFishingRod> WeakThis = this;
 	
@@ -152,15 +157,27 @@ void AFishingRod::OnEventRealBite()
 
 void AFishingRod::OnEventFinish(bool bLoop)
 {
+
+	for (FTimerHandle Handle : TimerHandles)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(Handle);
+		Handle.Invalidate();
+	}
+	
 	IsBiteFish = false;
 	FishData = FFishData();
 
 	const AMainPlayerController* PC = Cast<AMainPlayerController>(GetWorld()->GetFirstPlayerController());
 
-	UUIC_FishingUI* ModalUIController = 
-		Cast<UUIC_FishingUI>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Modal_FishingUI]);
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(PC->GetPawn());
 
-	ModalUIController->SetUI(false, TEXT("RM"), TEXT("회수하기"));
+	if (Player->IsLocallyControlled())
+	{
+		UUIC_FishingUI* ModalUIController = 
+			Cast<UUIC_FishingUI>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Modal_FishingUI]);
+
+		ModalUIController->SetUI(false, TEXT("RM"), TEXT("회수하기"));
+	}
 
 	if (Bobber)
 	{
@@ -200,38 +217,6 @@ void AFishingRod::FinishLogging(bool bSuccess)
 	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 }
 
-// bool AFishingRod::GetCanTouch() const
-// {
-// 	return false;
-// }
-//
-// FString AFishingRod::GetTouchDisplayText() const
-// {
-// 	return TEXT("올리기");
-// }
-//
-// void AFishingRod::OnTouch(AActor* Causer)
-// {
-// 	Super::OnTouch(Causer);
-//
-// 	// UKismetSystemLibrary::PrintString(GetWorld(),TEXT("AFishingRod::OnTouch"));
-//
-// 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
-// 	{
-// 		FGameplayEventData EventData;
-// 		EventData.EventTag = ISGGameplayTags::Fishing_Active_ReelInLine;
-// 		EventData.Instigator = Player;
-// 		EventData.Target = this;
-// 			
-// 		Player->GetAbilitySystemComponent()->HandleGameplayEvent(ISGGameplayTags::Fishing_Active_ReelInLine, &EventData);
-// 	}
-// }
-//
-// void AFishingRod::OnTouchResponse(AActor* Causer)
-// {
-// 	Super::OnTouchResponse(Causer);
-// }
-
 void AFishingRod::StartCasting(AActor* Causer, FVector Destination)
 {
 	if (!Bobber)
@@ -268,8 +253,6 @@ void AFishingRod::OnEndReelInLine(AActor* Causer)
 {
 	if (IsBiteFish && FishData.IsValid())
 	{
-		// UKismetSystemLibrary::PrintString(GetWorld(), TEXT("물고기 잡음!"));
-		
 		const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
 		
 		if (Player && Player->IsLocallyControlled())

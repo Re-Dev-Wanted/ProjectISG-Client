@@ -32,6 +32,4 @@ private:
 	void OnEndCinematic();
 
 	void UnlockPlayer();
-
-	void LoggingToEndCook();
 };

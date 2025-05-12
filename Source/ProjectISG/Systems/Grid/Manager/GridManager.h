@@ -39,6 +39,10 @@ public:
 	UPROPERTY(Replicated)
 	FPlacementGridContainer PlacementGridContainer;
 
+	//빠른 접근용 Cache Map
+	UPROPERTY()
+	TMap<FIntVector, uint16> PlacedMap;
+
 	FVector SnapToGrid(const FVector& Location);
 
 	FVector SnapToGridPlacement(const FVector& Location);
@@ -56,19 +60,24 @@ public:
 
 	void BuildPlacement(TSubclassOf<APlacement> PlacementClass, uint16 ItemId, const FVector& Pivot, const FVector& Location,
 	                    const FRotator& Rotation);
-	
-	void BuildPlacementAtGhost(TSubclassOf<APlacement> PlacementClass, uint16 ItemId, const APlacement& Ghost);
 
 	UFUNCTION(Server, Reliable)
 	void Server_BuildPlacement(TSubclassOf<APlacement> PlacementClass, uint16 ItemId, FVector Pivot, FVector Location, FRotator Rotation);
 
-	uint16 RemovePlacement(const FIntVector& GridAt);
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_BuildPlacement(const FIntVector& GridAt, uint16 ItemId);
 
-	bool TryGetPlacement(APlacement* Placement, FIntVector& OutGridAt, APlacement*& OutPlacement);
+	bool RemovePlacement(const FIntVector& GridAt, uint16 ItemId);
 
-	bool TryGetPlacement(const FVector& Location, FIntVector& OutGridAt, APlacement*& OutPlacement);
+	UFUNCTION(Server, Reliable)
+	void Server_RemovePlacement(const FIntVector& GridAt, uint16 ItemId);
 
-	bool TryGetPlacementAt(AActor* Actor, FIntVector& OutGridAt, APlacement*& OutPlacement);
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_RemovePlacement(const FIntVector& GridAt);
+
+	bool TryGetPlacement(APlacement* Placement, FIntVector& OutGridAt, uint16& ItemId);
+
+	bool TryGetPlacement(const FVector& Location, FIntVector& OutGridAt, uint16& ItemId);
 
 	void SetVisibleGrid(bool bIsVisible);
 
@@ -88,4 +97,6 @@ public:
 
 		return FRotator(0.f, Yaw + Degrees, 0.f);
 	}
+
+	bool IsEmptyGrid(const FVector& Location);
 };

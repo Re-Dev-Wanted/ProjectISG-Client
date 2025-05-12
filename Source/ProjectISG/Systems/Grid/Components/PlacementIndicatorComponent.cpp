@@ -4,6 +4,7 @@
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
@@ -125,16 +126,19 @@ void UPlacementIndicatorComponent::Execute()
 
 	const TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent = Player->GetPlayerInventoryComponent();
 
+	FRotator Rotation = GridManager->GetSnappedRotation
+			(GetDegrees(RotateDirection));
+
 	if (GetOwner()->HasAuthority())
 	{
 		ExecuteInternal(IndicateActor->GetActorPivotLocation(),
-			IndicateActor->GetActorLocation(), IndicateActor->GetActorRotation(),
+			IndicateActor->GetActorLocation(), Rotation,
 			IndicateActor->GetClass(), PlacementItemId);
 	}
 	else
 	{
 		Server_Execute(IndicateActor->GetActorPivotLocation(),
-			IndicateActor->GetActorLocation(), IndicateActor->GetActorRotation(),
+			IndicateActor->GetActorLocation(), Rotation,
 			IndicateActor->GetClass(), PlacementItemId);
 	}
 
@@ -176,7 +180,7 @@ void UPlacementIndicatorComponent::ExecuteInternal(FVector Pivot, FVector Locati
 			if (UItemManager::GetItemUsingType(ItemId) != "Disposability")
 			{
 				FDiaryLogParams LogParams;
-				LogParams.Location = "건축장";
+				LogParams.Location = TEXT("농장");
 				LogParams.ActionType = ELoggingActionType::HOUSING;
 				LogParams.ActionName = ELoggingActionName::place_housing;
 
@@ -233,9 +237,6 @@ void UPlacementIndicatorComponent::LineTrace()
 	{
 		if (PlayerController->GetCharacter()->IsLocallyControlled())
 		{
-			// FVector SnappedLocation = GridManager->GetLocationInPointerDirectionPlacement(
-			// 	PlayerController, IndicateActor->GetMeshSize());
-
 			FVector SnappedLocation = GridManager->SnapToGridPlacement(TargetTraceResult.ImpactPoint);
 			FRotator SnappedRotation = GridManager->GetSnappedRotation
 			(GetDegrees(RotateDirection));
@@ -249,10 +250,8 @@ void UPlacementIndicatorComponent::LineTrace()
 															  SnappedRotation.Yaw,
 															   0), 0.1f,
 															  InterpSpeed));
-			FIntVector GridCoord;
-			APlacement* PlacedActor;
 
-			bIsBlocked = GridManager->TryGetPlacement(SnappedLocation, GridCoord, PlacedActor);
+			bIsBlocked = !GridManager->IsEmptyGrid(SnappedLocation);
 
 			IndicateActor->SetOption(true, bIsBlocked);
 
@@ -443,6 +442,8 @@ void UPlacementIndicatorComponent::OnDeactivate()
 		{
 			PC->GetMainHUD()->TogglePlacementIndicatorUI(false);
 		}
+
+		Player->GetInteractionComponent()->SetIsInteractive(true);
 	}
 }
 

@@ -30,6 +30,11 @@ void UGA_CookingQTEAction::ActivateAbility(
 
 	AT_LogCooking = UAT_LogWithScreenShot::InitialEvent(this);
 
+	if (LevelSequenceActor)
+	{
+		LevelSequenceActor->Destroy();
+	}
+
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		GetAvatarActorFromActorInfo());
 
@@ -64,24 +69,47 @@ void UGA_CookingQTEAction::PlayNextSequence()
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		GetAvatarActorFromActorInfo());
 
+	AT_PlayCinematic = UAT_PlayCinematic::InitialEvent(
+		this, RemainQTEQueue.Peek()->Sequence, LevelSequenceActor);
+
+	AT_PlayCinematic->OnPlayCinematicOnReadyNotified.Unbind();
+	AT_PlayCinematic->OnPlayCinematicOnReadyNotified.BindUObject(
+		this, &ThisClass::OnPlayReadySequence);
+
+	AT_PlayCinematic->OnPlayCinematicEndNotified.Unbind();
+	AT_PlayCinematic->OnPlayCinematicEndNotified.BindUObject(
+		this, &ThisClass::OnEndSequence);
+
 	// 새로운 시네마틱 진행 시 QTE 진행 화면 가리기
 	// 비즈니스 로직 상 모든 QTE는 시네마틱 시작 쯤부터 진행해
 	// 시네마틱 1개 종료 시점에 반드시 마무리 해야 함을 명시한다.
 	Cast<UUIC_CookingQTEUI>(
 		Player->GetController<AMainPlayerController>()->GetUIManageComponent()->
-				ControllerInstances[EUIName::Popup_CookingQTE])->SetHiddenQTE();
-
-	AT_PlayCinematic = UAT_PlayCinematic::InitialEvent(
-		this, RemainQTEQueue.Peek()->Sequence, LevelSequenceActor);
-
-	AT_PlayCinematic->OnPlayCinematicOnReadyNotified.Clear();
-	AT_PlayCinematic->OnPlayCinematicOnReadyNotified.AddDynamic(
-		this, &ThisClass::OnPlayReadySequence);
-	AT_PlayCinematic->OnPlayCinematicEndNotified.Clear();
-	AT_PlayCinematic->OnPlayCinematicEndNotified.AddDynamic(
-		this, &ThisClass::OnEndSequence);
+		        ControllerInstances[EUIName::Popup_CookingQTE])->SetHiddenQTE();
 
 	AT_PlayCinematic->ReadyForActivation();
+}
+
+void UGA_CookingQTEAction::OnEndSequence()
+{
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		GetAvatarActorFromActorInfo());
+
+	AKitchenFurniture* KitchenFurniture = Cast<AKitchenFurniture>(
+		Player->GetInteractionComponent()->GetTargetTraceResult().GetActor());
+
+	KitchenFurniture->UnEquipCookingToolToAct();
+
+	RemainQTEQueue.Pop();
+
+	if (RemainQTEQueue.IsEmpty())
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo
+		           , true, false);
+		return;
+	}
+
+	PlayNextSequence();
 }
 
 void UGA_CookingQTEAction::OnPlayReadySequence(
@@ -100,17 +128,24 @@ void UGA_CookingQTEAction::OnPlayReadySequence(
 }
 
 void UGA_CookingQTEAction::EndAbility(const FGameplayAbilitySpecHandle Handle
-									, const FGameplayAbilityActorInfo* ActorInfo
-									, const FGameplayAbilityActivationInfo
-									ActivationInfo, bool bReplicateEndAbility
-									, bool bWasCancelled)
+                                      , const FGameplayAbilityActorInfo*
+                                      ActorInfo
+                                      , const FGameplayAbilityActivationInfo
+                                      ActivationInfo, bool bReplicateEndAbility
+                                      , bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility
-					, bWasCancelled);
+	                  , bWasCancelled);
 
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		GetAvatarActorFromActorInfo());
+
 	if (!Player)
+	{
+		return;
+	}
+
+	if (!Player->IsLocallyControlled())
 	{
 		return;
 	}
@@ -131,29 +166,9 @@ void UGA_CookingQTEAction::EndAbility(const FGameplayAbilitySpecHandle Handle
 		Recipe.GetFoodId());
 
 	Player->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
-			AddItem(NewFoodItem);
+	        AddItem(NewFoodItem);
 }
 
-void UGA_CookingQTEAction::OnEndSequence()
-{
-	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
-		GetAvatarActorFromActorInfo());
-
-	AKitchenFurniture* KitchenFurniture = Cast<AKitchenFurniture>(
-		Player->GetInteractionComponent()->GetTargetTraceResult().GetActor());
-
-	KitchenFurniture->UnEquipCookingToolToAct();
-
-	RemainQTEQueue.Pop();
-	if (RemainQTEQueue.IsEmpty())
-	{
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo
-					, true, false);
-		return;
-	}
-
-	PlayNextSequence();
-}
 
 void UGA_CookingQTEAction::LoggingToStartCook()
 {
@@ -182,8 +197,11 @@ void UGA_CookingQTEAction::LoggingToEndCook()
 	LogParams.Location = TEXT("요리장");
 	LogParams.ActionType = ELoggingActionType::COOKING;
 	LogParams.ActionName = ELoggingActionName::finish_cooking;
-	LogParams.Detail = UItemManager::GetItemInfoById(Recipe.GetFoodId()).
-		GetDisplayName() + TEXT(" ") + TEXT("1개");
+
+	const FString FoodName = UItemManager::GetItemInfoById(Recipe.GetFoodId()).
+		GetDisplayName();
+
+	LogParams.Detail = FoodName + TEXT(" 1개");
 
 	AT_LogCooking->SetLogParams(LogParams);
 	AT_LogCooking->SetIsLogWithScreenShot(true);

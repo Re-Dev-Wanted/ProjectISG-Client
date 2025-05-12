@@ -1,5 +1,6 @@
 #include "GridManager.h"
 
+#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Components/GridComponent.h"
@@ -134,13 +135,10 @@ void AGridManager::BuildPlacement(TSubclassOf<APlacement> PlacementClass,
 {
 	FIntVector GridCoord = WorldToGridLocation(Pivot);
 
-	UE_LOG(LogTemp, Warning, TEXT("Pivot %s"), *Pivot.ToString());
-	UE_LOG(LogTemp, Warning, TEXT("Coord %s"), *GridCoord.ToString());
-
 	FActorSpawnParameters Params;
 	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	Params.bNoFail = true;
-	Params.Owner = this;
+	Params.Owner = GetWorld()->GetFirstPlayerController();
 
 	APlacement* SpawnedActor = GetWorld()->SpawnActor<APlacement>(PlacementClass, SnapToGridPlacement(Location), Rotation, Params);
 		
@@ -151,6 +149,8 @@ void AGridManager::BuildPlacement(TSubclassOf<APlacement> PlacementClass,
 
 	SpawnedActor->SetReplicates(true);
 	SpawnedActor->SetReplicatingMovement(true);
+	SpawnedActor->bNetLoadOnClient = true;
+	SpawnedActor->bAlwaysRelevant = true;
 	if (SpawnedActor->GetMeshAssetPath().IsValid())
 	{
 		SpawnedActor->SetMeshAssetPath(SpawnedActor->GetMeshAssetPath());
@@ -161,92 +161,70 @@ void AGridManager::BuildPlacement(TSubclassOf<APlacement> PlacementClass,
 	SpawnedActor->ForceNetUpdate();
 	SpawnedActor->Setup(SnapSize);
 	SpawnedActor->SetOption(false);
-
-	// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("BuildPlacement %s"), 
-	// *SpawnedActor
-	// ->GetActorNameOrLabel()));
 		
 	PlacementGridContainer.Add
 	(
 		GridCoord,
 		SpawnedActor,
 		ItemId,
-		[this]
+		[this, GridCoord, ItemId]
 		{
 			ForceNetUpdate();
+
+			Multicast_BuildPlacement(GridCoord, ItemId);
 		}
 	);
+
 }
 
-void AGridManager::BuildPlacementAtGhost(TSubclassOf<APlacement> PlacementClass,
-	uint16 ItemId, const APlacement& Ghost)
+bool AGridManager::RemovePlacement(const FIntVector& GridAt, uint16 ItemId)
 {
-	BuildPlacement(PlacementClass, ItemId, Ghost.GetActorPivotLocation(), Ghost.GetActorLocation(),
-						  Ghost.GetActorRotation());
-}
-
-uint16 AGridManager::RemovePlacement(const FIntVector& GridAt)
-{
-	TWeakObjectPtr<APlacement> Placement = PlacementGridContainer.GetPlacedMap().FindRef(GridAt);
-	if (Placement.IsValid())
+	ItemId = PlacedMap.FindRef(GridAt);
+	
+	if (ItemId > 0)
 	{
-		const uint16 ItemId = PlacementGridContainer.Remove
+		PlacementGridContainer.Remove
 		(
-			Placement.Get(),
-			[this]
+			GridAt, ItemId,
+			[this, GridAt, ItemId]
 			{
 				ForceNetUpdate();
 			}
 		);
 
-		// 가구 제거
-		Placement->Destroy();
+		Multicast_RemovePlacement(GridAt);
 
-		return ItemId;
-	}
-
-	return 0;
-}
-
-bool AGridManager::TryGetPlacement(APlacement* Placement, FIntVector& OutGridAt, APlacement*& OutPlacement)
-{
-	return TryGetPlacement(Placement->GetActorPivotLocation(), OutGridAt, OutPlacement);
-}
-
-bool AGridManager::TryGetPlacement(const FVector& Location, FIntVector& OutGridAt, APlacement*& OutPlacement)
-{
-	FIntVector ToCoord = WorldToGridLocation(Location);
-
-	if (PlacementGridContainer.GetPlacedMap().Contains(ToCoord))
-	{
-		TWeakObjectPtr<APlacement> Placement = PlacementGridContainer.GetPlacedMap()[ToCoord];
-		if (Placement.IsValid())
-		{
-			OutGridAt = ToCoord;
-			OutPlacement = Placement.Get();
-
-			return true;
-		}
+		return true;
 	}
 
 	return false;
 }
 
-bool AGridManager::TryGetPlacementAt(AActor* Actor, FIntVector& OutGridAt, APlacement*& OutPlacement)
+void AGridManager::Server_RemovePlacement_Implementation(const FIntVector& GridAt, uint16 ItemId)
 {
-	FVector Start = Actor->GetActorLocation();
-	FVector End = Start + Actor->GetActorForwardVector() * 1000.f;
+	RemovePlacement(GridAt, ItemId);
+}
 
-	FHitResult HitResult;
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(Actor);
+void AGridManager::Multicast_RemovePlacement_Implementation(const FIntVector& GridAt)
+{
+	PlacedMap.Remove(GridAt);
+}
 
-	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
+bool AGridManager::TryGetPlacement(APlacement* Placement, FIntVector& OutGridAt, uint16& ItemId)
+{
+	return TryGetPlacement(Placement->GetActorPivotLocation(), OutGridAt, ItemId);
+}
 
-	if (bHit)
+bool AGridManager::TryGetPlacement(const FVector& Location, FIntVector& OutGridAt, uint16& ItemId)
+{
+	FIntVector ToCoord = WorldToGridLocation(Location);
+
+	ItemId = PlacedMap.FindRef(ToCoord);
+
+	if (ItemId > 0)
 	{
-		FVector HitLocation = HitResult.ImpactPoint;
-		return TryGetPlacement(HitLocation, OutGridAt, OutPlacement);
+		OutGridAt = ToCoord;
+		return true;
 	}
 
 	return false;
@@ -261,10 +239,29 @@ void AGridManager::SetVisibleGrid(bool bIsVisible)
 
 	GridComp->SetVisibility(bIsVisible);
 }
- 
+
+bool AGridManager::IsEmptyGrid(const FVector& Location)
+{
+	FIntVector ToCoord = WorldToGridLocation(Location);
+
+	if (ToCoord.X < 0 || ToCoord.X >= Rows || ToCoord.Y < 0 || ToCoord.Y >= Columns)
+	{
+		return false;
+	}
+
+	uint16 ItemId = PlacedMap.FindRef(ToCoord);
+
+	return ItemId <= 0;
+}
+
 void AGridManager::Server_BuildPlacement_Implementation
 (TSubclassOf<APlacement> PlacementClass, uint16 ItemId, FVector Pivot,
                                                         FVector Location, FRotator Rotation)
 {
 	BuildPlacement(PlacementClass, ItemId, Pivot, Location, Rotation);
+}
+
+void AGridManager::Multicast_BuildPlacement_Implementation(const FIntVector& GridAt, uint16 ItemId)
+{
+	PlacedMap.Add(GridAt, ItemId);
 }

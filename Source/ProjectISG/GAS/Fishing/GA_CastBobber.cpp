@@ -45,12 +45,15 @@ void UGA_CastBobber::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		FishingRod->StartCasting(ActorInfo->AvatarActor.Get(), TargetTraceResult.ImpactPoint);
 
-		AMainPlayerController* PC = Player->GetController<AMainPlayerController>();
+		if (Player->IsLocallyControlled())
+		{
+			AMainPlayerController* PC = Player->GetController<AMainPlayerController>();
 
-		PC->SetIgnoreLookInput(true);
-		PC->SetIgnoreMoveInput(true);
+			PC->SetIgnoreLookInput(true);
+			PC->SetIgnoreMoveInput(true);
 
-		Player->GetInteractionComponent()->SetIsInteractive(false);
+			Player->GetInteractionComponent()->SetIsInteractive(false);
+		}
 
 		AT_StartFishingCinematic = UAT_StartFishingCinematic::InitialEvent(this, StartFishingCinematic);
 		AT_StartFishingCinematic->OnStartFishingCinematicEndNotified.AddDynamic(this, &UGA_CastBobber::OnEndCinematic);

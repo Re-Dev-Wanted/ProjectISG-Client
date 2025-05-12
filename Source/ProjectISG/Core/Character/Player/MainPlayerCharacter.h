@@ -37,6 +37,10 @@ public:
 
 	FOnInputBindingNotified OnInputBindingNotified;
 
+	UE_DEPRECATED(
+		"5.5",
+		"Player State에 있는 On Update Inventory에 바인딩 걸어두면,"
+		" 인벤토리 변경 시 마다 호출되는 로직이 있으므로, 제거하기를 권장함")
 	FOnUpdateSelectedItem OnUpdateSelectedItem;
 
 	GETTER(TObjectPtr<UCameraComponent>, CameraComponent);

@@ -9,11 +9,9 @@
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
 #include "ProjectISG/Core/UI/Popup/Inventory/UI/UIC_InventoryUI.h"
-#include "ProjectISG/Core/UI/Popup/Inventory/UI/UIV_InventoryUI.h"
 #include "ProjectISG/Core/UI/Popup/Trading/UI/UIC_TradingUI.h"
 #include "ProjectISG/Core/UI/Popup/Trading/UI/UIV_TradingUI.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
-#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 UPlayerInventoryComponent::UPlayerInventoryComponent()
 {
@@ -29,7 +27,7 @@ void UPlayerInventoryComponent::InitializeComponent()
 }
 
 void UPlayerInventoryComponent::GetLifetimeReplicatedProps(
-	TArray<class FLifetimeProperty>& OutLifetimeProps) const
+	TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
@@ -86,13 +84,13 @@ void UPlayerInventoryComponent::MoveHotSlot(const FInputActionValue& Value)
 
 	if (MoveToSlot < 0)
 	{
-		ChangeCurrentSlotIndex(MoveToSlot + MaxMainSlotIndex);
+		ChangeCurrentSlotIndex(MoveToSlot + MaxMainSlotIndex + 1);
 		return;
 	}
 
 	if (MoveToSlot > MaxMainSlotIndex)
 	{
-		ChangeCurrentSlotIndex(MoveToSlot - MaxMainSlotIndex);
+		ChangeCurrentSlotIndex(MoveToSlot - MaxMainSlotIndex - 1);
 		return;
 	}
 
@@ -105,7 +103,8 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 
 	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 
-	const FItemMetaInfo ItemMetaInfo = PS->GetInventoryComponent()->GetInventoryList()[
+	const FItemMetaInfo ItemMetaInfo = PS->GetInventoryComponent()->
+	                                       GetInventoryList()[
 		NewIndex];
 
 	const uint16 ItemId = ItemMetaInfo.GetId();
@@ -182,6 +181,7 @@ void UPlayerInventoryComponent::UpdateInventorySlotItemData()
 	UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(
 		PC->GetUIManageComponent()->ControllerInstances[
 			EUIName::Popup_TradingUI]);
+
 	if (TradingUIController)
 	{
 		UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(
