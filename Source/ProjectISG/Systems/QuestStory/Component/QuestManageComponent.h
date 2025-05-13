@@ -16,9 +16,9 @@ public:
 	GETTER(FString, CurrentPlayingQuestId)
 
 	void StartQuest(const FString& NewQuestId);
-	
+
+	void EndQuest(const bool IsSuccess);
+
 private:
 	FString CurrentPlayingQuestId;
-
-	
 };

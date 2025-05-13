@@ -53,6 +53,7 @@ struct PROJECTISG_API FQuestStoryDialogue : public FTableRowBase
 	GETTER(FString, QuestId)
 	GETTER(uint32, DialogueIndex)
 	GETTER(FString, DialogueText)
+	GETTER(FString, DialogueOwner)
 
 private:
 	// 대사가 적용되는 퀘스트 Id
@@ -62,6 +63,11 @@ private:
 	// 특정 퀘스트에 노출될 대사의 순서
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	uint32 DialogueIndex = 0;
+
+	// 대화하는 주체에 대한 설정
+	// {Player}로 지정할 시 플레이어 이름으로 노출 처리
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	FString DialogueOwner;
 
 	// 대사 텍스트
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))

@@ -9,5 +9,16 @@ class PROJECTISG_API UUIC_AutoQuestDialogueWidget : public UBaseUIController
 {
 	GENERATED_BODY()
 
-	
+public:
+	void StartQuestDialogue();
+
+protected:
+	virtual void InitializeController(UBaseUIView* NewView,
+	                                  UBaseUIModel* NewModel) override;
+
+private:
+	void InitializeDialogue();
+
+	UFUNCTION()
+	void OnFinishDialogue();
 };

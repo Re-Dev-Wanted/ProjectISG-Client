@@ -1,6 +1,7 @@
 #include "QuestManageComponent.h"
 
-// #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
 
 UQuestManageComponent::UQuestManageComponent()
 {
@@ -10,10 +11,21 @@ void UQuestManageComponent::StartQuest(const FString& NewQuestId)
 {
 	CurrentPlayingQuestId = NewQuestId;
 
-	// AMainPlayerController* PC = Cast<AMainPlayerController>(GetOwner());
-	//
-	// if (!PC)
-	// {
-	// 	return;
-	// }
+	const AMainPlayerController* PC = Cast<AMainPlayerController>(GetOwner());
+
+	if (!PC)
+	{
+		return;
+	}
+
+	PC->GetMainHUD()->StartAutoQuest(NewQuestId);
+}
+
+void UQuestManageComponent::EndQuest(const bool IsSuccess)
+{
+	if (IsSuccess)
+	{
+		UE_LOG(LogTemp, Display,
+		       TEXT("Quest Manage Component: 여기에 퀘스트 완료 시 보상 처리"))
+	}
 }

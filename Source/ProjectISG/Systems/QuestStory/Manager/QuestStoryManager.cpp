@@ -20,6 +20,12 @@ FQuestStoryData& UQuestStoryManager::GetQuestDataById(const FString& QuestId)
 	return *QuestData.Find(QuestId);
 }
 
+TArray<FQuestStoryDialogue>& UQuestStoryManager::GetQuestDialogueById(
+	const FString& QuestId)
+{
+	return *QuestDialogueData.Find(QuestId);
+}
+
 void UQuestStoryManager::InitializeQuestData()
 {
 	const UDataTable* QuestStoryDataTable = LoadObject<UDataTable>(
