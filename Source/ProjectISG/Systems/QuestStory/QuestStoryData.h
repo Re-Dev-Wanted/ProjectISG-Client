@@ -16,18 +16,24 @@ struct PROJECTISG_API FQuestStoryData : public FTableRowBase
 	GETTER(FString, QuestDescription)
 	GETTER(EQuestStoryType, QuestType)
 
-	FORCEINLINE TMap<uint32, uint32>& GetRewardItemData() { return RewardItemData; }
-	
+	FORCEINLINE TMap<uint32, uint32>& GetRewardItemData()
+	{
+		return RewardItemData;
+	}
+
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	FString QuestId;
-	
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	FString QuestTitle;
+
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	FString QuestDescription;
 
 	UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess = true))
 	EQuestStoryType QuestType = EQuestStoryType::None;
-	
+
 	UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess = true))
 	EQuestStoryObjective QuestObjective = EQuestStoryObjective::None;
 
@@ -44,7 +50,7 @@ struct PROJECTISG_API FQuestStoryDialogue : public FTableRowBase
 	GETTER(FString, QuestId)
 	GETTER(uint32, DialogueIndex)
 	GETTER(FString, DialogueText)
-	
+
 private:
 	// 대사가 적용되는 퀘스트 Id
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
