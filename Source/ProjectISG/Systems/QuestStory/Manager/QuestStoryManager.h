@@ -15,7 +15,13 @@ public:
 	static FQuestStoryData& GetQuestDataById(const FString& QuestId);
 
 private:
+	static bool IsInitialized;
+	
 	static TMap<FString, FQuestStoryData> QuestData;
 
 	static TMap<FString, TArray<FQuestStoryDialogue>> QuestDialogueData;
+
+	static void InitializeQuestData();
+
+	static void InitializeQuestDialogue();
 };
