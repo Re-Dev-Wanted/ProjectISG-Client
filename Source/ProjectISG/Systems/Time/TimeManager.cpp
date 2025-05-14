@@ -1,6 +1,8 @@
 ﻿#include "TimeManager.h"
 
 #include "SleepManager.h"
+#include "GameFramework/GameStateBase.h"
+#include "GameFramework/PlayerState.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
@@ -67,6 +69,8 @@ void ATimeManager::BeginPlay()
 			DaysInMonths.Add(28);
 		}
 	}
+
+	OnContentRestrictionTimeReached.AddDynamic(this, &ATimeManager::ResetAllPlayerWidget);
 }
 
 void ATimeManager::Tick(float DeltaTime)
@@ -75,6 +79,8 @@ void ATimeManager::Tick(float DeltaTime)
 
 	if (!TimeStop && !SleepManager->GetbSleepCinematicStart())
 	{
+		ChangeTOD();
+
 		if (HasAuthority())
 		{
 			UpdateCycleTime(DeltaTime);
@@ -95,29 +101,6 @@ void ATimeManager::Tick(float DeltaTime)
 				}
 			}
 			RotateSun();
-
-			ETimeOfDay PreviousTimeOfDay = CurrentTimeOfDay; // 변경 전 상태 저장
-			if (Hour >= 6 && Hour <= 12)
-			{
-				CurrentTimeOfDay = ETimeOfDay::Morning;
-			}
-			else if (Hour > 12 && Hour <= 18)
-			{
-				CurrentTimeOfDay = ETimeOfDay::Afternoon;
-			}
-			else if (Hour > 18 && Hour < 21)
-			{
-				CurrentTimeOfDay = ETimeOfDay::Evening;
-			}
-			else
-			{
-				CurrentTimeOfDay = ETimeOfDay::Night;
-			}
-
-			if (PreviousTimeOfDay != CurrentTimeOfDay)
-			{
-				UpdateTimeOfDay(CurrentTimeOfDay);
-			}
 		}
 		else
 		{
@@ -212,7 +195,6 @@ void ATimeManager::UpdateTimeOfDay(ETimeOfDay TOD)
 			}
 		case ETimeOfDay::Night:
 			{
-				OnContentRestrictionTimeReached.Broadcast();
 				LoggingToNight();
 				TimeController->UpdateTimeImage(TimeModel->GetNightIcon());
 				break;
@@ -284,6 +266,50 @@ void ATimeManager::StopTime(bool value)
 void ATimeManager::OnRep_CurrentTimeOfDay()
 {
 	UpdateTimeOfDay(CurrentTimeOfDay);
+}
+
+void ATimeManager::ChangeTOD()
+{
+	ETimeOfDay PreviousTimeOfDay = CurrentTimeOfDay; // 변경 전 상태 저장
+	if (Hour >= 6 && Hour <= 12)
+	{
+		CurrentTimeOfDay = ETimeOfDay::Morning;
+	}
+	else if (Hour > 12 && Hour <= 18)
+	{
+		CurrentTimeOfDay = ETimeOfDay::Afternoon;
+	}
+	else if (Hour > 18 && Hour < 21)
+	{
+		CurrentTimeOfDay = ETimeOfDay::Evening;
+	}
+	else
+	{
+		CurrentTimeOfDay = ETimeOfDay::Night;
+	}
+
+	if (PreviousTimeOfDay != CurrentTimeOfDay)
+	{
+		UpdateTimeOfDay(CurrentTimeOfDay);
+		if (CurrentTimeOfDay == ETimeOfDay::Night)
+		{
+			OnContentRestrictionTimeReached.Broadcast();
+		}
+	}
+}
+
+void ATimeManager::ResetAllPlayerWidget()
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s"),*FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
+	AGameStateBase* GameState = GetWorld()->GetGameState();
+	for (APlayerState* PlayerState : GameState->PlayerArray)
+	{
+		AMainPlayerController* PS = Cast<AMainPlayerController>(PlayerState->GetPlayerController());
+		if (PS)
+		{
+			PS->GetUIManageComponent()->ResetWidget();
+		}
+	}
 }
 
 void ATimeManager::LoggingToMorning()

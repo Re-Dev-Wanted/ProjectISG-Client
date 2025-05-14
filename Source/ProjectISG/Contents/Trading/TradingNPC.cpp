@@ -9,9 +9,12 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Time/TimeManager.h"
+#include "ProjectISG/Utils/EnumUtil.h"
 
 
 class AMainPlayerCharacter;
@@ -41,7 +44,10 @@ void ATradingNPC::BeginPlay()
 	Super::BeginPlay();
 
 	ATimeManager* TimeManager = Cast<ATimeManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ATimeManager::StaticClass()));
-	TimeManager->OnContentRestrictionTimeReached.AddDynamic(this, &ThisClass::TradingRestrictByTimeReached);
+	if (TimeManager)
+	{
+		TimeManager->OnContentRestrictionTimeReached.AddDynamic(this, &ThisClass::TradingRestrictByTimeReached);
+	}
 	
 }
 
@@ -51,6 +57,7 @@ void ATradingNPC::GetLifetimeReplicatedProps(
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, CanInteractive);
+	
 }
 
 void ATradingNPC::Tick(float DeltaTime)
@@ -69,7 +76,7 @@ void ATradingNPC::OnInteractive(AActor* Causer)
 
 	FGameplayTagContainer ActivateTag;
 	ActivateTag.AddTag(ISGGameplayTags::Trading_Active_OpenTradingUI);
-	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
 	if (Player)
 	{
 		Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(

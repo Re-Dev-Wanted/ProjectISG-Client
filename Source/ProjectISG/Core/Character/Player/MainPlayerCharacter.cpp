@@ -8,12 +8,12 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Contents/Diary/Component/DiaryComponent.h"
-#include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/ISGAbilitySystemComponent.h"
 #include "ProjectISG/GAS/Common/Attribute/ISGAttributeSet.h"
 #include "ProjectISG/Systems/Grid/Components/PlacementIndicatorComponent.h"
 #include "ProjectISG/Systems/Logging/Component/ScreenShotComponent.h"
+#include "ProjectISG/Systems/Time/TimeManager.h"
 
 AMainPlayerCharacter::AMainPlayerCharacter()
 {

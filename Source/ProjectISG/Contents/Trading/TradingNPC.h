@@ -19,8 +19,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	
-
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void Tick(float DeltaTime) override;

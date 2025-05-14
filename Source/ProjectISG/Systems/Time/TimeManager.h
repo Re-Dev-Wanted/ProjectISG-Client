@@ -40,6 +40,9 @@ protected:
 	virtual void GetLifetimeReplicatedProps(
 		TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION()
+	void ResetAllPlayerWidget();
+	
 private:
 	void UpdateCycleTime(float DeltaTime);
 
@@ -53,6 +56,11 @@ private:
 
 	UFUNCTION()
 	void OnRep_CurrentTimeOfDay();
+
+	void ChangeTOD();
+
+
+
 
 #pragma region Log
 	void LoggingToMorning();

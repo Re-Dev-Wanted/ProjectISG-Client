@@ -130,3 +130,17 @@ bool UUIManageComponent::HasViewUI(const EUIName Key)
 {
 	return WidgetStack.Find(Key) != INDEX_NONE;
 }
+
+void UUIManageComponent::ResetWidget()
+{
+	if (HasViewUI(EUIName::Gameplay_MainHUD))
+	{
+		return;
+	}
+	
+	while (!WidgetStack.IsEmpty())
+	{
+		PopWidget();
+	}
+	PushWidget(EUIName::Gameplay_MainHUD);
+}

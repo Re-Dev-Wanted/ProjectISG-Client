@@ -27,6 +27,8 @@ public:
 
 	bool HasViewUI(const EUIName Key);
 
+	void ResetWidget();
+
 	UPROPERTY()
 	TMap<EUIName, TObjectPtr<UBaseUIController>> ControllerInstances;
 
