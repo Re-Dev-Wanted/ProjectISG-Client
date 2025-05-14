@@ -16,13 +16,14 @@ class PROJECTISG_API UBaseUIController : public UObject
 	GENERATED_BODY()
 
 public:
+	void StartShowUI(const EUILayer Layer);
+	void EndShowUI();
+
 	virtual void InitializeController(UBaseUIView* NewView
 	                                  , UBaseUIModel* NewModel);
 
 	virtual void InitializeSettingToPlayerController(APlayerController* PC);
 
-	virtual void AppearUI(const EUILayer Layer);
-	virtual void DisappearUI();
 
 	virtual void PopUIFromPlayerController();
 
@@ -30,12 +31,25 @@ public:
 	GETTER_EDITABLE(TObjectPtr<UBaseUIModel>, Model)
 	GETTER(TObjectPtr<APlayerController>, PlayerController)
 
+	GETTER(EUILayer, CurrentLayer)
+
 protected:
 	virtual void BindInputAction(UEnhancedInputComponent* InputComponent);
 
 	void ClearInputMappingContext();
 
+	UFUNCTION()
+	virtual void AppearUI();
+
+	UE_DEPRECATED("5.5", "Parameter가 없는 AppearUI로 사용하는 것을 권장, 둘다 사용하는 것은 불가능")
+	virtual void AppearUI(const EUILayer Layer);
+
+	UFUNCTION()
+	virtual void DisappearUI();
+
 private:
+	EUILayer CurrentLayer;
+
 	UPROPERTY()
 	TObjectPtr<APlayerController> PlayerController;
 

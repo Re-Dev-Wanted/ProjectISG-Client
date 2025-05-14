@@ -50,7 +50,7 @@ void UUIManageComponent::PushWidget(const EUIName Key)
 		if (WidgetLayers[Key] != EUILayer::Modal && ControllerInstances.
 			Contains(LastKey))
 		{
-			ControllerInstances[LastKey]->DisappearUI();
+			ControllerInstances[LastKey]->EndShowUI();
 		}
 	}
 
@@ -71,7 +71,7 @@ void UUIManageComponent::PushWidget(const EUIName Key)
 		ControllerInstances.Add(Key, NewView->GetController());
 	}
 
-	ControllerInstances[Key]->AppearUI(WidgetLayers[Key]);
+	ControllerInstances[Key]->StartShowUI(WidgetLayers[Key]);
 }
 
 void UUIManageComponent::PopWidget()
@@ -84,7 +84,7 @@ void UUIManageComponent::PopWidget()
 	const EUIName LastKey = WidgetStack.Last();
 	if (ControllerInstances.Contains(LastKey))
 	{
-		ControllerInstances[LastKey]->DisappearUI();
+		ControllerInstances[LastKey]->EndShowUI();
 	}
 
 	WidgetStack.Pop();
@@ -99,7 +99,7 @@ void UUIManageComponent::PopWidget()
 	const EUIName PrevKey = WidgetStack.Last();
 	if (ControllerInstances.Contains(PrevKey))
 	{
-		ControllerInstances[PrevKey]->AppearUI(WidgetLayers[PrevKey]);
+		ControllerInstances[PrevKey]->StartShowUI(WidgetLayers[PrevKey]);
 	}
 
 	APlayerController* PC = Cast<APlayerController>(GetOwner());

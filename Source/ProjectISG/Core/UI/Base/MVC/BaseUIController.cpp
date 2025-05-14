@@ -7,6 +7,34 @@
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
 
+void UBaseUIController::StartShowUI(const EUILayer Layer)
+{
+	CurrentLayer = Layer;
+
+	const UWidgetAnimation* StartAnimation = GetView()->
+		GetDefaultStartAnimation();
+	if (!StartAnimation)
+	{
+		AppearUI();
+		return;
+	}
+
+	GetView()->PlayAnimation(GetView()->GetDefaultStartAnimation());
+}
+
+void UBaseUIController::EndShowUI()
+{
+	const UWidgetAnimation* EndAnimation = GetView()->
+		GetDefaultEndAnimation();
+	if (!EndAnimation)
+	{
+		DisappearUI();
+		return;
+	}
+
+	GetView()->PlayAnimation(GetView()->GetDefaultEndAnimation());
+}
+
 void UBaseUIController::InitializeController(UBaseUIView* NewView,
                                              UBaseUIModel* NewModel)
 {
@@ -21,6 +49,24 @@ void UBaseUIController::InitializeController(UBaseUIView* NewView,
 		                                   GetView()->TickAnimationEndNotified);
 
 		GetView()->PlayAnimation(GetView()->GetDefaultTickAnimation());
+	}
+
+	if (GetView()->GetDefaultStartAnimation())
+	{
+		GetView()->StartAnimationFinishNotified.BindDynamic(
+			this, &ThisClass::AppearUI);
+		GetView()->BindToAnimationFinished(
+			GetView()->GetDefaultStartAnimation(),
+			GetView()->StartAnimationFinishNotified);
+	}
+
+	if (GetView()->GetDefaultEndAnimation())
+	{
+		GetView()->EndAnimationFinishNotified.BindDynamic(
+			this, &ThisClass::DisappearUI);
+		GetView()->BindToAnimationFinished(
+			GetView()->GetDefaultEndAnimation(),
+			GetView()->EndAnimationFinishNotified);
 	}
 }
 
@@ -69,6 +115,11 @@ void UBaseUIController::ChangeInputActionToUI(const bool IsBindAction)
 
 void UBaseUIController::BindInputAction(UEnhancedInputComponent* InputComponent)
 {
+}
+
+void UBaseUIController::AppearUI()
+{
+	AppearUI(GetCurrentLayer());
 }
 
 void UBaseUIController::AppearUI(const EUILayer Layer)
