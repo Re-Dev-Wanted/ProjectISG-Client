@@ -25,6 +25,10 @@ void UUIV_MainLobby::NativeConstruct()
 
 void UUIV_MainLobby::OnClickedOpenChooseCharacterUIButton()
 {
+	UUIC_MainLobby* MainLobbyController = Cast<UUIC_MainLobby>(GetController());
+	ALobbyPlayerController* LobbyPlayerController = Cast<
+		ALobbyPlayerController>(MainLobbyController->GetPlayerController());
+	LobbyPlayerController->ShowLoadingUI(true);
 }
 
 void UUIV_MainLobby::OnClickedFindSessionUIButton()

@@ -4,20 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
-#include "UIC_MainLobby.generated.h"
+#include "UIC_ChooseCharacter.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTISG_API UUIC_MainLobby : public UBaseUIController
+class PROJECTISG_API UUIC_ChooseCharacter : public UBaseUIController
 {
 	GENERATED_BODY()
-
-public:
-	void CreateSession();
-
-protected:
-	UFUNCTION()
-	void OnCompleteCreate(FName SessionName, bool IsCreateSuccess);
 };

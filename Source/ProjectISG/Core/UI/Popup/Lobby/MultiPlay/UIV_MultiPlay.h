@@ -26,6 +26,9 @@ protected:
 	UFUNCTION()
 	void OnClickedJoinSessionButton();
 
+	UFUNCTION()
+	void OnClickedFindRoomButton();
+
 private:
 #pragma region Widget
 	UPROPERTY(meta = (BindWidget))
@@ -36,5 +39,8 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	class UScrollBox* RoomList;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* FindRoom;
 #pragma endregion
 };

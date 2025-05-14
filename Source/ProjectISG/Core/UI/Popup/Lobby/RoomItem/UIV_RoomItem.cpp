@@ -3,8 +3,10 @@
 
 #include "UIV_RoomItem.h"
 
+#include "UIC_RoomItem.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "ProjectISG/Core/Controller/LobbyPlayerController.h"
 #include "ProjectISG/Utils/SessionUtil.h"
 
 void UUIV_RoomItem::NativeConstruct()
@@ -13,13 +15,15 @@ void UUIV_RoomItem::NativeConstruct()
 
 	JoinButton->OnClicked.AddDynamic(
 		this, &ThisClass::UUIV_RoomItem::OnClickedJoinButton);
-
-	OnJoinSessionCompleteDelegate = FOnJoinSessionCompleteDelegate::CreateUObject(this, &ThisClass::OnJoinSession);
 }
 
 void UUIV_RoomItem::OnClickedJoinButton()
 {
-	FSessionUtil::JoinSession(GetWorld(), SessionSearchResult, OnJoinSessionCompleteDelegate);
+	UUIC_RoomItem* RoomItemController = Cast<UUIC_RoomItem>(GetController());
+	ALobbyPlayerController* LobbyPlayerController = Cast<ALobbyPlayerController>(RoomItemController->GetPlayerController());
+
+	LobbyPlayerController->SessionSearchResult = this->SessionSearchResult;
+	LobbyPlayerController->ShowLoadingUI(false);
 }
 
 void UUIV_RoomItem::SetInfo(const FOnlineSessionSearchResult& SearchResult)
@@ -36,13 +40,4 @@ void UUIV_RoomItem::SetInfo(const FOnlineSessionSearchResult& SearchResult)
 
 	CurrentPlayerText->SetText(FText::FromString(FString::FromInt(MaxPlayerCount - RemainPlayerCount)));
 	MaxPlayerText->SetText(FText::FromString(FString::FromInt(MaxPlayerCount)));
-}
-
-void UUIV_RoomItem::OnJoinSession(FName SessionName, EOnJoinSessionCompleteResult::Type Type)
-{
-	FString Address;
-	if (FSessionUtil::OnlineSessionInterface->GetResolvedConnectString(NAME_GameSession, Address))
-	{
-		GetOwningPlayer()->ClientTravel(Address, TRAVEL_Absolute);
-	}
 }

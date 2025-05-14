@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "OnlineSessionSettings.h"
 #include "GameFramework/PlayerController.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "LobbyPlayerController.generated.h"
@@ -21,8 +22,12 @@ public:
 
 	void PushUI(const EUIName UIName);
 	void PopUI();
+	void ShowLoadingUI(bool bIsServerTravel);
 
 	GETTER(TObjectPtr<class UUIManageComponent>, UIManageComponent)
+	GETTER_SETTER(bool, IsServerTravel)
+
+	FOnlineSessionSearchResult SessionSearchResult;
 
 protected:
 	virtual void BeginPlay() override;
@@ -30,4 +35,6 @@ protected:
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UUIManageComponent> UIManageComponent;
+
+	bool IsServerTravel = false;
 };

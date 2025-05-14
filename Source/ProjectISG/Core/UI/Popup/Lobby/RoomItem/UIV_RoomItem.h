@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "OnlineSessionSettings.h"
-#include "Interfaces/OnlineSessionInterface.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
 #include "UIV_RoomItem.generated.h"
 
@@ -24,8 +23,6 @@ protected:
 
 	UFUNCTION()
 	void OnClickedJoinButton();
-	
-	void OnJoinSession(FName SessionName, EOnJoinSessionCompleteResult::Type Type);
 
 private:
 #pragma region Widget
@@ -43,7 +40,4 @@ private:
 #pragma endregion
 
 	FOnlineSessionSearchResult SessionSearchResult;
-	FOnJoinSessionCompleteDelegate OnJoinSessionCompleteDelegate;
-
-
 };

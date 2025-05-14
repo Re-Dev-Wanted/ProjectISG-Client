@@ -17,32 +17,19 @@ class PROJECTISG_API UUIC_MultiPlay : public UBaseUIController
 
 public:
 	UFUNCTION()
-	void CreateSession();
-
-	UFUNCTION()
 	void SearchGameAndJoinSession();
 
 	void FindSession();
 
 protected:
 	UFUNCTION()
-	void OnCompleteCreate(FName SessionName, bool IsCreateSuccess);
-
-	UFUNCTION()
 	void OnCompleteSearchAndTryJoin(bool IsSearchSuccess);
 
 	UFUNCTION()
 	void OnCompleteSearch(bool IsSearchSuccess);
 
-	void OnJoinSession(FName SessionName,
-	                   EOnJoinSessionCompleteResult::Type Type);
-
 private:
 	FSessionSearchData SessionSearchData;
-	FOnJoinSessionCompleteDelegate OnJoinSessionCompleteDelegate;
-
-	UPROPERTY(EditAnywhere)
-	uint8 MaxPlayer = 4;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UUIV_RoomItem> RoomItemFactory;

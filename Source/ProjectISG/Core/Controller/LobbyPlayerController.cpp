@@ -32,3 +32,10 @@ void ALobbyPlayerController::PopUI()
 {
 	UIManageComponent->PopWidget();
 }
+
+void ALobbyPlayerController::ShowLoadingUI(bool bIsServerTravel)
+{
+	UIManageComponent->PopWidget();
+	UIManageComponent->PushWidget(EUIName::Loading_LoadingUI);
+	IsServerTravel = bIsServerTravel;
+}
