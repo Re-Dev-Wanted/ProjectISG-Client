@@ -16,5 +16,5 @@ class PROJECTISG_API IItemHandler
 {
 	GENERATED_BODY()
 public:
-	virtual bool ChangeItem(const FItemMetaInfo& ItemInfo, const uint16 Index) = 0;
+	virtual bool ChangeItem(const FItemMetaInfo& ItemInfo, const uint16 Index) { return false; }
 };

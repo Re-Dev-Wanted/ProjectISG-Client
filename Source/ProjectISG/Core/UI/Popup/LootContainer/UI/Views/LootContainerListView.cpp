@@ -1,10 +1,10 @@
 #include "LootContainerListView.h"
 
 #include "Components/WrapBox.h"
-#include "ProjectISG/Core/UI/HUD/Inventory/Module/InventorySlot.h"
+#include "ProjectISG/Core/UI/Popup/LootContainer/UI/Widgets/LootContainerItemSlot.h"
 
-void ULootContainerListView::Construct(TSubclassOf<UInventorySlot> 
-InventorySlotClass, int32 SlotCount)
+
+void ULootContainerListView::Construct(const TSubclassOf<ULootContainerItemSlot>& InventorySlotClass, int32 SlotCount)
 {
 	if (!InventorySlotClass)
 	{
@@ -15,7 +15,7 @@ InventorySlotClass, int32 SlotCount)
 
 	for (int32 i = 0; i < SlotCount; i++)
 	{
-		UInventorySlot* NewSlot = CreateWidget<UInventorySlot>(this, InventorySlotClass);
+		ULootContainerItemSlot* NewSlot = CreateWidget<ULootContainerItemSlot>(this, InventorySlotClass);
 		WrapBox->AddChildToWrapBox(NewSlot);
 		NewSlot->SetIndex(i);
 	}

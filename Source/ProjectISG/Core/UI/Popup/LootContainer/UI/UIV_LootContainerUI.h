@@ -6,10 +6,10 @@
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
 #include "UIV_LootContainerUI.generated.h"
 
-class UInventorySlot;
+class ULootContainerItemSlot;
+class ULootContainerInventoryList;
 class UButton;
 class UTextBlock;
-class UInventoryList;
 class ULootContainerListView;
 
 UCLASS()
@@ -25,16 +25,16 @@ public:
 protected:
 	UPROPERTY(EditAnywhere, Category = "Options|UI",
 			meta = (AllowPrivateAccess))
-	TSubclassOf<UInventorySlot> InventorySlotClass;
+	TSubclassOf<ULootContainerItemSlot> InventorySlotClass;
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<ULootContainerListView> ContainerView;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInventoryList> InventoryList;
+	TObjectPtr<ULootContainerInventoryList> InventoryList;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInventoryList> MainSlotList;
+	TObjectPtr<ULootContainerInventoryList> MainSlotList;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> GuidText;

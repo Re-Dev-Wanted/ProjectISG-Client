@@ -7,8 +7,7 @@
 #include "LootContainerSubsystem.generated.h"
 
 UCLASS()
-class PROJECTISG_API ULootContainerSubsystem : public UGameInstanceSubsystem,
- public IItemHandler
+class PROJECTISG_API ULootContainerSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
@@ -18,7 +17,7 @@ public:
 
 	FGuid CreateLootContainer();
 
-	virtual bool ChangeItem(const FItemMetaInfo& ItemInfo, const uint16 Index) override;
+	// virtual bool ChangeItem(const FItemMetaInfo& ItemInfo, const uint16 Index) override;
 
 protected:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
