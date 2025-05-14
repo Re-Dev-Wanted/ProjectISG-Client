@@ -3,6 +3,8 @@
 TMap<FString, FQuestStoryData> UQuestStoryManager::QuestData;
 TMap<FString, TArray<FQuestStoryDialogue>>
 UQuestStoryManager::QuestDialogueData;
+TMap<FString, FQuestSceneCutData> UQuestStoryManager::QuestSceneCutData;
+
 bool UQuestStoryManager::IsInitialized;
 
 void UQuestStoryManager::Initialize()
@@ -10,8 +12,10 @@ void UQuestStoryManager::Initialize()
 	if (!IsInitialized)
 	{
 		IsInitialized = true;
+
 		InitializeQuestData();
 		InitializeQuestDialogue();
+		InitializeQuestSceneCut();
 	}
 }
 
@@ -24,6 +28,12 @@ TArray<FQuestStoryDialogue>& UQuestStoryManager::GetQuestDialogueById(
 	const FString& QuestId)
 {
 	return *QuestDialogueData.Find(QuestId);
+}
+
+FQuestSceneCutData& UQuestStoryManager::GetQuestSceneCutById(
+	const FString& SceneId)
+{
+	return *QuestSceneCutData.Find(SceneId);
 }
 
 void UQuestStoryManager::InitializeQuestData()
@@ -49,7 +59,6 @@ void UQuestStoryManager::InitializeQuestDialogue()
 		nullptr,
 		TEXT(
 			"/Script/Engine.DataTable'/Game/Systems/QuestStory/Data/DT_QuestStoryDialogue.DT_QuestStoryDialogue'"));
-
 
 	TArray<FQuestStoryDialogue*> TempQuestStoryDialogueTable;
 	QuestStoryDialogueTable->GetAllRows<FQuestStoryDialogue>(
@@ -81,5 +90,24 @@ void UQuestStoryManager::InitializeQuestDialogue()
 			{
 				return A.GetDialogueIndex() < B.GetDialogueIndex();
 			});
+	}
+}
+
+void UQuestStoryManager::InitializeQuestSceneCut()
+{
+	const UDataTable* QuestSceneCutDataTable = LoadObject<UDataTable>(
+		nullptr,
+		TEXT(
+			"/Script/Engine.DataTable'/Game/Systems/QuestStory/Data/DT_QuestSceneCutData.DT_QuestSceneCutData'"));
+
+	TArray<FQuestSceneCutData*> TempQuestSceneCutList;
+	QuestSceneCutDataTable->GetAllRows<FQuestSceneCutData>(
+		TEXT(""), TempQuestSceneCutList);
+
+	for (const FQuestSceneCutData* TempQuestSceneCutData :
+	     TempQuestSceneCutList)
+	{
+		QuestSceneCutData.Add(TempQuestSceneCutData->GetQuestSceneId(),
+		                      *TempQuestSceneCutData);
 	}
 }

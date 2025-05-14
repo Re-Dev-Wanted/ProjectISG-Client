@@ -6,12 +6,19 @@
 
 class UInputAction;
 
+DECLARE_DELEGATE(FOnSceneListEndNotified);
+
 UCLASS()
 class PROJECTISG_API UUIC_SceneListUI : public UBaseUIController
 {
 	GENERATED_BODY()
 
+public:
+	FOnSceneListEndNotified OnSceneListEndNotified;
+
 protected:
+	virtual void AppearUI(const EUILayer Layer) override;
+
 	virtual void InitializeController(UBaseUIView* NewView,
 	                                  UBaseUIModel* NewModel) override;
 
@@ -19,6 +26,8 @@ protected:
 	BindInputAction(UEnhancedInputComponent* InputComponent) override;
 
 private:
+	FTimerHandle SceneCutChangeTimerHandle;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",
 		meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInputAction> SkipSceneAction;
@@ -30,4 +39,7 @@ private:
 	void OnEndSkipSceneAction();
 
 	void SetSkipCircularPercent(const float Percent);
+
+	UFUNCTION()
+	void MoveToNextScene();
 };

@@ -14,6 +14,7 @@ public:
 	UQuestManageComponent();
 
 	GETTER(FString, CurrentPlayingQuestId)
+	GETTER(FString, CurrentPlayingSceneId)
 
 	void StartQuest(const FString& NewQuestId);
 
