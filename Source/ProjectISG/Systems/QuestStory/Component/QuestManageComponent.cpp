@@ -5,6 +5,7 @@
 
 UQuestManageComponent::UQuestManageComponent()
 {
+	
 }
 
 void UQuestManageComponent::StartQuest(const FString& NewQuestId)
