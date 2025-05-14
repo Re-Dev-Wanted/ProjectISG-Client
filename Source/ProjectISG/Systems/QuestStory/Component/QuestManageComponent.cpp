@@ -21,6 +21,20 @@ void UQuestManageComponent::StartQuest(const FString& NewQuestId)
 	PC->GetMainHUD()->StartAutoQuest(NewQuestId);
 }
 
+void UQuestManageComponent::StartScene(const FString& NewSceneId)
+{
+	CurrentPlayingSceneId = NewSceneId;
+
+	AMainPlayerController* PC = Cast<AMainPlayerController>(GetOwner());
+
+	if (!PC)
+	{
+		return;
+	}
+
+	PC->PushUI(EUIName::Popup_SceneListUI);
+}
+
 void UQuestManageComponent::EndQuest(const bool IsSuccess)
 {
 	if (IsSuccess)

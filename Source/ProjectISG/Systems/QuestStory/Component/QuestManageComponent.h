@@ -17,8 +17,11 @@ public:
 
 	void StartQuest(const FString& NewQuestId);
 
+	void StartScene(const FString& NewSceneId);
+
 	void EndQuest(const bool IsSuccess);
 
 private:
 	FString CurrentPlayingQuestId;
+	FString CurrentPlayingSceneId;
 };

@@ -49,6 +49,11 @@ void AMainPlayerController::StartQuest(const FString& QuestId) const
 	QuestManageComponent->StartQuest(QuestId);
 }
 
+void AMainPlayerController::StartScene(const FString& SceneId) const
+{
+	QuestManageComponent->StartScene(SceneId);
+}
+
 TObjectPtr<UUIC_MainHUD> AMainPlayerController::GetMainHUD() const
 {
 	// 컨트롤러가 없는 경우에만 만들기

@@ -24,11 +24,17 @@ public:
 	AMainPlayerController();
 
 	void OpenInventory();
+
+	UFUNCTION(BlueprintCallable)
 	void PushUI(const EUIName UIName);
+	UFUNCTION(BlueprintCallable)
 	void PopUI();
 
 	UFUNCTION(BlueprintCallable)
 	void StartQuest(const FString& QuestId) const;
+
+	UFUNCTION(BlueprintCallable)
+	void StartScene(const FString& SceneId) const;
 
 #pragma region GetUI
 	TObjectPtr<UUIC_MainHUD> GetMainHUD() const;

@@ -77,3 +77,21 @@ private:
 	// UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess = true))
 	// TMap<FString, FString> QuestBehaviorMetaData;
 };
+
+// 스토리 진행 상 컷 신이 필요한 경우에 대한 대응 처리
+// 이미지 데이터 배열을 저장하고 불러와 이미지를 할당해주는 역할
+USTRUCT(BlueprintType)
+struct PROJECTISG_API FQuestSceneCutData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+	GETTER(FString, QuestSceneId)
+	TArray<TObjectPtr<UTexture2D>>& GetSceneImages() { return SceneImages; }
+
+private:
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	FString QuestSceneId;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TArray<TObjectPtr<UTexture2D>> SceneImages;
+};
