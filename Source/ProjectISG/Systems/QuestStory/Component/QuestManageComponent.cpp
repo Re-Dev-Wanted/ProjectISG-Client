@@ -19,6 +19,7 @@ void UQuestManageComponent::StartQuest(const FString& NewQuestId)
 	}
 
 	PC->GetMainHUD()->StartAutoQuest(NewQuestId);
+	PC->GetMainHUD()->ToggleCurrentQuestUI(true);
 }
 
 void UQuestManageComponent::StartScene(const FString& NewSceneId)

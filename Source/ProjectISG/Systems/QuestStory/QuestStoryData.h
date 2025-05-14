@@ -13,7 +13,9 @@ struct PROJECTISG_API FQuestStoryData : public FTableRowBase
 	GENERATED_USTRUCT_BODY()
 
 	GETTER(FString, QuestId)
+	GETTER(FString, QuestTitle)
 	GETTER(FString, QuestDescription)
+
 	GETTER(EQuestStoryType, QuestType)
 
 	FORCEINLINE TMap<uint32, uint32>& GetRewardItemData()
