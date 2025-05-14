@@ -276,7 +276,7 @@ void APlacement::SetGuide(float TileSize)
 	}
 }
 
-void APlacement::SetOption(bool bIsGhost, bool bIsBlock) const
+void APlacement::SetOption(bool bIsGhost, bool bIsBlock)
 {
 	if (!bIsGhost)
 	{
