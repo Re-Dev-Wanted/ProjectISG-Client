@@ -15,7 +15,9 @@ public:
 	//TODO: 만약 데이터 저장 & 로드를 한다면 이것을 호출
 	void LoadAllDataAsync();
 
-	FGuid CreateLootContainer();
+	FGuid CreateLootContainer(int32 Capacity);
+
+	TArray<FItemMetaInfo> GetContainerItems(FGuid Guid);
 
 	// virtual bool ChangeItem(const FItemMetaInfo& ItemInfo, const uint16 Index) override;
 

@@ -6,8 +6,8 @@
 #include "Components/TextBlock.h"
 #include "Views/LootContainerListView.h"
 
-void UUIV_LootContainerUI::Construct(FGuid Guid, int32 Capacity)
+void UUIV_LootContainerUI::SetContainer(FGuid Guid, const TArray<FItemMetaInfo>& Items) const
 {
 	GuidText->SetText(FText::FromString(Guid.ToString(EGuidFormats::Digits)));
-	ContainerView->Construct(InventorySlotClass, Capacity);
+	ContainerView->SetContainerInfo(InventorySlotClass, Items);
 }

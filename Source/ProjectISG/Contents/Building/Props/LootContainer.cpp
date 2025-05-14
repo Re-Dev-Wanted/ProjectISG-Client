@@ -10,9 +10,10 @@ void ALootContainer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//TODO: 테스트용 추후에 지우기
 	Guid = GetWorld()->GetGameInstance()
 		->GetSubsystem<ULootContainerSubsystem>()
-		->CreateLootContainer();
+		->CreateLootContainer(Capacity);
 }
 
 void ALootContainer::SetOption(bool bIsGhost, bool bIsBlock)
@@ -23,7 +24,7 @@ void ALootContainer::SetOption(bool bIsGhost, bool bIsBlock)
 	{
 		Guid = GetWorld()->GetGameInstance()
 		->GetSubsystem<ULootContainerSubsystem>()
-		->CreateLootContainer();
+		->CreateLootContainer(Capacity);
 	}
 }
 
@@ -47,7 +48,11 @@ void ALootContainer::OnInteractive(AActor* Causer)
 			UUIC_LootContainerUI* UIController = Cast<UUIC_LootContainerUI>
 			(PC->GetUIManageComponent()->ControllerInstances[EUIName::Popup_LootContainerUI]);
 
-			UIController->SetUI(Guid, Capacity);
+			TArray<FItemMetaInfo> Items = GetWorld()->GetGameInstance()
+			->GetSubsystem<ULootContainerSubsystem>()
+			->GetContainerItems(Guid);
+
+			UIController->SetContainer(Guid, Items);
 		}
 	}
 }

@@ -14,7 +14,12 @@ void ULootContainerSubsystem::LoadAllDataAsync()
 {
 }
 
-FGuid ULootContainerSubsystem::CreateLootContainer()
+FGuid ULootContainerSubsystem::CreateLootContainer(int32 Capacity)
 {
-	return Data.AddContainer();
+	return Data.AddContainer(Capacity);
+}
+
+TArray<FItemMetaInfo> ULootContainerSubsystem::GetContainerItems(FGuid Guid)
+{
+	return Data.GetItems(Guid);
 }

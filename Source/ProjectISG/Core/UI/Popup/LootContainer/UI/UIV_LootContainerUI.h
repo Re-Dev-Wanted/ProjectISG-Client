@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
+#include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "UIV_LootContainerUI.generated.h"
 
 class ULootContainerItemSlot;
@@ -20,7 +21,7 @@ class PROJECTISG_API UUIV_LootContainerUI : public UBaseUIView
 public:
 	GETTER(TObjectPtr<UButton>, BackButton)
 	
-	void Construct(FGuid Guid, int32 Capacity);
+	void SetContainer(FGuid Guid, const TArray<FItemMetaInfo>& Items) const;
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Options|UI",

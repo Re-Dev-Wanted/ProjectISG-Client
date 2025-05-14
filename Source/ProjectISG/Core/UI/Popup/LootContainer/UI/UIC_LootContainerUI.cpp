@@ -16,10 +16,11 @@ void UUIC_LootContainerUI::InitializeController(UBaseUIView* NewView,
 	&UUIC_LootContainerUI::CloseUI);
 }
 
-void UUIC_LootContainerUI::SetUI(FGuid Guid, int32 Capacity)
+void UUIC_LootContainerUI::SetContainer(FGuid Guid, const TArray<FItemMetaInfo>& Items)
 {
 	UUIV_LootContainerUI* UIView = Cast<UUIV_LootContainerUI>(GetView());
-	UIView->Construct(Guid, Capacity);
+	
+	UIView->SetContainer(Guid, Items);
 }
 
 void UUIC_LootContainerUI::CloseUI()

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "LootContainerListView.generated.h"
 
 class ULootContainerItemSlot;
@@ -13,7 +14,7 @@ class PROJECTISG_API ULootContainerListView : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void Construct(const TSubclassOf<ULootContainerItemSlot>& InventorySlotClass, int32 SlotCount);
+	void SetContainerInfo(const TSubclassOf<ULootContainerItemSlot>& InventorySlotClass, TArray<FItemMetaInfo> Items);
 
 protected:
 	UPROPERTY(meta = (BindWidget))
