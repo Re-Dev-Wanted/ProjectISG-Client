@@ -25,7 +25,6 @@ public:
 	void ShowLoadingUI(bool bIsServerTravel);
 
 	GETTER(TObjectPtr<class UUIManageComponent>, UIManageComponent)
-	GETTER_SETTER(bool, IsServerTravel)
 
 	FOnlineSessionSearchResult SessionSearchResult;
 
@@ -35,6 +34,4 @@ protected:
 private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UUIManageComponent> UIManageComponent;
-
-	bool IsServerTravel = false;
 };

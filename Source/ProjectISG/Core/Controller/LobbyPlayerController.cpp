@@ -4,6 +4,7 @@
 #include "LobbyPlayerController.h"
 
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Loading/UIC_Loading.h"
 
 ALobbyPlayerController::ALobbyPlayerController()
 {
@@ -37,5 +38,9 @@ void ALobbyPlayerController::ShowLoadingUI(bool bIsServerTravel)
 {
 	UIManageComponent->PopWidget();
 	UIManageComponent->PushWidget(EUIName::Loading_LoadingUI);
-	IsServerTravel = bIsServerTravel;
+	UUIC_Loading* LoadingController = Cast<UUIC_Loading>(UIManageComponent->ControllerInstances[EUIName::Loading_LoadingUI]);
+	if (LoadingController)
+	{
+		LoadingController->SetIsServerTravel(bIsServerTravel);
+	}
 }
