@@ -21,6 +21,37 @@ void ATeleportTriggerBox::BeginPlay()
 	
 }
 
+auto ATeleportTriggerBox::Teleport(AMainPlayerCharacter* Player)
+{
+	return [this, Player]()
+	{
+		TArray<AActor*> Actors;
+
+		UGameplayStatics::GetAllActorsWithTag(GetWorld(),
+		                                      FName(*PointTag), Actors);
+
+		for (auto It = Actors.CreateConstIterator(); It; ++It)
+		{
+			if (ATeleportPoint* Point = Cast<ATeleportPoint>(*It))
+			{
+				Player->SetActorLocation(Point->GetActorLocation());
+
+				FRotator Rotation = Point->GetPoint()
+				                         ->GetForwardVector()
+				                         .Rotation();
+
+				Player->SetActorRotation(Rotation);
+
+				if (Player->Controller)
+				{
+					Player->Controller->SetControlRotation(Rotation);
+				}
+				break;
+			}
+		}
+	};
+}
+
 void ATeleportTriggerBox::OnBeginOverlap(
 	UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
@@ -34,49 +65,20 @@ void ATeleportTriggerBox::OnBeginOverlap(
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(OtherActor))
 	{
 		FLatentActionInfo LatentActionInfo;
-		LatentActionInfo.CallbackTarget = this;
-		LatentActionInfo.ExecutionFunction = FName("OnTeleport");
-		LatentActionInfo.Linkage = 0;
-		LatentActionInfo.UUID = __LINE__;
 		
 		UGameplayStatics::LoadStreamLevelBySoftObjectPtr(GetWorld(), 
 		StreamingLevel, true, false, LatentActionInfo);
-	}
-}
 
-void ATeleportTriggerBox::OnTeleport()
-{
-	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetWorld()
-	->GetFirstPlayerController()
-	->GetPawn());
+		FTimerHandle TimerHandle;
 
-	if (!Player)
-	{
-		return;
-	}
-	
-	TArray<AActor*> Actors;
-
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(),
-										  FName(*PointTag), Actors);
-
-	for (auto It = Actors.CreateConstIterator(); It; ++It)
-	{
-		if (ATeleportPoint* Point = Cast<ATeleportPoint>(*It))
-		{
-			Player->SetActorLocation(Point->GetActorLocation());
-
-			FRotator Rotation = Point->GetPoint()
-									 ->GetForwardVector()
-									 .Rotation();
-
-			Player->SetActorRotation(Rotation);
-
-			if (Player->Controller)
-			{
-				Player->Controller->SetControlRotation(Rotation);
-			}
-			break;
-		}
+		GetWorld()
+			->GetTimerManager()
+			.SetTimer
+			(
+				TimerHandle,
+				Teleport(Player),
+				0.25f,
+				false
+			);
 	}
 }
