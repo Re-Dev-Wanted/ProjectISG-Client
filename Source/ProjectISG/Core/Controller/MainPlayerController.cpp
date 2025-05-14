@@ -1,5 +1,6 @@
 ﻿#include "MainPlayerController.h"
 
+#include "ProjectISG/Core/GameMode/MainGameState.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
@@ -44,8 +45,27 @@ void AMainPlayerController::OnRep_PlayerState()
 	}
 }
 
-void AMainPlayerController::StartQuest(const FString& QuestId) const
+void AMainPlayerController::StartQuest(const FString& QuestId)
 {
+	// 서버면 GameState를 통해서 모든 PlayerController에 Quest 수행을 명령한다.
+	if (HasAuthority())
+	{
+		GetWorld()->GetGameState<AMainGameState>()->StartWorldQuest(QuestId);
+	}
+	else
+	{
+		// 서버가 아니면 서버에서 호출하도록 RPC 함수를 호출한다.
+		Server_StartQuest(QuestId);
+	}
+}
+
+void AMainPlayerController::StartQuestToPlayer(const FString& QuestId)
+{
+	if (!IsLocalController())
+	{
+		return;
+	}
+
 	QuestManageComponent->StartQuest(QuestId);
 }
 
@@ -102,4 +122,16 @@ void AMainPlayerController::OpenInventory()
 	}
 
 	UIManageComponent->PushWidget(EUIName::Popup_InventoryUI);
+}
+
+void AMainPlayerController::Server_StartQuest_Implementation(
+	const FString& QuestId)
+{
+	GetWorld()->GetGameState<AMainGameState>()->StartWorldQuest(QuestId);
+}
+
+void AMainPlayerController::Client_StartQuestToPlayer_Implementation(
+	const FString& QuestId)
+{
+	StartQuestToPlayer(QuestId);
 }

@@ -5,6 +5,8 @@
 #include "UObject/Object.h"
 #include "QuestStoryManager.generated.h"
 
+class AMainPlayerController;
+
 UCLASS()
 class PROJECTISG_API UQuestStoryManager : public UObject
 {
@@ -17,6 +19,9 @@ public:
 		const FString& QuestId);
 	static FQuestSceneCutData& GetQuestSceneCutById(const FString& SceneId);
 
+	static bool CheckAndCompleteQuest(AMainPlayerController* PC,
+	                                  const FString& QuestId);
+
 private:
 	static bool IsInitialized;
 
@@ -27,4 +32,7 @@ private:
 	static void InitializeQuestData();
 	static void InitializeQuestDialogue();
 	static void InitializeQuestSceneCut();
+
+	static void CompleteQuest_Internal(AMainPlayerController* PC,
+	                                   const FString& QuestId);
 };

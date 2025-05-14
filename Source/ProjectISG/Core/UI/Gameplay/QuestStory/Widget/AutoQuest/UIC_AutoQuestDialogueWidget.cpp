@@ -86,18 +86,23 @@ void UUIC_AutoQuestDialogueWidget::OnFinishDialogue()
 	UUIM_AutoQuestDialogueWidget* AutoQuestDialogueWidgetModel = Cast<
 		UUIM_AutoQuestDialogueWidget>(GetModel());
 
-	const AMainPlayerController* PC = Cast<AMainPlayerController>(
+	AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetView()->GetOwningPlayer());
 	const UQuestManageComponent* PlayerQuestManager = PC->
 		GetQuestManageComponent();
 
+	// 현재 총 퀘스트의 대화 배열 수
 	const uint8 DialogueCount = UQuestStoryManager::GetQuestDialogueById(
 		PlayerQuestManager->GetCurrentPlayingQuestId()).Num();
 
+	// 대화 배열 수 이상까지 가면 더 이상 출력할 대사 없음
 	if (AutoQuestDialogueWidgetModel->GetCurrentQuestDialogueIndex() >=
 		DialogueCount)
 	{
 		PC->GetMainHUD()->ToggleAutoQuestUI(false);
+		// 혹시 Dialogue 타입의 퀘스트인지, 그렇다면 바로 종료시킨다.
+		UQuestStoryManager::CheckAndCompleteQuest(
+			PC, PlayerQuestManager->GetCurrentPlayingQuestId());
 		return;
 	}
 

@@ -16,8 +16,6 @@ public:
 
 	void SelectSlot(const uint8 CurrentSlot, const uint8 NextSlot) const;
 
-	void InitializeHUD();
-
 	void ToggleInteractiveUI(const bool IsShow);
 	void ToggleInteractiveUI(const FString& DisplayKey,
 	                         const FString& DisplayText);
@@ -30,4 +28,6 @@ public:
 	void StartAutoQuest(const FString& QuestId);
 
 	void ToggleAutoQuestUI(const bool IsActive);
+
+	void ToggleCurrentQuestUI(const bool IsActive);
 };

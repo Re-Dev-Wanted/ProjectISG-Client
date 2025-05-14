@@ -2,11 +2,17 @@
 
 #include "UIM_MainHUD.h"
 #include "UIV_MainHUD.h"
+#include "Components/TextBlock.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
 #include "ProjectISG/Core/UI/Gameplay/QuestStory/Widget/AutoQuest/UIC_AutoQuestDialogueWidget.h"
 #include "ProjectISG/Core/UI/Gameplay/QuestStory/Widget/AutoQuest/UIV_AutoQuestDialogueWidget.h"
+#include "ProjectISG/Core/UI/Gameplay/QuestStory/Widget/CurrentQuest/UIC_CurrentQuestWidget.h"
+#include "ProjectISG/Core/UI/Gameplay/QuestStory/Widget/CurrentQuest/UIV_CurrentQuestWidget.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
 #include "ProjectISG/Core/UI/HUD/Interactive/InteractiveUI.h"
+#include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
+#include "ProjectISG/Systems/QuestStory/Manager/QuestStoryManager.h"
 
 void UUIC_MainHUD::AppearUI(const EUILayer Layer)
 {
@@ -27,11 +33,6 @@ void UUIC_MainHUD::SelectSlot(const uint8 CurrentSlot,
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 	MainHUDView->GetMainSlotList()->SelectSlot(CurrentSlot, NextSlot);
-}
-
-void UUIC_MainHUD::InitializeHUD()
-{
-	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 }
 
 void UUIC_MainHUD::ToggleInteractiveUI(const bool IsShow)
@@ -83,6 +84,8 @@ void UUIC_MainHUD::StartAutoQuest(const FString& QuestId)
 	Cast<UUIC_AutoQuestDialogueWidget>(
 			MainHUDView->GetAutoQuestDialogueWidget()->GetController())->
 		StartQuestDialogue();
+
+	auto a = MainHUDView->GetCurrentQuestWidget();
 }
 
 void UUIC_MainHUD::ToggleAutoQuestUI(const bool IsActive)
@@ -92,4 +95,35 @@ void UUIC_MainHUD::ToggleAutoQuestUI(const bool IsActive)
 		IsActive
 			? ESlateVisibility::SelfHitTestInvisible
 			: ESlateVisibility::Hidden);
+}
+
+void UUIC_MainHUD::ToggleCurrentQuestUI(const bool IsActive)
+{
+	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
+	UUIC_CurrentQuestWidget* CurrentQuestWidgetController = Cast<
+		UUIC_CurrentQuestWidget>(
+		MainHUDView->GetCurrentQuestWidget()->GetController());
+
+	if (IsActive)
+	{
+		const FString CurrentQuestId = GetView()->GetOwningPlayer<
+			                                          AMainPlayerController>()->
+		                                          GetQuestManageComponent()->
+		                                          GetCurrentPlayingQuestId();
+
+		const FQuestStoryData QuestData = UQuestStoryManager::GetQuestDataById(
+			CurrentQuestId);
+
+		MainHUDView->GetCurrentQuestWidget()->GetQuestTitle()->SetText(
+			FText::FromString(QuestData.GetQuestTitle()));
+		MainHUDView->GetCurrentQuestWidget()->GetQuestDescription()->SetText(
+			FText::FromString(QuestData.GetQuestDescription()));
+
+		CurrentQuestWidgetController->StartCurrentQuestAnimation();
+	}
+	else
+	{
+		MainHUDView->GetCurrentQuestWidget()->SetVisibility(
+			ESlateVisibility::Hidden);
+	}
 }
