@@ -11,4 +11,7 @@ class PROJECTISG_API UISGGameInstance : public UGameInstance
 
 public:
 	UISGGameInstance();
+
+protected:
+	virtual void Init() override;
 };

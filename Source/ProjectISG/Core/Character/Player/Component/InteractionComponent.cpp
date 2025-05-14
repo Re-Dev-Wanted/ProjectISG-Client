@@ -65,7 +65,7 @@ void UInteractionComponent::OnInteractive()
 	{
 		return;
 	}
-	
+
 	if (!TargetTraceResult.GetActor())
 	{
 		return;
@@ -80,7 +80,8 @@ void UInteractionComponent::OnInteractive()
 		return;
 	}
 
-	IInteractionInterface* InteractionInterface = Cast<IInteractionInterface>(TargetTraceResult.GetActor());
+	IInteractionInterface* InteractionInterface = Cast<IInteractionInterface>(
+		TargetTraceResult.GetActor());
 
 	if (!InteractionInterface || !InteractionInterface->GetCanInteractive())
 	{
@@ -96,7 +97,7 @@ void UInteractionComponent::OnTouch()
 	{
 		return;
 	}
-	
+
 	if (!TargetTraceResult.GetActor())
 	{
 		return;
@@ -111,7 +112,8 @@ void UInteractionComponent::OnTouch()
 		return;
 	}
 
-	IInteractionInterface* InteractionInterface = Cast<IInteractionInterface>(TargetTraceResult.GetActor());
+	IInteractionInterface* InteractionInterface = Cast<IInteractionInterface>(
+		TargetTraceResult.GetActor());
 
 	if (!InteractionInterface || !InteractionInterface->GetCanTouch())
 	{
@@ -138,7 +140,7 @@ void UInteractionComponent::ToggleInteractiveUI()
 {
 	const AMainPlayerController* PC = PlayerCharacter->GetController<
 		AMainPlayerController>();
-	
+
 	if (!IsInteractive || !TargetTraceResult.GetActor())
 	{
 		if (PC->GetMainHUD())
@@ -152,7 +154,8 @@ void UInteractionComponent::ToggleInteractiveUI()
 	const IInteractionInterface* Interaction = Cast<IInteractionInterface>(
 		TargetTraceResult.GetActor());
 
-	if (!Interaction || (!Interaction->GetCanInteractive() && !Interaction->GetCanTouch()))
+	if (!Interaction || (!Interaction->GetCanInteractive() && !Interaction->
+		GetCanTouch()))
 	{
 		if (PC->GetMainHUD())
 		{
@@ -161,7 +164,7 @@ void UInteractionComponent::ToggleInteractiveUI()
 
 		return;
 	}
-		
+
 	if (Interaction->GetCanInteractive())
 	{
 		if (PC->GetMainHUD())
@@ -170,7 +173,7 @@ void UInteractionComponent::ToggleInteractiveUI()
 				TEXT("F"), Interaction->GetInteractiveDisplayText());
 		}
 	}
-	
+
 	if (Interaction->GetCanTouch())
 	{
 		if (PC->GetMainHUD())
@@ -187,7 +190,6 @@ void UInteractionComponent::ToggleInteractiveUI()
 			}
 		}
 	}
-	
 }
 
 void UInteractionComponent::LineTraceToFindTarget()
@@ -202,7 +204,7 @@ void UInteractionComponent::LineTraceToFindTarget()
 		OwnerEndLocation, TargetRadius,
 		TargetRadius, TraceTypeQuery1,
 		false, IgnoreActors,
-		EDrawDebugTrace::ForOneFrame,
+		EDrawDebugTrace::None,
 		TargetTraceResult, true);
 
 	const AMainPlayerController* PC = PlayerCharacter->GetController<

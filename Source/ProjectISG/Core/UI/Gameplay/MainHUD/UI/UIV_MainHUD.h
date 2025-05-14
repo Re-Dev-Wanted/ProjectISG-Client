@@ -4,6 +4,7 @@
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
 #include "UIV_MainHUD.generated.h"
 
+class UUIV_AutoQuestDialogueWidget;
 class UInteractiveUI;
 class UInventoryList;
 class UUIV_Time;
@@ -17,6 +18,7 @@ public:
 	GETTER(TObjectPtr<UInventoryList>, MainSlotList)
 	GETTER(TObjectPtr<UInteractiveUI>, InteractiveUI)
 	GETTER(TObjectPtr<UUIV_Time>, TimeUI)
+	GETTER(TObjectPtr<UUIV_AutoQuestDialogueWidget>, AutoQuestDialogueWidget)
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -27,4 +29,7 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UUIV_Time> TimeUI;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UUIV_AutoQuestDialogueWidget> AutoQuestDialogueWidget;
 };

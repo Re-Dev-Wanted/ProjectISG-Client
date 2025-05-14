@@ -1,7 +1,10 @@
 ﻿#include "UIC_MainHUD.h"
 
+#include "UIM_MainHUD.h"
 #include "UIV_MainHUD.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
+#include "ProjectISG/Core/UI/Gameplay/QuestStory/Widget/AutoQuest/UIC_AutoQuestDialogueWidget.h"
+#include "ProjectISG/Core/UI/Gameplay/QuestStory/Widget/AutoQuest/UIV_AutoQuestDialogueWidget.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
 #include "ProjectISG/Core/UI/HUD/Interactive/InteractiveUI.h"
 
@@ -50,10 +53,10 @@ void UUIC_MainHUD::ToggleInteractiveUI(const FString& DisplayKey,
 }
 
 void UUIC_MainHUD::AdditiveToggleInteractiveUI(const FString& DisplayKey,
-	const FString& DisplayText)
+                                               const FString& DisplayText)
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
-	
+
 	if (MainHUDView->GetInteractiveUI()->IsInteractiveHidden())
 	{
 		return;
@@ -67,4 +70,26 @@ void UUIC_MainHUD::TogglePlacementIndicatorUI(const bool Visible)
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 
 	MainHUDView->GetInteractiveUI()->SetPlacementIndicator(Visible);
+}
+
+void UUIC_MainHUD::StartAutoQuest(const FString& QuestId)
+{
+	UUIM_MainHUD* MainHUDModel = Cast<UUIM_MainHUD>(GetModel());
+	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
+
+	MainHUDModel->SetCurrentPlayingAutoQuestId(QuestId);
+	ToggleAutoQuestUI(true);
+
+	Cast<UUIC_AutoQuestDialogueWidget>(
+			MainHUDView->GetAutoQuestDialogueWidget()->GetController())->
+		StartQuestDialogue();
+}
+
+void UUIC_MainHUD::ToggleAutoQuestUI(const bool IsActive)
+{
+	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
+	MainHUDView->GetAutoQuestDialogueWidget()->SetVisibility(
+		IsActive
+			? ESlateVisibility::SelfHitTestInvisible
+			: ESlateVisibility::Hidden);
 }

@@ -23,7 +23,11 @@ public:
 	                         const FString& DisplayText);
 
 	void AdditiveToggleInteractiveUI(const FString& DisplayKey,
-							 const FString& DisplayText);
+	                                 const FString& DisplayText);
 
 	void TogglePlacementIndicatorUI(const bool Visible);
+
+	void StartAutoQuest(const FString& QuestId);
+
+	void ToggleAutoQuestUI(const bool IsActive);
 };

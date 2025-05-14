@@ -6,11 +6,14 @@
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Popup/Inventory/UI/UIC_InventoryUI.h"
+#include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 
 AMainPlayerController::AMainPlayerController()
 {
 	UIManageComponent = CreateDefaultSubobject<UUIManageComponent>(
 		"UI Manage Component");
+	QuestManageComponent = CreateDefaultSubobject<UQuestManageComponent>(
+		"Quest Manage Component");
 }
 
 void AMainPlayerController::BeginPlay()
@@ -39,6 +42,16 @@ void AMainPlayerController::OnRep_PlayerState()
 	{
 		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
 	}
+}
+
+void AMainPlayerController::StartQuest(const FString& QuestId) const
+{
+	QuestManageComponent->StartQuest(QuestId);
+}
+
+void AMainPlayerController::StartScene(const FString& SceneId) const
+{
+	QuestManageComponent->StartScene(SceneId);
 }
 
 TObjectPtr<UUIC_MainHUD> AMainPlayerController::GetMainHUD() const

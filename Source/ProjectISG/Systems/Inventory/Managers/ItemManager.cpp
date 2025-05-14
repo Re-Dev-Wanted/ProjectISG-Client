@@ -31,7 +31,7 @@ void UItemManager::Initialize()
 	}
 }
 
-FItemInfoData UItemManager::GetItemInfoById(const uint16 Id)
+FItemInfoData& UItemManager::GetItemInfoById(const uint16 Id)
 {
 	return ItemInfoList[Id];
 }
