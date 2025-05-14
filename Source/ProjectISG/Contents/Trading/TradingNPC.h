@@ -19,6 +19,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	
+
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void OnInteractive(AActor* Causer) override;
@@ -26,6 +30,12 @@ protected:
 	virtual bool GetCanInteractive() const override;
 
 	virtual FString GetInteractiveDisplayText() const override;
+
+	UFUNCTION()
+	void TradingRestrictByTimeReached();
+	
+	UFUNCTION()
+	void TradingRestrictCancelByTimeReached();
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
@@ -40,7 +50,7 @@ private:
 		meta = (AllowPrivateAccess = true))
 	class USceneComponent* InteractionPos;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category = Settings,
 		meta = (AllowPrivateAccess = true))
 	bool CanInteractive = false;
 };

@@ -212,6 +212,7 @@ void ATimeManager::UpdateTimeOfDay(ETimeOfDay TOD)
 			}
 		case ETimeOfDay::Night:
 			{
+				OnContentRestrictionTimeReached.Broadcast();
 				LoggingToNight();
 				TimeController->UpdateTimeImage(TimeModel->GetNightIcon());
 				break;

@@ -6,8 +6,12 @@
 #include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
 #include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
+#include "ProjectISG/Systems/Time/TimeManager.h"
 
 
 class AMainPlayerCharacter;
@@ -35,12 +39,25 @@ ATradingNPC::ATradingNPC()
 void ATradingNPC::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ATimeManager* TimeManager = Cast<ATimeManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ATimeManager::StaticClass()));
+	TimeManager->OnContentRestrictionTimeReached.AddDynamic(this, &ThisClass::TradingRestrictByTimeReached);
 	
+}
+
+void ATradingNPC::GetLifetimeReplicatedProps(
+	TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, CanInteractive);
 }
 
 void ATradingNPC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	
 }
 
 void ATradingNPC::OnInteractive(AActor* Causer)
@@ -68,4 +85,14 @@ bool ATradingNPC::GetCanInteractive() const
 FString ATradingNPC::GetInteractiveDisplayText() const
 {
 	return TEXT("거래하기");
+}
+
+void ATradingNPC::TradingRestrictByTimeReached()
+{
+	CanInteractive = false;
+}
+
+void ATradingNPC::TradingRestrictCancelByTimeReached()
+{
+	CanInteractive = true;
 }
