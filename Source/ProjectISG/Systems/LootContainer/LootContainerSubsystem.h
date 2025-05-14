@@ -2,11 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "LootContainerData.h"
+#include "ProjectISG/Systems/Inventory/ItemHandler.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "LootContainerSubsystem.generated.h"
 
 UCLASS()
-class PROJECTISG_API ULootContainerSubsystem : public UGameInstanceSubsystem
+class PROJECTISG_API ULootContainerSubsystem : public UGameInstanceSubsystem,
+ public IItemHandler
 {
 	GENERATED_BODY()
 
@@ -15,6 +17,8 @@ public:
 	void LoadAllDataAsync();
 
 	FGuid CreateLootContainer();
+
+	virtual bool ChangeItem(const FItemMetaInfo& ItemInfo, const uint16 Index) override;
 
 protected:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;

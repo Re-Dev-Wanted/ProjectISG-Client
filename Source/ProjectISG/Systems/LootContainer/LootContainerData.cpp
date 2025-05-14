@@ -19,12 +19,13 @@ bool FLootContainerData::NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParams)
 
 FGuid FLootContainerData::AddContainer()
 {
+	FGuid Guid = FGuid::NewGuid();
 	FLootContainerEntry& Entry = Containers.AddDefaulted_GetRef();
-	Entry.Guid = FGuid::NewGuid();
+	Entry.Guid = Guid;
 
 	MarkItemDirty(Entry);
 
-	return Entry.Guid;
+	return Guid;
 }
 
 void FLootContainerData::RemoveContainer(FGuid Guid)

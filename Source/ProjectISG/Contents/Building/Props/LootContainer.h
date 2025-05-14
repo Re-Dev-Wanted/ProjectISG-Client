@@ -10,6 +10,8 @@ class PROJECTISG_API ALootContainer : public APlacement
 	GENERATED_BODY()
 
 public:
+	virtual void BeginPlay() override;
+	
 	virtual void SetOption(bool bIsGhost, bool bIsBlock = false) override;
 	
 	virtual void OnInteractive(AActor* Causer) override;
@@ -25,5 +27,5 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly,
 		meta = (AllowPrivateAccess = true, ClampMin = 1, ClampMax = 30))
-	int32 Capacity;
+	int32 Capacity = 25;
 };

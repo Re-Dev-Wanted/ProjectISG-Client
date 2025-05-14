@@ -3,7 +3,8 @@
 #include "Components/WrapBox.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/Module/InventorySlot.h"
 
-void ULootContainerListView::OnInitialize(int32 SlotCount)
+void ULootContainerListView::Construct(TSubclassOf<UInventorySlot> 
+InventorySlotClass, int32 SlotCount)
 {
 	if (!InventorySlotClass)
 	{
@@ -16,5 +17,6 @@ void ULootContainerListView::OnInitialize(int32 SlotCount)
 	{
 		UInventorySlot* NewSlot = CreateWidget<UInventorySlot>(this, InventorySlotClass);
 		WrapBox->AddChildToWrapBox(NewSlot);
+		NewSlot->SetIndex(i);
 	}
 }
