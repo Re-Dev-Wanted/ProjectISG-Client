@@ -25,6 +25,7 @@ public:
 
 	GETTER(TObjectPtr<UInventoryComponent>, InventoryComponent)
 	GETTER(TObjectPtr<class AGridManager>, GridManager)
+	GETTER(TObjectPtr<class ATimeManager>, TimeManager);
 	GETTER_SETTER(int32, Gold);
 
 	bool CanBuyProduct(int32 ProductPrice);
@@ -44,6 +45,9 @@ protected:
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInventoryComponent> InventoryComponent;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<class ATimeManager> TimeManager;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	int32 Gold = 10000;

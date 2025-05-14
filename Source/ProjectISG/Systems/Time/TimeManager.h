@@ -8,6 +8,8 @@
 #include "TimeManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAddSleepTimeToCrop);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnContentRestrictionTimeReached);
+
 
 UENUM(BlueprintType)
 enum class ETimeOfDay : uint8
@@ -169,4 +171,7 @@ private:
 public:
 	UPROPERTY()
 	FAddSleepTimeToCrop AddSleepTimeToCrop;
+
+	UPROPERTY()
+	FOnContentRestrictionTimeReached OnContentRestrictionTimeReached;
 };
