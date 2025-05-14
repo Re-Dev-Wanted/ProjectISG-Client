@@ -13,7 +13,7 @@ class PROJECTISG_API UUIC_InventoryUI : public UBaseUIController
 	GENERATED_BODY()
 
 public:
-	virtual void AppearUI(const EUILayer Layer) override;
+	virtual void AppearUI() override;
 
 	void UpdateMainSlotItemData() const;
 

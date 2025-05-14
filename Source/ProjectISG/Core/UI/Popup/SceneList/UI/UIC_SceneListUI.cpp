@@ -17,9 +17,9 @@ void UUIC_SceneListUI::InitializeController(UBaseUIView* NewView,
 	Super::InitializeController(NewView, NewModel);
 }
 
-void UUIC_SceneListUI::AppearUI(const EUILayer Layer)
+void UUIC_SceneListUI::AppearUI()
 {
-	Super::AppearUI(Layer);
+	Super::AppearUI();
 
 	UUIM_SceneListUI* SceneListModel = Cast<UUIM_SceneListUI>(GetModel());
 

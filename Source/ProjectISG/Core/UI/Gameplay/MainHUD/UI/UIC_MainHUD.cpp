@@ -14,9 +14,9 @@
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 #include "ProjectISG/Systems/QuestStory/Manager/QuestStoryManager.h"
 
-void UUIC_MainHUD::AppearUI(const EUILayer Layer)
+void UUIC_MainHUD::AppearUI()
 {
-	Super::AppearUI(Layer);
+	Super::AppearUI();
 
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 	MainHUDView->GetMainSlotList()->UpdateItemData();

@@ -10,7 +10,7 @@ class PROJECTISG_API UUIC_MainHUD : public UBaseUIController
 	GENERATED_BODY()
 
 public:
-	virtual void AppearUI(const EUILayer Layer) override;
+	virtual void AppearUI() override;
 
 	void UpdateMainHotSlot() const;
 

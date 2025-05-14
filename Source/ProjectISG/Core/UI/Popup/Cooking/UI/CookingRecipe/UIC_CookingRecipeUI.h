@@ -17,7 +17,7 @@ public:
 	void TurnOffSelectedCookingRecipe();
 
 protected:
-	virtual void AppearUI(const EUILayer Layer) override;
+	virtual void AppearUI() override;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Input"

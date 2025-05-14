@@ -7,9 +7,9 @@
 #include "ProjectISG/Core/UI/HUD/Inventory/Module/ItemInfo.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 
-void UUIC_InventoryUI::AppearUI(const EUILayer Layer)
+void UUIC_InventoryUI::AppearUI()
 {
-	Super::AppearUI(Layer);
+	Super::AppearUI();
 
 	ClearItemInfoData();
 }

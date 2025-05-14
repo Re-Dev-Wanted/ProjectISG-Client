@@ -11,9 +11,9 @@
 #include "ProjectISG/Core/UI/Popup/Cooking/Module/SelectedFoodDetail/UIV_SelectedFoodDetailWidget.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 
-void UUIC_CookingRecipeUI::AppearUI(const EUILayer Layer)
+void UUIC_CookingRecipeUI::AppearUI()
 {
-	Super::AppearUI(Layer);
+	Super::AppearUI();
 
 	const UUIV_CookingRecipeUI* CookingRecipeUI = Cast<UUIV_CookingRecipeUI>(
 		GetView());
