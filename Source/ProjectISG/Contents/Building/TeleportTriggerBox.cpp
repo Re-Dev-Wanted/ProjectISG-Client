@@ -18,7 +18,6 @@ void ATeleportTriggerBox::BeginPlay()
 
 	GetCollisionComponent()->OnComponentBeginOverlap.AddDynamic(this, 
 	&ATeleportTriggerBox::OnBeginOverlap);
-	
 }
 
 auto ATeleportTriggerBox::Teleport(AMainPlayerCharacter* Player)
