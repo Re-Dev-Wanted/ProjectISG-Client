@@ -17,10 +17,11 @@ struct PROJECTISG_API FQuestStoryData : public FTableRowBase
 	GETTER(FString, QuestDescription)
 
 	GETTER(EQuestStoryType, QuestType)
+	GETTER(EQuestStoryObjective, QuestObjective)
 
-	FORCEINLINE TMap<uint32, uint32>& GetRewardItemData()
+	FORCEINLINE TMap<FString, FString>& GetQuestMetaData()
 	{
-		return RewardItemData;
+		return QuestMetaData;
 	}
 
 private:
@@ -41,9 +42,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess = true))
 	TMap<FString, FString> QuestMetaData;
-
-	UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess = true))
-	TMap<uint32, uint32> RewardItemData;
 };
 
 // 퀘스트 대사에 대한 데이터
