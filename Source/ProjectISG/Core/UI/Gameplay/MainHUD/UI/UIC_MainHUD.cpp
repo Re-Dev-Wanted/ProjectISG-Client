@@ -4,7 +4,6 @@
 #include "UIV_MainHUD.h"
 #include "Components/TextBlock.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
-#include "ProjectISG/Core/UI/UIEnum.h"
 #include "ProjectISG/Core/UI/Gameplay/QuestStory/Widget/AutoQuest/UIC_AutoQuestDialogueWidget.h"
 #include "ProjectISG/Core/UI/Gameplay/QuestStory/Widget/AutoQuest/UIV_AutoQuestDialogueWidget.h"
 #include "ProjectISG/Core/UI/Gameplay/QuestStory/Widget/CurrentQuest/UIC_CurrentQuestWidget.h"
