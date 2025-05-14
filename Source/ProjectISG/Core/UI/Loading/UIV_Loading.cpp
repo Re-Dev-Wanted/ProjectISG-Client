@@ -20,9 +20,8 @@ void UUIV_Loading::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	if (IsCreated)
 	{
 		UUIC_Loading* LoadingController = Cast<UUIC_Loading>(GetController());
-		ALobbyPlayerController* LobbyPlayerController = Cast<ALobbyPlayerController>(LoadingController->GetPlayerController());
 		
-		if (LobbyPlayerController->GetIsServerTravel())
+		if (LoadingController->GetIsServerTravel())
 		{
 			LoadingController->CreateSession();
 		}

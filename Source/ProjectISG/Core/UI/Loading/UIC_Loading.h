@@ -20,6 +20,8 @@ public:
 	
 	void JoinSession();
 
+	GETTER_SETTER(bool, IsServerTravel)
+
 protected:
 	UFUNCTION()
 	void OnCompleteCreate(FName SessionName, bool IsCreateSuccess);
@@ -28,4 +30,6 @@ protected:
 	
 private:
 	FOnJoinSessionCompleteDelegate OnJoinSessionCompleteDelegate;
+
+	bool IsServerTravel;
 };
