@@ -5,6 +5,7 @@
 #include "ProjectISG/Contents/Trading/TradingManager.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/QuestStory/Manager/QuestStoryManager.h"
+#include "ProjectISG/Utils/SessionUtil.h"
 
 UISGGameInstance::UISGGameInstance()
 {
@@ -21,4 +22,6 @@ void UISGGameInstance::Init()
 	Super::Init();
 
 	UQuestStoryManager::Initialize();
+	FSessionUtil::Init();
+	
 }
