@@ -17,7 +17,7 @@ class PROJECTISG_API UBaseUIController : public UObject
 
 public:
 	virtual void InitializeController(UBaseUIView* NewView
-									, UBaseUIModel* NewModel);
+	                                  , UBaseUIModel* NewModel);
 
 	virtual void InitializeSettingToPlayerController(APlayerController* PC);
 
@@ -55,4 +55,7 @@ private:
 	TObjectPtr<UBaseUIView> View;
 
 	void ChangeInputActionToUI(const bool IsBindAction);
+
+	UFUNCTION()
+	void OnFinishDefaultTickAnimation();
 };

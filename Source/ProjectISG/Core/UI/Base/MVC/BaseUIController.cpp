@@ -6,13 +6,22 @@
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
-#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 
 void UBaseUIController::InitializeController(UBaseUIView* NewView,
                                              UBaseUIModel* NewModel)
 {
 	View = NewView;
 	Model = NewModel;
+
+	if (GetView()->GetDefaultTickAnimation())
+	{
+		GetView()->TickAnimationEndNotified.BindDynamic(
+			this, &ThisClass::OnFinishDefaultTickAnimation);
+		GetView()->BindToAnimationFinished(GetView()->GetDefaultTickAnimation(),
+		                                   GetView()->TickAnimationEndNotified);
+
+		GetView()->PlayAnimation(GetView()->GetDefaultTickAnimation());
+	}
 }
 
 void UBaseUIController::InitializeSettingToPlayerController(
@@ -116,4 +125,15 @@ void UBaseUIController::ClearInputMappingContext()
 		Subsystem->RemoveMappingContext(UIMappingContext);
 		Subsystem->AddMappingContext(Player->GetDefaultMappingContext(), 0);
 	}
+}
+
+void UBaseUIController::OnFinishDefaultTickAnimation()
+{
+	// 애니메이션이 갑자기 사라질 수 있지만, 실제 비즈니스 로직에 문제가 되어서는 안된다.
+	if (!GetView()->GetDefaultTickAnimation())
+	{
+		return;
+	}
+
+	GetView()->PlayAnimation(GetView()->GetDefaultTickAnimation());
 }
