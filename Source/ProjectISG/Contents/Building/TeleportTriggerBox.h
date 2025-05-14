@@ -17,11 +17,13 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	auto Teleport(AMainPlayerCharacter* Player);
 
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	                    int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnTeleport();
 
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UWorld> StreamingLevel = nullptr;
