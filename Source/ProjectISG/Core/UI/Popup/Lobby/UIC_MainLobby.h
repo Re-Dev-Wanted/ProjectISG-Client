@@ -13,11 +13,5 @@ UCLASS()
 class PROJECTISG_API UUIC_MainLobby : public UBaseUIController
 {
 	GENERATED_BODY()
-
-public:
-	void CreateSession();
-
-protected:
-	UFUNCTION()
-	void OnCompleteCreate(FName SessionName, bool IsCreateSuccess);
+	
 };

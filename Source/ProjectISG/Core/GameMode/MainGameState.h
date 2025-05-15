@@ -15,13 +15,11 @@ class PROJECTISG_API AMainGameState : public AGameStateBase
 public:
 	AMainGameState();
 
-	GETTER(FString, SessionId);
+	GETTER_SETTER(FString, SessionId);
 
 	GETTER_SETTER(FString, CurrentWorldQuestId)
 
 	void StartWorldQuest(const FString& QuestId);
-
-	void GetGameSessionId();
 	
 protected:
 	virtual void GetLifetimeReplicatedProps(

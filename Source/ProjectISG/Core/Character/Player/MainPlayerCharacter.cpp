@@ -8,13 +8,13 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Contents/Diary/Component/DiaryComponent.h"
+#include "ProjectISG/Core/ISGGameInstance.h"
 #include "ProjectISG/Core/GameMode/MainGameState.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/ISGAbilitySystemComponent.h"
 #include "ProjectISG/GAS/Common/Attribute/ISGAttributeSet.h"
 #include "ProjectISG/Systems/Grid/Components/PlacementIndicatorComponent.h"
 #include "ProjectISG/Systems/Logging/Component/ScreenShotComponent.h"
-#include "ProjectISG/Systems/Time/TimeManager.h"
 
 AMainPlayerCharacter::AMainPlayerCharacter()
 {
@@ -70,7 +70,9 @@ void AMainPlayerCharacter::BeginPlay()
 
 	if (HasAuthority() && IsLocallyControlled())
 	{
-		GetWorld()->GetGameState<AMainGameState>()->GetGameSessionId();
+		FString SessionId = GetWorld()->GetGameInstance<UISGGameInstance>()->GetSessionId();
+		GetWorld()->GetGameState<AMainGameState>()->SetSessionId(SessionId);
+		UE_LOG(LogTemp, Warning, TEXT("세션 복사 : %s"), *SessionId);
 	}
 }
 
