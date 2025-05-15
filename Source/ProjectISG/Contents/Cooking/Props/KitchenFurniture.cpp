@@ -3,13 +3,23 @@
 #include "GameplayTagContainer.h"
 #include "Camera/CameraComponent.h"
 #include "AbilitySystemComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/GameStateBase.h"
+#include "GameFramework/PlayerState.h"
+#include "Kismet/GameplayStatics.h"
 #include "ProjectISG/Contents/Cooking/CookingStruct.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
+#include "ProjectISG/Systems/Time/TimeManager.h"
+#include "ProjectISG/Utils/EnumUtil.h"
 
 AKitchenFurniture::AKitchenFurniture()
 {
+	bReplicates = true;
+	Super::SetReplicateMovement(true);
+	
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	Mesh->SetupAttachment(GetRootComponent());
 
@@ -48,6 +58,14 @@ FString AKitchenFurniture::GetInteractiveDisplayText() const
 void AKitchenFurniture::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ATimeManager* TimeManager = Cast<ATimeManager>(
+		UGameplayStatics::GetActorOfClass(GetWorld(),
+										  ATimeManager::StaticClass()));
+	if (TimeManager)
+	{
+		TimeManager->OnContentRestrictionTimeReached.AddDynamic(this, &ThisClass::UnlockPlayer);
+	}
 }
 
 void AKitchenFurniture::OnInteractive(AActor* Causer)
@@ -56,6 +74,8 @@ void AKitchenFurniture::OnInteractive(AActor* Causer)
 
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
+		OnRep_SetInteractingPlayer(Player);
+		Player->GetInteractionComponent()->Server_OnInteractiveResponse(Causer);
 		Player->bUseControllerRotationYaw = false;
 		Player->SetActorTransform(
 			KitchenStandPosition->GetComponentTransform());
@@ -73,6 +93,13 @@ void AKitchenFurniture::OnInteractive(AActor* Causer)
 		Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
 			ActivateTag);
 	}
+}
+
+void AKitchenFurniture::OnInteractiveResponse(AActor* Causer)
+{
+	Super::OnInteractiveResponse(Causer);
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
+	Server_SetInteractingPlayer(Player);
 }
 
 void AKitchenFurniture::EquipCookingToolToAct(
@@ -127,4 +154,33 @@ void AKitchenFurniture::UnEquipCookingToolToAct()
 	WokMesh->AttachToComponent(GetRootComponent(),
 	                           FAttachmentTransformRules::SnapToTargetIncludingScale);
 	WokMesh->SetRelativeLocation(FVector::ZeroVector);
+}
+
+void AKitchenFurniture::UnlockPlayer()
+{
+	Client_UnlockPlayer();
+}
+
+void AKitchenFurniture::Client_UnlockPlayer_Implementation()
+{
+	if (GetInteractingPlayer() == nullptr)
+	{
+		return;	
+	}
+
+	AMainPlayerController* PC = Cast<AMainPlayerController>(GetInteractingPlayer()->GetController());
+	if (PC)
+	{
+		PC->SetIgnoreLookInput(false);
+		PC->SetViewTargetWithBlend(GetInteractingPlayer());
+		GetInteractingPlayer()->bUseControllerRotationYaw = true;
+		GetInteractingPlayer()->GetInteractionComponent()->SetIsInteractive(true);
+		GetInteractingPlayer()->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+		GetInteractingPlayer()->GetCameraComponent()->Activate();
+	}
+}
+
+void AKitchenFurniture::Server_SetInteractingPlayer_Implementation(AMainPlayerCharacter* Player)
+{
+	OnRep_SetInteractingPlayer(Player);
 }

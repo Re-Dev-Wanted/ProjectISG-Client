@@ -39,8 +39,13 @@ void ATradingNPC::BeginPlay()
 	ATimeManager* TimeManager = Cast<ATimeManager>(
 		UGameplayStatics::GetActorOfClass(GetWorld(),
 		                                  ATimeManager::StaticClass()));
-	TimeManager->OnContentRestrictionTimeReached.AddDynamic(
-		this, &ThisClass::TradingRestrictByTimeReached);
+	if (TimeManager)
+	{
+		TimeManager->OnContentRestrictionTimeReached.AddDynamic(
+			this, &ThisClass::TradingRestrictByTimeReached);
+		TimeManager->OnContentRestrictionCancelTimeReached.AddDynamic(
+			this, &ThisClass::TradingRestrictCancelByTimeReached);
+	}
 }
 
 void ATradingNPC::GetLifetimeReplicatedProps(
@@ -66,7 +71,6 @@ void ATradingNPC::OnInteractive(AActor* Causer)
 	FGameplayTagContainer ActivateTag;
 	ActivateTag.AddTag(ISGGameplayTags::Trading_Active_OpenTradingUI);
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
-
 	if (Player)
 	{
 		Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(

@@ -13,4 +13,7 @@ UCLASS()
 class PROJECTISG_API UUIV_TimeAlert : public UBaseUIView
 {
 	GENERATED_BODY()
+
+protected:
+	virtual void NativeConstruct() override;
 };

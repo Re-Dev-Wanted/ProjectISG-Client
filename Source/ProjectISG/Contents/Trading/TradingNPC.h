@@ -18,8 +18,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void GetLifetimeReplicatedProps(
-		TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -31,7 +30,7 @@ protected:
 
 	UFUNCTION()
 	void TradingRestrictByTimeReached();
-
+	
 	UFUNCTION()
 	void TradingRestrictCancelByTimeReached();
 

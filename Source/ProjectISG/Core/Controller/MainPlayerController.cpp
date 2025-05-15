@@ -135,3 +135,9 @@ void AMainPlayerController::Client_StartQuestToPlayer_Implementation(
 {
 	StartQuestToPlayer(QuestId);
 }
+
+void AMainPlayerController::Client_ResetWidgetAndPushTimeAlert_Implementation()
+{
+	UIManageComponent->ResetWidget();
+	UIManageComponent->PushWidget(EUIName::Modal_TimeAlert);
+}

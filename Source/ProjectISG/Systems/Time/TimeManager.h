@@ -8,7 +8,10 @@
 #include "TimeManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAddSleepTimeToCrop);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnContentRestrictionTimeReached);
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnContentRestrictionCancelTimeReached);
 
 
 UENUM(BlueprintType)
@@ -40,6 +43,9 @@ protected:
 	virtual void GetLifetimeReplicatedProps(
 		TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION()
+	void ResetAllPlayerWidget();
+
 private:
 	void UpdateCycleTime(float DeltaTime);
 
@@ -53,6 +59,9 @@ private:
 
 	UFUNCTION()
 	void OnRep_CurrentTimeOfDay();
+
+	void ChangeTOD();
+
 
 #pragma region Log
 	void LoggingToMorning();
@@ -166,7 +175,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = "true"), Category = "Time")
 	class UUIM_Time* TimeModel = nullptr;
-#pragma endregion 
+#pragma endregion
 
 public:
 	UPROPERTY()
@@ -174,4 +183,8 @@ public:
 
 	UPROPERTY()
 	FOnContentRestrictionTimeReached OnContentRestrictionTimeReached;
+
+	UPROPERTY()
+	FOnContentRestrictionCancelTimeReached
+	OnContentRestrictionCancelTimeReached;
 };
