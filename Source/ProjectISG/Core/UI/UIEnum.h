@@ -27,5 +27,5 @@ enum class EUIName: uint32
 	Modal_SellNotification, Popup_DiaryEdit, Popup_DiaryList,
 	Modal_ExitInteractUI, Modal_FishingUI, Popup_SceneListUI,
 	Popup_MainLobby, Popup_MultiPlay, Popup_ChooseCharacter,
-	Loading_LoadingUI
+	Loading_LoadingUI, Modal_TimeAlert,
 };

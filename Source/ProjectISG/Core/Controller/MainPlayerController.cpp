@@ -103,3 +103,9 @@ void AMainPlayerController::OpenInventory()
 
 	UIManageComponent->PushWidget(EUIName::Popup_InventoryUI);
 }
+
+void AMainPlayerController::Client_ResetWidgetAndPushTimeAlert_Implementation()
+{
+	UIManageComponent->ResetWidget();
+	UIManageComponent->PushWidget(EUIName::Modal_TimeAlert);
+}

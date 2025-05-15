@@ -9,9 +9,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
-#include "ProjectISG/Core/Controller/MainPlayerController.h"
-#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
-#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Time/TimeManager.h"
 #include "ProjectISG/Utils/EnumUtil.h"
@@ -43,12 +40,16 @@ void ATradingNPC::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ATimeManager* TimeManager = Cast<ATimeManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ATimeManager::StaticClass()));
+	ATimeManager* TimeManager = Cast<ATimeManager>(
+		UGameplayStatics::GetActorOfClass(GetWorld(),
+		                                  ATimeManager::StaticClass()));
 	if (TimeManager)
 	{
-		TimeManager->OnContentRestrictionTimeReached.AddDynamic(this, &ThisClass::TradingRestrictByTimeReached);
+		TimeManager->OnContentRestrictionTimeReached.AddDynamic(
+			this, &ThisClass::TradingRestrictByTimeReached);
+		TimeManager->OnContentRestrictionCancelTimeReached.AddDynamic(
+			this, &ThisClass::TradingRestrictCancelByTimeReached);
 	}
-	
 }
 
 void ATradingNPC::GetLifetimeReplicatedProps(
@@ -57,20 +58,17 @@ void ATradingNPC::GetLifetimeReplicatedProps(
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, CanInteractive);
-	
 }
 
 void ATradingNPC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	
 }
 
 void ATradingNPC::OnInteractive(AActor* Causer)
 {
 	IInteractionInterface::OnInteractive(Causer);
-	
+
 	Causer->SetActorLocation(InteractionPos->GetComponentLocation());
 	Causer->SetActorRotation(InteractionPos->GetComponentRotation());
 
@@ -96,6 +94,8 @@ FString ATradingNPC::GetInteractiveDisplayText() const
 
 void ATradingNPC::TradingRestrictByTimeReached()
 {
+	//UE_LOG(LogTemp, Warning, TEXT("TradingNPC : %s"), *FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
+
 	CanInteractive = false;
 }
 

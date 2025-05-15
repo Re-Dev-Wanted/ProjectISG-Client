@@ -20,6 +20,8 @@ public:
 
 	virtual void OnInteractive(AActor* Causer) override;
 
+	virtual void OnInteractiveResponse(AActor* Causer) override;
+
 	GETTER(TObjectPtr<UCameraComponent>, KitchenCameraComponent)
 
 	virtual bool GetCanInteractive() const override;
@@ -29,6 +31,15 @@ public:
 	void EquipCookingToolToAct(const FEquipCookingToolToActParams& Params);
 
 	void UnEquipCookingToolToAct();
+
+	UFUNCTION()
+	void UnlockPlayer();
+
+	UFUNCTION(Client, Reliable)
+	void Client_UnlockPlayer();
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetInteractingPlayer(class AMainPlayerCharacter* Player);
 
 protected:
 	virtual void BeginPlay() override;

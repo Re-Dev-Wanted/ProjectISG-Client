@@ -3,3 +3,18 @@
 
 #include "BaseInteractiveActor.h"
 
+#include "Net/UnrealNetwork.h"
+
+void ABaseInteractiveActor::GetLifetimeReplicatedProps(
+	TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, InteractingPlayer);
+}
+
+void ABaseInteractiveActor::OnRep_SetInteractingPlayer(
+	class AMainPlayerCharacter* Player)
+{
+	InteractingPlayer = Player;
+}

@@ -25,6 +25,7 @@ ATimeManager::ATimeManager()
 	bReplicates = true;
 	Super::SetReplicateMovement(true);
 	SetNetAddressable();
+	bAlwaysRelevant = true;
 
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 
@@ -70,7 +71,8 @@ void ATimeManager::BeginPlay()
 		}
 	}
 
-	OnContentRestrictionTimeReached.AddDynamic(this, &ATimeManager::ResetAllPlayerWidget);
+	OnContentRestrictionTimeReached.AddDynamic(
+		this, &ATimeManager::ResetAllPlayerWidget);
 }
 
 void ATimeManager::Tick(float DeltaTime)
@@ -79,11 +81,12 @@ void ATimeManager::Tick(float DeltaTime)
 
 	if (!TimeStop && !SleepManager->GetbSleepCinematicStart())
 	{
-		ChangeTOD();
-
 		if (HasAuthority())
 		{
 			UpdateCycleTime(DeltaTime);
+			RotateSun();
+			ChangeTOD();
+
 			// 서버 시간 UI 업데이트
 			if (CheckTimeUI())
 			{
@@ -100,7 +103,6 @@ void ATimeManager::Tick(float DeltaTime)
 					TimeController->UpdateDayText(Day, Month);
 				}
 			}
-			RotateSun();
 		}
 		else
 		{
@@ -169,6 +171,49 @@ void ATimeManager::UpdateCycleDate()
 	}
 }
 
+void ATimeManager::RotateSun()
+{
+	const float TotalMinutes = Hour * 60.0f + Minute;
+
+	// 06(해 뜨는 시간) ~ 24(해 지는 시간)을 기준으로 offset을 통해 일출과 일몰 시간을 정해줌
+	float SunPitch = FMath::GetMappedRangeValueClamped(
+		FVector2d(0.f, 1440.0f),
+		FVector2d((90.f + (6 - SunriseTime) * 15.f),
+		          360.f + ((24 - SunsetTime) * 15.f)),
+		TotalMinutes);
+
+	// 0 ~ 360 범위로 정규화
+	SunPitch = FMath::Fmod(SunPitch, 360.0f);
+	FRotator newRot = FRotator(SunPitch, 0.f, 0.f);
+	SunRotation = newRot;
+}
+
+void ATimeManager::ChangeTOD()
+{
+	ETimeOfDay PreviousTimeOfDay = CurrentTimeOfDay; // 변경 전 상태 저장
+	if (Hour >= 6 && Hour <= 12)
+	{
+		CurrentTimeOfDay = ETimeOfDay::Morning;
+	}
+	else if (Hour > 12 && Hour <= 18)
+	{
+		CurrentTimeOfDay = ETimeOfDay::Afternoon;
+	}
+	else if (Hour > 18 && Hour < 21)
+	{
+		CurrentTimeOfDay = ETimeOfDay::Evening;
+	}
+	else
+	{
+		CurrentTimeOfDay = ETimeOfDay::Night;
+	}
+
+	if (PreviousTimeOfDay != CurrentTimeOfDay)
+	{
+		UpdateTimeOfDay(CurrentTimeOfDay);
+	}
+}
+
 void ATimeManager::UpdateTimeOfDay(ETimeOfDay TOD)
 {
 	if (CheckTimeUI())
@@ -195,6 +240,7 @@ void ATimeManager::UpdateTimeOfDay(ETimeOfDay TOD)
 			}
 		case ETimeOfDay::Night:
 			{
+				OnContentRestrictionTimeReached.Broadcast();
 				LoggingToNight();
 				TimeController->UpdateTimeImage(TimeModel->GetNightIcon());
 				break;
@@ -203,6 +249,40 @@ void ATimeManager::UpdateTimeOfDay(ETimeOfDay TOD)
 			break;
 		}
 	}
+	else
+	{
+		switch (TOD)
+		{
+		case ETimeOfDay::Morning:
+			{
+				LoggingToMorning();
+				break;
+			}
+		case ETimeOfDay::Afternoon:
+			{
+				LoggingToAfternoon();
+				break;
+			}
+		case ETimeOfDay::Evening:
+			{
+				LoggingToEvening();
+				break;
+			}
+		case ETimeOfDay::Night:
+			{
+				OnContentRestrictionTimeReached.Broadcast();
+				LoggingToNight();
+				break;
+			}
+		default:
+			break;
+		}
+	}
+}
+
+void ATimeManager::OnRep_CurrentTimeOfDay()
+{
+	UpdateTimeOfDay(CurrentTimeOfDay);
 }
 
 bool ATimeManager::CheckTimeUI()
@@ -231,23 +311,6 @@ bool ATimeManager::CheckTimeUI()
 	return false;
 }
 
-void ATimeManager::RotateSun()
-{
-	const float TotalMinutes = Hour * 60.0f + Minute;
-
-	// 06(해 뜨는 시간) ~ 24(해 지는 시간)을 기준으로 offset을 통해 일출과 일몰 시간을 정해줌
-	float SunPitch = FMath::GetMappedRangeValueClamped(
-		FVector2d(0.f, 1440.0f),
-		FVector2d((90.f + (6 - SunriseTime) * 15.f),
-		          360.f + ((24 - SunsetTime) * 15.f)),
-		TotalMinutes);
-
-	// 0 ~ 360 범위로 정규화
-	SunPitch = FMath::Fmod(SunPitch, 360.0f);
-	FRotator newRot = FRotator(SunPitch, 0.f, 0.f);
-	SunRotation = newRot;
-}
-
 void ATimeManager::StopTime(bool value)
 {
 	if (value)
@@ -263,51 +326,21 @@ void ATimeManager::StopTime(bool value)
 	}
 }
 
-void ATimeManager::OnRep_CurrentTimeOfDay()
-{
-	UpdateTimeOfDay(CurrentTimeOfDay);
-}
-
-void ATimeManager::ChangeTOD()
-{
-	ETimeOfDay PreviousTimeOfDay = CurrentTimeOfDay; // 변경 전 상태 저장
-	if (Hour >= 6 && Hour <= 12)
-	{
-		CurrentTimeOfDay = ETimeOfDay::Morning;
-	}
-	else if (Hour > 12 && Hour <= 18)
-	{
-		CurrentTimeOfDay = ETimeOfDay::Afternoon;
-	}
-	else if (Hour > 18 && Hour < 21)
-	{
-		CurrentTimeOfDay = ETimeOfDay::Evening;
-	}
-	else
-	{
-		CurrentTimeOfDay = ETimeOfDay::Night;
-	}
-
-	if (PreviousTimeOfDay != CurrentTimeOfDay)
-	{
-		UpdateTimeOfDay(CurrentTimeOfDay);
-		if (CurrentTimeOfDay == ETimeOfDay::Night)
-		{
-			OnContentRestrictionTimeReached.Broadcast();
-		}
-	}
-}
-
 void ATimeManager::ResetAllPlayerWidget()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s"),*FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
+	if (HasAuthority() == false)
+	{
+		return;
+	}
+
 	AGameStateBase* GameState = GetWorld()->GetGameState();
 	for (APlayerState* PlayerState : GameState->PlayerArray)
 	{
-		AMainPlayerController* PS = Cast<AMainPlayerController>(PlayerState->GetPlayerController());
-		if (PS)
+		AMainPlayerController* PC = Cast<AMainPlayerController>(
+			PlayerState->GetPlayerController());
+		if (PC)
 		{
-			PS->GetUIManageComponent()->ResetWidget();
+			PC->Client_ResetWidgetAndPushTimeAlert();
 		}
 	}
 }

@@ -44,6 +44,9 @@ public:
 	GETTER(TObjectPtr<UUIManageComponent>, UIManageComponent)
 	GETTER(TObjectPtr<UQuestManageComponent>, QuestManageComponent)
 
+	UFUNCTION(Client, Reliable)
+	void Client_ResetWidgetAndPushTimeAlert();
+	
 protected:
 	virtual void BeginPlay() override;
 
