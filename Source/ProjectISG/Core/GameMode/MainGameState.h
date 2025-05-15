@@ -21,12 +21,14 @@ public:
 
 	void StartWorldQuest(const FString& QuestId);
 
+	void GetGameSessionId();
+	
 protected:
 	virtual void GetLifetimeReplicatedProps(
 		TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 private:
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, VisibleAnywhere)
 	FString SessionId = TEXT("e1827901-2536-4fb9-b76a-ca8e149015cb");
 
 	UPROPERTY(Replicated)

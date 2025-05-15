@@ -8,6 +8,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Contents/Diary/Component/DiaryComponent.h"
+#include "ProjectISG/Core/GameMode/MainGameState.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/ISGAbilitySystemComponent.h"
 #include "ProjectISG/GAS/Common/Attribute/ISGAttributeSet.h"
@@ -65,6 +66,11 @@ void AMainPlayerCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
+	}
+
+	if (HasAuthority() && IsLocallyControlled())
+	{
+		GetWorld()->GetGameState<AMainGameState>()->GetGameSessionId();
 	}
 }
 
