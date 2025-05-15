@@ -32,7 +32,7 @@ protected:
 	virtual void InitializeComponent() override;
 
 	virtual void GetLifetimeReplicatedProps(
-		TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+		TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 private:
 	bool IsOpenedInventory = false;

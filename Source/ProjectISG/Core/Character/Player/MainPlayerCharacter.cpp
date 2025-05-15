@@ -76,6 +76,11 @@ void AMainPlayerCharacter::OnRep_PlayerState()
 
 	PlayerInventoryComponent->InitializePlayerInventory();
 	HandSlotComponent->InitializePlayerHandSlot();
+
+	if (IsLocallyControlled())
+	{
+		GetPlayerState<AMainPlayerState>()->InitializeData();
+	}
 }
 
 void AMainPlayerCharacter::PossessedBy(AController* NewController)
@@ -86,6 +91,11 @@ void AMainPlayerCharacter::PossessedBy(AController* NewController)
 
 	PlayerInventoryComponent->InitializePlayerInventory();
 	HandSlotComponent->InitializePlayerHandSlot();
+
+	if (IsLocallyControlled())
+	{
+		GetPlayerState<AMainPlayerState>()->InitializeData();
+	}
 }
 
 void AMainPlayerCharacter::InitializeAbilitySystem()
@@ -103,13 +113,12 @@ void AMainPlayerCharacter::InitializeAbilitySystem()
 		AttributeSet = PS->GetAttributeSet();
 		InitializePrimaryAttributes();
 
-
 		// 이후 Ability 시스템 관련 Delegate 연동 처리를 진행한다.
 	}
 }
 
 void AMainPlayerCharacter::GetLifetimeReplicatedProps(
-	TArray<class FLifetimeProperty>& OutLifetimeProps) const
+	TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 

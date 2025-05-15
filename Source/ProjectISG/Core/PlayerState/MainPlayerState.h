@@ -6,6 +6,8 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerState.generated.h"
 
+class ATimeManager;
+class AGridManager;
 class UInventoryComponent;
 class UISGAbilitySystemComponent;
 
@@ -24,8 +26,8 @@ public:
 	class UISGAttributeSet* GetAttributeSet() const { return AttributeSet; }
 
 	GETTER(TObjectPtr<UInventoryComponent>, InventoryComponent)
-	GETTER(TObjectPtr<class AGridManager>, GridManager)
-	GETTER(TObjectPtr<class ATimeManager>, TimeManager);
+	GETTER(TObjectPtr<AGridManager>, GridManager)
+	GETTER(TObjectPtr<ATimeManager>, TimeManager)
 	GETTER_SETTER(int32, Gold);
 
 	bool CanBuyProduct(int32 ProductPrice);
@@ -47,7 +49,7 @@ private:
 	TObjectPtr<UInventoryComponent> InventoryComponent;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<class ATimeManager> TimeManager;
+	TObjectPtr<ATimeManager> TimeManager;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	int32 Gold = 10000;

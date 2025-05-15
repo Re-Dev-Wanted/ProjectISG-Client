@@ -29,7 +29,6 @@ void AMainPlayerController::BeginPlay()
 
 	if (IsLocalController() && HasAuthority())
 	{
-		GetPlayerState<AMainPlayerState>()->InitializeData();
 		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
 	}
 }
@@ -37,7 +36,6 @@ void AMainPlayerController::BeginPlay()
 void AMainPlayerController::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
-	GetPlayerState<AMainPlayerState>()->InitializeData();
 
 	if (IsLocalController())
 	{
