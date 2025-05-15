@@ -2,6 +2,7 @@
 
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/GameMode/MainGameState.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Popup/LootContainer/UI/UIC_LootContainerUI.h"
 #include "ProjectISG/Systems/LootContainer/LootContainerSubsystem.h"
@@ -11,8 +12,8 @@ void ALootContainer::BeginPlay()
 	Super::BeginPlay();
 
 	//TODO: 테스트용 추후에 지우기
-	Guid = GetWorld()->GetGameInstance()
-		->GetSubsystem<ULootContainerSubsystem>()
+	Guid = GetWorld()->GetGameState<AMainGameState>()
+		->GetLootContainerComponent()
 		->CreateLootContainer(Capacity);
 }
 
@@ -22,8 +23,7 @@ void ALootContainer::SetOption(bool bIsGhost, bool bIsBlock)
 
 	if (!bIsGhost)
 	{
-		Guid = GetWorld()->GetGameInstance()
-		->GetSubsystem<ULootContainerSubsystem>()
+		Guid = GetWorld()->GetGameState<AMainGameState>()->GetLootContainerComponent()
 		->CreateLootContainer(Capacity);
 	}
 }
@@ -48,9 +48,8 @@ void ALootContainer::OnInteractive(AActor* Causer)
 			UUIC_LootContainerUI* UIController = Cast<UUIC_LootContainerUI>
 			(PC->GetUIManageComponent()->ControllerInstances[EUIName::Popup_LootContainerUI]);
 
-			TArray<FItemMetaInfo> Items = GetWorld()->GetGameInstance()
-			->GetSubsystem<ULootContainerSubsystem>()
-			->GetContainerItems(Guid);
+			TArray<FItemMetaInfo> Items = GetWorld()->GetGameState<AMainGameState>()->
+			GetLootContainerComponent()->GetContainerItems(Guid);
 
 			UIController->SetContainer(Guid, Items);
 		}

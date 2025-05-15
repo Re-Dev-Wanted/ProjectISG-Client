@@ -9,7 +9,6 @@
 #include "Kismet/KismetInputLibrary.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 
-#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/Module/InventorySlotDragDropOperation.h"
 #include "ProjectISG/Core/UI/Popup/Inventory/UI/UIC_InventoryUI.h"

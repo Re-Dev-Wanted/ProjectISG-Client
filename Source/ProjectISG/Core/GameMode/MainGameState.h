@@ -5,6 +5,7 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainGameState.generated.h"
 
+class ULootContainerSubsystem;
 class UQuestManageComponent;
 
 UCLASS()
@@ -19,11 +20,16 @@ public:
 
 	GETTER_SETTER(FString, CurrentWorldQuestId)
 
+	GETTER(TObjectPtr<ULootContainerSubsystem>, LootContainerComponent)
+
 	void StartWorldQuest(const FString& QuestId);
 	
 protected:
 	virtual void GetLifetimeReplicatedProps(
 		TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UPROPERTY(VisibleAnywhere, Replicated)
+	TObjectPtr<ULootContainerSubsystem> LootContainerComponent;
 
 private:
 	UPROPERTY(Replicated, VisibleAnywhere)

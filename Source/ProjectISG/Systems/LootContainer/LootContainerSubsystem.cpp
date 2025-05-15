@@ -1,13 +1,25 @@
 #include "LootContainerSubsystem.h"
 
-void ULootContainerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+#include "Net/UnrealNetwork.h"
+
+ULootContainerSubsystem::ULootContainerSubsystem()
 {
-	Super::Initialize(Collection);
+	PrimaryComponentTick.bCanEverTick = false;
+	bWantsInitializeComponent = true;
 }
 
-void ULootContainerSubsystem::Deinitialize()
+void ULootContainerSubsystem::InitializeComponent()
 {
-	Super::Deinitialize();
+	Super::InitializeComponent();
+	
+	SetIsReplicated(true);
+}
+
+void ULootContainerSubsystem::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ULootContainerSubsystem, Data);
 }
 
 void ULootContainerSubsystem::LoadAllDataAsync()

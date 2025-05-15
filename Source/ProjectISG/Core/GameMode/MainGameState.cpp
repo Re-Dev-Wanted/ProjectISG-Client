@@ -4,10 +4,12 @@
 #include "Interfaces/IHttpResponse.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Systems/LootContainer/LootContainerSubsystem.h"
 #include "ProjectISG/Utils/ApiUtil.h"
 
 AMainGameState::AMainGameState()
 {
+	LootContainerComponent = CreateDefaultSubobject<ULootContainerSubsystem>(TEXT("LootContainerComponent"));
 }
 
 void AMainGameState::GetLifetimeReplicatedProps(
@@ -17,6 +19,7 @@ void AMainGameState::GetLifetimeReplicatedProps(
 
 	DOREPLIFETIME(AMainGameState, CurrentWorldQuestId)
 	DOREPLIFETIME(AMainGameState, SessionId)
+	DOREPLIFETIME(AMainGameState, LootContainerComponent);
 }
 
 void AMainGameState::StartWorldQuest(const FString& QuestId)
