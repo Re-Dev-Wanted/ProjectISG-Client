@@ -70,6 +70,23 @@ void FLootContainerData::UpdateContainer(FGuid Guid, const FItemMetaInfo& Item, 
 	}
 }
 
+void FLootContainerData::SwapItemInContainer(FGuid Guid, uint16 Prev, uint16 Next)
+{
+	for (FLootContainerEntry& Entry : Containers)
+	{
+		if (Entry.Guid == Guid)
+		{
+			FItemMetaInfo Temp = Entry.Items[Prev];
+			
+			Entry.Items[Prev] = Entry.Items[Next];
+			Entry.Items[Next] = Temp;
+			
+			MarkArrayDirty();
+			break;
+		}
+	}
+}
+
 TArray<FItemMetaInfo> FLootContainerData::GetItems(FGuid Guid)
 {
 	for (FLootContainerEntry& Entry : Containers)

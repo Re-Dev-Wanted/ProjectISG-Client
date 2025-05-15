@@ -5,6 +5,8 @@
 #include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "UIC_LootContainerUI.generated.h"
 
+class UInputAction;
+
 UCLASS()
 class PROJECTISG_API UUIC_LootContainerUI : public UBaseUIController
 {
@@ -13,9 +15,12 @@ class PROJECTISG_API UUIC_LootContainerUI : public UBaseUIController
 public:
 	void SetContainer(FGuid Guid, const TArray<FItemMetaInfo>& Items);
 
-	UFUNCTION()
-	void CloseUI();
-
 protected:
 	virtual void InitializeController(UBaseUIView* NewView, UBaseUIModel* NewModel) override;
+
+	virtual void BindInputAction(UEnhancedInputComponent* InputComponent) override;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",
+		meta = (AllowPrivateAccess = true, EditCondition = "IsInputAccess"))
+	UInputAction* CloseAction;
 };

@@ -18,10 +18,11 @@ class PROJECTISG_API ULootContainerItemSlot : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	GETTER_SETTER(TScriptInterface<IItemHandler>, ItemHandler)
+	SETTER(TScriptInterface<IItemHandler>, ItemHandler)
 	SETTER(uint16, Index);
+	GETTER(FGuid, ContainerGuid)
 
-	void SetSlotInfo(const FItemMetaInfo& ItemMetaInfo);
+	void SetSlotInfo(const FItemMetaInfo& ItemMetaInfo, const FGuid& Guid = FGuid());
 	void SetSelected(const bool IsSelected) const;
 
 protected:
@@ -51,6 +52,7 @@ private:
 	bool IsDragUi;
 	bool IsExecuteDrop = true;
 
+	FGuid ContainerGuid;
 	TScriptInterface<IItemHandler> ItemHandler = nullptr;
 
 	uint16 Index;

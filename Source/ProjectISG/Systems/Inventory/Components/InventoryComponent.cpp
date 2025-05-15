@@ -62,11 +62,21 @@ void UInventoryComponent::InitializeItemData()
 	UpdateInventory();
 }
 
+FItemMetaInfo UInventoryComponent::GetItemMetaInfo(FGuid Guid, const uint16 Index)
+{
+	return InventoryList[Index];
+}
+
 bool UInventoryComponent::ChangeItem(FGuid Guid, const FItemMetaInfo& ItemInfo, const uint16 Index)
 {
 	InventoryList[Index] = ItemInfo;
 	
 	return true;
+}
+
+void UInventoryComponent::SwapItem(FGuid Guid, const uint16 Prev, const uint16 Next)
+{
+	SwapItemInInventory(Prev, Next);
 }
 
 void UInventoryComponent::BeginPlay()

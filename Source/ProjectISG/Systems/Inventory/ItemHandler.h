@@ -15,6 +15,11 @@ class UItemHandler : public UInterface
 class PROJECTISG_API IItemHandler
 {
 	GENERATED_BODY()
+	
 public:
-	virtual bool ChangeItem(FGuid Guid, const FItemMetaInfo& ItemInfo, const uint16 Index) { return false; }
+	virtual FItemMetaInfo GetItemMetaInfo(FGuid Guid, const uint16 Index) = 0;
+	
+	virtual bool ChangeItem(FGuid Guid, const FItemMetaInfo& ItemInfo, const uint16 Index) = 0;
+
+	virtual void SwapItem(FGuid Guid, const uint16 Prev, const uint16 Next) = 0;
 };

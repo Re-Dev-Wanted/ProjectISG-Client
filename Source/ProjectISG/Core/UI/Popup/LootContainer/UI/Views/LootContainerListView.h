@@ -14,7 +14,7 @@ class PROJECTISG_API ULootContainerListView : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void SetContainerInfo(const TSubclassOf<ULootContainerItemSlot>& InventorySlotClass, TArray<FItemMetaInfo> Items);
+	void SetContainerInfo(const TSubclassOf<ULootContainerItemSlot>& InventorySlotClass, TArray<FItemMetaInfo> Items, FGuid Guid);
 
 protected:
 	UPROPERTY(meta = (BindWidget))

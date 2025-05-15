@@ -100,19 +100,24 @@ bool ULootContainerItemSlot::NativeOnDrop(const FGeometry& InGeometry,
 	ULootContainerItemSlot* PrevInvSlot = Cast<ULootContainerItemSlot>(DropOperation->
 		GetOriginWidget());
 
+	TObjectPtr<UObject> PrevObj = PrevInvSlot->ItemHandler.GetObjectRef();
+	TObjectPtr<UObject> CurrentObj = ItemHandler.GetObjectRef();
 
+	const FItemMetaInfo CurrentItemInfo = ItemHandler->GetItemMetaInfo(ContainerGuid, Index);
+	const FItemMetaInfo PrevItemInfo = PrevInvSlot->ItemHandler->GetItemMetaInfo(PrevInvSlot->ContainerGuid, PrevInvSlot->Index);
+
+	if (PrevObj.GetClass() == CurrentObj.GetClass())
+	{
+		ItemHandler->SwapItem(ContainerGuid, PrevInvSlot->Index, Index);
+	}
+	else
+	{
+		PrevInvSlot->ItemHandler->ChangeItem(PrevInvSlot->ContainerGuid, CurrentItemInfo, PrevInvSlot->Index);
+		ItemHandler->ChangeItem(ContainerGuid, PrevItemInfo, Index);
+	}
 	
-
-	const AMainPlayerState* PS = Cast<AMainPlayerState>(
-		GetOwningPlayerPawn()->GetPlayerState());
-
-	TArray<FItemMetaInfo> InventoryList = PS->GetInventoryComponent()->
-	                                          GetInventoryList();
-	SetSlotInfo(InventoryList[DropOperation->GetItemIndex()]);
-	PrevInvSlot->SetSlotInfo(InventoryList[Index]);
-
-	PS->GetInventoryComponent()->SwapItemInInventory(
-		DropOperation->GetItemIndex(), Index);
+	SetSlotInfo(PrevItemInfo, ContainerGuid);
+	PrevInvSlot->SetSlotInfo(CurrentItemInfo, PrevInvSlot->ContainerGuid);
 
 	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 }
@@ -123,12 +128,14 @@ void ULootContainerItemSlot::NativeOnDragCancelled(
 	Super::NativeOnDragCancelled(InDragDropEvent, InOperation);
 }
 
-void ULootContainerItemSlot::SetSlotInfo(const FItemMetaInfo& ItemMetaInfo)
+void ULootContainerItemSlot::SetSlotInfo(const FItemMetaInfo& ItemMetaInfo, const FGuid& Guid)
 {
 	SetSlotItemId(ItemMetaInfo.GetId());
 	SetThumbnail(
 		UItemManager::GetItemInfoById(ItemMetaInfo.GetId()).GetThumbnail());
 	SetItemCount(ItemMetaInfo.GetCurrentCount());
+
+	ContainerGuid = Guid;
 }
 
 void ULootContainerItemSlot::SetIsDragged(const bool IsDragged)

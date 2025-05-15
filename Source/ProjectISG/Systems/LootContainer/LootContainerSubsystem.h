@@ -19,7 +19,11 @@ public:
 
 	TArray<FItemMetaInfo> GetContainerItems(FGuid Guid);
 
+	virtual FItemMetaInfo GetItemMetaInfo(FGuid Guid, const uint16 Index) override;
+	
 	virtual bool ChangeItem(FGuid Guid, const FItemMetaInfo& ItemInfo, const uint16 Index) override;
+
+	virtual void SwapItem(FGuid Guid, const uint16 Prev, const uint16 Next) override;
 
 protected:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;

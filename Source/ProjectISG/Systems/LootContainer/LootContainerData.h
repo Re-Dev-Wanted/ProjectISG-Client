@@ -40,8 +40,10 @@ public:
 
 	void UpdateContainer(FGuid Guid, const FItemMetaInfo& Item, uint16 Index);
 
-	TArray<FItemMetaInfo> GetItems(FGuid Guid);
+	void SwapItemInContainer(FGuid Guid, uint16 Prev, uint16 Next);
 	
+	TArray<FItemMetaInfo> GetItems(FGuid Guid);
+
 protected:
 	UPROPERTY()
 	TArray<FLootContainerEntry> Containers;
