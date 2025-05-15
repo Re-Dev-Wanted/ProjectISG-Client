@@ -38,6 +38,8 @@ public:
 
 	void UpdateContainer(FGuid Guid, TArray<FItemMetaInfo> Items);
 
+	void UpdateContainer(FGuid Guid, const FItemMetaInfo& Item, uint16 Index);
+
 	TArray<FItemMetaInfo> GetItems(FGuid Guid);
 	
 protected:

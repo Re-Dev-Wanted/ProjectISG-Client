@@ -4,8 +4,8 @@
 #include "Blueprint/UserWidget.h"
 #include "LootContainerInventoryList.generated.h"
 
+class ULootContainerItemSlot;
 class UGridPanel;
-class UInventorySlot;
 
 UCLASS()
 class PROJECTISG_API ULootContainerInventoryList : public UUserWidget
@@ -36,7 +36,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Options|UI",
 		meta = (AllowPrivateAccess))
-	TSubclassOf<UInventorySlot> InventorySlotClass;
+	TSubclassOf<ULootContainerItemSlot> InventorySlotClass;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UGridPanel> InventoryList;

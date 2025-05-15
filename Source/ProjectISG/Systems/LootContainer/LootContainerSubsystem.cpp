@@ -23,3 +23,9 @@ TArray<FItemMetaInfo> ULootContainerSubsystem::GetContainerItems(FGuid Guid)
 {
 	return Data.GetItems(Guid);
 }
+
+bool ULootContainerSubsystem::ChangeItem(FGuid Guid, const FItemMetaInfo& ItemInfo, const uint16 Index)
+{
+	Data.UpdateContainer(Guid, ItemInfo, Index);
+	return true;
+}

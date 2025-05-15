@@ -81,11 +81,9 @@ bool ULootContainerItemSlot::NativeOnDrop(const FGeometry& InGeometry,
 	{
 		return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 	}
-	// 드래그 필요한 UI인 경우 여기에 접근하는 순간부터 우선은 true로 교체해준다.
-	IsExecuteDrop = true;
 
-	// 이 경우가 애초부터 인벤토리 칸과 인벤토리 칸과의 교차임을 의미한다.
-	// 근데 이후 불안한 경우 내부에서 Operation의 Widget이 InvenSlot인지 확인
+	IsExecuteDrop = true;
+	
 	if (!InOperation->IsA(UInventorySlotDragDropOperation::StaticClass()))
 	{
 		return false;
@@ -101,6 +99,9 @@ bool ULootContainerItemSlot::NativeOnDrop(const FGeometry& InGeometry,
 
 	ULootContainerItemSlot* PrevInvSlot = Cast<ULootContainerItemSlot>(DropOperation->
 		GetOriginWidget());
+
+
+	
 
 	const AMainPlayerState* PS = Cast<AMainPlayerState>(
 		GetOwningPlayerPawn()->GetPlayerState());

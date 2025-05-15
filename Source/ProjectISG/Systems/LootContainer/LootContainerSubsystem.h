@@ -7,7 +7,7 @@
 #include "LootContainerSubsystem.generated.h"
 
 UCLASS()
-class PROJECTISG_API ULootContainerSubsystem : public UGameInstanceSubsystem
+class PROJECTISG_API ULootContainerSubsystem : public UGameInstanceSubsystem, public IItemHandler
 {
 	GENERATED_BODY()
 
@@ -19,7 +19,7 @@ public:
 
 	TArray<FItemMetaInfo> GetContainerItems(FGuid Guid);
 
-	// virtual bool ChangeItem(const FItemMetaInfo& ItemInfo, const uint16 Index) override;
+	virtual bool ChangeItem(FGuid Guid, const FItemMetaInfo& ItemInfo, const uint16 Index) override;
 
 protected:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
