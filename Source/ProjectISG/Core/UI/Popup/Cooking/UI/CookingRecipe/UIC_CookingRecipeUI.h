@@ -19,13 +19,15 @@ public:
 protected:
 	virtual void AppearUI() override;
 
+	virtual void
+	BindInputAction(UEnhancedInputComponent* InputComponent) override;
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Input"
 		, meta = (AllowPrivateAccess = true, EditCondition = "IsInputAccess"))
 	TObjectPtr<UInputAction> CloseCookingRecipeUI;
 
-	virtual void
-	BindInputAction(UEnhancedInputComponent* InputComponent) override;
+	bool CanCookByRecipeId(const uint32 RecipeId);
 
 	UFUNCTION()
 	void OnCloseCookingRecipeUI();
