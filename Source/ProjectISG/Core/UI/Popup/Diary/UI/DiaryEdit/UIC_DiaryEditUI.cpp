@@ -81,9 +81,7 @@ void UUIC_DiaryEditUI::OnClickToSaveDiary()
 	{
 		AMainPlayerController* PC = Cast<AMainPlayerController>(
 			GetView()->GetOwningPlayer());
-
 		PC->PopUI();
-
 		// TODO: 여기에 일기 저장 이후 추가 로직 필요하면 작성할 것
 	});
 
