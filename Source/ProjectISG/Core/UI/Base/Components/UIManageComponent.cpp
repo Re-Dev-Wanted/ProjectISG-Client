@@ -138,11 +138,6 @@ bool UUIManageComponent::HasViewUI(const EUIName Key)
 
 void UUIManageComponent::ResetWidget()
 {
-	if (HasViewUI(EUIName::Gameplay_MainHUD))
-	{
-		return;
-	}
-	
 	while (!WidgetStack.IsEmpty())
 	{
 		PopWidget();
