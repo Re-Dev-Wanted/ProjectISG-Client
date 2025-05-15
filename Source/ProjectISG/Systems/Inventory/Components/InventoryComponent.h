@@ -53,7 +53,7 @@ public:
 	
 	void UpdateInventory();
 
-	virtual void SwapItem(FGuid Guid, const uint16 Prev, const uint16 Next) override;
+	virtual void SwapItem(AActor* Causer, FGuid Guid, const uint16 Prev, const uint16 Next) override;
 
 protected:
 	virtual void BeginPlay() override;

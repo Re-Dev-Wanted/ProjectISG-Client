@@ -2,6 +2,7 @@
 
 #include "Components/WrapBox.h"
 #include "ProjectISG/Core/GameMode/MainGameState.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Popup/LootContainer/UI/Widgets/LootContainerItemSlot.h"
 #include "ProjectISG/Systems/LootContainer/LootContainerSubsystem.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
@@ -22,7 +23,7 @@ void ULootContainerListView::SetContainerInfo(const TSubclassOf<ULootContainerIt
 		ULootContainerItemSlot* NewSlot = CreateWidget<ULootContainerItemSlot>(this, InventorySlotClass);
 		WrapBox->AddChildToWrapBox(NewSlot);
 		
-		NewSlot->SetItemHandler(GetWorld()->GetGameState<AMainGameState>()->GetLootContainerComponent());
+		NewSlot->SetItemHandler(GetOwningPlayerState<AMainPlayerState>()->GetLootContainerComponent());
 		NewSlot->SetIndex(i);
 		NewSlot->SetSlotInfo(Items[i], Guid);
 	}

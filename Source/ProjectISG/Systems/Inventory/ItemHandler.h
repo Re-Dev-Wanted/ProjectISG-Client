@@ -19,7 +19,9 @@ class PROJECTISG_API IItemHandler
 public:
 	virtual FItemMetaInfo GetItemMetaInfo(FGuid Guid, const uint16 Index) = 0;
 	
-	virtual bool ChangeItem(FGuid Guid, const FItemMetaInfo& ItemInfo, const uint16 Index) = 0;
+	virtual bool ChangeItem(AActor* Causer, FGuid Guid, const FItemMetaInfo& 
+	ItemInfo, 
+	const uint16 Index) = 0;
 
-	virtual void SwapItem(FGuid Guid, const uint16 Prev, const uint16 Next) = 0;
+	virtual void SwapItem(AActor* Causer, FGuid Guid, const uint16 Prev, const uint16 Next) = 0;
 };

@@ -4,6 +4,7 @@
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/GameMode/MainGameState.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Popup/LootContainer/UI/UIC_LootContainerUI.h"
 #include "ProjectISG/Systems/LootContainer/LootContainerSubsystem.h"
@@ -11,22 +12,6 @@
 void ALootContainer::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//TODO: 테스트용 추후에 지우기
-	
-	if (HasAuthority())
-	{
-		Guid = FGuid::NewGuid();
-		GetWorld()->GetGameState<AMainGameState>()
-			->GetLootContainerComponent()
-			->CreateLootContainer(Guid, Capacity);
-	}
-	else
-	{
-		GetWorld()->GetGameState<AMainGameState>()
-			->GetLootContainerComponent()
-			->Server_CreateLootContainer(Guid, Capacity);
-	}
 }
 
 void ALootContainer::GetLifetimeReplicatedProps(
@@ -40,22 +25,7 @@ void ALootContainer::GetLifetimeReplicatedProps(
 void ALootContainer::SetOption(bool bIsGhost, bool bIsBlock)
 {
 	Super::SetOption(bIsGhost, bIsBlock);
-
-	if (!bIsGhost)
-	{
-		if (HasAuthority())
-		{
-			GetWorld()->GetGameState<AMainGameState>()
-				->GetLootContainerComponent()
-				->CreateLootContainer(Guid, Capacity);
-		}
-		else
-		{
-			GetWorld()->GetGameState<AMainGameState>()
-				->GetLootContainerComponent()
-				->Server_CreateLootContainer(Guid, Capacity);
-		}
-	}
+	
 }
 
 void ALootContainer::OnInteractive(AActor* Causer)
@@ -71,15 +41,22 @@ void ALootContainer::OnInteractive(AActor* Causer)
 			return;
 		}
 
+		const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
+
+		if (!Guid.IsValid())
+		{
+			Guid = FGuid::NewGuid();
+			PS->GetLootContainerComponent()->CreateLootContainer(Causer, Guid, Capacity);
+		}
+
+		TArray<FItemMetaInfo> Items = PS->GetLootContainerComponent()->GetContainerItems(Guid);
+		
 		if (Player->IsLocallyControlled())
 		{
 			PC->PushUI(EUIName::Popup_LootContainerUI);
 
 			UUIC_LootContainerUI* UIController = Cast<UUIC_LootContainerUI>
 			(PC->GetUIManageComponent()->ControllerInstances[EUIName::Popup_LootContainerUI]);
-
-			TArray<FItemMetaInfo> Items = GetWorld()->GetGameState<AMainGameState>()->
-			GetLootContainerComponent()->GetContainerItems(Guid);
 
 			UIController->SetContainer(Guid, Items);
 		}

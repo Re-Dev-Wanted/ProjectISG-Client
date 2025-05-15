@@ -7,7 +7,9 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Kismet/KismetInputLibrary.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/Module/InventorySlotDragDropOperation.h"
@@ -105,14 +107,19 @@ bool ULootContainerItemSlot::NativeOnDrop(const FGeometry& InGeometry,
 	const FItemMetaInfo CurrentItemInfo = ItemHandler->GetItemMetaInfo(ContainerGuid, Index);
 	const FItemMetaInfo PrevItemInfo = PrevInvSlot->ItemHandler->GetItemMetaInfo(PrevInvSlot->ContainerGuid, PrevInvSlot->Index);
 
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+	GetOwningPlayerState<AMainPlayerState>()
+	->GetPawn());
+	
 	if (PrevObj.GetClass() == CurrentObj.GetClass())
 	{
-		ItemHandler->SwapItem(ContainerGuid, PrevInvSlot->Index, Index);
+		ItemHandler->SwapItem(Player, ContainerGuid, PrevInvSlot->Index, Index);
 	}
 	else
 	{
-		PrevInvSlot->ItemHandler->ChangeItem(PrevInvSlot->ContainerGuid, CurrentItemInfo, PrevInvSlot->Index);
-		ItemHandler->ChangeItem(ContainerGuid, PrevItemInfo, Index);
+		PrevInvSlot->ItemHandler->ChangeItem(Player, PrevInvSlot->ContainerGuid, 
+		CurrentItemInfo, PrevInvSlot->Index);
+		ItemHandler->ChangeItem(Player, ContainerGuid, PrevItemInfo, Index);
 	}
 	
 	SetSlotInfo(PrevItemInfo, ContainerGuid);

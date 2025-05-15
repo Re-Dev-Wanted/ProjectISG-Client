@@ -67,14 +67,14 @@ FItemMetaInfo UInventoryComponent::GetItemMetaInfo(FGuid Guid, const uint16 Inde
 	return InventoryList[Index];
 }
 
-bool UInventoryComponent::ChangeItem(FGuid Guid, const FItemMetaInfo& ItemInfo, const uint16 Index)
+bool UInventoryComponent::ChangeItem(AActor* Causer, FGuid Guid, const FItemMetaInfo& ItemInfo, const uint16 Index)
 {
 	InventoryList[Index] = ItemInfo;
 	
 	return true;
 }
 
-void UInventoryComponent::SwapItem(FGuid Guid, const uint16 Prev, const uint16 Next)
+void UInventoryComponent::SwapItem(AActor* Causer, FGuid Guid, const uint16 Prev, const uint16 Next)
 {
 	SwapItemInInventory(Prev, Next);
 }

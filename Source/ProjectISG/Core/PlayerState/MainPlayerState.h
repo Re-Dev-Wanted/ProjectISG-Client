@@ -8,6 +8,7 @@
 
 class ATimeManager;
 class AGridManager;
+class ULootContainerSubsystem;
 class UInventoryComponent;
 class UISGAbilitySystemComponent;
 
@@ -27,7 +28,8 @@ public:
 
 	GETTER(TObjectPtr<UInventoryComponent>, InventoryComponent)
 	GETTER(TObjectPtr<AGridManager>, GridManager)
-	GETTER(TObjectPtr<ATimeManager>, TimeManager)
+	GETTER(TObjectPtr<ATimeManager>, TimeManager);
+	GETTER(TObjectPtr<ULootContainerSubsystem>, LootContainerComponent)
 	GETTER_SETTER(int32, Gold);
 
 	bool CanBuyProduct(int32 ProductPrice);
@@ -43,6 +45,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<AGridManager> GridManager;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<ULootContainerSubsystem> LootContainerComponent;
 
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))

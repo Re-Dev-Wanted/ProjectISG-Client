@@ -3,11 +3,11 @@
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/GAS/Common/ISGAbilitySystemComponent.h"
 #include "ProjectISG/GAS/Common/Attribute/ISGAttributeSet.h"
 #include "ProjectISG/Systems/Grid/Manager/GridManager.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/LootContainer/LootContainerSubsystem.h"
 #include "ProjectISG/Systems/Time/TimeManager.h"
 
 AMainPlayerState::AMainPlayerState()
@@ -21,6 +21,9 @@ AMainPlayerState::AMainPlayerState()
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(
 		"Inventory Component");
+
+	LootContainerComponent = CreateDefaultSubobject<ULootContainerSubsystem>
+	(TEXT("Loot Container Component"));
 }
 
 UAbilitySystemComponent* AMainPlayerState::GetAbilitySystemComponent() const

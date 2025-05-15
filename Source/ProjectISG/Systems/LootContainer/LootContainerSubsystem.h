@@ -21,24 +21,34 @@ public:
 	//TODO: 만약 데이터 저장 & 로드를 한다면 이것을 호출
 	void LoadAllDataAsync();
 
-	void CreateLootContainer(FGuid NewGuid, int32 Capacity);
+	void CreateLootContainer(AActor* Causer, FGuid NewGuid, int32 Capacity);
 
 	TArray<FItemMetaInfo> GetContainerItems(FGuid Guid);
 
 	virtual FItemMetaInfo GetItemMetaInfo(FGuid Guid, const uint16 Index) override;
 	
-	virtual bool ChangeItem(FGuid Guid, const FItemMetaInfo& ItemInfo, const uint16 Index) override;
+	virtual bool ChangeItem(AActor* Causer, FGuid Guid, const FItemMetaInfo& ItemInfo, const uint16 Index) override;
 
-	virtual void SwapItem(FGuid Guid, const uint16 Prev, const uint16 Next) override;
+	virtual void SwapItem(AActor* Causer, FGuid Guid, const uint16 Prev, const uint16 Next) override;
 
 	UFUNCTION(Server, Reliable)
 	void Server_CreateLootContainer(FGuid NewGuid, uint16 Capacity);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_CreateLootContainer(FGuid NewGuid, uint16 Capacity);
+
 	UFUNCTION(Server, Reliable)
 	void Server_SwapItem(FGuid Guid, const uint16 Prev, const uint16 Next);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_SwapItem(FGuid Guid, const uint16 Prev, const uint16 Next);
+
 	UFUNCTION(Server, Reliable)
 	void Server_ChangeItem(FGuid Guid, const FItemMetaInfo_Net& ItemInfo, const
+	 uint16 Index);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_ChangeItem(FGuid Guid, const FItemMetaInfo_Net& ItemInfo, const
 	 uint16 Index);
 	
 protected:

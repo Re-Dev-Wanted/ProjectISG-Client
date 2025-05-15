@@ -9,7 +9,6 @@
 
 AMainGameState::AMainGameState()
 {
-	LootContainerComponent = CreateDefaultSubobject<ULootContainerSubsystem>(TEXT("LootContainerComponent"));
 }
 
 void AMainGameState::GetLifetimeReplicatedProps(
@@ -19,7 +18,6 @@ void AMainGameState::GetLifetimeReplicatedProps(
 
 	DOREPLIFETIME(AMainGameState, CurrentWorldQuestId)
 	DOREPLIFETIME(AMainGameState, SessionId)
-	DOREPLIFETIME(AMainGameState, LootContainerComponent);
 }
 
 void AMainGameState::StartWorldQuest(const FString& QuestId)
