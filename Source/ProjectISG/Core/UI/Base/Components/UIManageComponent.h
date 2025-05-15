@@ -42,4 +42,6 @@ private:
 	TArray<EUIName> WidgetStack;
 
 	bool IsPlayerInLocalControlled() const;
+
+	void PrintAllWidgetStackToDebug();
 };

@@ -3,6 +3,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
+#include "ProjectISG/Utils/EnumUtil.h"
 
 void UUIManageComponent::Initialize()
 {
@@ -72,6 +73,8 @@ void UUIManageComponent::PushWidget(const EUIName Key)
 	}
 
 	ControllerInstances[Key]->StartShowUI(WidgetLayers[Key]);
+
+	PrintAllWidgetStackToDebug();
 }
 
 void UUIManageComponent::PopWidget()
@@ -108,6 +111,8 @@ void UUIManageComponent::PopWidget()
 	{
 		PC->SetShowMouseCursor(false);
 	}
+
+	PrintAllWidgetStackToDebug();
 }
 
 bool UUIManageComponent::IsPlayerInLocalControlled() const
@@ -129,4 +134,20 @@ TSubclassOf<UBaseUIView> UUIManageComponent::GetViewClasses(EUIName Key)
 bool UUIManageComponent::HasViewUI(const EUIName Key)
 {
 	return WidgetStack.Find(Key) != INDEX_NONE;
+}
+
+void UUIManageComponent::PrintAllWidgetStackToDebug()
+{
+	FString StackText;
+	for (int i = 0; i < WidgetStack.Num(); i++)
+	{
+		StackText += FEnumUtil::GetClassEnumKeyAsString(WidgetStack[i]);
+
+		if (i != WidgetStack.Num() - 1)
+		{
+			StackText += TEXT(",");
+		}
+	}
+
+	UE_LOG(LogTemp, Display, TEXT("Current Widget Stack: [%s]"), *StackText);
 }
