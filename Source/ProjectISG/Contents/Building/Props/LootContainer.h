@@ -17,6 +17,8 @@ public:
 	
 	virtual void OnInteractive(AActor* Causer) override;
 
+	virtual void OnInteractiveResponse(AActor* Causer) override;
+
 	virtual bool GetCanInteractive() const override;
 
 	virtual FString GetInteractiveDisplayText() const override;
@@ -26,9 +28,6 @@ public:
 	virtual void SwapItem(AActor* Causer, FGuid Guid, const uint16 Prev, const uint16 Next) override;
 
 	virtual FItemMetaInfo GetItemMetaInfo(FGuid Guid, const uint16 Index) override;
-
-	UFUNCTION()
-	void OnRep_Guid();
 
 	UFUNCTION()
 	void OnRep_Items();
@@ -43,12 +42,11 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_SwapItem(const uint16 Prev, const uint16 Next);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_NotifyItemsChanged();
+
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
-	
-	// 아이템 데이터를 저장하거나 얻기 위한 고유 Guid
-	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_Guid)
-	FGuid CurrentGuid = FGuid::NewGuid();
 
 	UPROPERTY(EditDefaultsOnly,
 		meta = (AllowPrivateAccess = true, ClampMin = 1, ClampMax = 30))

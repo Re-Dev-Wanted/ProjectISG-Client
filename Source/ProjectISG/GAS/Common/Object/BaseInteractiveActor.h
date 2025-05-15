@@ -14,7 +14,7 @@ class PROJECTISG_API ABaseInteractiveActor : public ABaseActor, public IInteract
 	GENERATED_BODY()
 
 public:
-	GETTER(class AMainPlayerCharacter*, InteractingPlayer)
+	GETTER_SETTER(class AMainPlayerCharacter*, InteractingPlayer)
 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
