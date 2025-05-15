@@ -20,7 +20,7 @@ void UInventoryList::NativePreConstruct()
 	{
 		UInventorySlot* NewSlot = CreateWidget<UInventorySlot>(
 			this, InventorySlotClass);
-		
+
 		NewSlot->SetPadding(4);
 
 		InventoryList->AddChildToGrid(NewSlot, i / ListColumn, i % ListColumn);
@@ -31,28 +31,59 @@ void UInventoryList::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	UpdateItemData();
+	CreateItemData();
 }
 
-void UInventoryList::UpdateItemData()
+void UInventoryList::CreateItemData()
 {
 	InventoryList->ClearChildren();
+
+	const AMainPlayerState* PlayerState = GetOwningPlayerState<
+		AMainPlayerState>();
+
 	for (int i = StartIndex; i < ListRow * ListColumn + StartIndex; i++)
 	{
 		UInventorySlot* NewSlot = CreateWidget<UInventorySlot>(
 			this, InventorySlotClass);
 		NewSlot->SetPadding(4);
-		
-		NewSlot->OnInventorySlotDragDetected.AddDynamic(this, &UInventoryList::OnDragItemDetected);
+
+		NewSlot->OnInventorySlotDragDetected.AddDynamic(
+			this, &UInventoryList::OnDragItemDetected);
 
 		InventoryList->AddChildToGrid(NewSlot, (i - StartIndex) / ListColumn,
 		                              (i - StartIndex) % ListColumn);
 
-		FItemMetaInfo ItemMetaInfo = GetOwningPlayerState<AMainPlayerState>()->
-		                             GetInventoryComponent()->GetInventoryList()
-			[i];
+		FItemMetaInfo ItemMetaInfo = PlayerState->GetInventoryComponent()->
+		                                          GetInventoryList()[i];
 		NewSlot->SetIndex(i);
 		NewSlot->SetSlotInfo(ItemMetaInfo);
+	}
+}
+
+void UInventoryList::UpdateItemData()
+{
+	const AMainPlayerState* PlayerState = GetOwningPlayerState<
+		AMainPlayerState>();
+
+	if (InventoryList->GetAllChildren().Num() == 0)
+	{
+		return;
+	}
+
+	for (int i = StartIndex; i < ListRow * ListColumn + StartIndex; i++)
+	{
+		UInventorySlot* ChildSlot = Cast<UInventorySlot>(
+			InventoryList->GetAllChildren()[i - StartIndex]);
+
+		if (!ChildSlot)
+		{
+			return;
+		}
+
+		FItemMetaInfo ItemMetaInfo = PlayerState->GetInventoryComponent()->
+		                                          GetInventoryList()[i];
+		ChildSlot->SetIndex(i);
+		ChildSlot->SetSlotInfo(ItemMetaInfo);
 	}
 }
 
