@@ -4,9 +4,10 @@
 #include "Components/Button.h"
 #include "InputAction.h"
 #include "EnhancedInputComponent.h"
+#include "ProjectISG/Systems/Inventory/ItemHandler.h"
 
 void UUIC_LootContainerUI::InitializeController(UBaseUIView* NewView,
-	UBaseUIModel* NewModel)
+                                                UBaseUIModel* NewModel)
 {
 	Super::InitializeController(NewView, NewModel);
 
@@ -24,9 +25,9 @@ void UUIC_LootContainerUI::BindInputAction(UEnhancedInputComponent* InputCompone
 								   this, &ThisClass::PopUIFromPlayerController);
 }
 
-void UUIC_LootContainerUI::SetContainer(FGuid Guid, const TArray<FItemMetaInfo>& Items)
+void UUIC_LootContainerUI::SetContainer(FGuid Guid, const TArray<FItemMetaInfo>& Items, TScriptInterface<IItemHandler> Handler)
 {
 	UUIV_LootContainerUI* UIView = Cast<UUIV_LootContainerUI>(GetView());
 	
-	UIView->SetContainer(Guid, Items);
+	UIView->SetContainer(Guid, Items, Handler);
 }

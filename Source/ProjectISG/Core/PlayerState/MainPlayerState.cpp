@@ -3,6 +3,7 @@
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Net/UnrealNetwork.h"
 #include "ProjectISG/GAS/Common/ISGAbilitySystemComponent.h"
 #include "ProjectISG/GAS/Common/Attribute/ISGAttributeSet.h"
 #include "ProjectISG/Systems/Grid/Manager/GridManager.h"
@@ -24,6 +25,7 @@ AMainPlayerState::AMainPlayerState()
 
 	LootContainerComponent = CreateDefaultSubobject<ULootContainerSubsystem>
 	(TEXT("Loot Container Component"));
+	LootContainerComponent->SetIsReplicated(true);
 }
 
 UAbilitySystemComponent* AMainPlayerState::GetAbilitySystemComponent() const
@@ -64,6 +66,13 @@ void AMainPlayerState::BeginPlay()
 	{
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("World에 TimeManager가 없습니다. 시간을 사용하는 맵이라면 반드시 World에 배치하세요."), true, true, FLinearColor::Red);
 	}
+}
+
+void AMainPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AMainPlayerState, LootContainerComponent);
 }
 
 void AMainPlayerState::InitializeData()

@@ -7,20 +7,29 @@ ULootContainerSubsystem::ULootContainerSubsystem()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 	bWantsInitializeComponent = true;
+    
+	SetIsReplicatedByDefault(true);
+    
+	// Initialize the FastArraySerializer
+	Data.OwningObject = this;
 }
 
 void ULootContainerSubsystem::InitializeComponent()
 {
 	Super::InitializeComponent();
-	
-	SetIsReplicated(true);
 }
 
 void ULootContainerSubsystem::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
+	
 	DOREPLIFETIME(ULootContainerSubsystem, Data);
+}
+
+bool ULootContainerSubsystem::ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,
+	FReplicationFlags* RepFlags)
+{
+	return Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
 }
 
 void ULootContainerSubsystem::LoadAllDataAsync()
@@ -30,30 +39,38 @@ void ULootContainerSubsystem::LoadAllDataAsync()
 void ULootContainerSubsystem::CreateLootContainer(AActor* Causer, FGuid NewGuid, 
 int32 Capacity)
 {
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%s"), *NewGuid.ToString()));
+	
 	if (Causer->HasAuthority())
 	{
 		Data.AddContainer(NewGuid, Capacity);
-
-		Multicast_CreateLootContainer(NewGuid, Capacity);
 	}
 	else
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("흠1"));
 		Server_CreateLootContainer(NewGuid, Capacity);
 	}
 }
 
-TArray<FItemMetaInfo> ULootContainerSubsystem::GetContainerItems(FGuid Guid)
+bool ULootContainerSubsystem::GetContainerItems(FGuid Guid, TArray<FItemMetaInfo>& OutItems)
 {
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%d"),
-	 Data.GetItems(Guid).Num()));
-	
-	return Data.GetItems(Guid);
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("[%s] %d"),
+	 *Guid.ToString(), Data.GetItems(Guid).Num()));
+
+	if (Data.Contains(Guid))
+	{
+		OutItems = Data.GetItems(Guid);
+
+		return true;
+	}
+
+	return false;
 }
 
 FItemMetaInfo ULootContainerSubsystem::GetItemMetaInfo(FGuid Guid, const uint16 Index)
 {
-	TArray<FItemMetaInfo> Items = GetContainerItems(Guid);
+	TArray<FItemMetaInfo> Items;
+
+	GetContainerItems(Guid, Items);
 
 	return Items[Index];
 }
@@ -63,8 +80,6 @@ bool ULootContainerSubsystem::ChangeItem(AActor* Causer, FGuid Guid, const FItem
 	if (Causer->HasAuthority())
 	{
 		Data.UpdateContainer(Guid, ItemInfo, Index);
-
-		Multicast_ChangeItem(Guid, FItemMetaInfo_Net(ItemInfo), Index);
 	}
 	else
 	{
@@ -90,22 +105,6 @@ void ULootContainerSubsystem::Server_CreateLootContainer_Implementation(FGuid Ne
 {
 	Data.AddContainer(NewGuid, Capacity);
 	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("흠2"));
-	Multicast_CreateLootContainer(NewGuid, Capacity);
-}
-
-
-void ULootContainerSubsystem::Multicast_SwapItem_Implementation(FGuid Guid,
-	const uint16 Prev, const uint16 Next)
-{
-}
-
-void ULootContainerSubsystem::Multicast_CreateLootContainer_Implementation(
-	FGuid NewGuid, uint16 Capacity)
-{
-	Data.AddContainer(NewGuid, Capacity);
-
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%d"),
-	 Data.GetItems(NewGuid).Num()));
 }
 
 void ULootContainerSubsystem::Server_SwapItem_Implementation(FGuid Guid,
@@ -117,27 +116,10 @@ void ULootContainerSubsystem::Server_SwapItem_Implementation(FGuid Guid,
 void ULootContainerSubsystem::Server_ChangeItem_Implementation(FGuid Guid,
 	const FItemMetaInfo_Net& ItemInfo, const uint16 Index)
 {
-	
 	FItemMetaInfo MetaInfo;
 	ItemInfo.To(MetaInfo);
 	
 	Data.UpdateContainer(Guid, MetaInfo, Index);
 
 	UKismetSystemLibrary::PrintString(GetWorld(), TEXT("흠2"));
-
-	Multicast_ChangeItem(Guid, ItemInfo, Index);
-}
-
-void ULootContainerSubsystem::Multicast_ChangeItem_Implementation(FGuid Guid,
-	const FItemMetaInfo_Net& ItemInfo, const uint16 Index)
-{
-	FItemMetaInfo MetaInfo;
-	ItemInfo.To(MetaInfo);
-	
-	Data.UpdateContainer(Guid, MetaInfo, Index);
-}
-
-void ULootContainerSubsystem::OnRep_UpdateData()
-{
-	Data.MarkArrayDirty();
 }

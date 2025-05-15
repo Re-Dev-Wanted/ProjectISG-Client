@@ -8,8 +8,6 @@
 
 #include "LootContainerSubsystem.generated.h"
 
-DECLARE_DELEGATE_OneParam(FOnContainerCreated, FGuid);
-
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTISG_API ULootContainerSubsystem : public UActorComponent, public IItemHandler
 {
@@ -23,7 +21,7 @@ public:
 
 	void CreateLootContainer(AActor* Causer, FGuid NewGuid, int32 Capacity);
 
-	TArray<FItemMetaInfo> GetContainerItems(FGuid Guid);
+	bool GetContainerItems(FGuid Guid, TArray<FItemMetaInfo>& OutItems);
 
 	virtual FItemMetaInfo GetItemMetaInfo(FGuid Guid, const uint16 Index) override;
 	
@@ -34,21 +32,11 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_CreateLootContainer(FGuid NewGuid, uint16 Capacity);
 
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_CreateLootContainer(FGuid NewGuid, uint16 Capacity);
-
 	UFUNCTION(Server, Reliable)
 	void Server_SwapItem(FGuid Guid, const uint16 Prev, const uint16 Next);
 
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_SwapItem(FGuid Guid, const uint16 Prev, const uint16 Next);
-
 	UFUNCTION(Server, Reliable)
 	void Server_ChangeItem(FGuid Guid, const FItemMetaInfo_Net& ItemInfo, const
-	 uint16 Index);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_ChangeItem(FGuid Guid, const FItemMetaInfo_Net& ItemInfo, const
 	 uint16 Index);
 	
 protected:
@@ -56,10 +44,8 @@ protected:
 	
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
-	UFUNCTION()
-	void OnRep_UpdateData();
-
-private:
-	UPROPERTY(ReplicatedUsing = OnRep_UpdateData);
+	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
+	
+	UPROPERTY(Replicated);
 	FLootContainerData Data;
 };

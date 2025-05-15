@@ -52,6 +52,7 @@ APlacement::APlacement()
 
 	bReplicates = true;
 	bAlwaysRelevant = true;
+	bNetLoadOnClient = true;
 	SetReplicatingMovement(true);
 }
 

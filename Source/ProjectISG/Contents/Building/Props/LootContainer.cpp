@@ -1,17 +1,20 @@
 #include "LootContainer.h"
 
+#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
-#include "ProjectISG/Core/GameMode/MainGameState.h"
-#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Popup/LootContainer/UI/UIC_LootContainerUI.h"
-#include "ProjectISG/Systems/LootContainer/LootContainerSubsystem.h"
 
 void ALootContainer::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (HasAuthority())
+	{
+		Items.Init(FItemMetaInfo(), Capacity);
+	}
 }
 
 void ALootContainer::GetLifetimeReplicatedProps(
@@ -19,7 +22,8 @@ void ALootContainer::GetLifetimeReplicatedProps(
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ALootContainer, Guid);
+	DOREPLIFETIME(ALootContainer, CurrentGuid);
+	DOREPLIFETIME(ALootContainer, Items);
 }
 
 void ALootContainer::SetOption(bool bIsGhost, bool bIsBlock)
@@ -40,16 +44,6 @@ void ALootContainer::OnInteractive(AActor* Causer)
 		{
 			return;
 		}
-
-		const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
-
-		if (!Guid.IsValid())
-		{
-			Guid = FGuid::NewGuid();
-			PS->GetLootContainerComponent()->CreateLootContainer(Causer, Guid, Capacity);
-		}
-
-		TArray<FItemMetaInfo> Items = PS->GetLootContainerComponent()->GetContainerItems(Guid);
 		
 		if (Player->IsLocallyControlled())
 		{
@@ -58,7 +52,7 @@ void ALootContainer::OnInteractive(AActor* Causer)
 			UUIC_LootContainerUI* UIController = Cast<UUIC_LootContainerUI>
 			(PC->GetUIManageComponent()->ControllerInstances[EUIName::Popup_LootContainerUI]);
 
-			UIController->SetContainer(Guid, Items);
+			UIController->SetContainer(CurrentGuid, Items, this);
 		}
 	}
 }
@@ -72,4 +66,82 @@ FString ALootContainer::GetInteractiveDisplayText() const
 {
 	return TEXT("열기");
 }
+
+bool ALootContainer::ChangeItem(AActor* Causer, FGuid Guid, const FItemMetaInfo& ItemInfo, const uint16 Index)
+{
+	if (HasAuthority())
+	{
+		UpdateItem(Index, ItemInfo);
+	}
+	else
+	{
+		Server_UpdateItem(Index, FItemMetaInfo_Net(ItemInfo));
+	}
+
+	return true;
+}
+
+void ALootContainer::SwapItem(AActor* Causer, FGuid Guid, const uint16 Prev, const uint16 Next)
+{
+	if (HasAuthority())
+	{
+		SwapItemInternal(Prev, Next);
+	}
+	else
+	{
+		Server_SwapItem(Prev, Next);
+	}
+}
+
+void ALootContainer::SwapItemInternal(uint16 PrevIndex, uint16 NextIndex)
+{
+	if (Items.IsValidIndex(PrevIndex) && Items.IsValidIndex(NextIndex))
+	{
+		const FItemMetaInfo Temp = Items[PrevIndex];
+		Items[PrevIndex] = Items[NextIndex];
+		Items[NextIndex] = Temp;
+		
+		ForceNetUpdate();
+	}
+}
+
+void ALootContainer::Server_SwapItem_Implementation(const uint16 Prev, const uint16 Next)
+{
+	SwapItemInternal(Prev, Next);
+}
+
+FItemMetaInfo ALootContainer::GetItemMetaInfo(FGuid Guid, const uint16 Index)
+{
+	return Items[Index];
+}
+
+void ALootContainer::OnRep_Guid()
+{
+	UKismetSystemLibrary::PrintString(GetWorld(), CurrentGuid.ToString());
+}
+
+void ALootContainer::OnRep_Items()
+{
+}
+
+void ALootContainer::UpdateItem(int32 Index, const FItemMetaInfo& NewItem)
+{
+	if (Items.IsValidIndex(Index))
+	{
+		TArray<FItemMetaInfo> Temp = Items;
+		Temp[Index] = NewItem;
+		Items = Temp;
+
+		ForceNetUpdate();
+	}
+}
+
+void ALootContainer::Server_UpdateItem_Implementation(int32 Index, const FItemMetaInfo_Net& NewItem)
+{
+	FItemMetaInfo ItemInfo;
+	NewItem.To(ItemInfo);
+	
+	UpdateItem(Index, ItemInfo);
+}
+
 

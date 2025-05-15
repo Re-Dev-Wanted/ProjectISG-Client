@@ -37,6 +37,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UISGAbilitySystemComponent> AbilitySystemComponent;
 
@@ -46,7 +48,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<AGridManager> GridManager;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Replicated)
 	TObjectPtr<ULootContainerSubsystem> LootContainerComponent;
 
 private:

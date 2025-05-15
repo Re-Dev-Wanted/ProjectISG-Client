@@ -7,7 +7,7 @@
 #include "ProjectISG/Systems/LootContainer/LootContainerSubsystem.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
 
-void ULootContainerListView::SetContainerInfo(const TSubclassOf<ULootContainerItemSlot>& InventorySlotClass, TArray<FItemMetaInfo> Items, FGuid Guid)
+void ULootContainerListView::SetContainerInfo(const TSubclassOf<ULootContainerItemSlot>& InventorySlotClass, TArray<FItemMetaInfo> Items, FGuid Guid, TScriptInterface<IItemHandler> Handler)
 {
 	if (!InventorySlotClass)
 	{
@@ -23,7 +23,8 @@ void ULootContainerListView::SetContainerInfo(const TSubclassOf<ULootContainerIt
 		ULootContainerItemSlot* NewSlot = CreateWidget<ULootContainerItemSlot>(this, InventorySlotClass);
 		WrapBox->AddChildToWrapBox(NewSlot);
 		
-		NewSlot->SetItemHandler(GetOwningPlayerState<AMainPlayerState>()->GetLootContainerComponent());
+		// NewSlot->SetItemHandler(GetOwningPlayerState<AMainPlayerState>()->GetLootContainerComponent());
+		NewSlot->SetItemHandler(Handler);
 		NewSlot->SetIndex(i);
 		NewSlot->SetSlotInfo(Items[i], Guid);
 	}
