@@ -3,7 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Interfaces/OnlineSessionInterface.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
 #include "UIC_Loading.generated.h"
 
@@ -15,21 +14,4 @@ class PROJECTISG_API UUIC_Loading : public UBaseUIController
 {
 	GENERATED_BODY()
 
-public:
-	void CreateSession();
-	
-	void JoinSession();
-
-	GETTER_SETTER(bool, IsServerTravel)
-
-protected:
-	UFUNCTION()
-	void OnCompleteCreate(FName SessionName, bool IsCreateSuccess);
-
-	void OnJoinSession(FName SessionName, EOnJoinSessionCompleteResult::Type Type);
-	
-private:
-	FOnJoinSessionCompleteDelegate OnJoinSessionCompleteDelegate;
-
-	bool IsServerTravel;
 };

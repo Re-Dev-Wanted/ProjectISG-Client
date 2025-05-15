@@ -6,6 +6,7 @@
 #include "UIC_MainLobby.h"
 #include "Components/Button.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "ProjectISG/Core/ISGGameInstance.h"
 #include "ProjectISG/Core/Controller/LobbyPlayerController.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 
