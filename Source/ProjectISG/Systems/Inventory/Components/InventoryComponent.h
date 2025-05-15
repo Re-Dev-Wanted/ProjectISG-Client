@@ -44,12 +44,14 @@ public:
 
 	void InitializeItemData();
 
+	void UpdateInventory();
+
 protected:
 	virtual void BeginPlay() override;
 
-private:
-	void OnUpdateInventory();
+	virtual void InitializeComponent() override;
 
+private:
 	TMap<uint32, uint32> CurrentRemainItemValue;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Options",

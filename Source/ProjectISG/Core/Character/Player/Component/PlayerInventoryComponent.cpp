@@ -104,8 +104,7 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 
 	const FItemMetaInfo ItemMetaInfo = PS->GetInventoryComponent()->
-	                                       GetInventoryList()[
-		NewIndex];
+	                                       GetInventoryList()[NewIndex];
 
 	const uint16 ItemId = ItemMetaInfo.GetId();
 

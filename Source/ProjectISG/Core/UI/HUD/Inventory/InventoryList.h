@@ -7,7 +7,8 @@
 class UGridPanel;
 class UInventorySlot;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDragDetectedNotified, uint16, ItemId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDragDetectedNotified, uint16,
+                                            ItemId);
 
 UCLASS()
 class PROJECTISG_API UInventoryList : public UUserWidget
@@ -47,4 +48,6 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UGridPanel> InventoryList;
+
+	void CreateItemData();
 };

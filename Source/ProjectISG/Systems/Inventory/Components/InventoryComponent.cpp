@@ -6,53 +6,60 @@
 
 UInventoryComponent::UInventoryComponent()
 {
+	bWantsInitializeComponent = true;
+}
+
+void UInventoryComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+	InventoryList.SetNum(InventorySlotCount);
 }
 
 void UInventoryComponent::InitializeItemData()
 {
-	InventoryList.SetNum(InventorySlotCount);
-
 	FItemMetaInfo HammerItemMetaInfo;
 	HammerItemMetaInfo.SetId(9);
 	HammerItemMetaInfo.SetCurrentCount(1);
 
-	AddItemToInventory(1, HammerItemMetaInfo);
+	InventoryList[0] = HammerItemMetaInfo;
 
 	FItemMetaInfo HoeItemMetaInfo;
 	HoeItemMetaInfo.SetId(10);
 	HoeItemMetaInfo.SetCurrentCount(1);
 
-	AddItemToInventory(2, HoeItemMetaInfo);
+	InventoryList[2] = HoeItemMetaInfo;
 
 	FItemMetaInfo WateringItemMetaInfo2;
 	WateringItemMetaInfo2.SetId(13);
 	WateringItemMetaInfo2.SetCurrentCount(1);
 
-	AddItemToInventory(3, WateringItemMetaInfo2);
+	InventoryList[3] = WateringItemMetaInfo2;
 
 	FItemMetaInfo FishingRodMetaInfo;
 	FishingRodMetaInfo.SetId(14);
 	FishingRodMetaInfo.SetCurrentCount(1);
 
-	AddItemToInventory(4, FishingRodMetaInfo);
+	InventoryList[4] = FishingRodMetaInfo;
 
 	FItemMetaInfo BuildItemMetaInfo;
 	BuildItemMetaInfo.SetId(2);
 	BuildItemMetaInfo.SetCurrentCount(1);
 
-	AddItemToInventory(5, BuildItemMetaInfo);
+	InventoryList[5] = BuildItemMetaInfo;
 
 	FItemMetaInfo BuildItemMetaInfo2;
 	BuildItemMetaInfo2.SetId(12);
 	BuildItemMetaInfo2.SetCurrentCount(1);
 
-	AddItemToInventory(6, BuildItemMetaInfo2);
+	InventoryList[6] = BuildItemMetaInfo2;
 
 	FItemMetaInfo CropItemMetaInfo;
 	CropItemMetaInfo.SetId(3);
 	CropItemMetaInfo.SetCurrentCount(2);
 
-	AddItemToInventory(7, CropItemMetaInfo);
+	InventoryList[7] = CropItemMetaInfo;
+
+	UpdateInventory();
 }
 
 void UInventoryComponent::BeginPlay()
@@ -155,7 +162,7 @@ uint32 UInventoryComponent::AddItemToInventory(const uint16 Index,
 		}
 	}
 
-	OnUpdateInventory();
+	UpdateInventory();
 	return RemainCount > 0 ? RemainCount : 0;
 }
 
@@ -167,7 +174,7 @@ bool UInventoryComponent::DropItem(const uint16 Index, const uint32 Count)
 		const FItemMetaInfo ClearItemMeta;
 		InventoryList[Index] = ClearItemMeta;
 
-		OnUpdateInventory();
+		UpdateInventory();
 		return true;
 	}
 
@@ -188,7 +195,7 @@ bool UInventoryComponent::DropItem(const uint16 Index, const uint32 Count)
 			InventoryList[Index].GetCurrentCount() - Count);
 	}
 
-	OnUpdateInventory();
+	UpdateInventory();
 
 	return true;
 }
@@ -290,7 +297,7 @@ bool UInventoryComponent::RemoveItem(const uint16 Id, const uint32 Count)
 		// 어차피 여기서 다 버려서 0이 될 수 밖에 없다.
 		if (RemainNum == 0)
 		{
-			OnUpdateInventory();
+			UpdateInventory();
 			return true;
 		}
 	}
@@ -300,7 +307,7 @@ bool UInventoryComponent::RemoveItem(const uint16 Id, const uint32 Count)
 }
 
 // TODO: 이 함수가 여러번 호출될 수 있음. 차라리 모든 인벤 업데이트 이후 별도로 처리하는 것 또한 좋아보임
-void UInventoryComponent::OnUpdateInventory()
+void UInventoryComponent::UpdateInventory()
 {
 	UpdateCurrentRemainItemValue();
 	OnInventoryUpdateNotified.Broadcast();
