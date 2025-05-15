@@ -17,16 +17,13 @@ bool FLootContainerData::NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParams)
 	(Containers, DeltaParams, *this);
 }
 
-FGuid FLootContainerData::AddContainer(int32 Capacity)
+void FLootContainerData::AddContainer(FGuid NewGuid, int32 Capacity)
 {
-	FGuid Guid = FGuid::NewGuid();
 	FLootContainerEntry& Entry = Containers.AddDefaulted_GetRef();
-	Entry.Guid = Guid;
+	Entry.Guid = NewGuid;
 	Entry.Items.Init(FItemMetaInfo(), Capacity);
 
-	MarkItemDirty(Entry);
-
-	return Guid;
+	MarkArrayDirty();
 }
 
 void FLootContainerData::RemoveContainer(FGuid Guid)
@@ -64,7 +61,7 @@ void FLootContainerData::UpdateContainer(FGuid Guid, const FItemMetaInfo& Item, 
 		if (Entry.Guid == Guid)
 		{
 			Entry.Items[Index] = Item;
-			MarkArrayDirty();
+			MarkItemDirty(Entry);
 			break;
 		}
 	}
@@ -99,3 +96,4 @@ TArray<FItemMetaInfo> FLootContainerData::GetItems(FGuid Guid)
 
 	return TArray<FItemMetaInfo>();
 }
+

@@ -1,5 +1,6 @@
 #include "LootContainer.h"
 
+#include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/GameMode/MainGameState.h"
@@ -12,9 +13,28 @@ void ALootContainer::BeginPlay()
 	Super::BeginPlay();
 
 	//TODO: 테스트용 추후에 지우기
-	Guid = GetWorld()->GetGameState<AMainGameState>()
-		->GetLootContainerComponent()
-		->CreateLootContainer(Capacity);
+	
+	if (HasAuthority())
+	{
+		Guid = FGuid::NewGuid();
+		GetWorld()->GetGameState<AMainGameState>()
+			->GetLootContainerComponent()
+			->CreateLootContainer(Guid, Capacity);
+	}
+	else
+	{
+		GetWorld()->GetGameState<AMainGameState>()
+			->GetLootContainerComponent()
+			->Server_CreateLootContainer(Guid, Capacity);
+	}
+}
+
+void ALootContainer::GetLifetimeReplicatedProps(
+	TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ALootContainer, Guid);
 }
 
 void ALootContainer::SetOption(bool bIsGhost, bool bIsBlock)
@@ -23,8 +43,18 @@ void ALootContainer::SetOption(bool bIsGhost, bool bIsBlock)
 
 	if (!bIsGhost)
 	{
-		Guid = GetWorld()->GetGameState<AMainGameState>()->GetLootContainerComponent()
-		->CreateLootContainer(Capacity);
+		if (HasAuthority())
+		{
+			GetWorld()->GetGameState<AMainGameState>()
+				->GetLootContainerComponent()
+				->CreateLootContainer(Guid, Capacity);
+		}
+		else
+		{
+			GetWorld()->GetGameState<AMainGameState>()
+				->GetLootContainerComponent()
+				->Server_CreateLootContainer(Guid, Capacity);
+		}
 	}
 }
 

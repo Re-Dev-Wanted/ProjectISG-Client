@@ -26,9 +26,9 @@ void ULootContainerSubsystem::LoadAllDataAsync()
 {
 }
 
-FGuid ULootContainerSubsystem::CreateLootContainer(int32 Capacity)
+void ULootContainerSubsystem::CreateLootContainer(FGuid NewGuid, int32 Capacity)
 {
-	return Data.AddContainer(Capacity);
+	Data.AddContainer(NewGuid, Capacity);
 }
 
 TArray<FItemMetaInfo> ULootContainerSubsystem::GetContainerItems(FGuid Guid)
@@ -45,11 +45,52 @@ FItemMetaInfo ULootContainerSubsystem::GetItemMetaInfo(FGuid Guid, const uint16 
 
 bool ULootContainerSubsystem::ChangeItem(FGuid Guid, const FItemMetaInfo& ItemInfo, const uint16 Index)
 {
-	Data.UpdateContainer(Guid, ItemInfo, Index);
+	if (GetOwner()->HasAuthority())
+	{
+		Data.UpdateContainer(Guid, ItemInfo, Index);
+	}
+	else
+	{
+		Server_ChangeItem(Guid, FItemMetaInfo_Net(ItemInfo), Index);
+	}
+
 	return true;
 }
 
 void ULootContainerSubsystem::SwapItem(FGuid Guid, const uint16 Prev, const uint16 Next)
 {
+	if (GetOwner()->HasAuthority())
+	{
+		Data.SwapItemInContainer(Guid, Prev, Next);
+	}
+	else
+	{
+		Server_SwapItem(Guid, Prev, Next);
+	}
+}
+
+void ULootContainerSubsystem::Server_CreateLootContainer_Implementation(
+	FGuid NewGuid, uint16 Capacity)
+{
+	CreateLootContainer(NewGuid, Capacity);
+}
+
+void ULootContainerSubsystem::Server_SwapItem_Implementation(FGuid Guid,
+	const uint16 Prev, const uint16 Next)
+{
 	Data.SwapItemInContainer(Guid, Prev, Next);
+}
+
+void ULootContainerSubsystem::Server_ChangeItem_Implementation(FGuid Guid,
+	const FItemMetaInfo_Net& ItemInfo, const uint16 Index)
+{
+	FItemMetaInfo MetaInfo;
+	ItemInfo.To(MetaInfo);
+	
+	Data.UpdateContainer(Guid, MetaInfo, Index);
+}
+
+void ULootContainerSubsystem::OnRep_UpdateData()
+{
+	Data.MarkArrayDirty();
 }

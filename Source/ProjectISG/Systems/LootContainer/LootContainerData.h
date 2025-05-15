@@ -32,7 +32,7 @@ struct FLootContainerData : public FFastArraySerializer
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParams);
 
 public:
-	FGuid AddContainer(int32 Capacity);
+	void AddContainer(FGuid NewGuid, int32 Capacity);
 
 	void RemoveContainer(FGuid Guid);
 

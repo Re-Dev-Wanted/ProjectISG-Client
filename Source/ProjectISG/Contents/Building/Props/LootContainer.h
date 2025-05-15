@@ -21,8 +21,10 @@ public:
 	virtual FString GetInteractiveDisplayText() const override;
 
 protected:
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	// 아이템 데이터를 저장하거나 얻기 위한 고유 Guid
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	FGuid Guid;
 
 	UPROPERTY(EditDefaultsOnly,
