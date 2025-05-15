@@ -17,7 +17,7 @@ public:
 	FOnSceneListEndNotified OnSceneListEndNotified;
 
 protected:
-	virtual void AppearUI(const EUILayer Layer) override;
+	virtual void AppearUI() override;
 
 	virtual void InitializeController(UBaseUIView* NewView,
 	                                  UBaseUIModel* NewModel) override;

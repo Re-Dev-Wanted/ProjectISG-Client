@@ -15,7 +15,7 @@ public:
 	void InitializeDiaryToEdit(const FGenerateDiaryResponse& Diary);
 
 protected:
-	virtual void AppearUI(const EUILayer Layer) override;
+	virtual void AppearUI() override;
 
 	virtual void DisappearUI() override;
 

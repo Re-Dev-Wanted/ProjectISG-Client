@@ -10,8 +10,6 @@ class PROJECTISG_API UUIC_MainHUD : public UBaseUIController
 	GENERATED_BODY()
 
 public:
-	virtual void AppearUI(const EUILayer Layer) override;
-
 	void UpdateMainHotSlot() const;
 
 	void SelectSlot(const uint8 CurrentSlot, const uint8 NextSlot) const;
@@ -30,4 +28,7 @@ public:
 	void ToggleAutoQuestUI(const bool IsActive);
 
 	void ToggleCurrentQuestUI(const bool IsActive);
+
+protected:
+	virtual void AppearUI() override;
 };
