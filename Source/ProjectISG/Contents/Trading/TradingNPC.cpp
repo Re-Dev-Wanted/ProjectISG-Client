@@ -1,7 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "TradingNPC.h"
+﻿#include "TradingNPC.h"
 
 #include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
@@ -11,7 +8,6 @@
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Time/TimeManager.h"
-#include "ProjectISG/Utils/EnumUtil.h"
 
 
 class AMainPlayerCharacter;
@@ -53,7 +49,7 @@ void ATradingNPC::BeginPlay()
 }
 
 void ATradingNPC::GetLifetimeReplicatedProps(
-	TArray<class FLifetimeProperty>& OutLifetimeProps) const
+	TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
@@ -74,7 +70,7 @@ void ATradingNPC::OnInteractive(AActor* Causer)
 
 	FGameplayTagContainer ActivateTag;
 	ActivateTag.AddTag(ISGGameplayTags::Trading_Active_OpenTradingUI);
-	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
 	if (Player)
 	{
 		Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
@@ -94,8 +90,6 @@ FString ATradingNPC::GetInteractiveDisplayText() const
 
 void ATradingNPC::TradingRestrictByTimeReached()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("TradingNPC : %s"), *FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
-
 	CanInteractive = false;
 }
 

@@ -99,7 +99,7 @@ void UPlayerInventoryComponent::MoveHotSlot(const FInputActionValue& Value)
 
 void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 {
-	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
 
 	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 

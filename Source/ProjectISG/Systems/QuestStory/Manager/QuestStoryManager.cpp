@@ -1,5 +1,9 @@
 #include "QuestStoryManager.h"
 
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+
 TMap<FString, FQuestStoryData> UQuestStoryManager::QuestData;
 TMap<FString, TArray<FQuestStoryDialogue>>
 UQuestStoryManager::QuestDialogueData;
@@ -109,5 +113,115 @@ void UQuestStoryManager::InitializeQuestSceneCut()
 	{
 		QuestSceneCutData.Add(TempQuestSceneCutData->GetQuestSceneId(),
 		                      *TempQuestSceneCutData);
+	}
+}
+
+bool UQuestStoryManager::CheckAndCompleteQuest(AMainPlayerController* PC,
+                                               const FString& QuestId)
+{
+	if (!PC->HasAuthority())
+	{
+		return false;
+	}
+
+	FQuestStoryData CurrentQuestStoryData = QuestData[QuestId];
+	bool IsSuccess = false;
+	switch (CurrentQuestStoryData.GetQuestObjective())
+	{
+	case EQuestStoryObjective::Dialogue:
+		{
+			IsSuccess = true;
+			break;
+		}
+	case EQuestStoryObjective::CollectItem:
+		{
+			UInventoryComponent* PlayerInventory = PC->GetPlayerState<
+				AMainPlayerState>()->GetInventoryComponent();
+
+			CurrentQuestStoryData.GetQuestMetaData()["RequireItem"];
+			TArray<FString> RequireItemTable;
+
+			// "/"를 기준으로 아이템 Key와 Value 테이블을 가져온다.
+			CurrentQuestStoryData.GetQuestMetaData()["RequireItem"].
+				ParseIntoArray(RequireItemTable, TEXT("/"), true);
+
+			bool TempSuccess = true;
+			// 정상적으로 아이템이 존재하는 지 검증한다.
+			for (FString ItemTable : RequireItemTable)
+			{
+				TArray<FString> RequireItemData;
+				ItemTable.ParseIntoArray(RequireItemData, TEXT(","), true);
+
+				const uint32 ItemRequireId = FCString::Atoi(
+					*RequireItemData[0]);
+				const uint32 ItemRequireCount = FCString::Atoi(
+					*RequireItemData[1]);
+
+				if (PlayerInventory->GetCurrentRemainItemValue()[ItemRequireId]
+					< ItemRequireCount)
+				{
+					TempSuccess = false;
+					break;
+				}
+			}
+
+			// 여기서 이미 실패 판정이 되었으면 뒤로 나간다.
+			if (!TempSuccess)
+			{
+				break;
+			}
+
+			// 아이템이 정상적으로 존재하는 경우 RemoveItemToClear 가
+			// true 인 상태라면 제거해준다.
+			if (CurrentQuestStoryData.GetQuestMetaData().Contains(
+					"RemoveItemToClear") && CurrentQuestStoryData.
+				GetQuestMetaData()["RemoveItemToClear"] == "true")
+			{
+				for (FString ItemTable : RequireItemTable)
+				{
+					TArray<FString> RequireItemData;
+					ItemTable.ParseIntoArray(
+						RequireItemData, TEXT(","), true);
+
+					const uint32 ItemRequireId = FCString::Atoi(
+						*RequireItemData[0]);
+					const uint32 ItemRequireCount = FCString::Atoi(
+						*RequireItemData[1]);
+
+					PlayerInventory->
+						RemoveItem(ItemRequireId, ItemRequireCount);
+				}
+			}
+
+			IsSuccess = true;
+			break;
+		}
+	default:
+		{
+			break;
+		}
+	}
+
+	if (IsSuccess)
+	{
+		CompleteQuest_Internal(PC, QuestId);
+	}
+
+	return IsSuccess;
+}
+
+void UQuestStoryManager::CompleteQuest_Internal(AMainPlayerController* PC,
+                                                const FString& QuestId)
+{
+	FQuestStoryData CurrentQuestStoryData = QuestData[QuestId];
+
+	if (CurrentQuestStoryData.GetQuestMetaData().Contains("NextQuest"))
+	{
+		PC->StartQuest(CurrentQuestStoryData.GetQuestMetaData()["NextQuest"]);
+	}
+
+	if (CurrentQuestStoryData.GetQuestMetaData().Contains("RewardItems"))
+	{
+		// TODO: 아이템 보상에 대한 처리
 	}
 }

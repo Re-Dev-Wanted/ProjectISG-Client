@@ -3,6 +3,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
+#include "ProjectISG/Utils/EnumUtil.h"
 
 void UUIManageComponent::Initialize()
 {
@@ -50,7 +51,7 @@ void UUIManageComponent::PushWidget(const EUIName Key)
 		if (WidgetLayers[Key] != EUILayer::Modal && ControllerInstances.
 			Contains(LastKey))
 		{
-			ControllerInstances[LastKey]->DisappearUI();
+			ControllerInstances[LastKey]->EndShowUI();
 		}
 	}
 
@@ -71,7 +72,9 @@ void UUIManageComponent::PushWidget(const EUIName Key)
 		ControllerInstances.Add(Key, NewView->GetController());
 	}
 
-	ControllerInstances[Key]->AppearUI(WidgetLayers[Key]);
+	ControllerInstances[Key]->StartShowUI(WidgetLayers[Key]);
+
+	PrintAllWidgetStackToDebug();
 }
 
 void UUIManageComponent::PopWidget()
@@ -84,7 +87,7 @@ void UUIManageComponent::PopWidget()
 	const EUIName LastKey = WidgetStack.Last();
 	if (ControllerInstances.Contains(LastKey))
 	{
-		ControllerInstances[LastKey]->DisappearUI();
+		ControllerInstances[LastKey]->EndShowUI();
 	}
 
 	WidgetStack.Pop();
@@ -99,7 +102,7 @@ void UUIManageComponent::PopWidget()
 	const EUIName PrevKey = WidgetStack.Last();
 	if (ControllerInstances.Contains(PrevKey))
 	{
-		ControllerInstances[PrevKey]->AppearUI(WidgetLayers[PrevKey]);
+		ControllerInstances[PrevKey]->StartShowUI(WidgetLayers[PrevKey]);
 	}
 
 	APlayerController* PC = Cast<APlayerController>(GetOwner());
@@ -108,6 +111,8 @@ void UUIManageComponent::PopWidget()
 	{
 		PC->SetShowMouseCursor(false);
 	}
+
+	PrintAllWidgetStackToDebug();
 }
 
 bool UUIManageComponent::IsPlayerInLocalControlled() const
@@ -143,4 +148,20 @@ void UUIManageComponent::ResetWidget()
 		PopWidget();
 	}
 	PushWidget(EUIName::Gameplay_MainHUD);
+}
+
+void UUIManageComponent::PrintAllWidgetStackToDebug()
+{
+	FString StackText;
+	for (int i = 0; i < WidgetStack.Num(); i++)
+	{
+		StackText += FEnumUtil::GetClassEnumKeyAsString(WidgetStack[i]);
+
+		if (i != WidgetStack.Num() - 1)
+		{
+			StackText += TEXT(",");
+		}
+	}
+
+	UE_LOG(LogTemp, Display, TEXT("Current Widget Stack: [%s]"), *StackText);
 }

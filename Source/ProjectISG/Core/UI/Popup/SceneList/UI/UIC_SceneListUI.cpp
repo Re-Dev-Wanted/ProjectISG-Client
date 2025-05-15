@@ -17,9 +17,9 @@ void UUIC_SceneListUI::InitializeController(UBaseUIView* NewView,
 	Super::InitializeController(NewView, NewModel);
 }
 
-void UUIC_SceneListUI::AppearUI(const EUILayer Layer)
+void UUIC_SceneListUI::AppearUI()
 {
-	Super::AppearUI(Layer);
+	Super::AppearUI();
 
 	UUIM_SceneListUI* SceneListModel = Cast<UUIM_SceneListUI>(GetModel());
 
@@ -70,6 +70,7 @@ void UUIC_SceneListUI::OnTriggerSkipSceneAction()
 	if (SceneListModel->GetCurrentLoadingPercent() >= SceneListModel->
 		GetMaxLoadingPercent())
 	{
+		GetWorld()->GetTimerManager().ClearTimer(SceneCutChangeTimerHandle);
 		GetView()->GetOwningPlayer<AMainPlayerController>()->PopUI();
 		// TODO: 추후 행동에 대한 Delegate를 받아도 상관없을 것 같다
 	}

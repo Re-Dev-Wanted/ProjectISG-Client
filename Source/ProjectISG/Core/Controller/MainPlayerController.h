@@ -6,11 +6,11 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerController.generated.h"
 
-class UQuestManageComponent;
 enum class EUIName : uint32;
 
 class UItemInfo;
 class UUIManageComponent;
+class UQuestManageComponent;
 
 class UUIC_MainHUD;
 class UUIC_InventoryUI;
@@ -31,7 +31,12 @@ public:
 	void PopUI();
 
 	UFUNCTION(BlueprintCallable)
-	void StartQuest(const FString& QuestId) const;
+	void StartQuest(const FString& QuestId);
+
+	void StartQuestToPlayer(const FString& QuestId);
+
+	UFUNCTION(Client, Reliable)
+	void Client_StartQuestToPlayer(const FString& QuestId);
 
 	UFUNCTION(BlueprintCallable)
 	void StartScene(const FString& SceneId) const;
@@ -58,4 +63,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UQuestManageComponent> QuestManageComponent;
+
+#pragma region Quest
+	UFUNCTION(Server, Reliable)
+	void Server_StartQuest(const FString& QuestId);
+#pragma endregion
 };

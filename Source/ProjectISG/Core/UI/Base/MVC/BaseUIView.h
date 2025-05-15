@@ -14,9 +14,13 @@ class PROJECTISG_API UBaseUIView : public UUserWidget
 
 public:
 	GETTER(TObjectPtr<UWidgetAnimation>, DefaultTickAnimation)
+	GETTER(TObjectPtr<UWidgetAnimation>, DefaultStartAnimation)
+	GETTER(TObjectPtr<UWidgetAnimation>, DefaultEndAnimation)
 	GETTER_EDITABLE(TObjectPtr<UBaseUIController>, Controller)
 
 	FWidgetAnimationDynamicEvent TickAnimationEndNotified;
+	FWidgetAnimationDynamicEvent StartAnimationFinishNotified;
+	FWidgetAnimationDynamicEvent EndAnimationFinishNotified;
 
 protected:
 	virtual void NativeConstruct() override;
@@ -25,6 +29,12 @@ protected:
 private:
 	UPROPERTY(Transient, meta=(BindWidgetAnimOptional))
 	TObjectPtr<UWidgetAnimation> DefaultTickAnimation;
+
+	UPROPERTY(Transient, meta=(BindWidgetAnimOptional))
+	TObjectPtr<UWidgetAnimation> DefaultStartAnimation;
+
+	UPROPERTY(Transient, meta=(BindWidgetAnimOptional))
+	TObjectPtr<UWidgetAnimation> DefaultEndAnimation;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Options",
 		meta=(AllowPrivateAccess = true))

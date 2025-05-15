@@ -15,7 +15,6 @@ class PROJECTISG_API ATradingNPC : public ABaseInteractiveActor
 public:
 	ATradingNPC();
 
-
 protected:
 	virtual void BeginPlay() override;
 

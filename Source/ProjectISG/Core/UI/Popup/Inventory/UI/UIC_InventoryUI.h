@@ -13,8 +13,6 @@ class PROJECTISG_API UUIC_InventoryUI : public UBaseUIController
 	GENERATED_BODY()
 
 public:
-	virtual void AppearUI(const EUILayer Layer) override;
-
 	void UpdateMainSlotItemData() const;
 
 	void UpdateInventorySlotItemData() const;
@@ -22,6 +20,9 @@ public:
 	void SetItemInfoData(const uint8 InventoryIndex);
 
 	void ClearItemInfoData();
+
+protected:
+	virtual void AppearUI() override;
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",

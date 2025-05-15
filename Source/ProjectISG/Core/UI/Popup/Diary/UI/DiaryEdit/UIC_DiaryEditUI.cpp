@@ -18,9 +18,9 @@
 #include "ProjectISG/Utils/ApiUtil.h"
 #include "ProjectISG/Utils/SessionUtil.h"
 
-void UUIC_DiaryEditUI::AppearUI(const EUILayer Layer)
+void UUIC_DiaryEditUI::AppearUI()
 {
-	Super::AppearUI(Layer);
+	Super::AppearUI();
 
 	const UUIV_DiaryEditUI* DiaryEditUIView = Cast<UUIV_DiaryEditUI>(GetView());
 	DiaryEditUIView->GetSaveButton()->OnClicked.AddDynamic(

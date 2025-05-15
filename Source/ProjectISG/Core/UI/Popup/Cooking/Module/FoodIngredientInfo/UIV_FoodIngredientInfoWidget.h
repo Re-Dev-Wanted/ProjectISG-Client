@@ -15,6 +15,7 @@ class PROJECTISG_API UUIV_FoodIngredientInfoWidget : public UBaseUIView
 public:
 	GETTER(TObjectPtr<UImage>, IngredientThumbnail)
 	GETTER(TObjectPtr<UTextBlock>, IngredientCount)
+	GETTER(TObjectPtr<UTextBlock>, CurrentIngredientCount)
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -22,4 +23,7 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> IngredientCount;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> CurrentIngredientCount;
 };
