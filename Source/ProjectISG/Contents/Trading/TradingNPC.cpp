@@ -1,7 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "TradingNPC.h"
+﻿#include "TradingNPC.h"
 
 #include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
@@ -9,7 +6,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
-#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Time/TimeManager.h"
 
@@ -40,13 +36,15 @@ void ATradingNPC::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ATimeManager* TimeManager = Cast<ATimeManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ATimeManager::StaticClass()));
-	TimeManager->OnContentRestrictionTimeReached.AddDynamic(this, &ThisClass::TradingRestrictByTimeReached);
-	
+	ATimeManager* TimeManager = Cast<ATimeManager>(
+		UGameplayStatics::GetActorOfClass(GetWorld(),
+		                                  ATimeManager::StaticClass()));
+	TimeManager->OnContentRestrictionTimeReached.AddDynamic(
+		this, &ThisClass::TradingRestrictByTimeReached);
 }
 
 void ATradingNPC::GetLifetimeReplicatedProps(
-	TArray<class FLifetimeProperty>& OutLifetimeProps) const
+	TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
@@ -56,20 +54,19 @@ void ATradingNPC::GetLifetimeReplicatedProps(
 void ATradingNPC::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	
 }
 
 void ATradingNPC::OnInteractive(AActor* Causer)
 {
 	IInteractionInterface::OnInteractive(Causer);
-	
+
 	Causer->SetActorLocation(InteractionPos->GetComponentLocation());
 	Causer->SetActorRotation(InteractionPos->GetComponentRotation());
 
 	FGameplayTagContainer ActivateTag;
 	ActivateTag.AddTag(ISGGameplayTags::Trading_Active_OpenTradingUI);
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
+
 	if (Player)
 	{
 		Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(

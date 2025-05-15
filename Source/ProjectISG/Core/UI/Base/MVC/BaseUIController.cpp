@@ -13,6 +13,8 @@ void UBaseUIController::StartShowUI(const EUILayer Layer)
 
 	const UWidgetAnimation* StartAnimation = GetView()->
 		GetDefaultStartAnimation();
+	GetView()->SetVisibility(ESlateVisibility::Visible);
+
 	if (!StartAnimation)
 	{
 		AppearUI();
@@ -31,7 +33,6 @@ void UBaseUIController::EndShowUI()
 		DisappearUI();
 		return;
 	}
-
 	GetView()->PlayAnimation(GetView()->GetDefaultEndAnimation());
 }
 
@@ -124,8 +125,6 @@ void UBaseUIController::AppearUI()
 
 void UBaseUIController::AppearUI(const EUILayer Layer)
 {
-	View->SetVisibility(ESlateVisibility::Visible);
-
 	if (Layer != EUILayer::Gameplay)
 	{
 		ChangeInputActionToUI(false);

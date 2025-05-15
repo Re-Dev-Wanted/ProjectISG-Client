@@ -37,7 +37,6 @@ void UUIC_TradingUI::OnCloseTradingUI()
 	UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
 	TradingUIView->SetOpenFlag(false);
 	PC->PopUI();
-	PC->PushUI(EUIName::Gameplay_MainHUD);
 }
 
 void UUIC_TradingUI::UpdateGoldText()

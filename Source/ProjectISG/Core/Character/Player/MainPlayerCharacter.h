@@ -11,11 +11,11 @@ class UScreenShotComponent;
 class UPlayerInventoryComponent;
 class UPlacementIndicatorComponent;
 class UPlayerHandSlotComponent;
-struct FInputActionValue;
 
 class USpringArmComponent;
 class UCameraComponent;
 
+struct FInputActionValue;
 class UInputAction;
 class UInputComponent;
 class UInputMappingContext;
