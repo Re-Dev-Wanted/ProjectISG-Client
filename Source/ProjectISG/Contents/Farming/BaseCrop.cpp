@@ -7,6 +7,7 @@
 #include "GameplayTagContainer.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Managers/FarmingManager.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
@@ -53,7 +54,9 @@ void ABaseCrop::BeginPlay()
 		return;
 	}
 
-	CropRemainGrowTime = CropTotalGrowDay * 24;
+	CropTotalGrowTime = CropTotalGrowDay * 24;
+	CropBecomeSprout = CropTotalGrowTime / 4;
+	CropBecomeStem = CropTotalGrowTime / 2;
 
 	TimeManager->AddSleepTimeToCrop.AddDynamic(
 		this, &ThisClass::UpdateGrowTimeBySleep);
@@ -76,13 +79,11 @@ void ABaseCrop::Tick(float DeltaTime)
 		return;
 	}
 
-	if (bIsGetWater && CurrentState == ECropState::Sprout)
+	// 남은 성장시간을 통해 현재 작물의 상태를 확인한다.
+	CheckStateByRemainGrowTime();
+	if (bIsGetWater && CurrentState != ECropState::Mature)
 	{
 		CheckGrowTime();
-	}
-
-	if (bIsGetWater)
-	{
 		CheckWaterDurationTime();
 	}
 }
@@ -112,14 +113,43 @@ void ABaseCrop::CheckGrowTime()
 
 	// 현재 시간과 씨앗을 심은 시간을 빼서 현재 지난 시간을 구한다.
 	CropGrowTime = CropCurrentGrowTime - CropStartGrowTime;
+}
 
-	// 농작물의 성장 시간 변수와 비교한다
-	if (CropGrowTime >= CropRemainGrowTime)
+void ABaseCrop::CheckStateByRemainGrowTime()
+{
+	int32 TotalEffectiveGrowTime = 0;
+
+	if (bIsGetWater)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("다 자랐다"));
-		if (HasAuthority())
+		TotalEffectiveGrowTime = CropGrowTime + CropGrowTimeSum;
+	}
+	else
+	{
+		TotalEffectiveGrowTime = CropGrowTimeSum;
+	}
+
+	if (TotalEffectiveGrowTime >= CropTotalGrowTime) // 다 자란 상태 체크
+	{
+		if (CurrentState != ECropState::Mature)
 		{
-			Server_CropIsMature();
+			SetCurrentState(ECropState::Mature);
+			// UE_LOG(LogTemp, Warning, TEXT("State Changed to Mature. TotalEffectiveGrowTime: %d"), TotalEffectiveGrowTime);
+		}
+	}
+	else if (TotalEffectiveGrowTime >= CropBecomeStem) // 줄기 상태 체크
+	{
+		if (CurrentState != ECropState::Stem)
+		{
+			SetCurrentState(ECropState::Stem);
+			// UE_LOG(LogTemp, Warning, TEXT("State Changed to Stem. TotalEffectiveGrowTime: %d"), TotalEffectiveGrowTime);
+		}
+	}
+	else if (TotalEffectiveGrowTime >= CropBecomeSprout) // 새싹 상태 체크
+	{
+		if (CurrentState != ECropState::Sprout)
+		{
+			SetCurrentState(ECropState::Sprout);
+			// UE_LOG(LogTemp, Warning, TEXT("State Changed to Sprout. TotalEffectiveGrowTime: %d"), TotalEffectiveGrowTime);
 		}
 	}
 }
@@ -127,13 +157,12 @@ void ABaseCrop::CheckGrowTime()
 void ABaseCrop::CheckWaterDurationTime()
 {
 	// 물을 준 후 부터 작물이 자라기 시작하기에 물 준후 지난시간과 작물의 총 성장시간은 동일하다.
-
 	if (CropGrowTime >= WaterDuration)
 	{
 		bIsGetWater = false;
-
-		CropRemainGrowTime -= CropGrowTime;
-		CropGrowTime = 0.f;
+		CropGrowTime = 0;
+		//CropTotalGrowTime -= WaterDuration;
+		CropGrowTimeSum += WaterDuration;
 		Server_FieldIsDried();
 	}
 }
@@ -156,8 +185,15 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
 	FGameplayTagContainer ActivateTag;
 	ActivateTag.AddTag(ISGGameplayTags::Farming_Active_Harvest);
-	Player->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
-	        AddItem(UItemManager::GetInitialItemMetaDataById(CropId));
+
+	for (int i = 0; i < UFarmingManager::GetDataByCropId(MatureFarmingObjectId).
+	     GetYield(); i++)
+	{
+		Player->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
+		        AddItem(UItemManager::GetInitialItemMetaDataById(
+			        UFarmingManager::GetDataByCropId(MatureFarmingObjectId).
+			        GetItemId()));
+	}
 
 	Player->GetInteractionComponent()->Server_OnInteractiveResponse(Causer);
 	Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
@@ -183,15 +219,14 @@ void ABaseCrop::UpdateGrowTimeBySleep()
 	int32 TotalSleepTime = (24 - TimeManager->GetTimeStoppedTime()) + 6;
 	// 작물의 총 성장시간 체크
 
-	if (CropRemainGrowTime > TotalSleepTime)
+	if (CropTotalGrowTime > TotalSleepTime)
 	{
 		// water duration과 물 준후의 지난 시간 체크
 		int32 RemainWaterDuration = WaterDuration - CropGrowTime;
 		if (RemainWaterDuration <= TotalSleepTime)
 		{
 			bIsGetWater = false;
-			CropRemainGrowTime -= WaterDuration;
-			CropGrowTime = 0.f;
+			CropGrowTime = 0;
 			NetMulticast_FieldIsDried();
 		}
 		else
@@ -224,7 +259,6 @@ void ABaseCrop::Server_CropIsMature_Implementation()
 
 void ABaseCrop::NetMulticast_ChangeCropMeshToMature_Implementation()
 {
-	SetActorScale3D(FVector(2.0f));
 	OnDryField.Broadcast();
 }
 
@@ -254,10 +288,76 @@ void ABaseCrop::CropIsGetWater()
 
 void ABaseCrop::SetCurrentState(ECropState State)
 {
-	CurrentState = State;
+	if (State == CurrentState)
+	{
+		return;
+	}
+	ChangeCurrentCropState(State);
 
 	if (CurrentState == ECropState::Mature)
 	{
 		Root->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	}
+}
+
+void ABaseCrop::ChangeCurrentCropState(ECropState State)
+{
+	CurrentState = State;
+	NetMulticast_ChangeCurrentCropState(State);
+}
+
+void ABaseCrop::NetMulticast_ChangeCurrentCropState_Implementation(
+	ECropState State)
+{
+	switch (State)
+	{
+	case ECropState::Seedling:
+		{
+			Mesh->SetRelativeScale3D(
+				UFarmingManager::GetDataByCropId(1).GetScale());
+			Mesh->SetStaticMesh(
+				UFarmingManager::GetDataByCropId(1).GetStaticMesh());
+			Mesh->SetMaterial(
+				0, UFarmingManager::GetDataByCropId(1).GetMeshMaterial());
+			break;
+		}
+	case ECropState::Sprout:
+		{
+			Mesh->SetRelativeScale3D(
+				UFarmingManager::GetDataByCropId(2).GetScale());
+			Mesh->SetStaticMesh(
+				UFarmingManager::GetDataByCropId(2).GetStaticMesh());
+			Mesh->SetMaterial(
+				0, UFarmingManager::GetDataByCropId(2).GetMeshMaterial());
+			break;
+		}
+	case ECropState::Stem:
+		{
+			Mesh->SetRelativeScale3D(
+				UFarmingManager::GetDataByCropId(3).GetScale());
+			Mesh->SetStaticMesh(
+				UFarmingManager::GetDataByCropId(3).GetStaticMesh());
+			Mesh->SetRelativeLocation(
+				UFarmingManager::GetDataByCropId(3).GetLocation());
+			Mesh->SetMaterial(
+				0, UFarmingManager::GetDataByCropId(3).GetMeshMaterial());
+			break;
+		}
+	case ECropState::Mature:
+		{
+			Mesh->SetRelativeScale3D(
+				UFarmingManager::GetDataByCropId(MatureFarmingObjectId).
+				GetScale());
+			Mesh->SetStaticMesh(
+				UFarmingManager::GetDataByCropId(MatureFarmingObjectId).
+				GetStaticMesh());
+			Mesh->SetRelativeLocation(
+				UFarmingManager::GetDataByCropId(MatureFarmingObjectId).
+				GetLocation());
+			Mesh->SetMaterial(
+				0, UFarmingManager::GetDataByCropId(MatureFarmingObjectId).
+				GetMeshMaterial());
+			break;
+		}
 	}
 }
