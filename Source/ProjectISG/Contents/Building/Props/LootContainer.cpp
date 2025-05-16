@@ -85,8 +85,7 @@ FString ALootContainer::GetInteractiveDisplayText() const
 	return TEXT("열기");
 }
 
-bool ALootContainer::ChangeItem(AActor* Causer, FGuid Guid,
-                                const FItemMetaInfo& ItemInfo,
+bool ALootContainer::ChangeItem(AActor* Causer,                                 const FItemMetaInfo& ItemInfo,
                                 const uint16 Index)
 {
 	if (!Items.IsValidIndex(Index))
@@ -106,7 +105,7 @@ bool ALootContainer::ChangeItem(AActor* Causer, FGuid Guid,
 	return true;
 }
 
-void ALootContainer::SwapItem(AActor* Causer, FGuid Guid, const uint16 Prev,
+void ALootContainer::SwapItem(AActor* Causer, const uint16 Prev,
                               const uint16 Next)
 {
 	if (!Items.IsValidIndex(Prev) || !Items.IsValidIndex(Next))
@@ -144,7 +143,7 @@ void ALootContainer::Server_SwapItem_Implementation(
 	SwapItemInternal(Prev, Next);
 }
 
-FItemMetaInfo ALootContainer::GetItemMetaInfo(FGuid Guid, const uint16 Index)
+FItemMetaInfo ALootContainer::GetItemMetaInfo(const uint16 Index)
 {
 	if (!Items.IsValidIndex(Index))
 	{

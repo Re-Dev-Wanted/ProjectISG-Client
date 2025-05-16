@@ -47,13 +47,13 @@ public:
 
 	//ItemHandler
 	
-	virtual FItemMetaInfo GetItemMetaInfo(FGuid Guid, const uint16 Index) override;
+	virtual FItemMetaInfo GetItemMetaInfo(const uint16 Index) override;
 	
-	virtual bool ChangeItem(FGuid Guid, const FItemMetaInfo& ItemInfo, const uint16 Index) override;
+	virtual bool ChangeItem(AActor* Causer, const FItemMetaInfo& ItemInfo, const uint16 Index) override;
 	
 	void UpdateInventory();
 
-	virtual void SwapItem(AActor* Causer, FGuid Guid, const uint16 Prev, const uint16 Next) override;
+	virtual void SwapItem(AActor* Causer, const uint16 Prev, const uint16 Next) override;
 
 protected:
 	virtual void BeginPlay() override;

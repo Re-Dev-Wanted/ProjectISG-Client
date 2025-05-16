@@ -23,11 +23,11 @@ public:
 
 	virtual FString GetInteractiveDisplayText() const override;
 
-	virtual bool ChangeItem(AActor* Causer, FGuid Guid, const FItemMetaInfo& ItemInfo, const uint16 Index) override;
+	virtual bool ChangeItem(AActor* Causer, const FItemMetaInfo& ItemInfo, const uint16 Index) override;
 
-	virtual void SwapItem(AActor* Causer, FGuid Guid, const uint16 Prev, const uint16 Next) override;
+	virtual void SwapItem(AActor* Causer, const uint16 Prev, const uint16 Next) override;
 
-	virtual FItemMetaInfo GetItemMetaInfo(FGuid Guid, const uint16 Index) override;
+	virtual FItemMetaInfo GetItemMetaInfo(const uint16 Index) override;
 
 	UFUNCTION()
 	void OnRep_Items();

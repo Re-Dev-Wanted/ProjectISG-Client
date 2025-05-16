@@ -1,10 +1,7 @@
 #include "LootContainerListView.h"
 
 #include "Components/WrapBox.h"
-#include "ProjectISG/Core/GameMode/MainGameState.h"
-#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Popup/LootContainer/UI/Widgets/LootContainerItemSlot.h"
-#include "ProjectISG/Systems/LootContainer/LootContainerSubsystem.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
 
 void ULootContainerListView::SetContainerInfo(const TSubclassOf<ULootContainerItemSlot>& InventorySlotClass, TArray<FItemMetaInfo> Items, FGuid Guid, TScriptInterface<IItemHandler> Handler)

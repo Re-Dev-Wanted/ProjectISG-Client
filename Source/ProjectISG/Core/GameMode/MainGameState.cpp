@@ -1,11 +1,8 @@
 ﻿#include "MainGameState.h"
 
 #include "GameFramework/PlayerState.h"
-#include "Interfaces/IHttpResponse.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
-#include "ProjectISG/Systems/LootContainer/LootContainerSubsystem.h"
-#include "ProjectISG/Utils/ApiUtil.h"
 
 AMainGameState::AMainGameState()
 {

@@ -8,7 +8,6 @@
 #include "ProjectISG/GAS/Common/Attribute/ISGAttributeSet.h"
 #include "ProjectISG/Systems/Grid/Manager/GridManager.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
-#include "ProjectISG/Systems/LootContainer/LootContainerSubsystem.h"
 #include "ProjectISG/Systems/Time/TimeManager.h"
 
 AMainPlayerState::AMainPlayerState()
@@ -22,10 +21,6 @@ AMainPlayerState::AMainPlayerState()
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(
 		"Inventory Component");
-
-	LootContainerComponent = CreateDefaultSubobject<ULootContainerSubsystem>
-	(TEXT("Loot Container Component"));
-	LootContainerComponent->SetIsReplicated(true);
 }
 
 UAbilitySystemComponent* AMainPlayerState::GetAbilitySystemComponent() const
@@ -66,13 +61,6 @@ void AMainPlayerState::BeginPlay()
 	{
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("World에 TimeManager가 없습니다. 시간을 사용하는 맵이라면 반드시 World에 배치하세요."), true, true, FLinearColor::Red);
 	}
-}
-
-void AMainPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AMainPlayerState, LootContainerComponent);
 }
 
 void AMainPlayerState::InitializeData()

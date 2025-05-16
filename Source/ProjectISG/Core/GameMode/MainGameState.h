@@ -5,7 +5,6 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainGameState.generated.h"
 
-class ULootContainerSubsystem;
 class UQuestManageComponent;
 
 UCLASS()

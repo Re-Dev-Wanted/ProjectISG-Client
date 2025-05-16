@@ -104,8 +104,8 @@ bool ULootContainerItemSlot::NativeOnDrop(const FGeometry& InGeometry,
 	TObjectPtr<UObject> PrevObj = PrevInvSlot->ItemHandler.GetObjectRef();
 	TObjectPtr<UObject> CurrentObj = ItemHandler.GetObjectRef();
 
-	const FItemMetaInfo CurrentItemInfo = ItemHandler->GetItemMetaInfo(ContainerGuid, Index);
-	const FItemMetaInfo PrevItemInfo = PrevInvSlot->ItemHandler->GetItemMetaInfo(PrevInvSlot->ContainerGuid, PrevInvSlot->Index);
+	const FItemMetaInfo CurrentItemInfo = ItemHandler->GetItemMetaInfo(Index);
+	const FItemMetaInfo PrevItemInfo = PrevInvSlot->ItemHandler->GetItemMetaInfo(PrevInvSlot->Index);
 
 	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 	GetOwningPlayerState<AMainPlayerState>()
@@ -113,17 +113,16 @@ bool ULootContainerItemSlot::NativeOnDrop(const FGeometry& InGeometry,
 	
 	if (PrevObj.GetClass() == CurrentObj.GetClass())
 	{
-		ItemHandler->SwapItem(Player, ContainerGuid, PrevInvSlot->Index, Index);
+		ItemHandler->SwapItem(Player, PrevInvSlot->Index, Index);
 	}
 	else
 	{
-		PrevInvSlot->ItemHandler->ChangeItem(Player, PrevInvSlot->ContainerGuid, 
-		CurrentItemInfo, PrevInvSlot->Index);
-		ItemHandler->ChangeItem(Player, ContainerGuid, PrevItemInfo, Index);
+		PrevInvSlot->ItemHandler->ChangeItem(Player, CurrentItemInfo, PrevInvSlot->Index);
+		ItemHandler->ChangeItem(Player, PrevItemInfo, Index);
 	}
 	
-	SetSlotInfo(PrevItemInfo, ContainerGuid);
-	PrevInvSlot->SetSlotInfo(CurrentItemInfo, PrevInvSlot->ContainerGuid);
+	SetSlotInfo(PrevItemInfo);
+	PrevInvSlot->SetSlotInfo(CurrentItemInfo);
 
 	return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 }
@@ -140,8 +139,6 @@ void ULootContainerItemSlot::SetSlotInfo(const FItemMetaInfo& ItemMetaInfo, cons
 	SetThumbnail(
 		UItemManager::GetItemInfoById(ItemMetaInfo.GetId()).GetThumbnail());
 	SetItemCount(ItemMetaInfo.GetCurrentCount());
-
-	ContainerGuid = Guid;
 }
 
 void ULootContainerItemSlot::SetIsDragged(const bool IsDragged)
