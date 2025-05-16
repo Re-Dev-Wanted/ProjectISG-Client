@@ -27,7 +27,7 @@ private:
 	uint8 CurrentScreenShotLogCount = 1;
 
 	FString ApiPath = TEXT(
-		"https://919e-221-148-189-129.ngrok-free.app/service2/log");
+		"http://192.168.10.96:8016/service2/log");
 
 	void SendHttpRequest(FApiCallData& CallData);
 
