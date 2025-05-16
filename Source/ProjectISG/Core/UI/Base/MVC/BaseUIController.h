@@ -24,7 +24,7 @@ public:
 
 	virtual void InitializeSettingToPlayerController(APlayerController* PC);
 
-
+	UFUNCTION()
 	virtual void PopUIFromPlayerController();
 
 	GETTER(TObjectPtr<UBaseUIView>, View)

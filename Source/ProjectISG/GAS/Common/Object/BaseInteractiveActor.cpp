@@ -12,9 +12,3 @@ void ABaseInteractiveActor::GetLifetimeReplicatedProps(
 
 	DOREPLIFETIME(ThisClass, InteractingPlayer);
 }
-
-void ABaseInteractiveActor::OnRep_SetInteractingPlayer(
-	class AMainPlayerCharacter* Player)
-{
-	InteractingPlayer = Player;
-}

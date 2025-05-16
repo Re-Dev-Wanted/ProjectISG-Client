@@ -75,7 +75,7 @@ public:
 
 	void SetGuide(float TileSize);
 
-	void SetOption(bool bIsGhost, bool bIsBlock = false) const;
+	virtual void SetOption(bool bIsGhost, bool bIsBlock = false);
 
 	void SetCollisionEnabled(bool bEnable) const;
 
