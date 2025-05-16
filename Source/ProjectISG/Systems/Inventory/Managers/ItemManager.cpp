@@ -153,6 +153,34 @@ uint16 UItemManager::GetGeneratedOtherItemIdById(const uint16 Id)
 	return FCString::Atoi(*FindDataRef);
 }
 
+uint16 UItemManager::GetChanceBasedSpawnItemIdById(const uint16 Id)
+{
+	const FItemInfoData ItemInfoData = GetItemInfoById(Id);
+	
+	const FString* FindData = ItemInfoData.GetConstData().Find
+	(EConstDataKey::ChanceBasedSpawnItemId);
+
+	if (!FindData)
+	{
+		return 0;
+	}
+
+	const FString FindDataRef = ItemInfoData.GetConstData().FindRef
+	(EConstDataKey::ChanceBasedSpawnItemId);
+
+	if (FindDataRef.IsEmpty())
+	{
+		return 0;
+	}
+
+	if (!FindDataRef.IsNumeric())
+	{
+		return 0;
+	}
+
+	return FCString::Atoi(*FindDataRef);
+}
+
 FName UItemManager::GetSocketNameById(const uint16 Id)
 {
 	const FItemInfoData ItemInfoData = GetItemInfoById(Id);

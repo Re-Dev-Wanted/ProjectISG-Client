@@ -4,6 +4,7 @@
 
 #include "Bobber.h"
 #include "CableComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Contents/Fishing/Managers/FishingManager.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
@@ -73,9 +74,19 @@ void AFishingRod::Destroyed()
 
 void AFishingRod::OnStartFishing()
 {
+	if (IsInWater)
+	{
+		return;
+	}
+
+	IsInWater = true;
+	
 	//TODO: 물고기를 여기에서 정하지만 옮길 수도 있음
 	FishData = UFishingManager::GetRandomData();
 	float WaitTime = FishData.GetWaitTime();
+
+	// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT
+	// ("OnStartFishing %fs"), WaitTime));
 	
 	GetWorld()->
 	GetTimerManager()
@@ -95,6 +106,9 @@ void AFishingRod::OnEventBite()
 	{
 		return;
 	}
+
+	// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT
+	// ("OnEventBite %fs"), BitingCheckDelayTime));
 
 	Bobber->OnBite(FishData.GetMesh());
 
@@ -172,6 +186,8 @@ void AFishingRod::OnEventFinish(bool bLoop)
 		ModalUIController->SetUI(false, TEXT("RM"), TEXT("회수하기"));
 	}
 
+	IsInWater = false;
+	
 	if (Bobber)
 	{
 		Bobber->RemoveFish();

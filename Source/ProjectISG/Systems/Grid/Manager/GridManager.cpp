@@ -161,6 +161,7 @@ void AGridManager::BuildPlacement(TSubclassOf<APlacement> PlacementClass,
 	SpawnedActor->ForceNetUpdate();
 	SpawnedActor->Setup(SnapSize);
 	SpawnedActor->SetOption(false);
+	SpawnedActor->OnSpawned();
 		
 	PlacementGridContainer.Add
 	(
