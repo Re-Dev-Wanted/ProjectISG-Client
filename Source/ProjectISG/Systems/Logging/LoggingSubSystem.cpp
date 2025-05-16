@@ -48,16 +48,26 @@ void ULoggingSubSystem::LoggingData(FDiaryLogParams& Payload)
 		                                  ATimeManager::StaticClass()));
 	Payload.CurrentDate = TimeManager->GetDateText();
 
+	QueueLogging(Payload);
+}
+
+void ULoggingSubSystem::LoggingDataWithScreenshot(FDiaryLogParams& Payload)
+{
+	const ATimeManager* TimeManager = Cast<ATimeManager>(
+		UGameplayStatics::GetActorOfClass(GetWorld(),
+		                                  ATimeManager::StaticClass()));
+	Payload.CurrentDate = TimeManager->GetDateText();
+
 	if (FMath::RandRange(0, 1) > static_cast<double>(CurrentScreenShotLogCount)
 		/ MaxScreenShotLogCount)
 	{
 		CurrentScreenShotLogCount = 1;
 		SendLoggingNow(Payload);
+		return;
 	}
 
-	CurrentScreenShotLogCount += 1;
-
 	QueueLogging(Payload);
+	CurrentScreenShotLogCount += 1;
 }
 
 void ULoggingSubSystem::SendLoggingNow(const FDiaryLogParams& Payload)
