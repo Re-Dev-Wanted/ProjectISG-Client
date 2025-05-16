@@ -73,6 +73,7 @@ public:
 	GETTER(TObjectPtr<UPlayerInventoryComponent>, PlayerInventoryComponent)
 	GETTER(TObjectPtr<UInteractionComponent>, InteractionComponent)
 	GETTER(TObjectPtr<UPlayerHandSlotComponent>, HandSlotComponent)
+	GETTER(TObjectPtr<USceneComponent>, ScreenshotCameraPosition)
 
 	GETTER(TObjectPtr<UAnimMontage>, SeedingMontage)
 	GETTER(TObjectPtr<UAnimMontage>, WateringMontage)
@@ -111,6 +112,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> CameraComponent;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<USceneComponent> ScreenshotCameraPosition;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",
 		meta = (AllowPrivateAccess = true))

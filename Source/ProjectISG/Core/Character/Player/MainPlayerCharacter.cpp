@@ -33,6 +33,10 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	CameraComponent->SetRelativeLocation({0, 0, 80});
 	CameraComponent->SetRelativeRotation({0, 0, -18});
 
+	ScreenshotCameraPosition = CreateDefaultSubobject<USceneComponent>(
+		"Screenshot Camera Position");
+	ScreenshotCameraPosition->SetupAttachment(GetMesh());
+
 	PlayerInventoryComponent = CreateDefaultSubobject<
 		UPlayerInventoryComponent>("Player Inventory Component");
 
@@ -70,7 +74,8 @@ void AMainPlayerCharacter::BeginPlay()
 
 	if (HasAuthority() && IsLocallyControlled())
 	{
-		FString SessionId = GetWorld()->GetGameInstance<UISGGameInstance>()->GetSessionId();
+		FString SessionId = GetWorld()->GetGameInstance<UISGGameInstance>()->
+		                                GetSessionId();
 		GetWorld()->GetGameState<AMainGameState>()->SetSessionId(SessionId);
 		UE_LOG(LogTemp, Warning, TEXT("세션 복사 : %s"), *SessionId);
 	}

@@ -2,10 +2,11 @@
 
 #include "IImageWrapperModule.h"
 #include "IImageWrapper.h"
-#include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Kismet/KismetRenderingLibrary.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 
 UScreenShotComponent::UScreenShotComponent()
 {
@@ -26,11 +27,14 @@ void UScreenShotComponent::SaveCaptureFrameImage(const UObject* Object,
                                                  const FOnCaptureFrameNotified&
                                                  OnCaptureFrameNotified)
 {
-	const APawn* Player = Cast<APawn>(GetOwner());
-	const APlayerCameraManager* PlayerCameraManager = Cast<APlayerController>(
-		Player->GetController())->PlayerCameraManager;
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
+	FTransform PlayerLocation;
+	PlayerLocation.SetLocation(Player->GetActorLocation());
 
-	SceneCapture->SetWorldTransform(PlayerCameraManager->GetActorTransform());
+	const FTransform ScreenshotPos = PlayerLocation + Player->
+		GetScreenshotCameraPosition()->GetRelativeTransform();
+
+	SceneCapture->SetWorldTransform(ScreenshotPos);
 
 	SceneCapture->TextureTarget =
 		UKismetRenderingLibrary::CreateRenderTarget2D(
@@ -38,7 +42,7 @@ void UScreenShotComponent::SaveCaptureFrameImage(const UObject* Object,
 			1920,
 			1080,
 			RTF_RGBA16f,
-			FLinearColor::White,
+			FLinearColor::Black,
 			false,
 			false
 		);

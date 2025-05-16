@@ -14,7 +14,8 @@ public:
 	// 스크린샷이 따로 필요없는 로그에 대한 처리
 	void LoggingData(FDiaryLogParams& Payload);
 	// 스크린샷이 필요한 로그에 대한 처리
-	void LoggingDataWithScreenshot(FDiaryLogParams& Payload);
+	void LoggingDataWithScreenshot(FDiaryLogParams& Payload,
+	                               const bool IsForce = false);
 
 	void SendLoggingNow(const FDiaryLogParams& Payload);
 	void QueueLogging(const FDiaryLogParams& Payload);
