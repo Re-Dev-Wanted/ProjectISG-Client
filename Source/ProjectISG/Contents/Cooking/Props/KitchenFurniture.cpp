@@ -47,7 +47,7 @@ AKitchenFurniture::AKitchenFurniture()
 
 bool AKitchenFurniture::GetCanInteractive() const
 {
-	return true;
+	return !IsValid(GetInteractingPlayer());
 }
 
 FString AKitchenFurniture::GetInteractiveDisplayText() const
@@ -74,7 +74,7 @@ void AKitchenFurniture::OnInteractive(AActor* Causer)
 
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
-		OnRep_SetInteractingPlayer(Player);
+		SetInteractingPlayer(Player);
 		Player->GetInteractionComponent()->Server_OnInteractiveResponse(Causer);
 		Player->bUseControllerRotationYaw = false;
 		Player->SetActorTransform(
@@ -182,5 +182,5 @@ void AKitchenFurniture::Client_UnlockPlayer_Implementation()
 
 void AKitchenFurniture::Server_SetInteractingPlayer_Implementation(AMainPlayerCharacter* Player)
 {
-	OnRep_SetInteractingPlayer(Player);
+	SetInteractingPlayer(Player);
 }

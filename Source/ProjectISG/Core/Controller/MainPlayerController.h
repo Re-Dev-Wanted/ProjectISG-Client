@@ -51,7 +51,12 @@ public:
 
 	UFUNCTION(Client, Reliable)
 	void Client_ResetWidgetAndPushTimeAlert();
-	
+
+#pragma region SetOwner
+	UFUNCTION(Server, Reliable)
+	void Server_SetOwnerActor(AActor* ResponseActor);
+#pragma endregion
+
 protected:
 	virtual void BeginPlay() override;
 

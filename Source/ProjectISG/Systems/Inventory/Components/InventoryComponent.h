@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
+#include "ProjectISG/Systems/Inventory/ItemHandler.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 
 #include "InventoryComponent.generated.h"
@@ -10,7 +11,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryUpdateNotified);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class PROJECTISG_API UInventoryComponent : public UActorComponent
+class PROJECTISG_API UInventoryComponent : public UActorComponent, public IItemHandler
 {
 	GENERATED_BODY()
 
@@ -44,7 +45,15 @@ public:
 
 	void InitializeItemData();
 
+	//ItemHandler
+	
+	virtual FItemMetaInfo GetItemMetaInfo(const uint16 Index) override;
+	
+	virtual bool ChangeItem(AActor* Causer, const FItemMetaInfo& ItemInfo, const uint16 Index) override;
+	
 	void UpdateInventory();
+
+	virtual void SwapItem(AActor* Causer, const uint16 Prev, const uint16 Next) override;
 
 protected:
 	virtual void BeginPlay() override;

@@ -85,6 +85,11 @@ void UBaseUIController::ChangeInputActionToUI(const bool IsBindAction)
 		return;
 	}
 
+	if (!UIMappingContext)
+	{
+		return;
+	}
+
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		PlayerController->GetPawn());
 	if (!Player)
@@ -125,17 +130,23 @@ void UBaseUIController::AppearUI()
 
 void UBaseUIController::AppearUI(const EUILayer Layer)
 {
-	if (Layer != EUILayer::Gameplay)
+	if (Layer == EUILayer::Gameplay)
 	{
-		ChangeInputActionToUI(false);
-
-		FInputModeGameAndUI InputMode;
-		InputMode.SetWidgetToFocus(GetView()->TakeWidget());
-		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-
+		const FInputModeGameOnly InputMode;
 		PlayerController->SetInputMode(InputMode);
-		PlayerController->SetShowMouseCursor(true);
+		PlayerController->SetShowMouseCursor(false);
+
+		return;
 	}
+
+	ChangeInputActionToUI(false);
+
+	FInputModeGameAndUI InputMode;
+	InputMode.SetWidgetToFocus(GetView()->TakeWidget());
+	InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+
+	PlayerController->SetInputMode(InputMode);
+	PlayerController->SetShowMouseCursor(true);
 }
 
 void UBaseUIController::DisappearUI()

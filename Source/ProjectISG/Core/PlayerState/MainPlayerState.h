@@ -27,14 +27,14 @@ public:
 
 	GETTER(TObjectPtr<UInventoryComponent>, InventoryComponent)
 	GETTER(TObjectPtr<AGridManager>, GridManager)
-	GETTER(TObjectPtr<ATimeManager>, TimeManager)
+	GETTER(TObjectPtr<ATimeManager>, TimeManager);
 	GETTER_SETTER(int32, Gold);
 
 	bool CanBuyProduct(int32 ProductPrice);
 
 protected:
 	virtual void BeginPlay() override;
-
+	
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UISGAbilitySystemComponent> AbilitySystemComponent;
 

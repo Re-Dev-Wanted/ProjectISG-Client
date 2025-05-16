@@ -3,7 +3,6 @@
 #include "JsonObjectConverter.h"
 #include "Interfaces/IHttpResponse.h"
 #include "Kismet/GameplayStatics.h"
-#include "Net/UnrealNetwork.h"
 #include "ProjectISG/Contents/Diary/DiaryStruct.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
@@ -12,7 +11,6 @@
 #include "ProjectISG/Core/UI/Popup/Diary/UI/DiaryEdit/UIC_DiaryEditUI.h"
 #include "ProjectISG/Systems/Time/TimeManager.h"
 #include "ProjectISG/Utils/ApiUtil.h"
-#include "ProjectISG/Utils/EnumUtil.h"
 #include "ProjectISG/Utils/SessionUtil.h"
 
 UDiaryComponent::UDiaryComponent()
@@ -100,7 +98,8 @@ void UDiaryComponent::Server_ChangeWriteDiary_Implementation(bool value,
 	Player->GetDiaryComponent()->SetbWriteDiary(value);
 }
 
-void UDiaryComponent::NetMulticast_ChangeWriteDiary_Implementation(bool value, class AMainPlayerCharacter* Player)
+void UDiaryComponent::NetMulticast_ChangeWriteDiary_Implementation(
+	bool value, class AMainPlayerCharacter* Player)
 {
 	if (Player->HasAuthority() == false)
 	{

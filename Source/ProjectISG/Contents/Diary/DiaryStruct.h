@@ -101,3 +101,54 @@ struct PROJECTISG_API FGetAllDiariesResponse
 	UPROPERTY()
 	TArray<FDiaryData> diaries;
 };
+
+USTRUCT()
+struct PROJECTISG_API FPostMbtiAskParams
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString user_id;
+
+	UPROPERTY()
+	FString session_id;
+};
+
+USTRUCT()
+struct PROJECTISG_API FPostMbtiAskResponse
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString question;
+
+	UPROPERTY()
+	FString dimension;
+
+	UPROPERTY()
+	bool completed;
+};
+
+USTRUCT()
+struct PROJECTISG_API FPostMbtiAnswerkParams
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FString user_id;
+
+	UPROPERTY()
+	FString session_id;
+
+	UPROPERTY()
+	FString response;
+};
+
+USTRUCT()
+struct PROJECTISG_API FPostMbtiAnswerResponse
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	bool completed;
+};
