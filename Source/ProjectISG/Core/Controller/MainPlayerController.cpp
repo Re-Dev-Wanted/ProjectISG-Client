@@ -139,3 +139,9 @@ void AMainPlayerController::Client_ResetWidgetAndPushTimeAlert_Implementation()
 	UIManageComponent->ResetWidget();
 	UIManageComponent->PushWidget(EUIName::Modal_TimeAlert);
 }
+
+void AMainPlayerController::Server_SetOwnerActor_Implementation(
+	AActor* ResponseActor)
+{
+	ResponseActor->SetOwner(this);
+}

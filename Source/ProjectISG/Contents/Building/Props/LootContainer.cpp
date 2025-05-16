@@ -1,5 +1,6 @@
 #include "LootContainer.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
@@ -34,26 +35,32 @@ void ALootContainer::OnInteractive(AActor* Causer)
 {
 	Super::OnInteractive(Causer);
 
-	if (GetInteractingPlayer())
-	{
-		return;
-	}
-	
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
-		AMainPlayerController* PC = Cast<AMainPlayerController>(Player->GetController());
+		AMainPlayerController* PC = Cast<AMainPlayerController>(
+			Player->GetController());
 
 		if (!PC)
 		{
 			return;
 		}
-		
+
+		if (HasAuthority())
+		{
+			SetOwner(PC);
+		}
+		else
+		{
+			PC->Server_SetOwnerActor(this);
+		}
+
 		if (Player->IsLocallyControlled())
 		{
 			PC->PushUI(EUIName::Popup_LootContainerUI);
 
 			UUIC_LootContainerUI* UIController = Cast<UUIC_LootContainerUI>
-			(PC->GetUIManageComponent()->ControllerInstances[EUIName::Popup_LootContainerUI]);
+			(PC->GetUIManageComponent()->ControllerInstances[
+				EUIName::Popup_LootContainerUI]);
 
 			UIController->SetContainer(FGuid(), Items, this);
 		}
@@ -70,7 +77,7 @@ void ALootContainer::OnInteractiveResponse(AActor* Causer)
 
 bool ALootContainer::GetCanInteractive() const
 {
-	return true;
+	return !IsValid(GetInteractingPlayer());
 }
 
 FString ALootContainer::GetInteractiveDisplayText() const
@@ -78,13 +85,15 @@ FString ALootContainer::GetInteractiveDisplayText() const
 	return TEXT("열기");
 }
 
-bool ALootContainer::ChangeItem(AActor* Causer, FGuid Guid, const FItemMetaInfo& ItemInfo, const uint16 Index)
+bool ALootContainer::ChangeItem(AActor* Causer, FGuid Guid,
+                                const FItemMetaInfo& ItemInfo,
+                                const uint16 Index)
 {
 	if (!Items.IsValidIndex(Index))
 	{
 		return false;
 	}
-	
+
 	if (HasAuthority())
 	{
 		UpdateItem(Index, ItemInfo);
@@ -97,13 +106,14 @@ bool ALootContainer::ChangeItem(AActor* Causer, FGuid Guid, const FItemMetaInfo&
 	return true;
 }
 
-void ALootContainer::SwapItem(AActor* Causer, FGuid Guid, const uint16 Prev, const uint16 Next)
+void ALootContainer::SwapItem(AActor* Causer, FGuid Guid, const uint16 Prev,
+                              const uint16 Next)
 {
 	if (!Items.IsValidIndex(Prev) || !Items.IsValidIndex(Next))
 	{
 		return;
 	}
-	
+
 	if (HasAuthority())
 	{
 		SwapItemInternal(Prev, Next);
@@ -123,12 +133,13 @@ void ALootContainer::SwapItemInternal(uint16 PrevIndex, uint16 NextIndex)
 		Items[NextIndex] = Temp;
 
 		NetMulticast_NotifyItemsChanged();
-		
+
 		ForceNetUpdate();
 	}
 }
 
-void ALootContainer::Server_SwapItem_Implementation(const uint16 Prev, const uint16 Next)
+void ALootContainer::Server_SwapItem_Implementation(
+	const uint16 Prev, const uint16 Next)
 {
 	SwapItemInternal(Prev, Next);
 }
@@ -139,13 +150,12 @@ FItemMetaInfo ALootContainer::GetItemMetaInfo(FGuid Guid, const uint16 Index)
 	{
 		return FItemMetaInfo();
 	}
-	
+
 	return Items[Index];
 }
 
 void ALootContainer::OnRep_Items()
 {
-
 }
 
 void ALootContainer::UpdateItem(int32 Index, const FItemMetaInfo& NewItem)
@@ -160,11 +170,12 @@ void ALootContainer::UpdateItem(int32 Index, const FItemMetaInfo& NewItem)
 	}
 }
 
-void ALootContainer::Server_UpdateItem_Implementation(int32 Index, const FItemMetaInfo_Net& NewItem)
+void ALootContainer::Server_UpdateItem_Implementation(
+	int32 Index, const FItemMetaInfo_Net& NewItem)
 {
 	FItemMetaInfo ItemInfo;
 	NewItem.To(ItemInfo);
-	
+
 	UpdateItem(Index, ItemInfo);
 }
 
@@ -175,5 +186,3 @@ void ALootContainer::NetMulticast_NotifyItemsChanged_Implementation()
 		OnRep_Items();
 	}
 }
-
-
