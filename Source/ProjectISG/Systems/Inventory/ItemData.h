@@ -5,6 +5,17 @@
 
 #include "ItemData.generated.h"
 
+UENUM(BlueprintType)
+enum class EItemGrade : uint8
+{
+	Common,
+	Uncommon,
+	Rare,
+	Epic,
+	Legendary,
+	Mythic
+};
+
 UENUM()
 enum class EItemType : uint32
 {
@@ -23,6 +34,7 @@ enum class EMetaDataKey : uint32
 {
 	None,
 	Durability,
+	Grade,
 };
 
 // 아이템 데이터 전체에서 고유한 값을 저장할 때 사용된다.
@@ -35,6 +47,7 @@ enum class EConstDataKey : uint32
 	SocketName,
 	GameplayTag,
 	GeneratedItemId, // 해당 아이템이 다른 아이템을 만들 경우
+	Grade,
 };
 
 // 아이템 정보를 담아 추후 아이템을 구성할 때 사용할 요소
@@ -49,6 +62,7 @@ struct PROJECTISG_API FItemInfoData : public FTableRowBase
 	GETTER(TSubclassOf<AActor>, ShowItemActor)
 	GETTER(TSubclassOf<AActor>, PlaceItemActor)
 	GETTER(uint32, MaxItemCount);
+	GETTER(EItemGrade, ItemGrade)
 
 	FORCEINLINE TMap<EMetaDataKey, FString> GetMetaData() const
 	{
@@ -108,6 +122,10 @@ private:
 		meta=(AllowPrivateAccess = true))
 	;
 	TMap<EConstDataKey, FString> ConstData;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Data",
+		meta=(AllowPrivateAccess = true))
+	EItemGrade ItemGrade = EItemGrade::Common;
 };
 
 // 실제 플레이어가 저장할 정보 값
