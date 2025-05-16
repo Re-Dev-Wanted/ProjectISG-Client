@@ -28,9 +28,6 @@ public:
 	virtual void SwapItem(AActor* Causer, const uint16 Prev, const uint16 Next) override;
 
 	virtual FItemMetaInfo GetItemMetaInfo(const uint16 Index) override;
-
-	UFUNCTION()
-	void OnRep_Items();
 	
 	void UpdateItem(int32 Index, const FItemMetaInfo& NewItem);
 
@@ -42,9 +39,6 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_SwapItem(const uint16 Prev, const uint16 Next);
 
-	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_NotifyItemsChanged();
-
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -52,6 +46,6 @@ protected:
 		meta = (AllowPrivateAccess = true, ClampMin = 1, ClampMax = 30))
 	int32 Capacity = 25;
 
-	UPROPERTY(ReplicatedUsing = OnRep_Items)
+	UPROPERTY(Replicated)
 	TArray<FItemMetaInfo_Net> Items;
 };

@@ -95,7 +95,7 @@ FString ALootContainer::GetInteractiveDisplayText() const
 	return TEXT("열기");
 }
 
-bool ALootContainer::ChangeItem(AActor* Causer,                                 const FItemMetaInfo& ItemInfo,
+bool ALootContainer::ChangeItem(AActor* Causer, const FItemMetaInfo& ItemInfo,
                                 const uint16 Index)
 {
 	if (!Items.IsValidIndex(Index))
@@ -140,9 +140,7 @@ void ALootContainer::SwapItemInternal(uint16 PrevIndex, uint16 NextIndex)
 		const FItemMetaInfo_Net Temp = Items[PrevIndex];
 		Items[PrevIndex] = Items[NextIndex];
 		Items[NextIndex] = Temp;
-
-		NetMulticast_NotifyItemsChanged();
-
+		
 		ForceNetUpdate();
 	}
 }
@@ -166,18 +164,12 @@ FItemMetaInfo ALootContainer::GetItemMetaInfo(const uint16 Index)
 	return OutInfo;
 }
 
-void ALootContainer::OnRep_Items()
-{
-}
-
 void ALootContainer::UpdateItem(int32 Index, const FItemMetaInfo& NewItem)
 {
 	if (Items.IsValidIndex(Index))
 	{
 		Items[Index] = NewItem;
-
-		NetMulticast_NotifyItemsChanged();
-
+		
 		ForceNetUpdate();
 	}
 }
@@ -189,12 +181,4 @@ void ALootContainer::Server_UpdateItem_Implementation(
 	NewItem.To(ItemInfo);
 
 	UpdateItem(Index, ItemInfo);
-}
-
-void ALootContainer::NetMulticast_NotifyItemsChanged_Implementation()
-{
-	if (!HasAuthority())
-	{
-		OnRep_Items();
-	}
 }
