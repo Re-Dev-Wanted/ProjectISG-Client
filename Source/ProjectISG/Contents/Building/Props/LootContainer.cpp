@@ -1,7 +1,5 @@
 #include "LootContainer.h"
 
-#include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
@@ -62,7 +60,19 @@ void ALootContainer::OnInteractive(AActor* Causer)
 			(PC->GetUIManageComponent()->ControllerInstances[
 				EUIName::Popup_LootContainerUI]);
 
-			UIController->SetContainer(FGuid(), Items, this);
+			TArray<FItemMetaInfo> OutDatas;
+			Algo::Transform(Items,
+				OutDatas,
+				[](const FItemMetaInfo_Net& Data)
+				{
+					FItemMetaInfo OutInfo;
+					Data.To(OutInfo);
+
+					return OutInfo;
+				}
+			);
+
+			UIController->SetContainer(FGuid(), OutDatas, this);
 		}
 	}
 }
@@ -127,7 +137,7 @@ void ALootContainer::SwapItemInternal(uint16 PrevIndex, uint16 NextIndex)
 {
 	if (Items.IsValidIndex(PrevIndex) && Items.IsValidIndex(NextIndex))
 	{
-		const FItemMetaInfo Temp = Items[PrevIndex];
+		const FItemMetaInfo_Net Temp = Items[PrevIndex];
 		Items[PrevIndex] = Items[NextIndex];
 		Items[NextIndex] = Temp;
 
@@ -150,7 +160,10 @@ FItemMetaInfo ALootContainer::GetItemMetaInfo(const uint16 Index)
 		return FItemMetaInfo();
 	}
 
-	return Items[Index];
+	FItemMetaInfo OutInfo;
+	Items[Index].To(OutInfo);
+
+	return OutInfo;
 }
 
 void ALootContainer::OnRep_Items()

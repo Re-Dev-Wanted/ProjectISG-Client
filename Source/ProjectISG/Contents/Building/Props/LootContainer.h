@@ -53,5 +53,5 @@ protected:
 	int32 Capacity = 25;
 
 	UPROPERTY(ReplicatedUsing = OnRep_Items)
-	TArray<FItemMetaInfo> Items;
+	TArray<FItemMetaInfo_Net> Items;
 };
