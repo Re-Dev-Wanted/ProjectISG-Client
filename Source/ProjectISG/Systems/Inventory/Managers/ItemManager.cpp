@@ -1,6 +1,7 @@
 ﻿#include "ItemManager.h"
 
 #include "ProjectISG/Systems/Inventory/ItemData.h"
+#include "ProjectISG/Utils/EnumUtil.h"
 
 bool UItemManager::IsInitialize;
 TArray<FItemInfoData> UItemManager::ItemInfoList;
@@ -102,15 +103,17 @@ bool UItemManager::IsItemCanInteraction(const uint16 Id)
 bool UItemManager::IsInfiniteDurability(const uint16 Id)
 {
 	const FItemInfoData ItemInfoData = GetItemInfoById(Id);
-	
-	const FString* FindData = ItemInfoData.GetConstData().Find(EConstDataKey::MaxDurability);
+
+	const FString* FindData = ItemInfoData.GetConstData().Find(
+		EConstDataKey::MaxDurability);
 
 	if (!FindData)
 	{
 		return false;
 	}
 
-	const FString FindDataRef = ItemInfoData.GetConstData().FindRef(EConstDataKey::MaxDurability);
+	const FString FindDataRef = ItemInfoData.GetConstData().FindRef(
+		EConstDataKey::MaxDurability);
 
 	if (FindDataRef.IsEmpty())
 	{
@@ -130,15 +133,17 @@ bool UItemManager::IsInfiniteDurability(const uint16 Id)
 uint16 UItemManager::GetGeneratedOtherItemIdById(const uint16 Id)
 {
 	const FItemInfoData ItemInfoData = GetItemInfoById(Id);
-	
-	const FString* FindData = ItemInfoData.GetConstData().Find(EConstDataKey::GeneratedItemId);
+
+	const FString* FindData = ItemInfoData.GetConstData().Find(
+		EConstDataKey::GeneratedItemId);
 
 	if (!FindData)
 	{
 		return 0;
 	}
 
-	const FString FindDataRef = ItemInfoData.GetConstData().FindRef(EConstDataKey::GeneratedItemId);
+	const FString FindDataRef = ItemInfoData.GetConstData().FindRef(
+		EConstDataKey::GeneratedItemId);
 
 	if (FindDataRef.IsEmpty())
 	{
@@ -156,9 +161,9 @@ uint16 UItemManager::GetGeneratedOtherItemIdById(const uint16 Id)
 uint16 UItemManager::GetChanceBasedSpawnItemIdById(const uint16 Id)
 {
 	const FItemInfoData ItemInfoData = GetItemInfoById(Id);
-	
+
 	const FString* FindData = ItemInfoData.GetConstData().Find
-	(EConstDataKey::ChanceBasedSpawnItemId);
+		(EConstDataKey::ChanceBasedSpawnItemId);
 
 	if (!FindData)
 	{
@@ -166,7 +171,7 @@ uint16 UItemManager::GetChanceBasedSpawnItemIdById(const uint16 Id)
 	}
 
 	const FString FindDataRef = ItemInfoData.GetConstData().FindRef
-	(EConstDataKey::ChanceBasedSpawnItemId);
+		(EConstDataKey::ChanceBasedSpawnItemId);
 
 	if (FindDataRef.IsEmpty())
 	{
@@ -185,14 +190,16 @@ FName UItemManager::GetSocketNameById(const uint16 Id)
 {
 	const FItemInfoData ItemInfoData = GetItemInfoById(Id);
 
-	const FString* FindData = ItemInfoData.GetConstData().Find(EConstDataKey::SocketName);
+	const FString* FindData = ItemInfoData.GetConstData().Find(
+		EConstDataKey::SocketName);
 
 	if (!FindData)
 	{
 		return NAME_None;
 	}
 
-	const FString FindDataRef = ItemInfoData.GetConstData().FindRef(EConstDataKey::SocketName);
+	const FString FindDataRef = ItemInfoData.GetConstData().FindRef(
+		EConstDataKey::SocketName);
 
 	if (FindDataRef.IsEmpty())
 	{
@@ -200,4 +207,11 @@ FName UItemManager::GetSocketNameById(const uint16 Id)
 	}
 
 	return *FindDataRef;
+}
+
+void UItemManager::SetItemGrade(FItemMetaInfo& Info, EItemGrade ItemGrade)
+{
+	UE_LOG(LogTemp, Warning, TEXT("123"));
+	Info.GetMetaData().Add(EMetaDataKey::ItemGrade,
+	                       FEnumUtil::GetClassEnumKeyAsString(ItemGrade));
 }
