@@ -23,6 +23,8 @@ public:
 
 	virtual bool GetCanInteractive() const override;
 
+	virtual bool GetCanTouch() const override;
+
 	virtual FString GetInteractiveDisplayText() const override;
 
 	virtual bool ChangeItem(AActor* Causer, const FItemMetaInfo& ItemInfo, const uint16 Index) override;

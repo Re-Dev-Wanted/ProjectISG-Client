@@ -61,6 +61,8 @@ protected:
 
 	bool IsBiteFish = false;
 
+	bool IsInWater = false;
+
 	// 지금 낚시대에 물고 있는 물고기 데이터
 	FFishData FishData;
 

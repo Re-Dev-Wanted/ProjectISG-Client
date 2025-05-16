@@ -13,7 +13,7 @@ class PROJECTISG_API UBuoyancyComponent : public UActorComponent
 
 public:
 	SETTER(float, WaterLevel)
-	SETTER(bool, IsInWater)
+	GETTER_SETTER(bool, IsInWater)
 	
 	UBuoyancyComponent();
 

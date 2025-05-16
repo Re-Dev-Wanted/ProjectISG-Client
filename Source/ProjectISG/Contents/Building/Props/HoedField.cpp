@@ -2,6 +2,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
@@ -19,6 +20,46 @@ AHoedField::AHoedField()
 	InteractionPos = CreateDefaultSubobject<USceneComponent>(
 		TEXT("InteractionPos"));
 	InteractionPos->SetupAttachment(Root);
+}
+
+void AHoedField::OnSpawned()
+{
+	//TODO:: 테스트 (20%)
+	float Percent = FMath::RandRange(1.f, 100.f);
+
+	if (Percent > ChanceBasedPercent)
+	{
+		return;
+	}
+
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		GetWorld()->GetFirstPlayerController()->GetPawn());
+
+	if (!Player)
+	{
+		return;
+	}
+	
+	// UKismetSystemLibrary::PrintString(GetWorld(), TEXT("돌맹이 나올것이여"));
+
+	int SlotIndex = Player->GetPlayerInventoryComponent()->GetCurrentSlotIndex();
+	
+	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
+
+	const FItemMetaInfo ItemMetaInfo = PS->GetInventoryComponent()->
+										   GetInventoryList()[SlotIndex];
+
+	uint16 ItemId = UItemManager::GetChanceBasedSpawnItemIdById(ItemMetaInfo.GetId
+	());
+
+	if (ItemId > 0)
+	{
+		const FItemMetaInfo AddItemMetaInfo = 
+		UItemManager::GetInitialItemMetaDataById
+		(ItemId);
+
+		PS->GetInventoryComponent()->AddItem(AddItemMetaInfo);
+	}
 }
 
 void AHoedField::BeginPlay()
