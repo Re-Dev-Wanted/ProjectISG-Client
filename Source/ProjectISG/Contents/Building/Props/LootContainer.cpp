@@ -102,6 +102,11 @@ bool ALootContainer::GetCanInteractive() const
 	return !IsValid(GetInteractingPlayer());
 }
 
+bool ALootContainer::GetCanTouch() const
+{
+	return false;
+}
+
 FString ALootContainer::GetInteractiveDisplayText() const
 {
 	return TEXT("열기");

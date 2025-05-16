@@ -22,6 +22,8 @@ public:
 	GETTER(FVector, MeshSize)
 	SETTER(float, CachedSnapSize)
 
+	virtual void OnSpawned() {} 
+
 	virtual bool GetCanTouch() const override;
 
 	virtual FString GetTouchDisplayText(AActor* Causer) const override; 

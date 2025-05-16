@@ -45,6 +45,8 @@ class PROJECTISG_API AHoedField : public APlacement
 
 public:
 	AHoedField();
+
+	virtual void OnSpawned() override;
 	
 	virtual bool GetCanTouch() const override;
 
@@ -81,6 +83,10 @@ protected:
 
 	UPROPERTY(ReplicatedUsing = OnRep_UpdateState)
 	bool IsWet = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
+	meta = (AllowPrivateAccess = true, ClampMin = 0, ClampMax = 100))
+	float ChanceBasedPercent = 20.f;
 
 	void UpdateState();
 };

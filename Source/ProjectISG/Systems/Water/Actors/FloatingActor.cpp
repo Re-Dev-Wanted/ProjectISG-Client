@@ -1,5 +1,6 @@
 ﻿#include "FloatingActor.h"
 #include "Components/BoxComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Systems/Water/Components/BuoyancyComponent.h"
 
 AFloatingActor::AFloatingActor()
@@ -49,6 +50,13 @@ void AFloatingActor::SetCollisionAndPhysicsEnabled(bool bIsEnabled)
 
 void AFloatingActor::EnterWater()
 {
+	// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("시작 %d"), BuoyancyComponent->GetIsInWater()));
+	
+	if (BuoyancyComponent->GetIsInWater())
+	{
+		return;
+	}
+	
 	BuoyancyComponent->SetIsInWater(true);
 
 	if (OnEnterWater.IsBound())

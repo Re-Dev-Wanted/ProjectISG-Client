@@ -17,6 +17,7 @@ public:
 	static bool IsItemCanInteraction(const uint16 Id);
 	static bool IsInfiniteDurability(const uint16 Id);
 	static uint16 GetGeneratedOtherItemIdById(const uint16 Id);
+	static uint16 GetChanceBasedSpawnItemIdById(const uint16 Id);
 	static FName GetSocketNameById(const uint16 Id);
 
 private:
