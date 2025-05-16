@@ -304,7 +304,7 @@ bool AHoedField::PlantCrop(FItemInfoData CropData, uint16 CropId)
 		Crop->CropIsGetWater();
 	}
 
-	Crop->SetCurrentState(ECropState::Sprout);
+	Crop->SetCurrentState(ECropState::Seedling);
 
 	return true;
 }

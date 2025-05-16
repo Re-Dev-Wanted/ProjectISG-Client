@@ -10,9 +10,11 @@
 UENUM(BlueprintType)
 enum class ECropState :uint8
 {
-	Seedling = 0,
-	Sprout = 1,
-	Mature = 2
+	None = 0,
+	Seedling = 1,
+	Sprout = 2,
+	Stem = 3,
+	Mature = 4
 };
 
 DECLARE_MULTICAST_DELEGATE(FOnDryField);
@@ -62,8 +64,16 @@ public:
 	FOnDryField OnDryField;
 
 	FHarvestCrop HarvestCrop;
+
 private:
 	void CheckGrowTime();
+
+	void CheckStateByRemainGrowTime();
+
+	void ChangeCurrentCropState(ECropState State);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_ChangeCurrentCropState(ECropState State);
 
 	void CheckWaterDurationTime();
 
@@ -91,17 +101,23 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
 		meta = (AllowPrivateAccess = true))
 	class USceneComponent* InteractionPos;
+
 	UPROPERTY(EditAnywhere, Category = Settings,
 		meta = (AllowPrivateAccess = true))
 	uint16 CropId;
+
+	UPROPERTY(EditAnywhere, Category = Settings,
+		meta = (AllowPrivateAccess = true))
+	uint16 MatureFarmingObjectId;
 
 	UPROPERTY()
 	class ATimeManager* TimeManager = nullptr;
 #pragma endregion
 
 #pragma region Grow
-	UPROPERTY(ReplicatedUsing = OnRep_UpdateState)
-	ECropState CurrentState = ECropState::Seedling;
+	UPROPERTY(ReplicatedUsing = OnRep_UpdateState, EditAnywhere,
+		Category = Grow)
+	ECropState CurrentState = ECropState::None;
 
 	UPROPERTY(EditAnywhere, Category = Grow)
 	float CropStartGrowTime;
@@ -113,7 +129,10 @@ private:
 	int32 CropGrowTime = 0;
 
 	UPROPERTY(EditAnywhere, Category = Grow)
-	int32 CropRemainGrowTime = 0;
+	int32 CropGrowTimeSum = 0;
+
+	UPROPERTY(EditAnywhere, Category = Grow)
+	int32 CropTotalGrowTime;
 
 	UPROPERTY(EditAnywhere, Category = Grow)
 	int32 CropTotalGrowDay = 1;
@@ -123,5 +142,11 @@ private:
 
 	UPROPERTY(Replicated, EditAnywhere, Category = Grow)
 	bool bIsGetWater = false;
+
+	UPROPERTY(EditAnywhere, Category = Grow)
+	int32 CropBecomeSprout;
+
+	UPROPERTY(EditAnywhere, Category = Grow)
+	int32 CropBecomeStem;
 #pragma endregion
 };
