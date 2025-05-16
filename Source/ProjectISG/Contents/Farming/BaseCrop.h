@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/GAS/Common/Object/BaseInteractiveActor.h"
+#include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "BaseCrop.generated.h"
 
@@ -89,6 +90,8 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void NetMulticast_FieldIsDried();
 
+	void SetItemGrade();
+
 #pragma region Settings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
 		meta = (AllowPrivateAccess = true))
@@ -148,5 +151,8 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Grow)
 	int32 CropBecomeStem;
+
+	UPROPERTY(EditAnywhere, Category = Grow)
+	EItemGrade ItemGrade;
 #pragma endregion
 };

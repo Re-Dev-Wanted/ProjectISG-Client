@@ -17,12 +17,25 @@ enum class EItemType : uint32
 	Max,
 };
 
+UENUM(BlueprintType)
+enum class EItemGrade : uint8
+{
+	None,
+	Common,
+	Uncommon,
+	Rare,
+	Epic,
+	Legendary,
+	Mythic
+};
+
 // 아이템 인스턴스 하나하나의 고유한 값을 저장할 때 사용된다.
 UENUM()
 enum class EMetaDataKey : uint32
 {
 	None,
 	Durability,
+	ItemGrade,
 };
 
 // 아이템 데이터 전체에서 고유한 값을 저장할 때 사용된다.
@@ -36,6 +49,7 @@ enum class EConstDataKey : uint32
 	GameplayTag,
 	GeneratedItemId, // 해당 아이템이 다른 아이템을 만들 경우
 	ChanceBasedSpawnItemId, // 일정 확률로 스폰되는 아이템
+	ItemGrade,
 };
 
 // 아이템 정보를 담아 추후 아이템을 구성할 때 사용할 요소
@@ -49,7 +63,7 @@ struct PROJECTISG_API FItemInfoData : public FTableRowBase
 	GETTER(TSoftObjectPtr<UTexture2D>, Thumbnail)
 	GETTER(TSubclassOf<AActor>, ShowItemActor)
 	GETTER(TSubclassOf<AActor>, PlaceItemActor)
-	GETTER(uint32, MaxItemCount);
+	GETTER(uint32, MaxItemCount)
 
 	FORCEINLINE TMap<EMetaDataKey, FString> GetMetaData() const
 	{
@@ -145,6 +159,7 @@ struct PROJECTISG_API FItemMetaInfo
 	{
 		return Id > 0;
 	}
+
 
 private:
 	// 0인 경우 아이템이 안들어가게 처리해야함.
