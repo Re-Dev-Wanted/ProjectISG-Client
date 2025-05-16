@@ -18,11 +18,8 @@ public:
 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
-
-	UFUNCTION()
-	void OnRep_SetInteractingPlayer(class AMainPlayerCharacter* Player);
 	
 private:
-	UPROPERTY(ReplicatedUsing = OnRep_SetInteractingPlayer, EditAnywhere, meta = (AllowPrivateAccess = true))
+	UPROPERTY(Replicated, EditAnywhere, meta = (AllowPrivateAccess = true))
 	class AMainPlayerCharacter* InteractingPlayer = nullptr;
 };

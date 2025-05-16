@@ -2,6 +2,7 @@
 
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Popup/LootContainer/UI/UIC_LootContainerUI.h"
@@ -14,6 +15,12 @@ void ALootContainer::BeginPlay()
 	{
 		Items.Init(FItemMetaInfo(), Capacity);
 	}
+}
+
+void ALootContainer::Server_SetInteractingPlayer_Implementation(AActor* Actor)
+{
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Actor);
+	SetInteractingPlayer(Player);
 }
 
 void ALootContainer::GetLifetimeReplicatedProps(
@@ -43,6 +50,8 @@ void ALootContainer::OnInteractive(AActor* Causer)
 			return;
 		}
 
+		SetInteractingPlayer(Player);
+		
 		if (HasAuthority())
 		{
 			SetOwner(PC);
@@ -50,8 +59,11 @@ void ALootContainer::OnInteractive(AActor* Causer)
 		else
 		{
 			PC->Server_SetOwnerActor(this);
-		}
 
+			Player->GetInteractionComponent()->Server_OnInteractiveResponse(Causer);
+		}
+		
+		
 		if (Player->IsLocallyControlled())
 		{
 			PC->PushUI(EUIName::Popup_LootContainerUI);
@@ -82,7 +94,7 @@ void ALootContainer::OnInteractiveResponse(AActor* Causer)
 	Super::OnInteractiveResponse(Causer);
 
 	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
-	OnRep_SetInteractingPlayer(Player);
+	Server_SetInteractingPlayer(Player);
 }
 
 bool ALootContainer::GetCanInteractive() const
@@ -162,6 +174,31 @@ FItemMetaInfo ALootContainer::GetItemMetaInfo(const uint16 Index)
 	Items[Index].To(OutInfo);
 
 	return OutInfo;
+}
+
+void ALootContainer::OnClosed()
+{
+	if (!IsValid(GetInteractingPlayer()))
+	{
+		return;
+	}
+	
+	AMainPlayerController* PC = Cast<AMainPlayerController>(
+		GetInteractingPlayer()->GetController());
+
+	if (!PC)
+	{
+		return;
+	}
+	
+	if (!HasAuthority())
+	{
+		GetInteractingPlayer()->GetInteractionComponent()->Server_OnInteractiveResponse
+		(nullptr);
+	}
+
+	SetInteractingPlayer(nullptr);
+	
 }
 
 void ALootContainer::UpdateItem(int32 Index, const FItemMetaInfo& NewItem)

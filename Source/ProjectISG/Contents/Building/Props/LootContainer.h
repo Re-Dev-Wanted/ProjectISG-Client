@@ -1,12 +1,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ProjectISG/Core/UI/Base/Interfaces/UIHandler.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Inventory/ItemHandler.h"
 #include "LootContainer.generated.h"
 
 UCLASS()
-class PROJECTISG_API ALootContainer : public APlacement, public IItemHandler
+class PROJECTISG_API ALootContainer : public APlacement, public IItemHandler,
+ public IUIHandler
 {
 	GENERATED_BODY()
 
@@ -28,6 +30,8 @@ public:
 	virtual void SwapItem(AActor* Causer, const uint16 Prev, const uint16 Next) override;
 
 	virtual FItemMetaInfo GetItemMetaInfo(const uint16 Index) override;
+
+	virtual void OnClosed() override;
 	
 	void UpdateItem(int32 Index, const FItemMetaInfo& NewItem);
 
@@ -38,6 +42,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_SwapItem(const uint16 Prev, const uint16 Next);
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetInteractingPlayer(AActor* Actor);
 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;

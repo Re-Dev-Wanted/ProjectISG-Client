@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Contents/Cooking/CookingStruct.h"
+#include "ProjectISG/Core/UI/Base/Interfaces/UIHandler.h"
 #include "ProjectISG/GAS/Common/Object/BaseInteractiveActor.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "KitchenFurniture.generated.h"
