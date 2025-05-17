@@ -126,7 +126,7 @@ struct PROJECTISG_API FPostMbtiAskResponse
 	FString dimension;
 
 	UPROPERTY()
-	bool completed;
+	bool completed = false;
 };
 
 USTRUCT()
@@ -150,5 +150,5 @@ struct PROJECTISG_API FPostMbtiAnswerResponse
 	GENERATED_BODY()
 
 	UPROPERTY()
-	bool completed;
+	bool completed = false;
 };

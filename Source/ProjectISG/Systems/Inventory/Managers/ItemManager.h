@@ -19,6 +19,7 @@ public:
 	static uint16 GetGeneratedOtherItemIdById(const uint16 Id);
 	static uint16 GetChanceBasedSpawnItemIdById(const uint16 Id);
 	static FName GetSocketNameById(const uint16 Id);
+	static void SetItemGrade(FItemMetaInfo& Info, EItemGrade ItemGrade);
 
 private:
 	static TArray<FItemInfoData> ItemInfoList;

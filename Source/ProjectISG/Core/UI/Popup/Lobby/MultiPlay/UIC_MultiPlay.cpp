@@ -65,10 +65,9 @@ void UUIC_MultiPlay::OnCompleteSearch(bool IsSearchSuccess)
 		{
 			UUIV_RoomItem* RoomItem = CreateWidget<UUIV_RoomItem>(
 				GetWorld(), RoomItemFactory);
-			MultiPlayView->GetRoomList()->AddChild(RoomItem);
-
 			RoomItem->
 				SetInfo(SessionSearchData.SessionSearch->SearchResults[i]);
+			MultiPlayView->GetRoomList()->AddChild(RoomItem);
 		}
 	}
 	else

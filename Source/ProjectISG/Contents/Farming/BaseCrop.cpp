@@ -133,7 +133,6 @@ void ABaseCrop::CheckStateByRemainGrowTime()
 		if (CurrentState != ECropState::Mature)
 		{
 			SetCurrentState(ECropState::Mature);
-			// UE_LOG(LogTemp, Warning, TEXT("State Changed to Mature. TotalEffectiveGrowTime: %d"), TotalEffectiveGrowTime);
 		}
 	}
 	else if (TotalEffectiveGrowTime >= CropBecomeStem) // 줄기 상태 체크
@@ -141,7 +140,6 @@ void ABaseCrop::CheckStateByRemainGrowTime()
 		if (CurrentState != ECropState::Stem)
 		{
 			SetCurrentState(ECropState::Stem);
-			// UE_LOG(LogTemp, Warning, TEXT("State Changed to Stem. TotalEffectiveGrowTime: %d"), TotalEffectiveGrowTime);
 		}
 	}
 	else if (TotalEffectiveGrowTime >= CropBecomeSprout) // 새싹 상태 체크
@@ -149,7 +147,6 @@ void ABaseCrop::CheckStateByRemainGrowTime()
 		if (CurrentState != ECropState::Sprout)
 		{
 			SetCurrentState(ECropState::Sprout);
-			// UE_LOG(LogTemp, Warning, TEXT("State Changed to Sprout. TotalEffectiveGrowTime: %d"), TotalEffectiveGrowTime);
 		}
 	}
 }
@@ -161,9 +158,37 @@ void ABaseCrop::CheckWaterDurationTime()
 	{
 		bIsGetWater = false;
 		CropGrowTime = 0;
-		//CropTotalGrowTime -= WaterDuration;
 		CropGrowTimeSum += WaterDuration;
 		Server_FieldIsDried();
+	}
+}
+
+void ABaseCrop::SetItemGrade()
+{
+	int32 RandomNum = FMath::RandRange(0, 100);
+	if (RandomNum > 96)
+	{
+		ItemGrade = EItemGrade::Mythic;
+	}
+	else if (RandomNum > 80)
+	{
+		ItemGrade = EItemGrade::Legendary;
+	}
+	else if (RandomNum > 64)
+	{
+		ItemGrade = EItemGrade::Epic;
+	}
+	else if (RandomNum > 48)
+	{
+		ItemGrade = EItemGrade::Rare;
+	}
+	else if (RandomNum > 32)
+	{
+		ItemGrade = EItemGrade::Uncommon;
+	}
+	else
+	{
+		ItemGrade = EItemGrade::Common;
 	}
 }
 
@@ -189,10 +214,13 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 	for (int i = 0; i < UFarmingManager::GetDataByCropId(MatureFarmingObjectId).
 	     GetYield(); i++)
 	{
+		FItemMetaInfo CropInfo = UItemManager::GetInitialItemMetaDataById(
+			UFarmingManager::GetDataByCropId(MatureFarmingObjectId).
+			GetItemId());
+		SetItemGrade();
+		UItemManager::SetItemGrade(CropInfo, ItemGrade);
 		Player->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
-		        AddItem(UItemManager::GetInitialItemMetaDataById(
-			        UFarmingManager::GetDataByCropId(MatureFarmingObjectId).
-			        GetItemId()));
+		        AddItem(CropInfo);
 	}
 
 	Player->GetInteractionComponent()->Server_OnInteractiveResponse(Causer);
