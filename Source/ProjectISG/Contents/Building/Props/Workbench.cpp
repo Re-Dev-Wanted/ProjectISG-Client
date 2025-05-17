@@ -1,24 +1,92 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿#include "Workbench.h"
 
-#include "Workbench.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 
-// Sets default values
-AWorkbench::AWorkbench()
-{
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-}
+class UUIC_LootContainerUI;
 
-// Called when the game starts or when spawned
 void AWorkbench::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-// Called every frame
-void AWorkbench::Tick(float DeltaTime)
+void AWorkbench::OnInteractive(AActor* Causer)
 {
-	Super::Tick(DeltaTime);
+	Super::OnInteractive(Causer);
+
+	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
+	{
+		AMainPlayerController* PC = Cast<AMainPlayerController>(
+			Player->GetController());
+
+		if (!PC)
+		{
+			return;
+		}
+
+		SetInteractingPlayer(Player);
+		
+		if (HasAuthority())
+		{
+			SetOwner(PC);
+		}
+		else
+		{
+			PC->Server_SetOwnerActor(this);
+
+			Player->GetInteractionComponent()->Server_OnInteractiveResponse(Causer);
+		}
+		
+		// GAS...
+	}
+}
+
+void AWorkbench::OnInteractiveResponse(AActor* Causer)
+{
+	Super::OnInteractiveResponse(Causer);
+
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
+	Server_SetInteractingPlayer(Player);
+}
+
+bool AWorkbench::GetCanInteractive() const
+{
+	return !IsValid(GetInteractingPlayer());
+}
+
+bool AWorkbench::GetCanTouch() const
+{
+	return false;
+}
+
+FString AWorkbench::GetInteractiveDisplayText() const
+{
+	return TEXT("제작하기");
+}
+
+void AWorkbench::OnClosed()
+{
+	if (!IsValid(GetInteractingPlayer()))
+	{
+		return;
+	}
+	
+	AMainPlayerController* PC = Cast<AMainPlayerController>(
+		GetInteractingPlayer()->GetController());
+
+	if (!PC)
+	{
+		return;
+	}
+	
+	if (!HasAuthority())
+	{
+		GetInteractingPlayer()->GetInteractionComponent()->Server_OnInteractiveResponse
+		(nullptr);
+	}
+
+	SetInteractingPlayer(nullptr);
 }
 
