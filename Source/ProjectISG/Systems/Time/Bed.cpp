@@ -115,7 +115,7 @@ void ABed::OnInteractiveResponse(AActor* Causer)
 		{
 			MainPlayer = Player;
 		}
-		Server_MovePlayerToBed();
+		NetMulticast_MovePlayerToBed();
 	}
 }
 

@@ -25,6 +25,14 @@ void USleepManager::InitializeComponent()
 {
 	Super::InitializeComponent();
 	TimeManager = Cast<ATimeManager>(GetOwner());
+
+}
+
+void USleepManager::BeginPlay()
+{
+	Super::BeginPlay();
+
+	//ForceSleepDelegate.AddDynamic(this, &ThisClass::LoadHouseLevel);
 }
 
 void USleepManager::GetLifetimeReplicatedProps(
@@ -51,7 +59,7 @@ void USleepManager::TickComponent(float DeltaTime, ELevelTick TickType,
 	else
 	{
 		Sleep();
-		//ForceSleep();
+		ForceSleep();
 	}
 }
 
@@ -75,27 +83,23 @@ void USleepManager::ForceSleep()
 {
 	if (TimeManager->GetHour() >= 23)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("ForceSleep()"));
+
 		// 시간을 멈춘다
 		TimeManager->StopTime(true);
 
-		// 침대에 각 플레이어를 배정 시킨다
-		AssignBedEachPlayer();
+		LoadHouseLevel();
 	
-		// 플레이어를 침대에 누운 상태로 바꾼다.
-		ChangeAllPlayerLieInBedValue(true);
-		
-		// 플레이어 상태를 수면상태로 바꾼다
-		ChangeAllPlayerSleepValue(true);
-		
 		// 서버의 수면 로그 보낸다.
-		if (bSleepCinematicStart == false)
-		{
-			OpenDiaryDelegate.Broadcast();
-			LoggingToSleep();
-		}
-
-		// 시네마틱을 진행시킨다.
-		bSleepCinematicStart = true;
+        if (bSleepCinematicStart == false)
+        {
+        	OpenDiaryDelegate.Broadcast();
+        	LoggingToSleep();
+        }
+    
+        // 시네마틱을 진행시킨다.
+        bSleepCinematicStart = true;
+		
 	}
 }
 
@@ -140,6 +144,21 @@ void USleepManager::OnRep_SleepCinematicStart()
 	}
 }
 
+void USleepManager::LoadHouseLevel()
+{
+	UE_LOG(LogTemp, Warning, TEXT("LoadHouseLevel()"));
+
+	FLatentActionInfo LatentActionInfo;
+	UGameplayStatics::LoadStreamLevelBySoftObjectPtr(GetWorld(), 
+	HouseLevel, true, false, LatentActionInfo);
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+	{
+		AssignBedEachPlayer();
+	}, 0.25, false);
+}
+
 void USleepManager::AssignBedEachPlayer()
 {
 	TArray<AActor*> Beds;
@@ -156,14 +175,16 @@ void USleepManager::AssignBedEachPlayer()
 		if (player && bed)
 		{
 			bed->SetMainPlayer(player);
+			player->SetbIsSleep(true);
+			player->SetbLieInBed(true);
 			idx++;
 		}
 	}
 
-	// 플레이어를 강제로 침대로 이동시킨다.
+	// // 플레이어를 강제로 침대로 이동시킨다.
 	SleepDelegate.Broadcast();
-
-	// 침대에 눕는 어빌리티를 실행시킨다.
+	//
+	// // 침대에 눕는 어빌리티를 실행시킨다.
 	ForceSleepDelegate.Broadcast();
 }
 

@@ -16,6 +16,9 @@ class PROJECTISG_API ABed : public ABaseInteractiveActor
 public:
 	ABed();
 
+	UFUNCTION()
+	void MovePlayerToBed();
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -33,8 +36,7 @@ protected:
 	virtual bool GetCanInteractive() const override;
 
 private:
-	UFUNCTION()
-	void MovePlayerToBed();
+
 
 	UFUNCTION(Server, Reliable)
 	void Server_MovePlayerToBed();

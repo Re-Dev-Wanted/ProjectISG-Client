@@ -27,6 +27,8 @@ public:
 protected:
 	virtual void InitializeComponent() override;
 
+	virtual void BeginPlay() override;
+
 	virtual void GetLifetimeReplicatedProps(
 		TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -43,6 +45,9 @@ private:
 
 	UFUNCTION()
 	void OnRep_SleepCinematicStart();
+
+	UFUNCTION()
+	void LoadHouseLevel();
 
 	void AssignBedEachPlayer();
 
@@ -61,11 +66,14 @@ private:
 	void LoggingToWakeUp();
 
 public:
-	GETTER(bool, bSleepCinematicStart);
+	GETTER(bool, bSleepCinematicStart)
 
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess), Category = Setting)
 	class ATimeManager* TimeManager;
+	
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess), Category = Setting)
+	TSoftObjectPtr<UWorld> HouseLevel = nullptr;
 
 	UPROPERTY(ReplicatedUsing = OnRep_SleepCinematicStart, EditAnywhere,
 		BlueprintReadWrite,
