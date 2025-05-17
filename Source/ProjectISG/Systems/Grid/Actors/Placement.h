@@ -94,4 +94,7 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_SetCollisionEnabled(bool bEnable) const;
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetInteractingPlayer(AActor* Actor);
 };

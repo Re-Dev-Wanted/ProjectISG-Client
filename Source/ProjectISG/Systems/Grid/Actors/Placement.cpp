@@ -418,3 +418,9 @@ FRotator APlacement::GetStartInteractRotation() const
 
 	return FRotator::ZeroRotator;
 }
+
+void APlacement::Server_SetInteractingPlayer_Implementation(AActor* Actor)
+{
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Actor);
+	SetInteractingPlayer(Player);
+}

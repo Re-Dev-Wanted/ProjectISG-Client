@@ -17,23 +17,12 @@ void ALootContainer::BeginPlay()
 	}
 }
 
-void ALootContainer::Server_SetInteractingPlayer_Implementation(AActor* Actor)
-{
-	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Actor);
-	SetInteractingPlayer(Player);
-}
-
 void ALootContainer::GetLifetimeReplicatedProps(
 	TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ALootContainer, Items);
-}
-
-void ALootContainer::SetOption(bool bIsGhost, bool bIsBlock)
-{
-	Super::SetOption(bIsGhost, bIsBlock);
 }
 
 void ALootContainer::OnInteractive(AActor* Causer)
