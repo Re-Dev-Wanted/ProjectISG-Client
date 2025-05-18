@@ -137,6 +137,15 @@ namespace ISGGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Sleeping_Active_WakeUp
 									   , "Sleeping.Active.WakeUp"
 									   , "수면 관련 액티브 : 일어나기");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Crafting_Active_StartCrafting
+										, "Crafting.Active.StartCrafting"
+										, "크래프팅 관련 액티브 : 크래프팅 모드 준비")
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Crafting_Active_OnCrafting
+										, "Crafting.Active.OnCrafting"
+										, "크래프팅 관련 액티브 : 크래프팅 하는 중")
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Crafting_Active_EndCrafting
+										, "Crafting.Active.EndCrafting"
+										, "크래프팅 관련 액티브 : 크래프팅 모드에서 나가기")
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Interactive_Active_Exit
 										, "Interactive.Active.Exit"
