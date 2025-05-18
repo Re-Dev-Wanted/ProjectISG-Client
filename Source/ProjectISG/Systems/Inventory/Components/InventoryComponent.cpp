@@ -59,6 +59,12 @@ void UInventoryComponent::InitializeItemData()
 
 	InventoryList[7] = CropItemMetaInfo;
 
+	FItemMetaInfo BranchItemMetaInfo;
+	BranchItemMetaInfo.SetId(18);
+	BranchItemMetaInfo.SetCurrentCount(10);
+
+	AddItem(BranchItemMetaInfo);
+
 	UpdateInventory();
 }
 
