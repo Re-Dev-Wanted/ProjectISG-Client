@@ -14,11 +14,12 @@ void UMaterialInfoWidget::NativeConstruct()
 	OwningCountText->SetText(FText::GetEmpty());
 }
 
-void UMaterialInfoWidget::SetWidget(uint16 MaterialId, uint16 Count, const FString& Name, UTexture2D* Image)
+void UMaterialInfoWidget::SetWidget(uint16 MaterialId, uint16 OwningCount, uint16 RequiredCount, const FString& Name, UTexture2D* Image)
 {
 	Id = MaterialId;
 
 	Thumbnail->SetBrushFromTexture(Image);
-	RequiredCountText->SetText(FText::FromString(FString::FromInt(Count)));
+	OwningCountText->SetText(FText::FromString(FString::FromInt(OwningCount)));
+	RequiredCountText->SetText(FText::FromString(FString::FromInt(RequiredCount)));
 }
 

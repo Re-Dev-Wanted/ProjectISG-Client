@@ -23,7 +23,7 @@ public:
 	
 	void OnSetup(const TArray<FCraftingRecipeUIModel>& Array, FOnSelectedCraftingRecipe OnSelected);
 
-	void OnUpdateUI(FCraftingRecipeUIModel SelectedModel);
+	void OnUpdateUI(FCraftingRecipeUIModel SelectedModel, const TMap<uint16, uint16>& OwningCounts);
 
 protected:
 	UPROPERTY(meta = (BindWidget))

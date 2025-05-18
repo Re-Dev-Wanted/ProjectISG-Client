@@ -96,5 +96,6 @@ void AWorkbench::OnClosed()
 	}
 
 	SetInteractingPlayer(nullptr);
+	
 }
 

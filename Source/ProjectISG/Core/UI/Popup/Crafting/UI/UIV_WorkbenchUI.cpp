@@ -9,7 +9,7 @@ void UUIV_WorkbenchUI::OnSetup(const TArray<FCraftingRecipeUIModel>& Array,
 	RecipeListView->OnSetup(Array, OnSelected);
 }
 
-void UUIV_WorkbenchUI::OnUpdateUI(FCraftingRecipeUIModel SelectedModel)
+void UUIV_WorkbenchUI::OnUpdateUI(FCraftingRecipeUIModel SelectedModel, const TMap<uint16, uint16>& OwningCounts)
 {
-	MaterialsView->OnUpdateUI(SelectedModel.ItemName, SelectedModel.GetRequiredMaterialsArray());
+	MaterialsView->OnUpdateUI(SelectedModel.ItemName, SelectedModel.GetRequiredMaterialsArray(), OwningCounts);
 }

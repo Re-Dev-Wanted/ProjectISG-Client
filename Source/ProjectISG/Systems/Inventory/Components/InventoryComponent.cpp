@@ -220,6 +220,26 @@ bool UInventoryComponent::DropItem(const uint16 Index, const uint32 Count)
 	return true;
 }
 
+uint32 UInventoryComponent::GetCurrentCount(const uint16 Id)
+{
+	int32 Result = 0;
+	
+	if (Id <= 0)
+	{
+		return Result;
+	}
+	
+	for (int i = 0, ListCount = GetInventorySlotCount(); i < ListCount; i++)
+	{
+		if (InventoryList[i].GetId() == Id)
+		{
+			Result += InventoryList[i].GetCurrentCount();
+		}
+	}
+
+	return Result;
+}
+
 // 정해진 규칙에 의거해 아이템을 순서대로 넣어둔다.
 uint32 UInventoryComponent::AddItem(const FItemMetaInfo& ItemInfo)
 {

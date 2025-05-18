@@ -1,10 +1,16 @@
 ﻿#include "UIC_WorkbenchUI.h"
 
+#include "AbilitySystemComponent.h"
 #include "EnhancedInputComponent.h"
 #include "UIM_WorkbenchUI.h"
 #include "UIV_WorkbenchUI.h"
+#include "Abilities/GameplayAbilityTypes.h"
 #include "Components/Button.h"
-#include "ProjectISG/Core/UI/Base/Interfaces/UIHandler.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
+#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 void UUIC_WorkbenchUI::AppearUI()
 {
@@ -40,27 +46,54 @@ void UUIC_WorkbenchUI::StartCrafting()
 
 	if (RecipeId > 0)
 	{
+		AMainPlayerState* PS = GetPlayerController()->GetPlayerState<AMainPlayerState>();
+
+		FCraftingRecipeUIModel UIModel = WorkbenchModel->GetRecipeUIModel(RecipeId);
+
+		for (FCraftingMaterialUIModel MaterialUIModel : UIModel.GetRequiredMaterialsArray())
+		{
+			PS->GetInventoryComponent()->RemoveItem(MaterialUIModel.Id, MaterialUIModel.RequiredCount);
+		}
+
+		FItemMetaInfo CraftedItemInfo = UItemManager::GetInitialItemMetaDataById(UIModel.ItemId);
 		
+		PS->GetInventoryComponent()->AddItem(CraftedItemInfo);
+
+		OnUpdateSelectedRecipeUI(RecipeId);
 	}
 }
 
 void UUIC_WorkbenchUI::OnUpdateSelectedRecipeUI(uint16 RecipeId)
 {
+	AMainPlayerState* PS = GetPlayerController()->GetPlayerState<AMainPlayerState>();
+	
 	UUIM_WorkbenchUI* WorkbenchModel = Cast<UUIM_WorkbenchUI>(GetModel());
 	UUIV_WorkbenchUI* WorkbenchView = Cast<UUIV_WorkbenchUI>(GetView());
 	
 	FCraftingRecipeUIModel UIModel = WorkbenchModel->GetRecipeUIModel(RecipeId);
 
-	WorkbenchView->OnUpdateUI(UIModel);
+	TMap<uint16, uint16> OwningCounts;
+
+	for (FCraftingMaterialUIModel MaterialUIModel : UIModel.GetRequiredMaterialsArray())
+	{
+		uint16 Count = PS->GetInventoryComponent()->GetCurrentCount(MaterialUIModel.Id);
+		OwningCounts.Add(MaterialUIModel.Id, Count);
+	}
+	
+	WorkbenchView->OnUpdateUI(UIModel, OwningCounts);
 	WorkbenchView->GetCraftingButton()->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UUIC_WorkbenchUI::CloseUI()
 {
-	if (UIHandler)
-	{
-		UIHandler->OnClosed();
-	}
-
 	PopUIFromPlayerController();
+
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetPlayerController()->GetPawn());
+
+	FGameplayEventData EventData;
+	EventData.EventTag = ISGGameplayTags::Crafting_Active_EndCrafting;
+	EventData.Instigator = Player;
+	EventData.Target = Cast<AActor>(UIHandler.GetObject());
+		
+	Player->GetAbilitySystemComponent()->HandleGameplayEvent(EventData.EventTag, &EventData);
 }

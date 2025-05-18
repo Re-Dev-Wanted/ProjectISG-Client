@@ -15,7 +15,7 @@ class PROJECTISG_API UMaterialsView : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void OnUpdateUI(const FString& ItemName, const TArray<FCraftingMaterialUIModel>& Materials);
+	void OnUpdateUI(const FString& ItemName, const TArray<FCraftingMaterialUIModel>& Materials, const TMap<uint16, uint16>& OwningCounts);
 
 protected:
 	virtual void NativePreConstruct() override;

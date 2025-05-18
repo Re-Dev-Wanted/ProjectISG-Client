@@ -1,4 +1,4 @@
-﻿#include "AT_StartCraftingMode.h"
+﻿#include "AT_EndCraftingMode.h"
 
 #include "LevelSequenceActor.h"
 #include "LevelSequencePlayer.h"
@@ -8,15 +8,15 @@
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 
-UAT_StartCraftingMode* UAT_StartCraftingMode::InitialEvent(UGameplayAbility* Ability, ULevelSequence* LevelSequence)
+UAT_EndCraftingMode* UAT_EndCraftingMode::InitialEvent(UGameplayAbility* Ability, ULevelSequence* LevelSequence)
 {
-	UAT_StartCraftingMode* NewTask = NewAbilityTask<UAT_StartCraftingMode>(Ability);
+	UAT_EndCraftingMode* NewTask = NewAbilityTask<UAT_EndCraftingMode>(Ability);
 	NewTask->LevelSequence = LevelSequence;
 
 	return NewTask;
 }
 
-void UAT_StartCraftingMode::Activate()
+void UAT_EndCraftingMode::Activate()
 {
 	Super::Activate();
 
@@ -56,9 +56,6 @@ void UAT_StartCraftingMode::Activate()
 		PlaybackSettings, LevelSequenceActor);
 
 	LevelSequencePlayer->OnFinished.AddDynamic(this, &ThisClass::OnFinish);
-
-	PC->SetIgnoreMoveInput(true);
-	PC->SetIgnoreLookInput(true);
 	
 	LevelSequenceActor->AddBindingByTag(FName(TEXT("Player")), GetAvatarActor());
 	LevelSequenceActor->AddBindingByTag(FName(TEXT("Target")), TargetWorkbench);
@@ -68,7 +65,7 @@ void UAT_StartCraftingMode::Activate()
 	LevelSequencePlayer->Play();
 }
 
-void UAT_StartCraftingMode::OnFinish()
+void UAT_EndCraftingMode::OnFinish()
 {
-	OnStartCraftingCinematicEndNotified.Broadcast();
+	OnEndCraftingCinematicEndNotified.Broadcast();
 }

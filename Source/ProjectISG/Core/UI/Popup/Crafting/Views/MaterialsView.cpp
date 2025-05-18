@@ -27,7 +27,7 @@ void UMaterialsView::NativeConstruct()
 	SetVisibility(ESlateVisibility::Hidden);
 }
 
-void UMaterialsView::OnUpdateUI(const FString& ItemName, const TArray<FCraftingMaterialUIModel>& Materials)
+void UMaterialsView::OnUpdateUI(const FString& ItemName, const TArray<FCraftingMaterialUIModel>& Materials, const TMap<uint16, uint16>& OwningCounts)
 {
 	SelectedItemName->SetText(FText::FromString(ItemName));
 	
@@ -42,9 +42,11 @@ void UMaterialsView::OnUpdateUI(const FString& ItemName, const TArray<FCraftingM
 		AsyncUtil::LoadAsync<UTexture2D>
 		(
 			Model.Thumbnail,
-			[this,Widget, Model](UTexture2D* Thumbnail)
+			[this, Widget, Model, OwningCounts](UTexture2D* Thumbnail)
 			{
-				Widget->SetWidget(Model.Id, Model.RequiredCount, Model.Name, Thumbnail);
+				uint32 OwningCount = OwningCounts.Find(Model.Id)? OwningCounts[Model.Id] : 0;
+				
+				Widget->SetWidget(Model.Id, OwningCount, Model.RequiredCount, Model.Name, Thumbnail);
 			}
 		);
 

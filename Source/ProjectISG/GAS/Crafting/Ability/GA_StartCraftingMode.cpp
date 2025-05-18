@@ -29,8 +29,6 @@ void UGA_StartCraftingMode::ActivateAbility(const FGameplayAbilitySpecHandle Han
 
 void UGA_StartCraftingMode::OnEndCinematic()
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnEndCinematic"));
-	
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>
 		(CurrentActorInfo->AvatarActor.Get());
 
