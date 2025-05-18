@@ -2,8 +2,10 @@
 
 #include "ProjectISG/Contents/Building/Props/Workbench.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Systems/Grid/Components/PlacementIndicatorComponent.h"
 #include "Task/AT_EndCraftingMode.h"
 
 void UGA_EndCraftingMode::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -65,7 +67,13 @@ void UGA_EndCraftingMode::OnEndCinematic()
 	{
 		PC->SetIgnoreMoveInput(false);
 		PC->SetIgnoreLookInput(false);
+
+		Player->GetInteractionComponent()->SetIsInteractive(true);
+		Player->GetPlacementIndicatorComponent()->SetIsActive(true);
 	}
+
+	AMainPlayerCharacter* _Player = const_cast<AMainPlayerCharacter*>(Player);
+	_Player->StopAnimMontage(_Player->GetCurrentMontage());
 
 	AActor* TargetActor = const_cast<AActor*>(CurrentEventData.Target.Get());
 	AWorkbench* Workbench = Cast<AWorkbench>(TargetActor);

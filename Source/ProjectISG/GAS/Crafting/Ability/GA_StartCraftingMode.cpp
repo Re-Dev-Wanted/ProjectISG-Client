@@ -2,10 +2,12 @@
 
 #include "ProjectISG/Contents/Building/Props/Workbench.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Popup/Crafting/UI/UIC_WorkbenchUI.h"
+#include "ProjectISG/Systems/Grid/Components/PlacementIndicatorComponent.h"
 #include "Task/AT_StartCraftingMode.h"
 
 void UGA_StartCraftingMode::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -37,9 +39,15 @@ void UGA_StartCraftingMode::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		OnEndCinematic();
 		return;
 	}
+	
+	if (Player->IsLocallyControlled())
+	{
+		PC->SetIgnoreMoveInput(true);
+		PC->SetIgnoreLookInput(true);
 
-	PC->SetIgnoreMoveInput(true);
-	PC->SetIgnoreLookInput(true);
+		Player->GetInteractionComponent()->SetIsInteractive(false);
+		Player->GetPlacementIndicatorComponent()->SetIsActive(false);
+	}
 
 	AT_StartCraftingModeCinematic = UAT_StartCraftingMode::InitialEvent(this, CraftingReadyCinematic);
 	AT_StartCraftingModeCinematic->OnStartCraftingCinematicEndNotified.AddDynamic(this, &ThisClass::OnEndCinematic);

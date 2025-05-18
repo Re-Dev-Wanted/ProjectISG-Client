@@ -17,7 +17,7 @@ void UGA_OnGoingCrafting::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	(
 		this,
 		NAME_None,
-		AnimMontage,
+		CraftingAnimMontage,
 		FGameplayTagContainer()
 	);
 
@@ -27,8 +27,6 @@ void UGA_OnGoingCrafting::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 
 void UGA_OnGoingCrafting::EndMontage(FGameplayTag EventTag, FGameplayEventData Payload)
 {
-	UE_LOG(LogTemp, Warning, TEXT("EndMontage"));
-	
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>
 		(CurrentActorInfo->AvatarActor.Get());
 
@@ -44,6 +42,9 @@ void UGA_OnGoingCrafting::EndMontage(FGameplayTag EventTag, FGameplayEventData P
 
 	AMainPlayerController* PC = Cast<AMainPlayerController>( 
 		Player->GetController());
+
+	AMainPlayerCharacter* _Player = const_cast<AMainPlayerCharacter*>(Player);
+	_Player->PlayAnimMontage(IdleAnimMontage);
 
 	if (Player->IsLocallyControlled())
 	{
