@@ -139,6 +139,11 @@ struct PROJECTISG_API FItemMetaInfo
 		return MetaData;
 	}
 
+	FORCEINLINE void SetMetaDataValue(const EMetaDataKey Key, const FString& Value)
+	{
+		MetaData.Add(Key, Value);
+	}
+
 	FORCEINLINE void SetMetaData(
 		const TMap<EMetaDataKey, FString>& NewMetaData)
 	{
