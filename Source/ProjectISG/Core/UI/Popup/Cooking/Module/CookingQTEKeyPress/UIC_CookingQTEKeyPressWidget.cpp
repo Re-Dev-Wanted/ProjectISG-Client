@@ -9,8 +9,10 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "ProjectISG/Contents/Cooking/CookingEnum.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Popup/Cooking/UI/CookingQTE/UIC_CookingQTEUI.h"
+#include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 
 void UUIC_CookingQTEKeyPressWidget::StartQTE()
 {
@@ -101,8 +103,17 @@ void UUIC_CookingQTEKeyPressWidget::CheckQTE(const uint8 CookingQTEKey)
 
 	// 다음 Index로 이동하기 위해 우선 Index 값을 추가한다.
 	DataModel->SetCurrentQTEIndex(DataModel->GetCurrentQTEIndex() + 1);
+
+	// Key 하나 맞출 때 마다 1점 씩 추가하기
+	ISGGameplayTags::AddGameplayTag(GetView()->GetOwningPlayerState<AMainPlayerState>()->GetAbilitySystemComponent(),
+		ISGGameplayTags::Cooking_Variable_QTEScore, 1);
+	
 	if (DataModel->GetCurrentQTEIndex() >= DataModel->GetRemainQTEKeys().Num())
 	{
+		// 기본 점수 10점 매직넘버 추가
+		ISGGameplayTags::AddGameplayTag(GetView()->GetOwningPlayerState<AMainPlayerState>()->GetAbilitySystemComponent(),
+			ISGGameplayTags::Cooking_Variable_QTEScore, 10);
+		
 		Cast<UUIC_CookingQTEUI>(QTEController)->SetQTEStatus(
 			ECookingQTEStatus::Success);
 	}
@@ -133,4 +144,10 @@ void UUIC_CookingQTEKeyPressWidget::DecreaseTime(const float DeltaTime)
 	const float RemainPercent = 1 - FMath::Clamp(
 		DataModel->GetElapsedTime() / DataModel->GetRemainTime(), 0.0f, 1.0f);
 	UIView->GetRemainTimeBar()->SetPercent(RemainPercent);
+
+	if (RemainPercent == 0)
+	{
+		Cast<UUIC_CookingQTEUI>(QTEController)->SetQTEStatus(
+			ECookingQTEStatus::Fail);
+	}
 }

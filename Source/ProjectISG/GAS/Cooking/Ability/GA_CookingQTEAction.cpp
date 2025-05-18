@@ -14,11 +14,13 @@
 #include "ProjectISG/Core/UI/Popup/Cooking/UI/CookingRecipe/UIM_CookingRecipeUI.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/AT_LogWithScreenShot.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/AT_PlayCinematic.h"
+#include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/Logging/LoggingEnum.h"
 #include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
+#include "ProjectISG/Utils/EnumUtil.h"
 
 void UGA_CookingQTEAction::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle
@@ -162,13 +164,38 @@ void UGA_CookingQTEAction::EndAbility(const FGameplayAbilitySpecHandle Handle
 	// 완료된 음식 아이템 주기
 	const FFoodRecipe Recipe = UCookingManager::GetRecipeData()[
 		SelectedFoodRecipeId];
-	const FItemMetaInfo NewFoodItem = UItemManager::GetInitialItemMetaDataById(
+	FItemMetaInfo NewFoodItem = UItemManager::GetInitialItemMetaDataById(
 		Recipe.GetFoodId());
+	NewFoodItem.SetMetaDataValue(EMetaDataKey::ItemGrade,
+		FEnumUtil::GetClassEnumKeyAsString(GetResultFoodGrade()));
 
 	Player->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
 	        AddItem(NewFoodItem);
 }
 
+EItemGrade UGA_CookingQTEAction::GetResultFoodGrade()
+{
+	const uint32 FoodScore = ISGGameplayTags::GetGameplayTagCount(
+		GetAbilitySystemComponentFromActorInfo(),
+		ISGGameplayTags::Cooking_Variable_QTEScore);
+
+	if (FoodScore >= 50)
+	{
+		return EItemGrade::Epic;
+	}
+
+	if (FoodScore >= 40)
+	{
+		return EItemGrade::Rare;
+	}
+
+	if (FoodScore >= 30)
+	{
+		return EItemGrade::Uncommon;
+	}
+
+	return EItemGrade::Common;
+}
 
 void UGA_CookingQTEAction::LoggingToStartCook()
 {
