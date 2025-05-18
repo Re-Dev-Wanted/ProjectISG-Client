@@ -19,7 +19,13 @@ void UMaterialInfoWidget::SetWidget(uint16 MaterialId, uint16 OwningCount, uint1
 	Id = MaterialId;
 
 	Thumbnail->SetBrushFromTexture(Image);
+	
 	OwningCountText->SetText(FText::FromString(FString::FromInt(OwningCount)));
+
+	FColor Color = OwningCount < RequiredCount? FColor::Red : FColor::White;
+	
+	OwningCountText->SetColorAndOpacity(FSlateColor(Color));
+	
 	RequiredCountText->SetText(FText::FromString(FString::FromInt(RequiredCount)));
 }
 

@@ -98,11 +98,21 @@ void UUIC_WorkbenchUI::OnUpdateSelectedRecipeUI(uint16 RecipeId)
 
 	TMap<uint16, uint16> OwningCounts;
 
+	bool IsSatisfied = true;
+
 	for (FCraftingMaterialUIModel MaterialUIModel : UIModel.GetRequiredMaterialsArray())
 	{
 		uint16 Count = PS->GetInventoryComponent()->GetCurrentCount(MaterialUIModel.Id);
+
+		if (IsSatisfied && Count < MaterialUIModel.RequiredCount)
+		{
+			IsSatisfied = false;
+		}
+		
 		OwningCounts.Add(MaterialUIModel.Id, Count);
 	}
+
+	WorkbenchView->GetCraftingButton()->SetIsEnabled(IsSatisfied);
 	
 	WorkbenchView->OnUpdateUI(UIModel, OwningCounts);
 	WorkbenchView->GetCraftingButton()->SetVisibility(ESlateVisibility::Visible);
