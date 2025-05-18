@@ -8,11 +8,14 @@ namespace ISGGameplayTags
 	void AddGameplayTag(UAbilitySystemComponent* ASC, const FGameplayTag Tag
 						, const int32 Count, const bool IsReplicated)
 	{
+		const uint32 CurrentTagCount = GetGameplayTagCount(ASC, Tag);
+		
 		if (IsReplicated)
 		{
-			ASC->SetReplicatedLooseGameplayTagCount(Tag, Count);
+			ASC->SetReplicatedLooseGameplayTagCount(Tag, CurrentTagCount + Count);
 		}
-		ASC->SetLooseGameplayTagCount(Tag, Count);
+		
+		ASC->SetLooseGameplayTagCount(Tag, CurrentTagCount + Count);
 	}
 
 	void RemoveGameplayTag(UAbilitySystemComponent* ASC, const FGameplayTag Tag
@@ -50,6 +53,12 @@ namespace ISGGameplayTags
 		AddGameplayTag(ASC, ToTag, FromTagCount, IsReplicated);
 	}
 
+	uint32 GetGameplayTagCount(UAbilitySystemComponent* ASC
+		, const FGameplayTag FindToTag)
+	{
+		return ASC->GetGameplayTagCount(FindToTag);
+	}
+
 	bool HasGameplayTag(UAbilitySystemComponent* ASC
 						, const FGameplayTag FindToTag)
 	{
@@ -82,6 +91,10 @@ namespace ISGGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooking_Active_QTEEvent_KeyPressArray
 									, "Cooking.Active.QTEEvent.KeyPressArray"
 									, "요리 관련 액티브 : QTE 이벤트 시작 - 키 연속 입력");
+	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooking_Variable_QTEScore
+									, "Cooking.Variable.QTEScore"
+									, "요리 관련 변수 수치: QTE 성공 스코어 태그 갯수");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Farming_Active_Seeding
 	                               , "Farming.Active.Seeding"
