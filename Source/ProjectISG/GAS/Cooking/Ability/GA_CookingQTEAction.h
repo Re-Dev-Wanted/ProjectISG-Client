@@ -5,6 +5,7 @@
 #include "ProjectISG/GAS/Common/Ability/Utility/GA_BaseInputAbility.h"
 #include "GA_CookingQTEAction.generated.h"
 
+enum class EItemGrade : uint8;
 class UAT_LogWithScreenShot;
 class UAT_PlayCinematic;
 class ULevelSequence;
@@ -57,4 +58,6 @@ private:
 
 	void LoggingToStartCook();
 	void LoggingToEndCook();
+
+	EItemGrade GetResultFoodGrade();
 };
