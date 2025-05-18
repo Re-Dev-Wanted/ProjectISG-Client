@@ -47,7 +47,7 @@ void UScreenShotComponent::SaveCaptureFrameImage(const UObject* Object,
 			false
 		);
 	SceneCapture->CaptureScene();
-	SceneCapture->bCaptureEveryFrame = false;
+	
 	// RenderTarget에서 리소스 얻기
 	// GameThread_GetRenderTargetResource 는 이름 그대로 메인 스레드인
 	// 게임 Thread에서 진행되기 때문에 다른 스레드에서 실행시키려고 한다면
