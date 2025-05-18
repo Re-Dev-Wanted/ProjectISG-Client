@@ -13,6 +13,8 @@ void UItemInfo::ShowItemData(const FItemMetaInfo& ItemMetaInfo)
 		ItemMetaInfo.GetId());
 
 	ItemDisplayName->SetText(FText::FromString(ItemInfoData.GetDisplayName()));
+	ItemRank->SetText(FText::FromString(UItemManager::GetItemGradeText(ItemMetaInfo)));
+	
 	IsActive = true;
 }
 
