@@ -2,7 +2,7 @@
 
 #include "IImageWrapperModule.h"
 #include "IImageWrapper.h"
-#include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Kismet/KismetRenderingLibrary.h"
@@ -28,13 +28,8 @@ void UScreenShotComponent::SaveCaptureFrameImage(const UObject* Object,
                                                  OnCaptureFrameNotified)
 {
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
-	FTransform PlayerLocation;
-	PlayerLocation.SetLocation(Player->GetActorLocation());
 
-	const FTransform ScreenshotPos = PlayerLocation + Player->
-		GetScreenshotCameraPosition()->GetRelativeTransform();
-
-	SceneCapture->SetWorldTransform(ScreenshotPos);
+	SceneCapture->SetWorldTransform(Player->GetScreenShotCameraComponent()->GetComponentTransform());
 
 	SceneCapture->TextureTarget =
 		UKismetRenderingLibrary::CreateRenderTarget2D(

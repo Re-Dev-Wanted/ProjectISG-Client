@@ -33,9 +33,12 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	CameraComponent->SetRelativeLocation({0, 0, 80});
 	CameraComponent->SetRelativeRotation({0, 0, -18});
 
-	ScreenshotCameraPosition = CreateDefaultSubobject<USceneComponent>(
-		"Screenshot Camera Position");
-	ScreenshotCameraPosition->SetupAttachment(GetMesh());
+	
+	ScreenShotSpringArm = CreateDefaultSubobject<USpringArmComponent>("ScreenShot Spring Arm");
+	ScreenShotSpringArm->SetupAttachment(GetMesh());
+	
+	ScreenShotCameraComponent = CreateDefaultSubobject<UCameraComponent>("ScreenShot Camera");
+	ScreenShotCameraComponent->SetupAttachment(ScreenShotSpringArm);
 
 	PlayerInventoryComponent = CreateDefaultSubobject<
 		UPlayerInventoryComponent>("Player Inventory Component");
