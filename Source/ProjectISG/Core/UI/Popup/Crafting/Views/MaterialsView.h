@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "MaterialsView.generated.h"
 
+struct FCraftingMaterialUIModel;
 class UMaterialInfoWidget;
 class UScrollBox;
 class UTextBlock;
@@ -13,8 +14,13 @@ class PROJECTISG_API UMaterialsView : public UUserWidget
 {
 	GENERATED_BODY()
 
+public:
+	void OnUpdateUI(const FString& ItemName, const TArray<FCraftingMaterialUIModel>& Materials);
+
 protected:
 	virtual void NativePreConstruct() override;
+
+	virtual void NativeConstruct() override;
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> SelectedItemName;
