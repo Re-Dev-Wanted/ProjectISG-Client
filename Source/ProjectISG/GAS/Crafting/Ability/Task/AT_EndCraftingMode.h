@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/Tasks/AbilityTask.h"
+#include "ProjectISG/Contents/Building/Props/Workbench.h"
 #include "AT_EndCraftingMode.generated.h"
 
 class AWorkbench;
@@ -17,7 +18,7 @@ class PROJECTISG_API UAT_EndCraftingMode : public UAbilityTask
 	GENERATED_BODY()
 
 public:
-	static UAT_EndCraftingMode* InitialEvent(UGameplayAbility* Ability, ULevelSequence* LevelSequence);
+	static UAT_EndCraftingMode* InitialEvent(UGameplayAbility* Ability, ULevelSequence* LevelSequence, AWorkbench* Workbench);
 
 	FOnEndCraftingCinematicEndNotified OnEndCraftingCinematicEndNotified;
 

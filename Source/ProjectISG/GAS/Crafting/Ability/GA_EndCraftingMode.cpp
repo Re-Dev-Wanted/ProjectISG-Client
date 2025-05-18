@@ -16,11 +16,21 @@ void UGA_EndCraftingMode::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 
 	if (!Player)
 	{
-		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+		OnEndCinematic();
 		return;
 	}
 
-	AT_EndCraftingModeCinematic = UAT_EndCraftingMode::InitialEvent(this, EndCraftingCinematic);
+	AActor* TargetActor = const_cast<AActor*>(TriggerEventData->Target.Get());
+
+	if (!TargetActor)
+	{
+		OnEndCinematic();
+		return;
+	}
+	
+	AWorkbench* Workbench = Cast<AWorkbench>(TargetActor);
+
+	AT_EndCraftingModeCinematic = UAT_EndCraftingMode::InitialEvent(this, EndCraftingCinematic, Workbench);
 	AT_EndCraftingModeCinematic->OnEndCraftingCinematicEndNotified.AddDynamic(this, &ThisClass::OnEndCinematic);
 	AT_EndCraftingModeCinematic->ReadyForActivation();
 }

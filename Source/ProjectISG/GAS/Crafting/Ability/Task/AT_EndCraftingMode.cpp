@@ -8,10 +8,11 @@
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 
-UAT_EndCraftingMode* UAT_EndCraftingMode::InitialEvent(UGameplayAbility* Ability, ULevelSequence* LevelSequence)
+UAT_EndCraftingMode* UAT_EndCraftingMode::InitialEvent(UGameplayAbility* Ability, ULevelSequence* LevelSequence, AWorkbench* Workbench)
 {
 	UAT_EndCraftingMode* NewTask = NewAbilityTask<UAT_EndCraftingMode>(Ability);
 	NewTask->LevelSequence = LevelSequence;
+	NewTask->TargetWorkbench = Workbench;
 
 	return NewTask;
 }
@@ -28,11 +29,6 @@ void UAT_EndCraftingMode::Activate()
 		EndTask();
 		return;
 	}
-
-	AActor* HitResult = MainPlayerCharacter->GetInteractionComponent()->
-											 GetTargetTraceResult().GetActor();
-
-	TargetWorkbench = Cast<AWorkbench>(HitResult);
 
 	if (!TargetWorkbench)
 	{
