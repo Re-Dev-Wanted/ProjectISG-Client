@@ -209,9 +209,83 @@ FName UItemManager::GetSocketNameById(const uint16 Id)
 	return *FindDataRef;
 }
 
-void UItemManager::SetItemGrade(FItemMetaInfo& Info, EItemGrade ItemGrade)
+EItemGrade UItemManager::GetItemGrade(const FItemMetaInfo& Info)
 {
-	UE_LOG(LogTemp, Warning, TEXT("123"));
+	if (!Info.GetMetaData().Contains(EMetaDataKey::ItemGrade))
+	{
+		return EItemGrade::None;
+	}
+
+	if (Info.GetMetaData()[EMetaDataKey::ItemGrade] == TEXT("Common"))
+	{
+		return EItemGrade::Common;
+	}
+	
+	if (Info.GetMetaData()[EMetaDataKey::ItemGrade] == TEXT("Uncommon"))
+	{
+		return EItemGrade::Uncommon;
+	}
+	
+	if (Info.GetMetaData()[EMetaDataKey::ItemGrade] == TEXT("Rare"))
+	{
+		return EItemGrade::Rare;
+	}
+
+	if (Info.GetMetaData()[EMetaDataKey::ItemGrade] == TEXT("Epic"))
+	{
+		return EItemGrade::Epic;
+	}
+
+	if (Info.GetMetaData()[EMetaDataKey::ItemGrade] == TEXT("Legendary"))
+	{
+		return EItemGrade::Legendary;
+	}
+
+	if (Info.GetMetaData()[EMetaDataKey::ItemGrade] == TEXT("Mythic"))
+	{
+		return EItemGrade::Mythic;
+	}
+	
+	return EItemGrade::None;
+}
+
+FString UItemManager::GetItemGradeText(const FItemMetaInfo& Info)
+{
+	switch (GetItemGrade(Info))
+	{
+	case EItemGrade::Common:
+		{
+			return TEXT("커먼");
+		}
+	case EItemGrade::Uncommon:
+		{
+			return TEXT("언커먼");
+		}
+	case EItemGrade::Rare:
+		{
+			return TEXT("레어");
+		}
+	case EItemGrade::Epic:
+		{
+			return TEXT("에픽");
+		}
+	case EItemGrade::Legendary:
+		{
+			return TEXT("레전더리");
+		}
+	case EItemGrade::Mythic:
+		{
+			return TEXT("신화");
+		}
+	default:
+		{
+			return TEXT("없음");
+		}
+	}
+}
+
+void UItemManager::SetItemGrade(FItemMetaInfo& Info, const EItemGrade ItemGrade)
+{
 	Info.GetMetaData().Add(EMetaDataKey::ItemGrade,
 	                       FEnumUtil::GetClassEnumKeyAsString(ItemGrade));
 }
