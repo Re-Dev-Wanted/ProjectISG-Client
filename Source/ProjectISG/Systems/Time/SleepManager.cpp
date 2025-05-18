@@ -25,14 +25,12 @@ void USleepManager::InitializeComponent()
 {
 	Super::InitializeComponent();
 	TimeManager = Cast<ATimeManager>(GetOwner());
-
 }
 
 void USleepManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//ForceSleepDelegate.AddDynamic(this, &ThisClass::LoadHouseLevel);
 }
 
 void USleepManager::GetLifetimeReplicatedProps(
@@ -51,7 +49,7 @@ void USleepManager::TickComponent(float DeltaTime, ELevelTick TickType,
 	{
 		return;
 	}
-	
+
 	if (bSleepCinematicStart)
 	{
 		SleepCinematic(DeltaTime);
@@ -89,17 +87,16 @@ void USleepManager::ForceSleep()
 		TimeManager->StopTime(true);
 
 		LoadHouseLevel();
-	
+
 		// 서버의 수면 로그 보낸다.
-        if (bSleepCinematicStart == false)
-        {
-        	OpenDiaryDelegate.Broadcast();
-        	LoggingToSleep();
-        }
-    
-        // 시네마틱을 진행시킨다.
-        bSleepCinematicStart = true;
-		
+		if (bSleepCinematicStart == false)
+		{
+			OpenDiaryDelegate.Broadcast();
+			LoggingToSleep();
+		}
+
+		// 시네마틱을 진행시킨다.
+		bSleepCinematicStart = true;
 	}
 }
 
@@ -115,15 +112,24 @@ void USleepManager::SleepCinematic(float DeltaTime)
 		TimeManager->StopTime(false);
 		TimeManager->AddSleepTimeToCrop.Broadcast();
 		WakeUpDelegate.Broadcast();
-		
+
 		if (bSleepCinematicStart)
 		{
 			LoggingToWakeUp();
 		}
 
-		ChangeAllPlayerWriteDiary(false);
-		ChangeAllPlayerSleepValue(false);
-		ChangeAllPlayerLieInBedValue(false);
+		AGameStateBase* GameState = GetWorld()->GetGameState();
+		for (APlayerState* PlayerState : GameState->PlayerArray)
+		{
+			AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(
+				PlayerState->GetPawn());
+			if (player)
+			{
+				player->SetbIsSleep(false);
+				player->SetbLieInBed(false);
+				player->GetDiaryComponent()->SetbWriteDiary(false);
+			}
+		}
 		TimeManager->ChangeDayBySleep();
 
 		bSleepCinematicStart = false;
@@ -149,8 +155,8 @@ void USleepManager::LoadHouseLevel()
 	UE_LOG(LogTemp, Warning, TEXT("LoadHouseLevel()"));
 
 	FLatentActionInfo LatentActionInfo;
-	UGameplayStatics::LoadStreamLevelBySoftObjectPtr(GetWorld(), 
-	HouseLevel, true, false, LatentActionInfo);
+	UGameplayStatics::LoadStreamLevelBySoftObjectPtr(GetWorld(),
+		HouseLevel, true, false, LatentActionInfo);
 
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
@@ -181,10 +187,7 @@ void USleepManager::AssignBedEachPlayer()
 		}
 	}
 
-	// // 플레이어를 강제로 침대로 이동시킨다.
-	SleepDelegate.Broadcast();
-	//
-	// // 침대에 눕는 어빌리티를 실행시킨다.
+	// 침대에 눕는 어빌리티를 실행시킨다.
 	ForceSleepDelegate.Broadcast();
 }
 

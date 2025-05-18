@@ -17,7 +17,7 @@ void UGA_LieInBed::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		ActorInfo->AvatarActor.Get());
 	if (!IsValid(Player))
 	{
@@ -27,6 +27,7 @@ void UGA_LieInBed::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	UE_LOG(LogTemp, Warning, TEXT("침대에 눕기 어빌리티, %s"),
 	       *FEnumUtil::GetClassEnumKeyAsString(Player->GetLocalRole()));
 
+	Player->bUseControllerRotationYaw = false;
 	if (CurrentEventData.Target)
 	{
 		const AActor* Target = CurrentEventData.Target.Get();

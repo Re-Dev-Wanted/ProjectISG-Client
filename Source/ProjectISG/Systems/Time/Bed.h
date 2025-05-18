@@ -16,9 +16,6 @@ class PROJECTISG_API ABed : public ABaseInteractiveActor
 public:
 	ABed();
 
-	UFUNCTION()
-	void MovePlayerToBed();
-
 protected:
 	virtual void BeginPlay() override;
 
@@ -36,10 +33,7 @@ protected:
 	virtual bool GetCanInteractive() const override;
 
 private:
-
-
-	UFUNCTION(Server, Reliable)
-	void Server_MovePlayerToBed();
+	void MovePlayerToBed();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void NetMulticast_MovePlayerToBed();
@@ -49,17 +43,18 @@ private:
 
 	UFUNCTION()
 	void OpenDiary();
-	
+
 	UFUNCTION()
 	void ActivateSleepAbility();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void NetMulticast_SetCollisionEnabled(bool bEnable);
+	void NetMulticast_InteractiveValue(bool bEnable);
 
 public:
 	SETTER(class AMainPlayerCharacter*, MainPlayer);
 
 	void SetCollisionEnabled(bool bEnable) const;
+	
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Setting,
@@ -73,6 +68,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Setting,
 		meta = (AllowPrivateAccess = true))
 	class USceneComponent* WakeUpPos;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Setting,
+		meta = (AllowPrivateAccess = true))
+	class UCameraComponent* CameraComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Setting,
 		meta = (AllowPrivateAccess = true))

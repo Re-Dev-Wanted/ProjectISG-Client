@@ -71,7 +71,7 @@ public:
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess), Category = Setting)
 	class ATimeManager* TimeManager;
-	
+
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess), Category = Setting)
 	TSoftObjectPtr<UWorld> HouseLevel = nullptr;
 
@@ -87,7 +87,7 @@ private:
 	// 임시 변수, 시네마틱이 추가 되면 해당 시네마틱 시간을 가져와야함
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = true), Category = Sleep)
-	float CinematicEndTime = 10.f;
+	float CinematicEndTime = 3.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = "true"), Category = Sleep)
@@ -95,14 +95,12 @@ private:
 
 public:
 	UPROPERTY()
-	FSleep SleepDelegate;
-
-	UPROPERTY()
-	FWakeUp WakeUpDelegate;
-
+	FForceSleep ForceSleepDelegate;
+	
 	UPROPERTY()
 	FOpenDiary OpenDiaryDelegate;
 
 	UPROPERTY()
-	FForceSleep ForceSleepDelegate;
+	FWakeUp WakeUpDelegate;
+
 };
