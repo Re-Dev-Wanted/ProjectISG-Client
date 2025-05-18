@@ -15,8 +15,6 @@ class PROJECTISG_API ALootContainer : public APlacement, public IItemHandler,
 public:
 	virtual void BeginPlay() override;
 	
-	virtual void SetOption(bool bIsGhost, bool bIsBlock = false) override;
-	
 	virtual void OnInteractive(AActor* Causer) override;
 
 	virtual void OnInteractiveResponse(AActor* Causer) override;
@@ -44,9 +42,6 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_SwapItem(const uint16 Prev, const uint16 Next);
-
-	UFUNCTION(Server, Reliable)
-	void Server_SetInteractingPlayer(AActor* Actor);
 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;

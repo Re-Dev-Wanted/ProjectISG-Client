@@ -8,6 +8,7 @@
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/UI/Base/Interfaces/UIHandler.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Components/PlacementIndicatorComponent.h"
@@ -59,6 +60,11 @@ void UGA_EndSitDown::EndMontage(FGameplayTag EventTag, FGameplayEventData EventD
 	{
 		const AActor* Target = EventData.Target.Get();
 		const APlacement* ConstPlacement = Cast<APlacement>(Target);
+
+		if (const IUIHandler* Handler = Cast<IUIHandler>(ConstPlacement))
+		{
+			const_cast<IUIHandler*>(Handler)->OnClosed();
+		}
 		
 		ConstPlacement->Multicast_SetCollisionEnabled(true);
 	}

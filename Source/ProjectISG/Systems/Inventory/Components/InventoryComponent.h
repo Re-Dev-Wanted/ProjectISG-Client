@@ -21,6 +21,8 @@ public:
 	GETTER(uint8, InventorySlotCount)
 	GETTER(TArray<FItemMetaInfo>, InventoryList)
 
+	uint32 GetCurrentCount(const uint16 Id);
+
 	uint32 AddItem(const FItemMetaInfo& ItemInfo);
 
 	bool HasItemInInventory(const uint32 Id, const uint32 Count);

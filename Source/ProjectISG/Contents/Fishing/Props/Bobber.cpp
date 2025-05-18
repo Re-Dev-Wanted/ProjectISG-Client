@@ -8,7 +8,7 @@
 ABobber::ABobber()
 {
 	LineAttachPoint = CreateDefaultSubobject<USceneComponent>(TEXT("LineAttachPoint"));
-	LineAttachPoint->SetupAttachment(RootComponent);
+	LineAttachPoint->SetupAttachment(MeshComponent);
 
 	FishMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FishMesh"));
 	FishMesh->SetupAttachment(RootComponent);

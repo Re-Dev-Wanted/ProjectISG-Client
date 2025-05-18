@@ -4,6 +4,7 @@
 #include "GameFramework/PlayerState.h"
 #include "Interfaces/IHttpResponse.h"
 #include "ProjectISG/Contents/Cooking/Managers/CookingManager.h"
+#include "ProjectISG/Contents/Crafting/Managers/CraftingManager.h"
 #include "ProjectISG/Contents/Farming/Managers/FarmingManager.h"
 #include "ProjectISG/Contents/Fishing/Managers/FishingManager.h"
 #include "ProjectISG/Contents/Trading/TradingManager.h"
@@ -23,6 +24,7 @@ UISGGameInstance::UISGGameInstance()
 	UTradingManager::Initialize();
 	UFishingManager::Initialize();
 	UFarmingManager::Initialize();
+	UCraftingManager::Initialize();
 }
 
 void UISGGameInstance::CreateGameSessionIdAndCreateSession()
