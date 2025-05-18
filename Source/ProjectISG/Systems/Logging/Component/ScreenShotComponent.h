@@ -4,10 +4,10 @@
 #include "Components/ActorComponent.h"
 #include "ScreenShotComponent.generated.h"
 
-struct FDiaryLogData;
-
 DECLARE_DELEGATE_OneParam(FOnCaptureFrameNotified,
                           TArray64<uint8> ImageBinaryData);
+
+class USpringArmComponent;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTISG_API UScreenShotComponent : public UActorComponent
