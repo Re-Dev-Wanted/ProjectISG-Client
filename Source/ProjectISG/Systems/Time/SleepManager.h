@@ -27,6 +27,8 @@ public:
 protected:
 	virtual void InitializeComponent() override;
 
+	virtual void BeginPlay() override;
+
 	virtual void GetLifetimeReplicatedProps(
 		TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -43,6 +45,9 @@ private:
 
 	UFUNCTION()
 	void OnRep_SleepCinematicStart();
+
+	UFUNCTION()
+	void LoadHouseLevel();
 
 	void AssignBedEachPlayer();
 
@@ -61,11 +66,14 @@ private:
 	void LoggingToWakeUp();
 
 public:
-	GETTER(bool, bSleepCinematicStart);
+	GETTER(bool, bSleepCinematicStart)
 
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess), Category = Setting)
 	class ATimeManager* TimeManager;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess), Category = Setting)
+	TSoftObjectPtr<UWorld> HouseLevel = nullptr;
 
 	UPROPERTY(ReplicatedUsing = OnRep_SleepCinematicStart, EditAnywhere,
 		BlueprintReadWrite,
@@ -79,7 +87,7 @@ private:
 	// 임시 변수, 시네마틱이 추가 되면 해당 시네마틱 시간을 가져와야함
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = true), Category = Sleep)
-	float CinematicEndTime = 10.f;
+	float CinematicEndTime = 3.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,
 		meta = (AllowPrivateAccess = "true"), Category = Sleep)
@@ -87,14 +95,12 @@ private:
 
 public:
 	UPROPERTY()
-	FSleep SleepDelegate;
-
-	UPROPERTY()
-	FWakeUp WakeUpDelegate;
-
+	FForceSleep ForceSleepDelegate;
+	
 	UPROPERTY()
 	FOpenDiary OpenDiaryDelegate;
 
 	UPROPERTY()
-	FForceSleep ForceSleepDelegate;
+	FWakeUp WakeUpDelegate;
+
 };

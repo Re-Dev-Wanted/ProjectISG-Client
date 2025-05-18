@@ -4,6 +4,7 @@
 #include "GA_WakeUp.h"
 
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
 #include "ProjectISG/Systems/Time/Bed.h"
 #include "ProjectISG/Utils/EnumUtil.h"
@@ -53,6 +54,20 @@ void UGA_WakeUp::OnCompleteWakeUpMontage(FGameplayTag EventTag,
 {
 	UE_LOG(LogTemp, Warning, TEXT("몽타주 끝"))
 	BlockInputForMontage(false);
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		CurrentActorInfo->AvatarActor.Get());
+	Player->bUseControllerRotationYaw = true;
+
+	AMainPlayerController* PC = Cast<AMainPlayerController>(Player->GetController());
+	PC->SetViewTargetWithBlend(Player);
+
+	if (CurrentEventData.Target)
+	{
+		const AActor* Target = CurrentEventData.Target.Get();
+		const ABed* Bed = Cast<ABed>(Target);
+		Bed->SetCollisionEnabled(true);
+	}
+	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo,
 	           false, false);
 }
