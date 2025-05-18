@@ -160,11 +160,17 @@ void ULoggingSubSystem::CreateLogDataStringForMultipart(
 	};
 
 	// 필수 필드 추가
+#if WITH_EDITOR
+	AddTextField(
+	TEXT("session_id"),TEXT("e1827901-2536-4fb9-b76a-ca8e149015cb"), true);
+	AddTextField(TEXT("user_id"), TEXT("1"),false);
+#else
 	AddTextField(
 		TEXT("session_id"),
 		GetWorld()->GetGameState<AMainGameState>()->GetSessionId(), true);
 	AddTextField(TEXT("user_id"), FSessionUtil::GetCurrentId(GetWorld()),
-	             false);
+				 false);
+#endif
 	AddTextField(TEXT("timestamp"), FDateTime::Now().ToString(), false);
 	AddTextField(TEXT("ingame_datetime"), LogData.CurrentDate, false);
 	// TODO: 나중에 해당 값을 별도로 Parameter로 받던가
