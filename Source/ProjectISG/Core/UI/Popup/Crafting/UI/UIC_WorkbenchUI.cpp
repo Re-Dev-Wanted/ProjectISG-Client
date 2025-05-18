@@ -15,13 +15,21 @@
 void UUIC_WorkbenchUI::AppearUI()
 {
 	Super::AppearUI();
-	
+
 	UUIM_WorkbenchUI* WorkbenchModel = Cast<UUIM_WorkbenchUI>(GetModel());
+	
+	if (IsInitialized)
+	{
+		OnUpdateSelectedRecipeUI(WorkbenchModel->GetSelectedRecipeId());
+		return;
+	}
+
+	IsInitialized = true;
 
 	WorkbenchModel->LoadAll();
 	
 	UUIV_WorkbenchUI* WorkbenchView = Cast<UUIV_WorkbenchUI>(GetView());
-
+	
 	WorkbenchView->GetCloseButton()->OnClicked.AddDynamic(this, &ThisClass::CloseUI);
 	WorkbenchView->GetCraftingButton()->Get()->OnClicked.AddDynamic(this, &ThisClass::StartCrafting);
 	WorkbenchView->GetCraftingButton()->SetVisibility(ESlateVisibility::Hidden);
@@ -58,17 +66,33 @@ void UUIC_WorkbenchUI::StartCrafting()
 		FItemMetaInfo CraftedItemInfo = UItemManager::GetInitialItemMetaDataById(UIModel.ItemId);
 		
 		PS->GetInventoryComponent()->AddItem(CraftedItemInfo);
-
-		OnUpdateSelectedRecipeUI(RecipeId);
 	}
+
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetPlayerController()->GetPawn());
+
+	FGameplayEventData EventData;
+	EventData.EventTag = ISGGameplayTags::Crafting_Active_OnCrafting;
+	EventData.Instigator = Player;
+	EventData.Target = Cast<AActor>(UIHandler.GetObject());
+		
+	Player->GetAbilitySystemComponent()->HandleGameplayEvent(EventData.EventTag, &EventData);
+
+	PopUIFromPlayerController();
 }
 
 void UUIC_WorkbenchUI::OnUpdateSelectedRecipeUI(uint16 RecipeId)
 {
+	UUIV_WorkbenchUI* WorkbenchView = Cast<UUIV_WorkbenchUI>(GetView());
+	
+	if (RecipeId <= 0)
+	{
+		WorkbenchView->GetCraftingButton()->SetVisibility(ESlateVisibility::Hidden);
+		return;
+	}
+	
 	AMainPlayerState* PS = GetPlayerController()->GetPlayerState<AMainPlayerState>();
 	
 	UUIM_WorkbenchUI* WorkbenchModel = Cast<UUIM_WorkbenchUI>(GetModel());
-	UUIV_WorkbenchUI* WorkbenchView = Cast<UUIV_WorkbenchUI>(GetView());
 	
 	FCraftingRecipeUIModel UIModel = WorkbenchModel->GetRecipeUIModel(RecipeId);
 

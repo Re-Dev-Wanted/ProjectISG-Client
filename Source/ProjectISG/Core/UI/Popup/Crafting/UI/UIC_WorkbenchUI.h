@@ -37,4 +37,7 @@ protected:
 	TObjectPtr<UInputAction> CloseAction;
 
 	TScriptInterface<IUIHandler> UIHandler;
+
+private:
+	bool IsInitialized = false;
 };

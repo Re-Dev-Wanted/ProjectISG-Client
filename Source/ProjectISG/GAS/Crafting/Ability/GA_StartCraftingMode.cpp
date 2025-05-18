@@ -2,6 +2,7 @@
 
 #include "ProjectISG/Contents/Building/Props/Workbench.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Popup/Crafting/UI/UIC_WorkbenchUI.h"
@@ -21,6 +22,24 @@ void UGA_StartCraftingMode::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 		return;
 	}
+
+	TObjectPtr<ABaseActor> HeldItem = Player->GetHandSlotComponent()->GetHeldItem();
+
+	if (HeldItem)
+	{
+		HeldItem->SetHidden(true);
+	}
+
+	AMainPlayerController* PC = Player->GetController<AMainPlayerController>();
+	
+	if (!PC)
+	{
+		OnEndCinematic();
+		return;
+	}
+
+	PC->SetIgnoreMoveInput(true);
+	PC->SetIgnoreLookInput(true);
 
 	AT_StartCraftingModeCinematic = UAT_StartCraftingMode::InitialEvent(this, CraftingReadyCinematic);
 	AT_StartCraftingModeCinematic->OnStartCraftingCinematicEndNotified.AddDynamic(this, &ThisClass::OnEndCinematic);

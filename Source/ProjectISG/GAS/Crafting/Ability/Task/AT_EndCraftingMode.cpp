@@ -5,7 +5,6 @@
 #include "MovieSceneSequencePlaybackSettings.h"
 #include "ProjectISG/Contents/Building/Props/Workbench.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
-#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 
 UAT_EndCraftingMode* UAT_EndCraftingMode::InitialEvent(UGameplayAbility* Ability, ULevelSequence* LevelSequence, AWorkbench* Workbench)
@@ -56,7 +55,7 @@ void UAT_EndCraftingMode::Activate()
 	LevelSequenceActor->AddBindingByTag(FName(TEXT("Player")), GetAvatarActor());
 	LevelSequenceActor->AddBindingByTag(FName(TEXT("Target")), TargetWorkbench);
 
-	LevelSequenceActor->SetActorTransform(GetAvatarActor()->GetTransform());
+	LevelSequenceActor->SetActorTransform(TargetWorkbench->GetTransform());
 
 	LevelSequencePlayer->Play();
 }

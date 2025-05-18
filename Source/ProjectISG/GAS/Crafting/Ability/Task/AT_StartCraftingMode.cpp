@@ -6,7 +6,6 @@
 #include "ProjectISG/Contents/Building/Props/Workbench.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
-#include "ProjectISG/Core/Controller/MainPlayerController.h"
 
 UAT_StartCraftingMode* UAT_StartCraftingMode::InitialEvent(UGameplayAbility* Ability, ULevelSequence* LevelSequence)
 {
@@ -40,14 +39,6 @@ void UAT_StartCraftingMode::Activate()
 		return;
 	}
 
-	AMainPlayerController* PC = MainPlayerCharacter->GetController<AMainPlayerController>();
-	
-	if (!PC)
-	{
-		EndTask();
-		return;
-	}
-
 	FMovieSceneSequencePlaybackSettings PlaybackSettings;
 	PlaybackSettings.bAutoPlay = true;
 
@@ -56,9 +47,6 @@ void UAT_StartCraftingMode::Activate()
 		PlaybackSettings, LevelSequenceActor);
 
 	LevelSequencePlayer->OnFinished.AddDynamic(this, &ThisClass::OnFinish);
-
-	PC->SetIgnoreMoveInput(true);
-	PC->SetIgnoreLookInput(true);
 	
 	LevelSequenceActor->AddBindingByTag(FName(TEXT("Player")), GetAvatarActor());
 	LevelSequenceActor->AddBindingByTag(FName(TEXT("Target")), TargetWorkbench);

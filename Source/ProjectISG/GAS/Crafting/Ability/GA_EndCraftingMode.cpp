@@ -2,6 +2,7 @@
 
 #include "ProjectISG/Contents/Building/Props/Workbench.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "Task/AT_EndCraftingMode.h"
 
@@ -39,6 +40,13 @@ void UGA_EndCraftingMode::OnEndCinematic()
 {
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>
 		(CurrentActorInfo->AvatarActor.Get());
+
+	TObjectPtr<ABaseActor> HeldItem = Player->GetHandSlotComponent()->GetHeldItem();
+
+	if (HeldItem)
+	{
+		HeldItem->SetHidden(false);
+	}
 
 	if (!Player)
 	{
