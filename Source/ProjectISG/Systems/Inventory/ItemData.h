@@ -139,6 +139,11 @@ struct PROJECTISG_API FItemMetaInfo
 		return MetaData;
 	}
 
+	FORCEINLINE void SetMetaDataValue(const EMetaDataKey Key, const FString& Value)
+	{
+		MetaData.Add(Key, Value);
+	}
+
 	FORCEINLINE void SetMetaData(
 		const TMap<EMetaDataKey, FString>& NewMetaData)
 	{
@@ -152,7 +157,36 @@ struct PROJECTISG_API FItemMetaInfo
 
 	bool operator ==(const FItemMetaInfo& CompareItem) const
 	{
-		return CompareItem.GetId() == GetId();
+		if (CompareItem.GetId() != GetId())
+		{
+			return false;
+		}
+
+		// MetaData 갯수가 다르다는 것 자체가 다른 아이템 데이터라는 의미
+		if (MetaData.Num() != CompareItem.MetaData.Num())
+		{
+			return false;
+		}
+
+		// MetaData 갯수가 같다는 것은 둘 중 하나 모든 인자 값을 가지고 있을 수 있고
+		// 비교할 때 하나라도 다르면 값 자체가 다르다라는 뜻을 의미함
+		for (const TTuple<EMetaDataKey, FString> Data : MetaData)
+		{
+			// 비교할 아이템에 Key가 없으면 다른 MetaData
+			if (!CompareItem.MetaData.Contains(Data.Key))
+			{
+				return false;
+			}
+
+			// 당연하게 같은 Key에 값이 다르면 다른 값임을 의미함.
+			if (MetaData[Data.Key] != CompareItem.MetaData[Data.Key])
+			{
+				return false;
+			}
+		}
+
+		// 위 조건들에 모두 만족하면 알아서 true로 반환함
+		return true;
 	}
 
 	bool IsValid() const
