@@ -55,7 +55,7 @@ void UInventoryComponent::InitializeItemData()
 
 	FItemMetaInfo CropItemMetaInfo;
 	CropItemMetaInfo.SetId(3);
-	CropItemMetaInfo.SetCurrentCount(2);
+	CropItemMetaInfo.SetCurrentCount(10);
 
 	InventoryList[7] = CropItemMetaInfo;
 
@@ -67,14 +67,17 @@ FItemMetaInfo UInventoryComponent::GetItemMetaInfo(const uint16 Index)
 	return InventoryList[Index];
 }
 
-bool UInventoryComponent::ChangeItem(AActor* Causer, const FItemMetaInfo& ItemInfo, const uint16 Index)
+bool UInventoryComponent::ChangeItem(AActor* Causer,
+                                     const FItemMetaInfo& ItemInfo,
+                                     const uint16 Index)
 {
 	InventoryList[Index] = ItemInfo;
-	
+
 	return true;
 }
 
-void UInventoryComponent::SwapItem(AActor* Causer, const uint16 Prev, const uint16 Next)
+void UInventoryComponent::SwapItem(AActor* Causer, const uint16 Prev,
+                                   const uint16 Next)
 {
 	SwapItemInInventory(Prev, Next);
 }
