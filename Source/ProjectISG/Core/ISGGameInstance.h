@@ -20,7 +20,7 @@ public:
 	void CreateSession();
 
 	void JoinFoundSession();
-#pragma endregion 
+#pragma endregion
 
 #pragma region GETTERSETTER
 	GETTER_SETTER(FString, SessionId)
@@ -29,14 +29,15 @@ public:
 
 	GETTER_SETTER(bool, IsServerTravel)
 #pragma endregion
-	
+
 protected:
 	virtual void Init() override;
 
 	UFUNCTION()
 	void OnCompleteCreate(FName SessionName, bool IsCreateSuccess);
-	
-	void OnJoinSession(FName SessionName, EOnJoinSessionCompleteResult::Type Type);
+
+	void OnJoinSession(FName SessionName,
+	                   EOnJoinSessionCompleteResult::Type Type);
 
 private:
 	UPROPERTY()
@@ -44,7 +45,7 @@ private:
 
 	bool SessionCreateSuccess = false;
 
-	bool IsServerTravel;
+	bool IsServerTravel = false;
 
 	FOnJoinSessionCompleteDelegate OnJoinSessionCompleteDelegate;
 };

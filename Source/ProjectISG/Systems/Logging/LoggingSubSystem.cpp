@@ -4,10 +4,9 @@
 #include "Interfaces/IHttpRequest.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
-#include "ProjectISG/Core/GameMode/MainGameMode.h"
 #include "ProjectISG/Core/GameMode/MainGameState.h"
-#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Systems/Time/TimeManager.h"
+#include "ProjectISG/Systems/Logging/Component/ScreenShotComponent.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 #include "ProjectISG/Utils/SessionUtil.h"
 
@@ -48,16 +47,49 @@ void ULoggingSubSystem::LoggingData(FDiaryLogParams& Payload)
 		                                  ATimeManager::StaticClass()));
 	Payload.CurrentDate = TimeManager->GetDateText();
 
-	if (FMath::RandRange(0, 1) > static_cast<double>(CurrentScreenShotLogCount)
-		/ MaxScreenShotLogCount)
+	QueueLogging(Payload);
+}
+
+void ULoggingSubSystem::LoggingDataWithScreenshot(
+	FDiaryLogParams& Payload, const bool IsForce)
+{
+	const ATimeManager* TimeManager = Cast<ATimeManager>(
+		UGameplayStatics::GetActorOfClass(GetWorld(),
+		                                  ATimeManager::StaticClass()));
+	Payload.CurrentDate = TimeManager->GetDateText();
+
+	const bool IsCanScreenshot = FMath::RandRange(0, 1) > static_cast<double>(
+			CurrentScreenShotLogCount)
+		/ MaxScreenShotLogCount;
+
+	if (IsCanScreenshot || IsForce)
 	{
+		FOnCaptureFrameNotified OnCaptureFrameNotified;
+		OnCaptureFrameNotified.BindLambda(
+			[this, Payload](const TArray64<uint8>& FileBinary) mutable
+			{
+				if (!FileBinary.IsEmpty())
+				{
+					Payload.File = FileBinary;
+				}
+
+				SendLoggingNow(Payload);
+			});
+
 		CurrentScreenShotLogCount = 1;
-		SendLoggingNow(Payload);
+
+		const AMainPlayerCharacter* LocalPlayer = Cast<
+			AMainPlayerCharacter>(
+			UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+		LocalPlayer->GetScreenShotComponent()->
+		             SaveCaptureFrameImage(this, OnCaptureFrameNotified);
+
+		return;
 	}
 
-	CurrentScreenShotLogCount += 1;
-
 	QueueLogging(Payload);
+	CurrentScreenShotLogCount += 1;
 }
 
 void ULoggingSubSystem::SendLoggingNow(const FDiaryLogParams& Payload)
@@ -128,11 +160,17 @@ void ULoggingSubSystem::CreateLogDataStringForMultipart(
 	};
 
 	// 필수 필드 추가
+#if WITH_EDITOR
+	AddTextField(
+	TEXT("session_id"),TEXT("e1827901-2536-4fb9-b76a-ca8e149015cb"), true);
+	AddTextField(TEXT("user_id"), TEXT("1"),false);
+#else
 	AddTextField(
 		TEXT("session_id"),
 		GetWorld()->GetGameState<AMainGameState>()->GetSessionId(), true);
 	AddTextField(TEXT("user_id"), FSessionUtil::GetCurrentId(GetWorld()),
-	             false);
+				 false);
+#endif
 	AddTextField(TEXT("timestamp"), FDateTime::Now().ToString(), false);
 	AddTextField(TEXT("ingame_datetime"), LogData.CurrentDate, false);
 	// TODO: 나중에 해당 값을 별도로 Parameter로 받던가

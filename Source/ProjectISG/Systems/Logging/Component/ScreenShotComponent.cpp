@@ -6,6 +6,7 @@
 #include "Engine/TextureRenderTarget2D.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Kismet/KismetRenderingLibrary.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 
 UScreenShotComponent::UScreenShotComponent()
 {
@@ -26,11 +27,9 @@ void UScreenShotComponent::SaveCaptureFrameImage(const UObject* Object,
                                                  const FOnCaptureFrameNotified&
                                                  OnCaptureFrameNotified)
 {
-	const APawn* Player = Cast<APawn>(GetOwner());
-	const APlayerCameraManager* PlayerCameraManager = Cast<APlayerController>(
-		Player->GetController())->PlayerCameraManager;
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
 
-	SceneCapture->SetWorldTransform(PlayerCameraManager->GetActorTransform());
+	SceneCapture->SetWorldTransform(Player->GetScreenShotCameraComponent()->GetComponentTransform());
 
 	SceneCapture->TextureTarget =
 		UKismetRenderingLibrary::CreateRenderTarget2D(
@@ -38,12 +37,12 @@ void UScreenShotComponent::SaveCaptureFrameImage(const UObject* Object,
 			1920,
 			1080,
 			RTF_RGBA16f,
-			FLinearColor::White,
+			FLinearColor::Black,
 			false,
 			false
 		);
 	SceneCapture->CaptureScene();
-	SceneCapture->bCaptureEveryFrame = false;
+	
 	// RenderTarget에서 리소스 얻기
 	// GameThread_GetRenderTargetResource 는 이름 그대로 메인 스레드인
 	// 게임 Thread에서 진행되기 때문에 다른 스레드에서 실행시키려고 한다면
