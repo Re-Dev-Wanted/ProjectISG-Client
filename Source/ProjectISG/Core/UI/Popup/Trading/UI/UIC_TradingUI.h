@@ -29,5 +29,5 @@ public:
 	void UpdateInventory();
 
 	UFUNCTION()
-	void DetectDragItem(uint16 ItemId);
+	void DetectDragItem(uint16 ItemId, uint16 SlotIndex);
 };

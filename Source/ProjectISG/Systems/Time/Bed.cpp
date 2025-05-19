@@ -33,9 +33,11 @@ ABed::ABed()
 	WakeUpPos = CreateDefaultSubobject<USceneComponent>(TEXT("WakeUpPos"));
 	WakeUpPos->SetupAttachment(Root);
 
-	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
+	CameraComponent = CreateDefaultSubobject<UCameraComponent>(
+		TEXT("CameraComponent"));
 	CameraComponent->SetupAttachment(Root);
-	CameraComponent->SetRelativeLocation(FVector(0.000000, 250.000000, 300.000000));
+	CameraComponent->SetRelativeLocation(
+		FVector(0.000000, 250.000000, 300.000000));
 	CameraComponent->SetRelativeRotation(FRotator(0.f, -90.f, -45.f));
 
 	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(
@@ -101,7 +103,7 @@ void ABed::OnInteractive(AActor* Causer)
 	EventPayload.Target = this;
 	Player->GetAbilitySystemComponent()->HandleGameplayEvent(
 		EventPayload.EventTag, &EventPayload);
-	
+
 	Player->GetInteractionComponent()->Server_OnInteractiveResponse(Causer);
 
 	CanInteractive = false;
@@ -139,7 +141,8 @@ void ABed::MovePlayerToBed()
 {
 	if (MainPlayer)
 	{
-		AMainPlayerController* PC = Cast<AMainPlayerController>(MainPlayer->GetController());
+		AMainPlayerController* PC = Cast<AMainPlayerController>(
+			MainPlayer->GetController());
 		PC->SetViewTargetWithBlend(this);
 		MainPlayer->SetActorRotation(WakeUpPos->GetComponentRotation());
 		MainPlayer->SetActorLocation(WakeUpPos->GetComponentLocation());
@@ -221,6 +224,7 @@ void ABed::SetCollisionEnabled(bool bEnable) const
 void ABed::NetMulticast_InteractiveValue_Implementation(bool bEnable)
 {
 	CanInteractive = bEnable;
+
 	MainPlayer->GetInteractionComponent()->SetIsInteractive(bEnable);
 	MainPlayer->GetPlacementIndicatorComponent()->SetIsActive(bEnable);
 }

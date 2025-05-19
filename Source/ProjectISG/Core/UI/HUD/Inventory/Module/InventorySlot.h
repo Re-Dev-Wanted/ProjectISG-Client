@@ -10,7 +10,7 @@ class UBorder;
 class UOverlay;
 class UTextBlock;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventorySlotDragDetected, uint16, ItemId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnInventorySlotDragDetected, uint16, ItemId, uint16, SlotIndex);
 
 UCLASS()
 class PROJECTISG_API UInventorySlot : public UUserWidget

@@ -16,9 +16,13 @@ class PROJECTISG_API UUIM_TradingUI : public UBaseUIModel
 	GENERATED_BODY()
 
 public:
-	GETTER_SETTER(uint32, ClickedInventoryItem);
+	GETTER_SETTER(uint32, ClickedInventoryItem)
+	GETTER_SETTER(uint16, ClickedInventorySlotIndex)
 
 private:
 	UPROPERTY()
 	uint32 ClickedInventoryItem;
+
+	UPROPERTY()
+	uint16 ClickedInventorySlotIndex;
 };

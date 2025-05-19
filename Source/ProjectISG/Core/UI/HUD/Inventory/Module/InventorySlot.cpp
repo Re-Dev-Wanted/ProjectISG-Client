@@ -74,7 +74,7 @@ void UInventorySlot::NativeOnDragDetected(const FGeometry& InGeometry,
 
 	if (OnInventorySlotDragDetected.IsBound())
 	{
-		OnInventorySlotDragDetected.Broadcast(SlotItemId);
+		OnInventorySlotDragDetected.Broadcast(SlotItemId, Index);
 	}
 }
 

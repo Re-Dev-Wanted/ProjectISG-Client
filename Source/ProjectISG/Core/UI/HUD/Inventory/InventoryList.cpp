@@ -98,10 +98,10 @@ void UInventoryList::SelectSlot(const uint16 Prev, const uint16 Next)
 	NextSelectedSlot->SetSelected(true);
 }
 
-void UInventoryList::OnDragItemDetected(uint16 ItemId)
+void UInventoryList::OnDragItemDetected(uint16 ItemId, uint16 SlotIndex)
 {
 	if (OnDragDetectedNotified.IsBound())
 	{
-		OnDragDetectedNotified.Broadcast(ItemId);
+		OnDragDetectedNotified.Broadcast(ItemId, SlotIndex);
 	}
 }

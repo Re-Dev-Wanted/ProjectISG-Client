@@ -37,12 +37,14 @@ void UUIC_MultiPlay::OnCompleteSearchAndTryJoin(bool IsSearchSuccess)
 {
 	if (IsSearchSuccess)
 	{
-		ALobbyPlayerController* LobbyPlayerController = Cast<ALobbyPlayerController>(GetPlayerController());
+		ALobbyPlayerController* LobbyPlayerController = Cast<
+			ALobbyPlayerController>(GetPlayerController());
 		for (int i = 0; i < SessionSearchData.SessionSearch->SearchResults.Num()
 		     ; i++)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("세션을 검색하는 것에 성공하였습니다."));
-			LobbyPlayerController->SessionSearchResult = SessionSearchData.SessionSearch->SearchResults[i]; 
+			LobbyPlayerController->SessionSearchResult = SessionSearchData.
+				SessionSearch->SearchResults[i];
 			LobbyPlayerController->ShowLoadingUI(false);
 		}
 	}
@@ -56,13 +58,12 @@ void UUIC_MultiPlay::OnCompleteSearch(bool IsSearchSuccess)
 {
 	if (IsSearchSuccess)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("세션을 검색하는 것에 성공하였습니다."));
-
 		UUIV_MultiPlay* MultiPlayView = Cast<UUIV_MultiPlay>(GetView());
 		MultiPlayView->GetRoomList()->ClearChildren();
 		for (int i = 0; i < SessionSearchData.SessionSearch->SearchResults.Num()
 		     ; i++)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("세션을 검색하는 것에 성공하였습니다. %d"), i);
 			UUIV_RoomItem* RoomItem = CreateWidget<UUIV_RoomItem>(
 				GetWorld(), RoomItemFactory);
 			RoomItem->
@@ -75,4 +76,3 @@ void UUIC_MultiPlay::OnCompleteSearch(bool IsSearchSuccess)
 		UE_LOG(LogTemp, Warning, TEXT("세션을 검색하는 것에 실패하였습니다."));
 	}
 }
-
