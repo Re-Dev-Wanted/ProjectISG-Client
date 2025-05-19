@@ -42,13 +42,18 @@ FQuestSceneCutData& UQuestStoryManager::GetQuestSceneCutById(
 
 void UQuestStoryManager::InitializeQuestData()
 {
-	const UDataTable* QuestStoryDataTable = LoadObject<UDataTable>(
-		nullptr,
-		TEXT(
-			"/Script/Engine.DataTable'/Game/Systems/QuestStory/Data/DT_QuestStoryData.DT_QuestStoryData'"));
+	const static ConstructorHelpers::FObjectFinder<UDataTable>
+		QuestStoryDataTable(
+			TEXT(
+				"'/Game/Systems/QuestStory/Data/DT_QuestStoryData.DT_QuestStoryData'"));
+
+	if (!QuestStoryDataTable.Succeeded())
+	{
+		return;
+	}
 
 	TArray<FQuestStoryData*> TempQuestStoryData;
-	QuestStoryDataTable->GetAllRows<FQuestStoryData>(
+	QuestStoryDataTable.Object->GetAllRows<FQuestStoryData>(
 		TEXT(""), TempQuestStoryData);
 
 	for (const FQuestStoryData* QuestStoryData : TempQuestStoryData)
@@ -59,13 +64,18 @@ void UQuestStoryManager::InitializeQuestData()
 
 void UQuestStoryManager::InitializeQuestDialogue()
 {
-	const UDataTable* QuestStoryDialogueTable = LoadObject<UDataTable>(
-		nullptr,
-		TEXT(
-			"/Script/Engine.DataTable'/Game/Systems/QuestStory/Data/DT_QuestStoryDialogue.DT_QuestStoryDialogue'"));
+	const static ConstructorHelpers::FObjectFinder<UDataTable>
+		QuestStoryDialogueTable(
+			TEXT(
+				"'/Game/Systems/QuestStory/Data/DT_QuestStoryDialogue.DT_QuestStoryDialogue'"));
+
+	if (!QuestStoryDialogueTable.Succeeded())
+	{
+		return;
+	}
 
 	TArray<FQuestStoryDialogue*> TempQuestStoryDialogueTable;
-	QuestStoryDialogueTable->GetAllRows<FQuestStoryDialogue>(
+	QuestStoryDialogueTable.Object->GetAllRows<FQuestStoryDialogue>(
 		TEXT(""), TempQuestStoryDialogueTable);
 
 	// 초기 데이터 삽입
@@ -82,7 +92,8 @@ void UQuestStoryManager::InitializeQuestDialogue()
 			TArray<FQuestStoryDialogue> NewTempData;
 			NewTempData.Add(*StoryDialogueData);
 
-			QuestDialogueData.Add(StoryDialogueData->GetQuestId(), NewTempData);
+			QuestDialogueData.Add(StoryDialogueData->GetQuestId(),
+			                      NewTempData);
 		}
 	}
 
@@ -99,13 +110,18 @@ void UQuestStoryManager::InitializeQuestDialogue()
 
 void UQuestStoryManager::InitializeQuestSceneCut()
 {
-	const UDataTable* QuestSceneCutDataTable = LoadObject<UDataTable>(
-		nullptr,
-		TEXT(
-			"/Script/Engine.DataTable'/Game/Systems/QuestStory/Data/DT_QuestSceneCutData.DT_QuestSceneCutData'"));
+	const static ConstructorHelpers::FObjectFinder<UDataTable>
+		QuestSceneCutDataTable(
+			TEXT(
+				"'/Game/Systems/QuestStory/Data/DT_QuestSceneCutData.DT_QuestSceneCutData'"));
+
+	if (!QuestSceneCutDataTable.Succeeded())
+	{
+		return;
+	}
 
 	TArray<FQuestSceneCutData*> TempQuestSceneCutList;
-	QuestSceneCutDataTable->GetAllRows<FQuestSceneCutData>(
+	QuestSceneCutDataTable.Object->GetAllRows<FQuestSceneCutData>(
 		TEXT(""), TempQuestSceneCutList);
 
 	for (const FQuestSceneCutData* TempQuestSceneCutData :
