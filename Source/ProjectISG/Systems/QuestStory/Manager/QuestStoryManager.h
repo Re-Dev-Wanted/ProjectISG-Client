@@ -22,10 +22,16 @@ public:
 	static bool CheckAndCompleteQuest(AMainPlayerController* PC,
 	                                  const FString& QuestId);
 
+	static FORCEINLINE TArray<FQuestStoryData>& GetAllQuestData()
+	{
+		return QuestArrayList;
+	}
+
 private:
 	static bool IsInitialized;
 
 	static TMap<FString, FQuestStoryData> QuestData;
+	static TArray<FQuestStoryData> QuestArrayList;
 	static TMap<FString, TArray<FQuestStoryDialogue>> QuestDialogueData;
 	static TMap<FString, FQuestSceneCutData> QuestSceneCutData;
 

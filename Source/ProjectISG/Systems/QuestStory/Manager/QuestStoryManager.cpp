@@ -4,6 +4,7 @@
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 
+TArray<FQuestStoryData> UQuestStoryManager::QuestArrayList;
 TMap<FString, FQuestStoryData> UQuestStoryManager::QuestData;
 TMap<FString, TArray<FQuestStoryDialogue>>
 UQuestStoryManager::QuestDialogueData;
@@ -56,8 +57,15 @@ void UQuestStoryManager::InitializeQuestData()
 	QuestStoryDataTable.Object->GetAllRows<FQuestStoryData>(
 		TEXT(""), TempQuestStoryData);
 
+	TempQuestStoryData.HeapSort(
+		[](const FQuestStoryData& A, const FQuestStoryData& B)
+		{
+			return A.GetQuestId() < B.GetQuestId();
+		});
+
 	for (const FQuestStoryData* QuestStoryData : TempQuestStoryData)
 	{
+		QuestArrayList.Add(*QuestStoryData);
 		QuestData.Add(QuestStoryData->GetQuestId(), *QuestStoryData);
 	}
 }
