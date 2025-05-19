@@ -401,6 +401,14 @@ FString ATimeManager::GetDateText() const
 	return DateText.ToString();
 }
 
+FString ATimeManager::GetDateDisplayText() const
+{
+	FDateTime DateText(1, 1, 1, 0, 0, 0);
+	DateText += FTimespan(Day - 1, Hour, Minute, Second);
+
+	return DateText.ToFormattedString(TEXT("%Y년 %m월 %d일"));
+}
+
 uint32 ATimeManager::GetTotalPlayingDay() const
 {
 	const uint32 YearToDay = (Year - 1) * 365;
