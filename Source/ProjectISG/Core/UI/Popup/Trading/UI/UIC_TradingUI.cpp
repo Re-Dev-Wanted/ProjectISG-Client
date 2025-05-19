@@ -62,8 +62,11 @@ void UUIC_TradingUI::UpdateInventory()
 	}
 }
 
-void UUIC_TradingUI::DetectDragItem(uint16 ItemId)
+
+
+void UUIC_TradingUI::DetectDragItem(uint16 ItemId, uint16 SlotIndex)
 {
 	UUIM_TradingUI* TradingModel = Cast<UUIM_TradingUI>(GetModel());
 	TradingModel->SetClickedInventoryItem(ItemId);
+	TradingModel->SetClickedInventorySlotIndex(SlotIndex);
 }

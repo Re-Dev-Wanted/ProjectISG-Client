@@ -88,6 +88,7 @@ protected:
 
 	// 현재 상호작용 중 인지 알 수 있는 flag 값으로
 	// 해당 flag가 비활성화 상태인 경우는 Trace가 되지 않는 상태가 된다.
+	UPROPERTY(EditAnywhere)
 	bool IsInteractive;
 #pragma endregion
 };

@@ -158,6 +158,10 @@ void AKitchenFurniture::UnEquipCookingToolToAct()
 
 void AKitchenFurniture::UnlockPlayer()
 {
+	if (HasAuthority())
+	{
+		SetInteractingPlayer(nullptr);
+	}
 	Client_UnlockPlayer();
 }
 

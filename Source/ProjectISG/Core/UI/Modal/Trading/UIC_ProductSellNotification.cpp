@@ -15,6 +15,7 @@
 #include "ProjectISG/Core/UI/Popup/Trading/UI/UIC_TradingUI.h"
 #include "ProjectISG/Core/UI/Popup/Trading/UI/UIM_TradingUI.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/Logging/LoggingEnum.h"
 #include "ProjectISG/Systems/Logging/LoggingStruct.h"
 #include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
@@ -47,15 +48,11 @@ void UUIC_ProductSellNotification::OnClickedSellButton()
 
 	AMainPlayerState* PS = GetPlayerController()->GetPlayerState<
 		AMainPlayerState>();
-	PS->GetInventoryComponent()->RemoveItem(
-		TradingUIModel->GetClickedInventoryItem(), 1);
 
-	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
-		GetPlayerController()->GetPawn());
-	Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
 
 	PS->SetGold(PS->GetGold() + FindItemPrice(TradingUIModel));
 	TradingUIController->UpdateGoldText();
+
 	LoggingToSellItem();
 }
 
@@ -66,14 +63,85 @@ int32 UUIC_ProductSellNotification::FindItemPrice(
 
 	for (int i = 0; i < UTradingManager::GetProductData().Num(); i++)
 	{
-		if (UTradingManager::GetProductData()[i].GetProductId() ==
+		uint32 ProductId = UTradingManager::GetProductData()[i].GetProductId();
+		
+		if (ProductId ==
 			TradingUIModel->GetClickedInventoryItem())
 		{
-			return UTradingManager::GetProductData()[i].GetProductPrice();
+			return CalcItemPriceByItemGrade(ProductId,
+			                         UTradingManager::GetProductData()[i].
+			                         GetProductPrice());
 		}
 	}
 
 	return 0;
+}
+
+int32 UUIC_ProductSellNotification::CalcItemPriceByItemGrade(uint32 ProductId, uint32 ProductPrice)
+{
+	AMainPlayerState* PS = GetPlayerController()->GetPlayerState<
+		AMainPlayerState>();
+	AMainPlayerController* PC = Cast<AMainPlayerController>(GetPlayerController());
+
+	
+	UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(
+		PC->GetUIManageComponent()->ControllerInstances[
+			EUIName::Popup_TradingUI]);
+	
+	
+	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(
+		TradingUIController->GetModel());
+	
+	FItemMetaInfo ProductInfo = PS->GetInventoryComponent()->GetItemMetaInfo(TradingUIModel->GetClickedInventorySlotIndex());
+	EItemGrade ProductGrade = UItemManager::GetItemGrade(ProductInfo);
+
+	float CalculatedPrice = 0;
+	switch (ProductGrade)
+	{
+	case EItemGrade::Common:
+		{
+			CalculatedPrice = ProductPrice;
+			break;
+		}
+	case EItemGrade::Uncommon:
+		{
+			CalculatedPrice = ProductPrice * 1.5f;
+			break;
+		}
+	case EItemGrade::Rare:
+		{
+			CalculatedPrice = ProductPrice * 2.0f;
+			break;
+		}
+	case EItemGrade::Epic:
+		{
+			CalculatedPrice = ProductPrice * 3.0f;
+			break;
+		}
+	case EItemGrade::Legendary:
+		{
+			CalculatedPrice = ProductPrice * 5.0f;
+			break;
+		}
+	case EItemGrade::Mythic:
+		{
+			CalculatedPrice = ProductPrice * 10.0f;
+			break;
+		}
+	case EItemGrade::None:
+		{
+			CalculatedPrice = ProductPrice;
+			break;
+		}
+	}
+
+	
+	PS->GetInventoryComponent()->RemoveItem(
+		TradingUIModel->GetClickedInventoryItem(), 1);
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+	GetPlayerController()->GetPawn());
+	Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
+	return static_cast<int32>(CalculatedPrice);
 }
 
 void UUIC_ProductSellNotification::LoggingToSellItem()

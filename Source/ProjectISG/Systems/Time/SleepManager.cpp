@@ -30,7 +30,6 @@ void USleepManager::InitializeComponent()
 void USleepManager::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void USleepManager::GetLifetimeReplicatedProps(
@@ -57,7 +56,7 @@ void USleepManager::TickComponent(float DeltaTime, ELevelTick TickType,
 	else
 	{
 		Sleep();
-		ForceSleep();
+		//ForceSleep();
 	}
 }
 
@@ -170,6 +169,12 @@ void USleepManager::AssignBedEachPlayer()
 	TArray<AActor*> Beds;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABed::StaticClass(),
 	                                      Beds);
+
+	if (Beds.IsEmpty())
+	{
+		UE_LOG(LogTemp, Error, TEXT("맵에 배치된 침대가 없습니다."));
+		return;
+	}
 
 	int32 idx = 0;
 	AGameStateBase* GameState = GetWorld()->GetGameState();
