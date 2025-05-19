@@ -14,20 +14,29 @@ class PROJECTISG_API UUIC_TradingUI : public UBaseUIController
 {
 	GENERATED_BODY()
 
+protected:
 	virtual void
 	BindInputAction(UEnhancedInputComponent* InputComponent) override;
 
+	virtual void AppearUI() override;
+
 	UFUNCTION()
 	void OnCloseTradingUI();
-	UPROPERTY(EditDefaultsOnly, Category = "Options|Input"
-		, meta = (AllowPrivateAccess = true, EditCondition = "IsInputAccess"))
-	class UInputAction* CloseTradingUI;
+
+	UFUNCTION()
+	void DetectDragItem(uint16 ItemId, uint16 SlotIndex);
 
 public:
 	void UpdateGoldText();
 
 	void UpdateInventory();
 
-	UFUNCTION()
-	void DetectDragItem(uint16 ItemId, uint16 SlotIndex);
+	void ClearItemInfoData();
+
+	void SetItemInfoData(const uint8 InventoryIndex);
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Input"
+		, meta = (AllowPrivateAccess = true, EditCondition = "IsInputAccess"))
+	class UInputAction* CloseTradingUI;
 };

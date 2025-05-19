@@ -90,7 +90,7 @@ private:
 	UFUNCTION(NetMulticast, Reliable)
 	void NetMulticast_FieldIsDried();
 
-	void SetItemGrade();
+	EItemGrade SetItemGrade();
 
 #pragma region Settings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
@@ -152,7 +152,5 @@ private:
 	UPROPERTY(EditAnywhere, Category = Grow)
 	int32 CropBecomeStem;
 
-	UPROPERTY(EditAnywhere, Category = Grow)
-	EItemGrade ItemGrade;
 #pragma endregion
 };

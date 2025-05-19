@@ -24,7 +24,7 @@ protected:
 private:
 	int32 FindItemPrice(class UUIM_TradingUI* TradingUIModel);
 
-	int32 CalcItemPriceByItemGrade(uint32 ProductId, uint32 ProductPrice);
+	int32 CalcItemPriceByItemGrade(uint32 ProductPrice);
 
 	void LoggingToSellItem();
 };
