@@ -163,33 +163,31 @@ void ABaseCrop::CheckWaterDurationTime()
 	}
 }
 
-void ABaseCrop::SetItemGrade()
+EItemGrade ABaseCrop::SetItemGrade()
 {
 	int32 RandomNum = FMath::RandRange(0, 100);
+	UE_LOG(LogTemp, Warning, TEXT("랜덤 숫자 : %d"), RandomNum);
 	if (RandomNum > 96)
 	{
-		ItemGrade = EItemGrade::Mythic;
+		return EItemGrade::Mythic;
 	}
-	else if (RandomNum > 80)
+	if (RandomNum > 80)
 	{
-		ItemGrade = EItemGrade::Legendary;
+		return EItemGrade::Legendary;
 	}
-	else if (RandomNum > 64)
+	if (RandomNum > 64)
 	{
-		ItemGrade = EItemGrade::Epic;
+		return EItemGrade::Epic;
 	}
-	else if (RandomNum > 48)
+	if (RandomNum > 48)
 	{
-		ItemGrade = EItemGrade::Rare;
+		return EItemGrade::Rare;
 	}
-	else if (RandomNum > 32)
+	if (RandomNum > 32)
 	{
-		ItemGrade = EItemGrade::Uncommon;
+		return EItemGrade::Uncommon;
 	}
-	else
-	{
-		ItemGrade = EItemGrade::Common;
-	}
+	return EItemGrade::Common;
 }
 
 void ABaseCrop::OnInteractive(AActor* Causer)
@@ -204,9 +202,6 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 	UE_LOG(LogTemp, Warning, TEXT("작물 상호작용 함수 실행 , 로컬롤 : %s"),
 	       *FEnumUtil::GetClassEnumKeyAsString(GetLocalRole()));
 
-	Causer->SetActorLocation(InteractionPos->GetComponentLocation());
-	Causer->SetActorRotation(InteractionPos->GetComponentRotation());
-
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
 	FGameplayTagContainer ActivateTag;
 	ActivateTag.AddTag(ISGGameplayTags::Farming_Active_Harvest);
@@ -217,8 +212,9 @@ void ABaseCrop::OnInteractive(AActor* Causer)
 		FItemMetaInfo CropInfo = UItemManager::GetInitialItemMetaDataById(
 			UFarmingManager::GetDataByCropId(MatureFarmingObjectId).
 			GetItemId());
-		SetItemGrade();
-		UItemManager::SetItemGrade(CropInfo, ItemGrade);
+		CropInfo.SetMetaDataValue(EMetaDataKey::ItemGrade,
+		                          FEnumUtil::GetClassEnumKeyAsString(
+			                          SetItemGrade()));
 		Player->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
 		        AddItem(CropInfo);
 	}

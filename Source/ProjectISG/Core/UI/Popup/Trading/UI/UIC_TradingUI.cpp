@@ -12,6 +12,8 @@
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
+#include "ProjectISG/Core/UI/HUD/Inventory/Module/ItemInfo.h"
+#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 
 class AMainPlayerState;
 class AMainPlayerCharacter;
@@ -27,6 +29,13 @@ void UUIC_TradingUI::BindInputAction(UEnhancedInputComponent* InputComponent)
 
 	TradingView->GetInventoryList()->OnDragDetectedNotified.AddDynamic(
 		this, &UUIC_TradingUI::DetectDragItem);
+}
+
+void UUIC_TradingUI::AppearUI()
+{
+	Super::AppearUI();
+
+	ClearItemInfoData();
 }
 
 void UUIC_TradingUI::OnCloseTradingUI()
@@ -55,13 +64,38 @@ void UUIC_TradingUI::UpdateGoldText()
 
 void UUIC_TradingUI::UpdateInventory()
 {
-	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetPlayerController()->GetPawn());
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		GetPlayerController()->GetPawn());
 	if (Player && Player->GetPlayerInventoryComponent())
 	{
 		Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
 	}
 }
 
+void UUIC_TradingUI::ClearItemInfoData()
+{
+	const UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
+	TradingUIView->GetItemInfoTooltip()->
+	               SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UUIC_TradingUI::SetItemInfoData(const uint8 InventoryIndex)
+{
+	const UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
+	AMainPlayerState* PS = TradingUIView->GetOwningPlayerState<
+		AMainPlayerState>();
+
+	const FItemMetaInfo ItemMetaInfo = PS->GetInventoryComponent()->
+	                                       GetInventoryList()[InventoryIndex];
+
+	if (ItemMetaInfo.GetId() == 0)
+	{
+		ClearItemInfoData();
+		return;
+	}
+
+	TradingUIView->GetItemInfoTooltip()->ShowItemData(ItemMetaInfo);
+}
 
 
 void UUIC_TradingUI::DetectDragItem(uint16 ItemId, uint16 SlotIndex)

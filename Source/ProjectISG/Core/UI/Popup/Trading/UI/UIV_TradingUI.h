@@ -15,11 +15,12 @@ class PROJECTISG_API UUIV_TradingUI : public UBaseUIView
 	GENERATED_BODY()
 
 public:
-	GETTER(class UUIV_ProductListWidget*, ProductList);
-	GETTER(class UInventoryList*, InventoryList);
-	GETTER(class UTextBlock*, GoldText);
+	GETTER(class UUIV_ProductListWidget*, ProductList)
+	GETTER(class UInventoryList*, InventoryList)
+	GETTER(class UTextBlock*, GoldText)
 	SETTER(bool, OpenFlag)
-	
+	GETTER(class UItemInfo*, ItemInfoTooltip)
+
 protected:
 	virtual bool NativeOnDrop(const FGeometry& InGeometry,
 	                          const FDragDropEvent& InDragDropEvent,
@@ -27,8 +28,8 @@ protected:
 
 	virtual void NativeConstruct() override;
 
-	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-
+	virtual void
+	NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -42,6 +43,9 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* GoldText;
+
+	UPROPERTY(meta = (BindWidget))
+	class UItemInfo* ItemInfoTooltip;
 
 	bool OpenFlag = false;
 };

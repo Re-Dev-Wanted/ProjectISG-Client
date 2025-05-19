@@ -229,12 +229,12 @@ bool UInventoryComponent::DropItem(const uint16 Index, const uint32 Count)
 uint32 UInventoryComponent::GetCurrentCount(const uint16 Id)
 {
 	int32 Result = 0;
-	
+
 	if (Id <= 0)
 	{
 		return Result;
 	}
-	
+
 	for (int i = 0, ListCount = GetInventorySlotCount(); i < ListCount; i++)
 	{
 		if (InventoryList[i].GetId() == Id)
@@ -259,7 +259,7 @@ uint32 UInventoryComponent::AddItem(const FItemMetaInfo& ItemInfo)
 
 	for (int i = 0; i < GetInventorySlotCount(); i++)
 	{
-		if (InventoryList[i].GetId() == ItemInfo.GetId()
+		if (InventoryList[i] == ItemInfo
 			&& InventoryList[i].GetCurrentCount() < ItemInfoById.
 			GetMaxItemCount())
 		{

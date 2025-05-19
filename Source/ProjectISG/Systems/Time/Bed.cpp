@@ -166,6 +166,7 @@ void ABed::ActivateWakeUp()
 			ActivateTag);
 
 		NetMulticast_InteractiveValue(true);
+		SetCollisionEnabled(true);
 		MainPlayer = nullptr;
 	}
 }

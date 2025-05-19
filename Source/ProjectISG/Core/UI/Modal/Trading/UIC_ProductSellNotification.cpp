@@ -64,35 +64,38 @@ int32 UUIC_ProductSellNotification::FindItemPrice(
 	for (int i = 0; i < UTradingManager::GetProductData().Num(); i++)
 	{
 		uint32 ProductId = UTradingManager::GetProductData()[i].GetProductId();
-		
+
 		if (ProductId ==
 			TradingUIModel->GetClickedInventoryItem())
 		{
-			return CalcItemPriceByItemGrade(ProductId,
-			                         UTradingManager::GetProductData()[i].
-			                         GetProductPrice());
+			return CalcItemPriceByItemGrade(
+				UTradingManager::GetProductData()[i].
+				GetProductPrice());
 		}
 	}
 
 	return 0;
 }
 
-int32 UUIC_ProductSellNotification::CalcItemPriceByItemGrade(uint32 ProductId, uint32 ProductPrice)
+int32 UUIC_ProductSellNotification::CalcItemPriceByItemGrade(
+	uint32 ProductPrice)
 {
 	AMainPlayerState* PS = GetPlayerController()->GetPlayerState<
 		AMainPlayerState>();
-	AMainPlayerController* PC = Cast<AMainPlayerController>(GetPlayerController());
+	AMainPlayerController* PC = Cast<AMainPlayerController>(
+		GetPlayerController());
 
-	
+
 	UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(
 		PC->GetUIManageComponent()->ControllerInstances[
 			EUIName::Popup_TradingUI]);
-	
-	
+
+
 	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(
 		TradingUIController->GetModel());
-	
-	FItemMetaInfo ProductInfo = PS->GetInventoryComponent()->GetItemMetaInfo(TradingUIModel->GetClickedInventorySlotIndex());
+
+	FItemMetaInfo ProductInfo = PS->GetInventoryComponent()->GetItemMetaInfo(
+		TradingUIModel->GetClickedInventorySlotIndex());
 	EItemGrade ProductGrade = UItemManager::GetItemGrade(ProductInfo);
 
 	float CalculatedPrice = 0;
@@ -135,12 +138,12 @@ int32 UUIC_ProductSellNotification::CalcItemPriceByItemGrade(uint32 ProductId, u
 		}
 	}
 
-	
-	PS->GetInventoryComponent()->RemoveItem(
-		TradingUIModel->GetClickedInventoryItem(), 1);
+	PS->GetInventoryComponent()->DropItem(
+		TradingUIModel->GetClickedInventorySlotIndex(), 1);
 	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
-	GetPlayerController()->GetPawn());
+		GetPlayerController()->GetPawn());
 	Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
+
 	return static_cast<int32>(CalculatedPrice);
 }
 
