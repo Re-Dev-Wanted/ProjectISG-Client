@@ -5,7 +5,6 @@
 
 UQuestManageComponent::UQuestManageComponent()
 {
-	
 }
 
 void UQuestManageComponent::StartQuest(const FString& NewQuestId)
@@ -43,5 +42,7 @@ void UQuestManageComponent::EndQuest(const bool IsSuccess)
 	{
 		UE_LOG(LogTemp, Display,
 		       TEXT("Quest Manage Component: 여기에 퀘스트 완료 시 보상 처리"))
+
+		EndQuestIdList.Add(CurrentPlayingQuestId);
 	}
 }

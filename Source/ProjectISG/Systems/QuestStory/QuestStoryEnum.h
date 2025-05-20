@@ -21,3 +21,20 @@ enum class EQuestStoryObjective : uint8
 	// 특정 아이템을 수집해 가야 함.
 	CollectItem
 };
+
+UENUM()
+enum class EQuestStoryMetaDataKey: uint8
+{
+	None,
+	RequireItem,
+	RemoveItemToClear,
+	NextQuest,
+};
+
+UENUM()
+enum class EQuestStoryRewardType: uint8
+{
+	None,
+	Item,
+	Gold,
+};

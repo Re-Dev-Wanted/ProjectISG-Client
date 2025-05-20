@@ -84,6 +84,7 @@ public:
 	GETTER(class USleepManager*, SleepManager);
 
 	FString GetDateText() const;
+	FString GetDateDisplayText() const;
 	uint32 GetTotalPlayingDay() const;
 
 private:
