@@ -282,6 +282,8 @@ void USleepManager::LoggingToSleep()
 
 	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
 	            LoggingData(LogParams);
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 }
 
 void USleepManager::LoggingToWakeUp()
@@ -292,6 +294,4 @@ void USleepManager::LoggingToWakeUp()
 
 	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
 	            LoggingData(LogParams);
-
-	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
 }

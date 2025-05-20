@@ -348,6 +348,8 @@ void ABaseCrop::NetMulticast_ChangeCurrentCropState_Implementation(
 		}
 	case ECropState::Sprout:
 		{
+			Mesh->SetRelativeLocation(
+				UFarmingManager::GetDataByCropId(2).GetLocation());
 			Mesh->SetRelativeScale3D(
 				UFarmingManager::GetDataByCropId(2).GetScale());
 			Mesh->SetStaticMesh(
@@ -358,12 +360,12 @@ void ABaseCrop::NetMulticast_ChangeCurrentCropState_Implementation(
 		}
 	case ECropState::Stem:
 		{
+			Mesh->SetRelativeLocation(
+				UFarmingManager::GetDataByCropId(3).GetLocation());
 			Mesh->SetRelativeScale3D(
 				UFarmingManager::GetDataByCropId(3).GetScale());
 			Mesh->SetStaticMesh(
 				UFarmingManager::GetDataByCropId(3).GetStaticMesh());
-			Mesh->SetRelativeLocation(
-				UFarmingManager::GetDataByCropId(3).GetLocation());
 			Mesh->SetMaterial(
 				0, UFarmingManager::GetDataByCropId(3).GetMeshMaterial());
 			break;

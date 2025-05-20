@@ -61,6 +61,7 @@ int32 UUIC_ProductSellNotification::FindItemPrice(
 {
 	// 상품 데이터 테이블에 없으면 0원 처리 한다.
 
+	int32 ProductPrice = 0;
 	for (int i = 0; i < UTradingManager::GetProductData().Num(); i++)
 	{
 		uint32 ProductId = UTradingManager::GetProductData()[i].GetProductId();
@@ -68,13 +69,21 @@ int32 UUIC_ProductSellNotification::FindItemPrice(
 		if (ProductId ==
 			TradingUIModel->GetClickedInventoryItem())
 		{
-			return CalcItemPriceByItemGrade(
+			ProductPrice = CalcItemPriceByItemGrade(
 				UTradingManager::GetProductData()[i].
 				GetProductPrice());
 		}
 	}
 
-	return 0;
+	AMainPlayerState* PS = GetPlayerController()->GetPlayerState<
+		AMainPlayerState>();
+	PS->GetInventoryComponent()->DropItem(
+		TradingUIModel->GetClickedInventorySlotIndex(), 1);
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		GetPlayerController()->GetPawn());
+	Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
+
+	return ProductPrice;
 }
 
 int32 UUIC_ProductSellNotification::CalcItemPriceByItemGrade(
@@ -137,13 +146,7 @@ int32 UUIC_ProductSellNotification::CalcItemPriceByItemGrade(
 			break;
 		}
 	}
-
-	PS->GetInventoryComponent()->DropItem(
-		TradingUIModel->GetClickedInventorySlotIndex(), 1);
-	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
-		GetPlayerController()->GetPawn());
-	Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
-
+	
 	return static_cast<int32>(CalculatedPrice);
 }
 
