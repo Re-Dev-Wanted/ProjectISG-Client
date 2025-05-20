@@ -23,15 +23,19 @@ UPlacementIndicatorComponent::UPlacementIndicatorComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	bWantsInitializeComponent = true;
-	
-	ConstructorHelpers::FObjectFinder<UInputAction> InputAction(TEXT("/Game/Core/Character/Blueprints/MainPlayer/Input/IA_RotateObject.IA_RotateObject"));
+
+	ConstructorHelpers::FObjectFinder<UInputAction> InputAction(
+		TEXT(
+			"/Game/Core/Character/Blueprints/MainPlayer/Input/IA_RotateObject.IA_RotateObject"));
 
 	if (InputAction.Succeeded())
 	{
 		RotateAction = InputAction.Object;
 	}
 
-	ConstructorHelpers::FObjectFinder<UInputAction> InputAction2(TEXT("/Game/Core/Character/Blueprints/MainPlayer/Input/IA_Touch.IA_Touch"));
+	ConstructorHelpers::FObjectFinder<UInputAction> InputAction2(
+		TEXT(
+			"/Game/Core/Character/Blueprints/MainPlayer/Input/IA_Touch.IA_Touch"));
 
 	if (InputAction2.Succeeded())
 	{
@@ -53,15 +57,19 @@ void UPlacementIndicatorComponent::InitializeComponent()
 	Player->OnUpdateSelectedItem.AddDynamic(this, &ThisClass::OnChange);
 }
 
-void UPlacementIndicatorComponent::BindingInputActions(UEnhancedInputComponent* EnhancedInputComponent)
+void UPlacementIndicatorComponent::BindingInputActions(
+	UEnhancedInputComponent* EnhancedInputComponent)
 {
-	EnhancedInputComponent->BindAction(RotateAction, ETriggerEvent::Triggered, this, &ThisClass::OnRotate);
-	EnhancedInputComponent->BindAction(TouchAction, 
-	ETriggerEvent::Triggered, this, &ThisClass::Execute);
+	EnhancedInputComponent->BindAction(RotateAction, ETriggerEvent::Triggered,
+	                                   this, &ThisClass::OnRotate);
+	EnhancedInputComponent->BindAction(TouchAction,
+	                                   ETriggerEvent::Triggered, this,
+	                                   &ThisClass::Execute);
 }
 
-void UPlacementIndicatorComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-                                                 FActorComponentTickFunction* ThisTickFunction)
+void UPlacementIndicatorComponent::TickComponent(
+	float DeltaTime, ELevelTick TickType,
+	FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
@@ -89,12 +97,12 @@ void UPlacementIndicatorComponent::Execute()
 	{
 		return;
 	}
-	
+
 	if (!bIsIndicatorActive)
 	{
 		return;
 	}
-	
+
 	if (bIsBlocked)
 	{
 		return;
@@ -104,19 +112,20 @@ void UPlacementIndicatorComponent::Execute()
 	{
 		return;
 	}
-	
+
 	if (!PlayerController || !PlayerController->PlayerState)
 	{
 		return;
 	}
-	
-	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(PlayerController->PlayerState);
+
+	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(
+		PlayerController->PlayerState);
 
 	if (!PlayerState)
 	{
 		return;
 	}
-	
+
 	AGridManager* GridManager = PlayerState->GetGridManager();
 
 	if (!GridManager)
@@ -124,22 +133,23 @@ void UPlacementIndicatorComponent::Execute()
 		return;
 	}
 
-	const TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent = Player->GetPlayerInventoryComponent();
+	const TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent =
+		Player->GetPlayerInventoryComponent();
 
 	FRotator Rotation = GridManager->GetSnappedRotation
-			(GetDegrees(RotateDirection));
+		(GetDegrees(RotateDirection));
 
 	if (GetOwner()->HasAuthority())
 	{
 		ExecuteInternal(IndicateActor->GetActorPivotLocation(),
-			IndicateActor->GetActorLocation(), Rotation,
-			IndicateActor->GetClass(), PlacementItemId);
+		                IndicateActor->GetActorLocation(), Rotation,
+		                IndicateActor->GetClass(), PlacementItemId);
 	}
 	else
 	{
 		Server_Execute(IndicateActor->GetActorPivotLocation(),
-			IndicateActor->GetActorLocation(), Rotation,
-			IndicateActor->GetClass(), PlacementItemId);
+		               IndicateActor->GetActorLocation(), Rotation,
+		               IndicateActor->GetClass(), PlacementItemId);
 	}
 
 	if (!bIsInfiniteItem)
@@ -147,34 +157,35 @@ void UPlacementIndicatorComponent::Execute()
 		if (PlayerInventoryComponent->RemoveItemCurrentSlotIndex(1))
 		{
 			OnDeactivate();
-		}	
+		}
 	}
 }
 
-void UPlacementIndicatorComponent::ExecuteInternal(FVector Pivot, FVector Location, FRotator Rotation,
+void UPlacementIndicatorComponent::ExecuteInternal(
+	FVector Pivot, FVector Location, FRotator Rotation,
 	TSubclassOf<APlacement> PlacementClass, uint16 ItemId)
 {
-	
 	if (!PlayerController || !PlayerController->PlayerState)
 	{
 		return;
 	}
-	
-	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(PlayerController->PlayerState);
+
+	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(
+		PlayerController->PlayerState);
 
 	if (!PlayerState)
 	{
 		return;
 	}
-	
+
 	AGridManager* GridManager = PlayerState->GetGridManager();
 
 	if (GridManager)
 	{
-
 		if (GetOwner()->HasAuthority())
 		{
-			GridManager->BuildPlacement(PlacementClass, ItemId, Pivot, Location, Rotation);
+			GridManager->BuildPlacement(PlacementClass, ItemId, Pivot, Location,
+			                            Rotation);
 
 			// Logging
 			if (UItemManager::GetItemUsingType(ItemId) != "Disposability")
@@ -184,41 +195,43 @@ void UPlacementIndicatorComponent::ExecuteInternal(FVector Pivot, FVector Locati
 				LogParams.ActionType = ELoggingActionType::HOUSING;
 				LogParams.ActionName = ELoggingActionName::place_housing;
 
-				GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-							LoggingData(LogParams);
-
-				GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
+				GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()
+				          ->
+				          LoggingDataWithScreenshot(LogParams);
 			}
 		}
 		else
 		{
-			GridManager->Server_BuildPlacement(PlacementClass, ItemId, Pivot, Location, Rotation);
+			GridManager->Server_BuildPlacement(PlacementClass, ItemId, Pivot,
+			                                   Location, Rotation);
 		}
 	}
 }
 
 void UPlacementIndicatorComponent::LineTrace()
 {
-	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(PlayerController->PlayerState);
+	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(
+		PlayerController->PlayerState);
 
 	if (!PlayerState)
 	{
 		return;
 	}
-	
+
 	AGridManager* GridManager = PlayerState->GetGridManager();
 
 	if (!GridManager)
 	{
 		return;
 	}
-	
+
 	const TArray<AActor*> IgnoreActors;
 	const FVector OwnerStartLocation = Player->GetActorLocation();
 	const FVector OwnerEndLocation = OwnerStartLocation + Player->
 		GetCameraComponent()->GetForwardVector() * TargetRange;
 
-	const AMainPlayerController* PC = Cast<AMainPlayerController>(PlayerController);
+	const AMainPlayerController* PC = Cast<AMainPlayerController>(
+		PlayerController);
 
 	if (!PC)
 	{
@@ -237,19 +250,22 @@ void UPlacementIndicatorComponent::LineTrace()
 	{
 		if (PlayerController->GetCharacter()->IsLocallyControlled())
 		{
-			FVector SnappedLocation = GridManager->SnapToGridPlacement(TargetTraceResult.ImpactPoint);
+			FVector SnappedLocation = GridManager->SnapToGridPlacement(
+				TargetTraceResult.ImpactPoint);
 			FRotator SnappedRotation = GridManager->GetSnappedRotation
-			(GetDegrees(RotateDirection));
+				(GetDegrees(RotateDirection));
 
-			IndicateActor->SetActorLocation(FMath::VInterpTo(IndicateActor->GetActorLocation(), SnappedLocation,
-															  0.1f,
-															  InterpSpeed));
-			
-			IndicateActor->SetActorRotation(FMath::RInterpTo(IndicateActor->GetActorRotation(),
-															  FRotator(0, 
-															  SnappedRotation.Yaw,
-															   0), 0.1f,
-															  InterpSpeed));
+			IndicateActor->SetActorLocation(FMath::VInterpTo(
+				IndicateActor->GetActorLocation(), SnappedLocation,
+				0.1f,
+				InterpSpeed));
+
+			IndicateActor->SetActorRotation(FMath::RInterpTo(
+				IndicateActor->GetActorRotation(),
+				FRotator(0,
+				         SnappedRotation.Yaw,
+				         0), 0.1f,
+				InterpSpeed));
 
 			bIsBlocked = !GridManager->IsEmptyGrid(SnappedLocation);
 
@@ -270,20 +286,21 @@ void UPlacementIndicatorComponent::LineTrace()
 	}
 }
 
-void UPlacementIndicatorComponent::OnRotate(const FInputActionValue& InputActionValue)
+void UPlacementIndicatorComponent::OnRotate(
+	const FInputActionValue& InputActionValue)
 {
 	if (!IsActive)
 	{
 		return;
 	}
-		
+
 	if (!bIsIndicatorActive)
 	{
 		return;
 	}
-	
+
 	float Value = InputActionValue.Get<float>();
-	
+
 	if (Value > 0)
 	{
 		RotateDirection = RotateDirection << static_cast<uint8>(1);
@@ -299,17 +316,17 @@ void UPlacementIndicatorComponent::OnChange(
 	uint16 ItemId)
 {
 	RotateDirection = North;
-	
+
 	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
 
 	const bool bIsStructure = UItemManager::IsItemCanHousing(ItemId);
 
 	const TSubclassOf<AActor> ActorClass = ItemInfoData.GetPlaceItemActor();
-	
+
 	bIsIndicatorActive = bIsStructure
-					&& ActorClass
-					&& ActorClass->IsChildOf(APlacement::StaticClass());
-	
+		&& ActorClass
+		&& ActorClass->IsChildOf(APlacement::StaticClass());
+
 	if (bIsIndicatorActive)
 	{
 		// 다른 아이템을 생성하는 도구인지 판단
@@ -323,21 +340,26 @@ void UPlacementIndicatorComponent::OnChange(
 			// 없다면 해당 도구 Data에 문제가 있는것이므로 DataTable 확인
 			uint16 Id = UItemManager::GetGeneratedOtherItemIdById(ItemId);
 
-			const FItemInfoData OtherInfoData = UItemManager::GetItemInfoById(Id);
+			const FItemInfoData OtherInfoData =
+				UItemManager::GetItemInfoById(Id);
 			const bool bIsHousing = UItemManager::IsItemCanHousing(ItemId);
 
 			if (bIsHousing)
 			{
-				const TSubclassOf<AActor> OtherActorClass = OtherInfoData.GetPlaceItemActor();
-				if (OtherActorClass&& OtherActorClass->IsChildOf(APlacement::StaticClass()))
+				const TSubclassOf<AActor> OtherActorClass = OtherInfoData.
+					GetPlaceItemActor();
+				if (OtherActorClass && OtherActorClass->IsChildOf(
+					APlacement::StaticClass()))
 				{
 					PlacementClass = OtherActorClass;
 					OtherItemId = Id;
 				}
 			}
 		}
-		
-		PlacementItemId = bIsInfiniteItem && OtherItemId > 0? OtherItemId : ItemId;
+
+		PlacementItemId = bIsInfiniteItem && OtherItemId > 0
+			                  ? OtherItemId
+			                  : ItemId;
 		if (!PlacementClass)
 		{
 			PlacementClass = ActorClass;
@@ -358,14 +380,15 @@ void UPlacementIndicatorComponent::OnActivate(
 	{
 		return;
 	}
-	
-	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(PlayerController->PlayerState);
+
+	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(
+		PlayerController->PlayerState);
 
 	if (!PlayerState)
 	{
 		return;
 	}
-	
+
 	if (PlayerController->GetCharacter()->IsLocallyControlled())
 	{
 		AGridManager* GridManager = PlayerState->GetGridManager();
@@ -376,7 +399,7 @@ void UPlacementIndicatorComponent::OnActivate(
 		}
 
 		GridManager->SetVisibleGrid(true);
-		
+
 		SetActive(true);
 
 		if (IndicateActor)
@@ -385,7 +408,7 @@ void UPlacementIndicatorComponent::OnActivate(
 			DestroyActor->Destroy();
 			IndicateActor = nullptr;
 		}
-	
+
 		IndicateActor = GetWorld()->SpawnActor<APlacement>(Factory);
 
 		if (IndicateActor)
@@ -397,7 +420,8 @@ void UPlacementIndicatorComponent::OnActivate(
 			IndicateActor->SetGuide(GridManager->SnapSize);
 		}
 
-		const AMainPlayerController* PC = Cast<AMainPlayerController>(PlayerController);
+		const AMainPlayerController* PC = Cast<AMainPlayerController>(
+			PlayerController);
 
 		if (PC && PC->GetMainHUD())
 		{
@@ -418,16 +442,17 @@ void UPlacementIndicatorComponent::OnDeactivate()
 		}
 
 		SetActive(false);
-		
+
 		if (PlayerController)
 		{
-			AMainPlayerState* PlayerState = Cast<AMainPlayerState>(PlayerController->PlayerState);
+			AMainPlayerState* PlayerState = Cast<AMainPlayerState>(
+				PlayerController->PlayerState);
 
 			if (!PlayerState)
 			{
 				return;
 			}
-			
+
 			AGridManager* GridManager = PlayerState->GetGridManager();
 
 			if (GridManager)
@@ -436,7 +461,8 @@ void UPlacementIndicatorComponent::OnDeactivate()
 			}
 		}
 
-		const AMainPlayerController* PC = Cast<AMainPlayerController>(PlayerController);
+		const AMainPlayerController* PC = Cast<AMainPlayerController>(
+			PlayerController);
 
 		if (PC && PC->GetMainHUD())
 		{
@@ -450,8 +476,9 @@ void UPlacementIndicatorComponent::OnDeactivate()
 void UPlacementIndicatorComponent::SetIsActive(bool NewActive)
 {
 	IsActive = NewActive;
-	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(PlayerController->PlayerState);
-	
+	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(
+		PlayerController->PlayerState);
+
 	AGridManager* GridManager = PlayerState->GetGridManager();
 
 	if (GridManager)
@@ -466,8 +493,8 @@ void UPlacementIndicatorComponent::SetIsActive(bool NewActive)
 }
 
 void UPlacementIndicatorComponent::Server_Execute_Implementation(FVector Pivot,
-                                                                 FVector Location, FRotator Rotation, TSubclassOf<APlacement> PlacementClass,
-                                                                 uint16 ItemId)
+	FVector Location, FRotator Rotation, TSubclassOf<APlacement> PlacementClass,
+	uint16 ItemId)
 {
 	ExecuteInternal(Pivot, Location, Rotation, PlacementClass, ItemId);
 }

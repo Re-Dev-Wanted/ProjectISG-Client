@@ -29,10 +29,12 @@ AFishingRod::AFishingRod()
 	SocketComp = CreateDefaultSubobject<USceneComponent>(TEXT("SocketComp"));
 	SocketComp->SetupAttachment(MeshComp, TEXT("ThreadSocket"));
 
-	PocketSocketComp = CreateDefaultSubobject<USceneComponent>(TEXT("PocketSocketComp"));
+	PocketSocketComp = CreateDefaultSubobject<USceneComponent>(
+		TEXT("PocketSocketComp"));
 	PocketSocketComp->SetupAttachment(MeshComp, TEXT("PocketSocket"));
 
-	CastingStartPoint = CreateDefaultSubobject<USceneComponent>(TEXT("CastingStartPoint"));
+	CastingStartPoint = CreateDefaultSubobject<USceneComponent>(
+		TEXT("CastingStartPoint"));
 	CastingStartPoint->SetupAttachment(MeshComp);
 
 	Thread = CreateDefaultSubobject<UCableComponent>(TEXT("ThreadComp"));
@@ -52,7 +54,8 @@ void AFishingRod::BeginPlay()
 		Bobber = GetWorld()->SpawnActor<ABobber>(BobberFactory);
 		Bobber->OnEnterWater.BindDynamic(this, &AFishingRod::OnStartFishing);
 		Bobber->SetCollisionAndPhysicsEnabled(false);
-		Bobber->AttachToComponent(PocketSocketComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		Bobber->AttachToComponent(PocketSocketComp,
+		                          FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
 		Thread->SetAttachEndTo(Bobber, TEXT("LineAttachPoint"));
 	}
@@ -80,24 +83,24 @@ void AFishingRod::OnStartFishing()
 	}
 
 	IsInWater = true;
-	
+
 	//TODO: 물고기를 여기에서 정하지만 옮길 수도 있음
 	FishData = UFishingManager::GetRandomData();
 	float WaitTime = FishData.GetWaitTime();
 
 	// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT
 	// ("OnStartFishing %fs"), WaitTime));
-	
+
 	GetWorld()->
-	GetTimerManager()
-	.SetTimer
-	(
-		TimerHandles[0],
-		this,
-		&AFishingRod::OnEventBite,
-		WaitTime,
-		false
-	);
+		GetTimerManager()
+		.SetTimer
+		(
+			TimerHandles[0],
+			this,
+			&AFishingRod::OnEventBite,
+			WaitTime,
+			false
+		);
 }
 
 void AFishingRod::OnEventBite()
@@ -113,16 +116,15 @@ void AFishingRod::OnEventBite()
 	Bobber->OnBite(FishData.GetMesh());
 
 	GetWorld()->
-	GetTimerManager()
-	.SetTimer
-	(
-		TimerHandles[1],
-		this,
-		&AFishingRod::OnEventRealBite,
-		BitingCheckDelayTime,
-		false
-	);
-	
+		GetTimerManager()
+		.SetTimer
+		(
+			TimerHandles[1],
+			this,
+			&AFishingRod::OnEventRealBite,
+			BitingCheckDelayTime,
+			false
+		);
 }
 
 void AFishingRod::OnEventRealBite()
@@ -131,63 +133,70 @@ void AFishingRod::OnEventRealBite()
 
 	BiteLogging();
 
-	const AMainPlayerController* PC = Cast<AMainPlayerController>(GetWorld()->GetFirstPlayerController());
+	const AMainPlayerController* PC = Cast<AMainPlayerController>(
+		GetWorld()->GetFirstPlayerController());
 
-	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(PC->GetPawn());
-	
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		PC->GetPawn());
+
 	if (Player->IsLocallyControlled())
 	{
-		UUIC_FishingUI* ModalUIController = 
-			Cast<UUIC_FishingUI>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Modal_FishingUI]);
+		UUIC_FishingUI* ModalUIController =
+			Cast<UUIC_FishingUI>(
+				PC->GetUIManageComponent()->ControllerInstances[
+					EUIName::Modal_FishingUI]);
 
 		ModalUIController->SetUI(true, TEXT("RM"), TEXT("물었다!"));
 	}
 
 	TWeakObjectPtr<AFishingRod> WeakThis = this;
-	
+
 	GetWorld()->
-	GetTimerManager()
-	.SetTimer
-	(
-		TimerHandles[2],
-		[WeakThis] ()
-		{
-			if (WeakThis.IsValid())
+		GetTimerManager()
+		.SetTimer
+		(
+			TimerHandles[2],
+			[WeakThis]()
 			{
-				WeakThis->OnEventFinish(true);
-			}
-		},
-		BitingTime,
-		false
-	);
+				if (WeakThis.IsValid())
+				{
+					WeakThis->OnEventFinish(true);
+				}
+			},
+			BitingTime,
+			false
+		);
 }
 
 void AFishingRod::OnEventFinish(bool bLoop)
 {
-
 	for (FTimerHandle Handle : TimerHandles)
 	{
 		GetWorld()->GetTimerManager().ClearTimer(Handle);
 		Handle.Invalidate();
 	}
-	
+
 	IsBiteFish = false;
 	FishData = FFishData();
 
-	const AMainPlayerController* PC = Cast<AMainPlayerController>(GetWorld()->GetFirstPlayerController());
+	const AMainPlayerController* PC = Cast<AMainPlayerController>(
+		GetWorld()->GetFirstPlayerController());
 
-	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(PC->GetPawn());
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		PC->GetPawn());
 
 	if (Player->IsLocallyControlled())
 	{
-		UUIC_FishingUI* ModalUIController = 
-			Cast<UUIC_FishingUI>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Modal_FishingUI]);
+		UUIC_FishingUI* ModalUIController =
+			Cast<UUIC_FishingUI>(
+				PC->GetUIManageComponent()->ControllerInstances[
+					EUIName::Modal_FishingUI]);
 
 		ModalUIController->SetUI(false, TEXT("RM"), TEXT("회수하기"));
 	}
 
 	IsInWater = false;
-	
+
 	if (Bobber)
 	{
 		Bobber->RemoveFish();
@@ -207,9 +216,7 @@ void AFishingRod::BiteLogging()
 	LogParams.ActionName = ELoggingActionName::hook_bite;
 
 	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-				LoggingData(LogParams);
-
-	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
+	            LoggingData(LogParams);
 }
 
 void AFishingRod::FinishLogging(bool bSuccess)
@@ -218,12 +225,10 @@ void AFishingRod::FinishLogging(bool bSuccess)
 	LogParams.Location = TEXT("연못");
 	LogParams.ActionType = ELoggingActionType::FISHING;
 	LogParams.ActionName = ELoggingActionName::finish_fishing;
-	LogParams.Detail = bSuccess? TEXT("물고기를 낚았다!") : TEXT("물고기를 낚지 못했다.");
+	LogParams.Detail = bSuccess ? TEXT("물고기를 낚았다!") : TEXT("물고기를 낚지 못했다.");
 
 	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-				LoggingData(LogParams);
-
-	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
+	            LoggingDataWithScreenshot(LogParams);
 }
 
 void AFishingRod::StartCasting(AActor* Causer, FVector Destination)
@@ -236,8 +241,9 @@ void AFishingRod::StartCasting(AActor* Causer, FVector Destination)
 	Bobber->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	Bobber->SetActorLocation(CastingStartPoint->GetComponentLocation());
 
-	FVector EndLocation = Destination + Causer->GetActorForwardVector() * CastingDistance;
-	
+	FVector EndLocation = Destination + Causer->GetActorForwardVector() *
+		CastingDistance;
+
 	Bobber->SuggestProjectileVelocity(Causer->GetActorLocation(), EndLocation);
 }
 
@@ -253,9 +259,10 @@ void AFishingRod::ReelInLine()
 		GetWorld()->GetTimerManager().ClearTimer(Handle);
 		Handle.Invalidate();
 	}
-	
+
 	Bobber->SetCollisionAndPhysicsEnabled(false);
-	Bobber->AttachToComponent(PocketSocketComp, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	Bobber->AttachToComponent(PocketSocketComp,
+	                          FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 }
 
 void AFishingRod::OnEndReelInLine(AActor* Causer)
@@ -263,18 +270,20 @@ void AFishingRod::OnEndReelInLine(AActor* Causer)
 	if (IsBiteFish && FishData.IsValid())
 	{
 		const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
-		
+
 		if (Player && Player->IsLocallyControlled())
 		{
-			AMainPlayerState* PlayerState = Cast<AMainPlayerState>(Player->GetController()->PlayerState);
+			AMainPlayerState* PlayerState = Cast<AMainPlayerState>(
+				Player->GetController()->PlayerState);
 
 			if (PlayerState)
 			{
-				FItemMetaInfo FishMetaInfo = UItemManager::GetInitialItemMetaDataById(FishData.GetItemId());
+				FItemMetaInfo FishMetaInfo =
+					UItemManager::GetInitialItemMetaDataById(
+						FishData.GetItemId());
 				PlayerState->GetInventoryComponent()->AddItem(FishMetaInfo);
 			}
 		}
-
 	}
 
 	FinishLogging(IsBiteFish);
