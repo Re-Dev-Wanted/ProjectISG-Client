@@ -6,6 +6,25 @@
 
 #include "QuestStoryData.generated.h"
 
+
+enum class EMetaDataKey : uint32;
+
+USTRUCT(BlueprintType)
+struct PROJECTISG_API FQuestRewardData
+{
+	GENERATED_USTRUCT_BODY()
+
+	GETTER(EQuestStoryRewardType, RewardType)
+	GETTER(FString, RewardId)
+
+private:
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	EQuestStoryRewardType RewardType = EQuestStoryRewardType::None;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	FString RewardId;
+};
+
 // 실제 퀘스트 가장 큰 데이터
 USTRUCT(BlueprintType)
 struct PROJECTISG_API FQuestStoryData : public FTableRowBase
@@ -20,9 +39,14 @@ struct PROJECTISG_API FQuestStoryData : public FTableRowBase
 	GETTER(EQuestStoryType, QuestType)
 	GETTER(EQuestStoryObjective, QuestObjective)
 
-	FORCEINLINE TMap<FString, FString>& GetQuestMetaData()
+	FORCEINLINE TMap<EQuestStoryMetaDataKey, FString>& GetQuestMetaData()
 	{
 		return QuestMetaData;
+	}
+
+	FORCEINLINE TArray<FQuestRewardData>& GetQuestRewardData()
+	{
+		return QuestRewardData;
 	}
 
 private:
@@ -48,7 +72,10 @@ private:
 	EQuestStoryObjective QuestObjective = EQuestStoryObjective::None;
 
 	UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess = true))
-	TMap<FString, FString> QuestMetaData;
+	TMap<EQuestStoryMetaDataKey, FString> QuestMetaData;
+
+	UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess = true))
+	TArray<FQuestRewardData> QuestRewardData;
 };
 
 // 퀘스트 대사에 대한 데이터
@@ -101,4 +128,34 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TArray<TObjectPtr<UTexture2D>> SceneImages;
+};
+
+USTRUCT(BlueprintType)
+struct PROJECTISG_API FQuestRewardTemplate : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+private:
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	FString RewardId;
+};
+
+USTRUCT(BlueprintType)
+struct PROJECTISG_API FQuestItemReward : public FQuestRewardTemplate
+{
+	GENERATED_USTRUCT_BODY()
+
+	GETTER(uint32, Count)
+
+	FORCEINLINE TMap<EMetaDataKey, FString>& GetItemMetaData()
+	{
+		return ItemMetaData;
+	}
+
+private:
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	uint32 Count = 0;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TMap<EMetaDataKey, FString> ItemMetaData;
 };

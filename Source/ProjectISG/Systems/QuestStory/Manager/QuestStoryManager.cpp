@@ -196,8 +196,10 @@ bool UQuestStoryManager::CheckAndCompleteQuest(AMainPlayerController* PC,
 			// 아이템이 정상적으로 존재하는 경우 RemoveItemToClear 가
 			// true 인 상태라면 제거해준다.
 			if (CurrentQuestStoryData.GetQuestMetaData().Contains(
-					"RemoveItemToClear") && CurrentQuestStoryData.
-				GetQuestMetaData()["RemoveItemToClear"] == "true")
+					EQuestStoryMetaDataKey::RemoveItemToClear) &&
+				CurrentQuestStoryData.
+				GetQuestMetaData()[EQuestStoryMetaDataKey::RemoveItemToClear] ==
+				"true")
 			{
 				for (FString ItemTable : RequireItemTable)
 				{
@@ -240,11 +242,11 @@ TArray<FString> UQuestStoryManager::GetQuestRequiredItemTableById(
 
 	// RequireItem Table이 있는 경우에 대해서 Parsing을 진행한다.
 	if (CurrentQuestStoryData.GetQuestMetaData().Contains(
-		QuestStoryMetaDataKey::RequireItem))
+		EQuestStoryMetaDataKey::RequireItem))
 	{
 		// "/"를 기준으로 아이템 Key와 Value 테이블을 가져온다.
 		CurrentQuestStoryData.GetQuestMetaData()[
-				QuestStoryMetaDataKey::RequireItem].
+				EQuestStoryMetaDataKey::RequireItem].
 			ParseIntoArray(RequireItemTable, TEXT("/"), true);
 	}
 
@@ -256,14 +258,43 @@ void UQuestStoryManager::CompleteQuest_Internal(AMainPlayerController* PC,
 {
 	FQuestStoryData CurrentQuestStoryData = QuestData[QuestId];
 
-	if (CurrentQuestStoryData.GetQuestMetaData().Contains("NextQuest"))
+	if (CurrentQuestStoryData.GetQuestMetaData().Contains(
+		EQuestStoryMetaDataKey::NextQuest))
 	{
-		PC->StartQuest(CurrentQuestStoryData.GetQuestMetaData()["NextQuest"]);
+		PC->StartQuest(
+			CurrentQuestStoryData.GetQuestMetaData()[
+				EQuestStoryMetaDataKey::NextQuest]);
 	}
 
-	if (CurrentQuestStoryData.GetQuestMetaData().Contains("RewardItems"))
+	GiveRewardQuest_Internal(PC, QuestId);
+}
+
+void UQuestStoryManager::GiveRewardQuest_Internal(AMainPlayerController* PC,
+                                                  const FString& QuestId)
+{
+	FQuestStoryData CurrentQuestStoryData = QuestData[QuestId];
+	AMainPlayerState* PS = PC->GetPlayerState<AMainPlayerState>();
+
+	for (const FQuestRewardData RewardData : CurrentQuestStoryData.
+	     GetQuestRewardData())
 	{
-		// TODO: 아이템 보상에 대한 처리
+		switch (RewardData.GetRewardType())
+		{
+		case EQuestStoryRewardType::Gold:
+			{
+				// 기존 골드에 값을 추가해준다.
+				// 골드는 Id 자체가 Value로 취급된다.
+				PS->SetGold(
+					PS->GetGold() + FCString::Atoi(*RewardData.GetRewardId()));
+			}
+		case EQuestStoryRewardType::Item:
+			{
+			}
+		default:
+			{
+				break;
+			}
+		}
 	}
 }
 

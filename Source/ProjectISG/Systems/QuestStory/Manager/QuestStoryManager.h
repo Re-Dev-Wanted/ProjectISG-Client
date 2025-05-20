@@ -37,6 +37,7 @@ private:
 	static TArray<FQuestStoryData> QuestArrayList;
 	static TMap<FString, TArray<FQuestStoryDialogue>> QuestDialogueData;
 	static TMap<FString, FQuestSceneCutData> QuestSceneCutData;
+	static TMap<FString, FQuestItemReward> QuestRewardItemData;
 
 	static void InitializeQuestData();
 	static void InitializeQuestDialogue();
@@ -47,4 +48,7 @@ private:
 
 	static void CompleteQuest_Internal(AMainPlayerController* PC,
 	                                   const FString& QuestId);
+
+	static void GiveRewardQuest_Internal(AMainPlayerController* PC,
+	                                     const FString& QuestId);
 };
