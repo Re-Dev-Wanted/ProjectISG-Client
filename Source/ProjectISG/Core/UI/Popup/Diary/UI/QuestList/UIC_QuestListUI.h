@@ -17,4 +17,6 @@ protected:
 
 private:
 	void InitializeQuestList();
+
+	void SetQuestRequireData(const FString& QuestId);
 };

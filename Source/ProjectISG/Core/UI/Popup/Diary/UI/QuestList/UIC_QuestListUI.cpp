@@ -36,11 +36,15 @@ void UUIC_QuestListUI::SetQuestInfo(const FString& QuestId)
 		QuestId);
 
 	QuestListUIView->GetQuestInfo()->SetVisibility(ESlateVisibility::Visible);
+
 	QuestListUIView->GetQuestTitle()->SetText(
 		FText::FromString(QuestData.GetQuestTitle()));
+
 	QuestListUIView->GetQuestTitle()->SetText(
 		FText::FromString(QuestData.GetQuestTitle()));
+
 	QuestListUIView->GetQuestScenario()->SetText(QuestData.GetQuestScenario());
+
 	QuestListUIView->GetQuestHint()->SetText(
 		FText::FromString(QuestData.GetQuestHint()));
 }
@@ -60,4 +64,8 @@ void UUIC_QuestListUI::InitializeQuestList()
 
 		QuestListUIView->GetQuestListView()->AddItem(QuestItemWidgetObject);
 	}
+}
+
+void UUIC_QuestListUI::SetQuestRequireData(const FString& QuestId)
+{
 }
