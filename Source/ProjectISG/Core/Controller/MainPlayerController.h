@@ -33,6 +33,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StartQuest(const FString& QuestId);
 
+	UFUNCTION(BlueprintCallable)
 	void StartQuestToPlayer(const FString& QuestId);
 
 	UFUNCTION(Client, Reliable)
