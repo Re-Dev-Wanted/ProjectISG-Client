@@ -23,7 +23,8 @@ APlacement::APlacement()
 	AnchorComp = CreateDefaultSubobject<USceneComponent>(TEXT("AnchorComp"));
 	AnchorComp->SetupAttachment(RootComponent);
 
-	CollisionComp = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionComp"));
+	CollisionComp = CreateDefaultSubobject<
+		UBoxComponent>(TEXT("CollisionComp"));
 	CollisionComp->SetupAttachment(AnchorComp);
 	CollisionComp->SetIsReplicated(true);
 	// CollisionComp->SetCollisionObjectType(ECC_WorldStatic);
@@ -34,16 +35,19 @@ APlacement::APlacement()
 	MeshComp->SetupAttachment(CollisionComp);
 	MeshComp->bRenderCustomDepth = true;
 
-	ProceduralMeshComp = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("ProceduralMeshComp"));
+	ProceduralMeshComp = CreateDefaultSubobject<UProceduralMeshComponent>(
+		TEXT("ProceduralMeshComp"));
 	ProceduralMeshComp->SetupAttachment(CollisionComp);
 	ProceduralMeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	ProceduralMeshComp->SetGenerateOverlapEvents(false);
 
 	InteractStartPoint = CreateDefaultSubobject<USceneComponent>(TEXT
-	("InteractStartPoint"));
+		("InteractStartPoint"));
 	InteractStartPoint->SetupAttachment(MeshComp);
 
-	ConstructorHelpers::FObjectFinder<UMaterialInstance> Mat_Instance(TEXT("/Script/Engine.MaterialInstanceConstant'/Game/Systems/Grid/Materials/SelectBrushMaterial_Inst.SelectBrushMaterial_Inst'"));
+	ConstructorHelpers::FObjectFinder<UMaterialInstance> Mat_Instance(
+		TEXT(
+			"/Script/Engine.MaterialInstanceConstant'/Game/Systems/Grid/Materials/SelectBrushMaterial_Inst.SelectBrushMaterial_Inst'"));
 
 	if (Mat_Instance.Succeeded())
 	{
@@ -58,7 +62,8 @@ APlacement::APlacement()
 
 bool APlacement::GetCanTouch() const
 {
-	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		GetWorld()->GetFirstPlayerController()->GetPawn());
 
 	if (!Player)
 	{
@@ -66,8 +71,8 @@ bool APlacement::GetCanTouch() const
 	}
 
 	const FString HandItemUsingType = Player->GetHandSlotComponent()
-		->GetItemUsingType();
-	
+	                                        ->GetItemUsingType();
+
 	return HandItemUsingType.Equals("Deconstruct");
 }
 
@@ -76,8 +81,8 @@ FString APlacement::GetTouchDisplayText(AActor* Causer) const
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
 		const FString HandItemUsingType = Player->GetHandSlotComponent()
-		->GetItemUsingType();
-		
+		                                        ->GetItemUsingType();
+
 		if (HandItemUsingType.Equals("Deconstruct"))
 		{
 			return TEXT("철거하기");
@@ -94,13 +99,14 @@ void APlacement::OnTouch(AActor* Causer)
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
 		const FString HandItemUsingType = Player->GetHandSlotComponent()
-		->GetItemUsingType();
-		
+		                                        ->GetItemUsingType();
+
 		if (HandItemUsingType.Equals("Deconstruct"))
 		{
 			FGameplayTagContainer ActivateTag;
 			ActivateTag.AddTag(ISGGameplayTags::Building_Active_Deconstruct);
-			Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(ActivateTag);
+			Player->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
+				ActivateTag);
 
 			//Logging
 			FDiaryLogParams LogParams;
@@ -109,9 +115,7 @@ void APlacement::OnTouch(AActor* Causer)
 			LogParams.ActionName = ELoggingActionName::remove_housing;
 
 			GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-						LoggingData(LogParams);
-
-			GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
+			            LoggingData(LogParams);
 		}
 	}
 }
@@ -119,7 +123,7 @@ void APlacement::OnTouch(AActor* Causer)
 void APlacement::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	// 서버, 클라 구분 없이 강제 Mesh 세팅
 	UStaticMesh* Mesh;
 	if (MeshAssetPath.IsValid())
@@ -130,7 +134,7 @@ void APlacement::BeginPlay()
 	{
 		Mesh = MeshAssetPath.LoadSynchronous();
 	}
-	
+
 	if (Mesh)
 	{
 		MeshComp->SetStaticMesh(Mesh);
@@ -143,7 +147,8 @@ void APlacement::BeginPlay()
 	// }
 }
 
-void APlacement::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+void APlacement::GetLifetimeReplicatedProps(
+	TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
@@ -159,7 +164,9 @@ void APlacement::Tick(float DeltaTime)
 
 void APlacement::Setup(float TileSize)
 {
-	UStaticMesh* Mesh = MeshAssetPath.IsValid() ? MeshAssetPath.Get() : MeshAssetPath.LoadSynchronous();
+	UStaticMesh* Mesh = MeshAssetPath.IsValid()
+		                    ? MeshAssetPath.Get()
+		                    : MeshAssetPath.LoadSynchronous();
 	if (!Mesh)
 	{
 		UE_LOG(LogTemp, Error, TEXT("MeshAssetPath not loaded in Setup"));
@@ -167,12 +174,12 @@ void APlacement::Setup(float TileSize)
 	}
 
 	MeshComp->SetStaticMesh(Mesh);
-	
+
 	// 오브젝트 크기가 제각각 다를 것이다.
 	// 적당히 가운데 정렬하고 tileSize에 맞추기
 
 	FVector BoxExtent = Mesh->GetBounds().BoxExtent;
-	
+
 	float HalfSize = FMath::FloorToInt(TileSize * 0.5f);
 
 	FVector SnapExtent
@@ -193,8 +200,10 @@ void APlacement::Setup(float TileSize)
 
 	FVector PivotLocation = FVector
 	(
-		FMath::Max(0, FMath::FloorToInt(SnapExtent.X / HalfSize) - 1) * HalfSize,
-		FMath::Max(0, FMath::FloorToInt(SnapExtent.Y / HalfSize) - 1) * HalfSize,
+		FMath::Max(0, FMath::FloorToInt(SnapExtent.X / HalfSize) - 1) *
+		HalfSize,
+		FMath::Max(0, FMath::FloorToInt(SnapExtent.Y / HalfSize) - 1) *
+		HalfSize,
 		SnapExtent.Z
 	);
 
@@ -218,7 +227,7 @@ void APlacement::SetGuide(float TileSize)
 		FMath::CeilToInt(BoxExtent.Y / HalfSize) * HalfSize,
 		FMath::CeilToInt(BoxExtent.Z / HalfSize) * HalfSize
 	);
-	
+
 	TArray<FVector> EmptyVectorArray;
 	TArray<FVector2D> EmptyVector2DArray;
 	TArray<FColor> EmptyColorArray;
@@ -260,16 +269,20 @@ void APlacement::SetGuide(float TileSize)
 		}
 	}
 
-	if (ProceduralMeshComp && ProceduralVertices.Num() > 0 && ProceduralTriangles.Num() > 0)
+	if (ProceduralMeshComp && ProceduralVertices.Num() > 0 &&
+		ProceduralTriangles.Num() > 0)
 	{
 		if (!ProceduralMeshComp->IsRegistered())
 		{
 			ProceduralMeshComp->RegisterComponent(); // 강제 등록
 		}
-		
-		ProceduralMeshComp->CreateMeshSection(0, ProceduralVertices, ProceduralTriangles, EmptyVectorArray,
-											  EmptyVector2DArray, EmptyColorArray,
-											  EmptyTangentArray, false);
+
+		ProceduralMeshComp->CreateMeshSection(0, ProceduralVertices,
+		                                      ProceduralTriangles,
+		                                      EmptyVectorArray,
+		                                      EmptyVector2DArray,
+		                                      EmptyColorArray,
+		                                      EmptyTangentArray, false);
 
 		ProceduralMeshComp->SetRelativeLocation(-SnapExtent);
 		ProceduralMeshComp->SetVisibility(true);
@@ -286,12 +299,16 @@ void APlacement::SetOption(bool bIsGhost, bool bIsBlock)
 	}
 
 	SetCollisionEnabled(false);
-	
+
 	if (TempMaterial)
 	{
 		MeshComp->SetMaterial(0, TempMaterial);
-		UMaterialInstanceDynamic* MatDynamic = MeshComp->CreateAndSetMaterialInstanceDynamic(0);
-		MatDynamic->SetVectorParameterValue("HighlightColor", bIsBlock ? FLinearColor::Red : FLinearColor::Green);
+		UMaterialInstanceDynamic* MatDynamic = MeshComp->
+			CreateAndSetMaterialInstanceDynamic(0);
+		MatDynamic->SetVectorParameterValue("HighlightColor",
+		                                    bIsBlock
+			                                    ? FLinearColor::Red
+			                                    : FLinearColor::Green);
 	}
 }
 
@@ -309,15 +326,16 @@ void APlacement::SetCollisionEnabled(bool bEnable) const
 		// CollisionComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 		// CollisionComp->SetGenerateOverlapEvents(false);
 		MeshComp->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
-		MeshComp->SetGenerateOverlapEvents(false);	
+		MeshComp->SetGenerateOverlapEvents(false);
 	}
 }
 
-TArray<FIntVector> APlacement::GetOccupiedGrid(float SnapSize, const FIntVector& Current)
+TArray<FIntVector> APlacement::GetOccupiedGrid(float SnapSize,
+                                               const FIntVector& Current)
 {
 	TArray<FIntVector> Array;
 	Occupied.Empty();
-	
+
 	FVector BoxExtent = CollisionComp->Bounds.BoxExtent;
 
 	float HalfSize = SnapSize * 0.5f;
@@ -389,12 +407,15 @@ void APlacement::OnRep_LoadMeshAsset()
 		}
 		else
 		{
-			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("MeshAssetPath is invalid or not loaded"));
+			UKismetSystemLibrary::PrintString(GetWorld(),
+			                                  TEXT(
+				                                  "MeshAssetPath is invalid or not loaded"));
 		}
 	}
 }
 
-void APlacement::Multicast_SetCollisionEnabled_Implementation(bool bEnable) const
+void APlacement::Multicast_SetCollisionEnabled_Implementation(
+	bool bEnable) const
 {
 	SetCollisionEnabled(bEnable);
 }

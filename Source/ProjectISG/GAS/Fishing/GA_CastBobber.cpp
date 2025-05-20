@@ -17,7 +17,9 @@
 class AMainPlayerState;
 
 void UGA_CastBobber::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                     const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+                                     const FGameplayAbilityActorInfo* ActorInfo,
+                                     const FGameplayAbilityActivationInfo
+                                     ActivationInfo,
                                      const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
@@ -31,7 +33,8 @@ void UGA_CastBobber::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 
-	const TObjectPtr<ABaseActor> Equipment = Player->GetHandSlotComponent()->GetHeldItem();
+	const TObjectPtr<ABaseActor> Equipment = Player->GetHandSlotComponent()->
+		GetHeldItem();
 
 	if (!Equipment)
 	{
@@ -39,15 +42,18 @@ void UGA_CastBobber::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 
-	FHitResult TargetTraceResult = Player->GetInteractionComponent()->GetTargetTraceResult();
+	FHitResult TargetTraceResult = Player->GetInteractionComponent()->
+	                                       GetTargetTraceResult();
 
 	if (AFishingRod* FishingRod = Cast<AFishingRod>(Equipment))
 	{
-		FishingRod->StartCasting(ActorInfo->AvatarActor.Get(), TargetTraceResult.ImpactPoint);
+		FishingRod->StartCasting(ActorInfo->AvatarActor.Get(),
+		                         TargetTraceResult.ImpactPoint);
 
 		if (Player->IsLocallyControlled())
 		{
-			AMainPlayerController* PC = Player->GetController<AMainPlayerController>();
+			AMainPlayerController* PC = Player->GetController<
+				AMainPlayerController>();
 
 			PC->SetIgnoreLookInput(true);
 			PC->SetIgnoreMoveInput(true);
@@ -55,27 +61,32 @@ void UGA_CastBobber::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			Player->GetInteractionComponent()->SetIsInteractive(false);
 		}
 
-		AT_StartFishingCinematic = UAT_StartFishingCinematic::InitialEvent(this, StartFishingCinematic);
-		AT_StartFishingCinematic->OnStartFishingCinematicEndNotified.AddDynamic(this, &UGA_CastBobber::OnEndCinematic);
+		AT_StartFishingCinematic = UAT_StartFishingCinematic::InitialEvent(
+			this, StartFishingCinematic);
+		AT_StartFishingCinematic->OnStartFishingCinematicEndNotified.AddDynamic(
+			this, &UGA_CastBobber::OnEndCinematic);
 		AT_StartFishingCinematic->ReadyForActivation();
 
 		Logging();
-		
+
 		return;
 	}
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
 }
 
-void UGA_CastBobber::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+void UGA_CastBobber::EndAbility(const FGameplayAbilitySpecHandle Handle,
+                                const FGameplayAbilityActorInfo* ActorInfo,
+                                const FGameplayAbilityActivationInfo
+                                ActivationInfo, bool bReplicateEndAbility,
+                                bool bWasCancelled)
 {
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility,
+	                  bWasCancelled);
 }
 
 void UGA_CastBobber::OnEndCinematic()
 {
-
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>
 		(CurrentActorInfo->AvatarActor.Get());
 
@@ -84,21 +95,22 @@ void UGA_CastBobber::OnEndCinematic()
 		return;
 	}
 
-	AMainPlayerController* PlayerController = Cast<AMainPlayerController>( 
+	AMainPlayerController* PlayerController = Cast<AMainPlayerController>(
 		Player->GetController());
 
 	if (PlayerController && Player->IsLocallyControlled())
 	{
 		PlayerController->PushUI(EUIName::Modal_FishingUI);
 
-		UUIC_FishingUI* ModalUIController = 
-		Cast<UUIC_FishingUI>(PlayerController->GetUIManageComponent
-		()->ControllerInstances[EUIName::Modal_FishingUI]);
+		UUIC_FishingUI* ModalUIController =
+			Cast<UUIC_FishingUI>(PlayerController->GetUIManageComponent
+				()->ControllerInstances[EUIName::Modal_FishingUI]);
 
 		ModalUIController->SetUI(false, TEXT("RM"), TEXT("회수하기"));
 	}
-	
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true,
+	           false);
 }
 
 void UGA_CastBobber::Logging()
@@ -110,8 +122,5 @@ void UGA_CastBobber::Logging()
 	LogParams.Detail = TEXT("낚시를 시작했다.");
 
 	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-				LoggingData(LogParams);
-
-	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->Flush();
-	
+	            LoggingDataWithScreenshot(LogParams);
 }
