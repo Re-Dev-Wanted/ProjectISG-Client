@@ -5,6 +5,7 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerCharacter.generated.h"
 
+class UInputActionComponent;
 class UDiaryComponent;
 class UInteractionComponent;
 class UScreenShotComponent;
@@ -75,6 +76,7 @@ public:
 	GETTER(TObjectPtr<UPlayerHandSlotComponent>, HandSlotComponent)
 	GETTER(TObjectPtr<UCameraComponent>, ScreenShotCameraComponent)
 
+	// TODO: Ability로 이관 후 AbilityTask로 해당 로직 처리하기
 	GETTER(TObjectPtr<UAnimMontage>, SeedingMontage)
 	GETTER(TObjectPtr<UAnimMontage>, WateringMontage)
 	GETTER(TObjectPtr<UAnimMontage>, LyingMontage)
@@ -90,6 +92,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlayerInventoryComponent> PlayerInventoryComponent;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UInputActionComponent> InputActionComponent;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UScreenShotComponent> ScreenShotComponent;

@@ -19,6 +19,12 @@ public:
 		const FString& QuestId);
 	static FQuestSceneCutData& GetQuestSceneCutById(const FString& SceneId);
 
+	static TArray<FQuestRequireData> GetRequireQuestDataById(
+		const FString& QuestId);
+
+	static uint32 GetRequireQuestDateToAbleFinish(
+		const AMainPlayerController* PC, const FString& QuestId);
+
 	static bool CheckAndCompleteQuest(AMainPlayerController* PC,
 	                                  const FString& QuestId);
 
@@ -26,9 +32,6 @@ public:
 	{
 		return QuestArrayList;
 	}
-
-	// 퀘스트에서 수행해야 할 모든 행동 퀘스트의 갯수를 가져온다.
-	static uint32 GetQuestAllBehaviorCount(const FString& QuestId);
 
 private:
 	static bool IsInitialized;
@@ -38,8 +41,10 @@ private:
 	static TMap<FString, TArray<FQuestStoryDialogue>> QuestDialogueData;
 	static TMap<FString, FQuestSceneCutData> QuestSceneCutData;
 	static TMap<FString, FQuestItemReward> QuestRewardItemData;
+	static TMap<FString, TArray<FQuestRequireData>> QuestRequireData;
 
 	static void InitializeQuestData();
+	static void InitializeQuestRequireData();
 	static void InitializeQuestDialogue();
 	static void InitializeQuestSceneCut();
 
