@@ -3,6 +3,7 @@
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/QuestStory/QuestStoryConstants.h"
 
 TArray<FQuestStoryData> UQuestStoryManager::QuestArrayList;
 TMap<FString, FQuestStoryData> UQuestStoryManager::QuestData;
@@ -150,6 +151,7 @@ bool UQuestStoryManager::CheckAndCompleteQuest(AMainPlayerController* PC,
 
 	FQuestStoryData CurrentQuestStoryData = QuestData[QuestId];
 	bool IsSuccess = false;
+
 	switch (CurrentQuestStoryData.GetQuestObjective())
 	{
 	case EQuestStoryObjective::Dialogue:
@@ -162,12 +164,8 @@ bool UQuestStoryManager::CheckAndCompleteQuest(AMainPlayerController* PC,
 			UInventoryComponent* PlayerInventory = PC->GetPlayerState<
 				AMainPlayerState>()->GetInventoryComponent();
 
-			CurrentQuestStoryData.GetQuestMetaData()["RequireItem"];
-			TArray<FString> RequireItemTable;
-
-			// "/"를 기준으로 아이템 Key와 Value 테이블을 가져온다.
-			CurrentQuestStoryData.GetQuestMetaData()["RequireItem"].
-				ParseIntoArray(RequireItemTable, TEXT("/"), true);
+			TArray<FString> RequireItemTable = GetQuestRequiredItemTableById(
+				QuestId);
 
 			bool TempSuccess = true;
 			// 정상적으로 아이템이 존재하는 지 검증한다.
@@ -234,6 +232,25 @@ bool UQuestStoryManager::CheckAndCompleteQuest(AMainPlayerController* PC,
 	return IsSuccess;
 }
 
+TArray<FString> UQuestStoryManager::GetQuestRequiredItemTableById(
+	const FString& QuestId)
+{
+	FQuestStoryData CurrentQuestStoryData = QuestData[QuestId];
+	TArray<FString> RequireItemTable;
+
+	// RequireItem Table이 있는 경우에 대해서 Parsing을 진행한다.
+	if (CurrentQuestStoryData.GetQuestMetaData().Contains(
+		QuestStoryMetaDataKey::RequireItem))
+	{
+		// "/"를 기준으로 아이템 Key와 Value 테이블을 가져온다.
+		CurrentQuestStoryData.GetQuestMetaData()[
+				QuestStoryMetaDataKey::RequireItem].
+			ParseIntoArray(RequireItemTable, TEXT("/"), true);
+	}
+
+	return RequireItemTable;
+}
+
 void UQuestStoryManager::CompleteQuest_Internal(AMainPlayerController* PC,
                                                 const FString& QuestId)
 {
@@ -248,4 +265,22 @@ void UQuestStoryManager::CompleteQuest_Internal(AMainPlayerController* PC,
 	{
 		// TODO: 아이템 보상에 대한 처리
 	}
+}
+
+uint32 UQuestStoryManager::GetQuestAllBehaviorCount(const FString& QuestId)
+{
+	const FQuestStoryData CurrentQuestStoryData = QuestData[QuestId];
+	// 퀘스트 형태가 단순 Dialogue 형태인 경우는 따로 완료해야 할 경우 수가 없어
+	// 1개로 설정한다.
+	if (CurrentQuestStoryData.GetQuestObjective() ==
+		EQuestStoryObjective::Dialogue)
+	{
+		return 1;
+	}
+
+	uint32 Result = 0;
+	// 요구 아이템에 따른 갯수
+	Result += GetQuestRequiredItemTableById(QuestId).Num();
+
+	return Result;
 }

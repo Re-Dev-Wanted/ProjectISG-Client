@@ -25,24 +25,8 @@ void UUIC_QuestListUI::AppearUI()
 
 	QuestListUIView->GetUserId()->SetText(
 		FText::FromString(FSessionUtil::GetCurrentId(GetWorld())));
-}
 
-void UUIC_QuestListUI::InitializeController(UBaseUIView* NewView,
-                                            UBaseUIModel* NewModel)
-{
-	Super::InitializeController(NewView, NewModel);
-
-	const UUIV_QuestListUI* QuestListUIView = Cast<UUIV_QuestListUI>(GetView());
-
-	for (FQuestStoryData CurrentQuestData :
-	     UQuestStoryManager::GetAllQuestData())
-	{
-		UQuestItemWidgetObject* QuestItemWidgetObject = NewObject<
-			UQuestItemWidgetObject>();
-		QuestItemWidgetObject->QuestId = CurrentQuestData.GetQuestId();
-
-		QuestListUIView->GetQuestListView()->AddItem(QuestItemWidgetObject);
-	}
+	InitializeQuestList();
 }
 
 void UUIC_QuestListUI::SetQuestInfo(const FString& QuestId)
@@ -57,4 +41,23 @@ void UUIC_QuestListUI::SetQuestInfo(const FString& QuestId)
 	QuestListUIView->GetQuestTitle()->SetText(
 		FText::FromString(QuestData.GetQuestTitle()));
 	QuestListUIView->GetQuestScenario()->SetText(QuestData.GetQuestScenario());
+	QuestListUIView->GetQuestHint()->SetText(
+		FText::FromString(QuestData.GetQuestHint()));
+}
+
+void UUIC_QuestListUI::InitializeQuestList()
+{
+	const UUIV_QuestListUI* QuestListUIView = Cast<UUIV_QuestListUI>(GetView());
+
+	QuestListUIView->GetQuestListView()->ClearListItems();
+
+	for (FQuestStoryData CurrentQuestData :
+	     UQuestStoryManager::GetAllQuestData())
+	{
+		UQuestItemWidgetObject* QuestItemWidgetObject = NewObject<
+			UQuestItemWidgetObject>();
+		QuestItemWidgetObject->QuestId = CurrentQuestData.GetQuestId();
+
+		QuestListUIView->GetQuestListView()->AddItem(QuestItemWidgetObject);
+	}
 }

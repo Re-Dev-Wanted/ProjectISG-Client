@@ -21,6 +21,7 @@ public:
 	GETTER(TObjectPtr<UTextBlock>, QuestChapter)
 	GETTER(TObjectPtr<UMultiLineEditableTextBox>, QuestScenario)
 	GETTER(TObjectPtr<UTextBlock>, QuestTitle)
+	GETTER(TObjectPtr<UTextBlock>, QuestHint)
 	GETTER(TObjectPtr<UOverlay>, QuestInfo)
 	GETTER(TObjectPtr<UTextBlock>, UserId)
 
@@ -36,6 +37,9 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> QuestTitle;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> QuestHint;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UMultiLineEditableTextBox> QuestScenario;

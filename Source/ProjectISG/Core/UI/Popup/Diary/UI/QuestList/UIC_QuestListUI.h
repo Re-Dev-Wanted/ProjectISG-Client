@@ -15,6 +15,6 @@ public:
 protected:
 	virtual void AppearUI() override;
 
-	virtual void InitializeController(UBaseUIView* NewView,
-	                                  UBaseUIModel* NewModel) override;
+private:
+	void InitializeQuestList();
 };

@@ -14,6 +14,7 @@ struct PROJECTISG_API FQuestStoryData : public FTableRowBase
 
 	GETTER(FString, QuestId)
 	GETTER(FString, QuestTitle)
+	GETTER(FString, QuestHint)
 	GETTER(FString, QuestDescription)
 	GETTER(FText, QuestScenario)
 	GETTER(EQuestStoryType, QuestType)
@@ -33,6 +34,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	FString QuestDescription;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	FString QuestHint;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	FText QuestScenario;

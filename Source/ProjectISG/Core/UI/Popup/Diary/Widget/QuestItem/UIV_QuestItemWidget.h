@@ -5,6 +5,7 @@
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
 #include "UIV_QuestItemWidget.generated.h"
 
+class UBorder;
 class UButton;
 class UOverlay;
 class UTextBlock;
@@ -19,6 +20,7 @@ public:
 	GETTER(TObjectPtr<UButton>, QuestItemButton)
 	GETTER(TObjectPtr<UTextBlock>, QuestTitle)
 	GETTER(TObjectPtr<UTextBlock>, QuestStatus)
+	GETTER(TObjectPtr<UBorder>, QuestPlayingNotify)
 	GETTER(TObjectPtr<UTextBlock>, MaxFinishQuestCount)
 	GETTER(TObjectPtr<UTextBlock>, CurrentFinishQuestCount)
 
@@ -33,11 +35,14 @@ private:
 	TObjectPtr<UTextBlock> QuestTitle;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> QuestStatus;
-
-	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CurrentFinishQuestCount;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> MaxFinishQuestCount;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> QuestStatus;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UBorder> QuestPlayingNotify;
 };
