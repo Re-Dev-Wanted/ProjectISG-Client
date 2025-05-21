@@ -181,7 +181,7 @@ EItemGrade UGA_CookingQTEAction::GetResultFoodGrade()
 
 	if (FoodScore >= 50)
 	{
-		return EItemGrade::Epic;
+		return EItemGrade::Unique;
 	}
 
 	if (FoodScore >= 40)

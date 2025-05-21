@@ -117,27 +117,17 @@ int32 UUIC_ProductSellNotification::CalcItemPriceByItemGrade(
 		}
 	case EItemGrade::Uncommon:
 		{
-			CalculatedPrice = ProductPrice * 1.5f;
+			CalculatedPrice = ProductPrice * 1.2f;
 			break;
 		}
 	case EItemGrade::Rare:
 		{
+			CalculatedPrice = ProductPrice * 1.5f;
+			break;
+		}
+	case EItemGrade::Unique:
+		{
 			CalculatedPrice = ProductPrice * 2.0f;
-			break;
-		}
-	case EItemGrade::Epic:
-		{
-			CalculatedPrice = ProductPrice * 3.0f;
-			break;
-		}
-	case EItemGrade::Legendary:
-		{
-			CalculatedPrice = ProductPrice * 5.0f;
-			break;
-		}
-	case EItemGrade::Mythic:
-		{
-			CalculatedPrice = ProductPrice * 10.0f;
 			break;
 		}
 	case EItemGrade::None:

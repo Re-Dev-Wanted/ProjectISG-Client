@@ -24,9 +24,7 @@ enum class EItemGrade : uint8
 	Common,
 	Uncommon,
 	Rare,
-	Epic,
-	Legendary,
-	Mythic
+	Unique,
 };
 
 // 아이템 인스턴스 하나하나의 고유한 값을 저장할 때 사용된다.

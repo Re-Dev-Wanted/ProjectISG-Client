@@ -231,20 +231,11 @@ EItemGrade UItemManager::GetItemGrade(const FItemMetaInfo& Info)
 		return EItemGrade::Rare;
 	}
 
-	if (Info.GetMetaData()[EMetaDataKey::ItemGrade] == TEXT("Epic"))
+	if (Info.GetMetaData()[EMetaDataKey::ItemGrade] == TEXT("Unique"))
 	{
-		return EItemGrade::Epic;
+		return EItemGrade::Unique;
 	}
-
-	if (Info.GetMetaData()[EMetaDataKey::ItemGrade] == TEXT("Legendary"))
-	{
-		return EItemGrade::Legendary;
-	}
-
-	if (Info.GetMetaData()[EMetaDataKey::ItemGrade] == TEXT("Mythic"))
-	{
-		return EItemGrade::Mythic;
-	}
+	
 	
 	return EItemGrade::None;
 }
@@ -265,17 +256,9 @@ FString UItemManager::GetItemGradeText(const FItemMetaInfo& Info)
 		{
 			return TEXT("레어");
 		}
-	case EItemGrade::Epic:
+	case EItemGrade::Unique:
 		{
-			return TEXT("에픽");
-		}
-	case EItemGrade::Legendary:
-		{
-			return TEXT("레전더리");
-		}
-	case EItemGrade::Mythic:
-		{
-			return TEXT("신화");
+			return TEXT("유니크");
 		}
 	default:
 		{
