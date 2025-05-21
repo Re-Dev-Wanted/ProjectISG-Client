@@ -29,6 +29,7 @@ public:
 
 	bool DropItem(const uint16 Index, const uint32 Count);
 
+	// 특정 Id 기반의 아이템 삭제
 	bool RemoveItem(const uint16 Id, const uint32 Count);
 
 	uint32 AddItemToInventory(const uint16 Index,

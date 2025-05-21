@@ -30,9 +30,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PopUI();
 
+	// 월드 퀘스트 실행
 	UFUNCTION(BlueprintCallable)
 	void StartQuest(const FString& QuestId);
 
+	// 특정 플레이어에게만 특정 퀘스트를 진행 시킴
 	UFUNCTION(BlueprintCallable)
 	void StartQuestToPlayer(const FString& QuestId);
 
