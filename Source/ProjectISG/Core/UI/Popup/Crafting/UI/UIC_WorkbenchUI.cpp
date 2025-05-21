@@ -13,6 +13,8 @@
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
+#include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 
 void UUIC_WorkbenchUI::AppearUI()
 {
@@ -65,9 +67,10 @@ void UUIC_WorkbenchUI::StartCrafting()
 			PS->GetInventoryComponent()->RemoveItem(MaterialUIModel.Id, MaterialUIModel.RequiredCount);
 		}
 
-		FItemMetaInfo CraftedItemInfo = UItemManager::GetInitialItemMetaDataById(UIModel.ItemId);
+		const FItemMetaInfo CraftedItemInfo = UItemManager::GetInitialItemMetaDataById(UIModel.ItemId);
 		
 		PS->GetInventoryComponent()->AddItem(CraftedItemInfo);
+		Logging(CraftedItemInfo.GetId());
 	}
 
 	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetPlayerController()->GetPawn());
@@ -141,4 +144,18 @@ void UUIC_WorkbenchUI::CloseUI()
 	EventData.Target = Cast<AActor>(UIHandler.GetObject());
 		
 	Player->GetAbilitySystemComponent()->HandleGameplayEvent(EventData.EventTag, &EventData);
+}
+
+void UUIC_WorkbenchUI::Logging(uint16 ItemId)
+{
+	const FItemInfoData CraftedItemInfo = UItemManager::GetItemInfoById(ItemId);
+	
+	FDiaryLogParams LogParams;
+	LogParams.Location = TEXT("제작대");
+	LogParams.ActionType = ELoggingActionType::CRAFTING;
+	LogParams.ActionName = ELoggingActionName::craft_item;
+	LogParams.Detail = FString::Printf(TEXT("제작대에서 %s 제작했다."), *CraftedItemInfo.GetDisplayName());
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+				LoggingDataWithScreenshot(LogParams);
 }

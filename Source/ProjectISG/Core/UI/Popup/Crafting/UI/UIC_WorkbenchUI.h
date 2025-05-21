@@ -32,6 +32,8 @@ protected:
 
 	UFUNCTION()
 	void CloseUI();
+
+	void Logging(uint16 ItemId);
 	
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UInputAction> CloseAction;
