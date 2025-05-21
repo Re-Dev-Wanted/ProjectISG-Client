@@ -34,5 +34,12 @@ private:
 
 	UFUNCTION()
 	void OnToggleQuestUI();
+
+	UPROPERTY(EditDefaultsOnly, Category = "Options",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<UInputAction> ToggleDiaryInputAction;
+
+	UFUNCTION()
+	void OnToggleDiaryUI();
 #pragma endregion
 };

@@ -10,6 +10,7 @@
 void UBaseUIController::StartShowUI(const EUILayer Layer)
 {
 	CurrentLayer = Layer;
+	IsVisibleUI = true;
 
 	const UWidgetAnimation* StartAnimation = GetView()->
 		GetDefaultStartAnimation();
@@ -24,12 +25,20 @@ void UBaseUIController::StartShowUI(const EUILayer Layer)
 	GetView()->PlayAnimation(GetView()->GetDefaultStartAnimation());
 }
 
-void UBaseUIController::EndShowUI()
+void UBaseUIController::EndShowUI(const bool IsWidget)
 {
+	IsVisibleUI = false;
+
 	const UWidgetAnimation* EndAnimation = GetView()->
 		GetDefaultEndAnimation();
 	if (!EndAnimation)
 	{
+		if (IsWidget)
+		{
+			View->SetVisibility(ESlateVisibility::Hidden);
+			return;
+		}
+
 		DisappearUI();
 		return;
 	}
@@ -147,6 +156,8 @@ void UBaseUIController::AppearUI(const EUILayer Layer)
 
 	PlayerController->SetInputMode(InputMode);
 	PlayerController->SetShowMouseCursor(true);
+
+	OnFinishDefaultTickAnimation();
 }
 
 void UBaseUIController::DisappearUI()
@@ -192,6 +203,11 @@ void UBaseUIController::OnFinishDefaultTickAnimation()
 {
 	// 애니메이션이 갑자기 사라질 수 있지만, 실제 비즈니스 로직에 문제가 되어서는 안된다.
 	if (!GetView()->GetDefaultTickAnimation())
+	{
+		return;
+	}
+
+	if (!IsVisibleUI)
 	{
 		return;
 	}
