@@ -5,7 +5,9 @@
 
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
+#include "ProjectISG/Systems/Animation/Manager/AnimMontageManager.h"
 #include "ProjectISG/Systems/Time/Bed.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 
@@ -31,7 +33,9 @@ void UGA_WakeUp::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	(
 		this,
 		NAME_None,
-		Player->GetWakeUpMontage(),
+		UAnimMontageManager::GetMontage(
+			Player->GetPlayerState<AMainPlayerState>(),
+			EAnimMontageKey::Sleep_WakeUp),
 		FGameplayTagContainer(),
 		CurrentEventData);
 
@@ -58,7 +62,8 @@ void UGA_WakeUp::OnCompleteWakeUpMontage(FGameplayTag EventTag,
 		CurrentActorInfo->AvatarActor.Get());
 	Player->bUseControllerRotationYaw = true;
 
-	AMainPlayerController* PC = Cast<AMainPlayerController>(Player->GetController());
+	AMainPlayerController* PC = Cast<AMainPlayerController>(
+		Player->GetController());
 	PC->SetViewTargetWithBlend(Player);
 
 	if (CurrentEventData.Target)
@@ -67,7 +72,7 @@ void UGA_WakeUp::OnCompleteWakeUpMontage(FGameplayTag EventTag,
 		const ABed* Bed = Cast<ABed>(Target);
 		Bed->SetCollisionEnabled(true);
 	}
-	
+
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo,
 	           false, false);
 }

@@ -76,12 +76,6 @@ public:
 	GETTER(TObjectPtr<UPlayerHandSlotComponent>, HandSlotComponent)
 	GETTER(TObjectPtr<UCameraComponent>, ScreenShotCameraComponent)
 
-	// TODO: Ability로 이관 후 AbilityTask로 해당 로직 처리하기
-	GETTER(TObjectPtr<UAnimMontage>, SeedingMontage)
-	GETTER(TObjectPtr<UAnimMontage>, WateringMontage)
-	GETTER(TObjectPtr<UAnimMontage>, LyingMontage)
-	GETTER(TObjectPtr<UAnimMontage>, WakeUpMontage)
-
 	UFUNCTION(Server, Reliable)
 	void Server_SetActorTransformReplicated(const FTransform& Transform);
 
@@ -151,21 +145,5 @@ private:
 	UPROPERTY(Replicated, EditAnywhere, Category = "Sleep",
 		meta = (AllowPrivateAccess = true))
 	bool bLieInBed = false;
-
-	UPROPERTY(EditAnywhere, Category = "Animation",
-		meta = (AllowPrivateAccess = true))
-	TObjectPtr<UAnimMontage> SeedingMontage;
-
-	UPROPERTY(EditAnywhere, Category = "Animation",
-		meta = (AllowPrivateAccess = true))
-	TObjectPtr<UAnimMontage> WateringMontage;
-
-	UPROPERTY(EditAnywhere, Category = "Animation",
-		meta = (AllowPrivateAccess = true))
-	TObjectPtr<UAnimMontage> LyingMontage;
-
-	UPROPERTY(EditAnywhere, Category = "Animation",
-		meta = (AllowPrivateAccess = true))
-	TObjectPtr<UAnimMontage> WakeUpMontage;
 #pragma endregion
 };

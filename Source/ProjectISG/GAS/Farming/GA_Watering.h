@@ -6,9 +6,8 @@
 #include "ProjectISG/GAS/Common/Ability/Utility/GA_BaseInputAbility.h"
 #include "GA_Watering.generated.h"
 
-/**
- * 
- */
+class UPlayMontageWithEvent;
+
 UCLASS()
 class PROJECTISG_API UGA_Watering : public UGA_BaseInputAbility
 {
@@ -29,11 +28,11 @@ protected:
 	                        bool bWasCancelled) override;
 
 private:
+	UPROPERTY()
+	UPlayMontageWithEvent* AT_WateringAnim;
+
 	UFUNCTION()
 	void OnEndWateringAnim(FGameplayTag EventTag, FGameplayEventData EventData);
 
 	void LoggingToWatering();
-private:
-	UPROPERTY()
-	class UPlayMontageWithEvent* AT_WateringAnim;
 };

@@ -13,7 +13,10 @@ enum class EAnimMontageKey : uint8
 	None,
 	SitDown_Start,
 	SitDown_Idle,
-	SitDown_End
+	SitDown_End,
+	Farming_Watering,
+	Sleep_Lying,
+	Sleep_WakeUp,
 };
 
 UENUM()
@@ -41,14 +44,15 @@ struct PROJECTISG_API FAnimMontageData : public FTableRowBase
 	{
 		return MontageData;
 	}
-	
+
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "Data", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, Category = "Data",
+		meta = (AllowPrivateAccess = true))
 	EAnimMontageKey Key = EAnimMontageKey::None;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Data", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, Category = "Data",
+		meta = (AllowPrivateAccess = true))
 	TMap<ECharacterName, TObjectPtr<UAnimMontage>> MontageData;
-	
 };
 
 
@@ -59,17 +63,18 @@ struct PROJECTISG_API FLevelSequenceData : public FTableRowBase
 
 	GETTER(ELevelSequenceKey, Key);
 
-	FORCEINLINE TMap<ECharacterName, TObjectPtr<ULevelSequence>> 
+	FORCEINLINE TMap<ECharacterName, TObjectPtr<ULevelSequence>>
 	GetSequenceData() const
 	{
 		return SequenceData;
 	}
 
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "Data", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, Category = "Data",
+		meta = (AllowPrivateAccess = true))
 	ELevelSequenceKey Key = ELevelSequenceKey::None;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Data", meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, Category = "Data",
+		meta = (AllowPrivateAccess = true))
 	TMap<ECharacterName, TObjectPtr<ULevelSequence>> SequenceData;
-	
 };

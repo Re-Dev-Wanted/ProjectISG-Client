@@ -5,7 +5,9 @@
 
 #include "AbilitySystemComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
+#include "ProjectISG/Systems/Animation/Manager/AnimMontageManager.h"
 #include "ProjectISG/Systems/Time/Bed.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 
@@ -39,11 +41,14 @@ void UGA_LieInBed::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	(
 		this,
 		NAME_None,
-		Player->GetLyingMontage(),
+		UAnimMontageManager::GetMontage(
+			Player->GetPlayerState<AMainPlayerState>(),
+			EAnimMontageKey::Sleep_Lying),
 		FGameplayTagContainer(),
 		CurrentEventData);
 
 	AT_LyingAnim->Activate();
+
 	BlockInputForMontage(true);
 	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 }
