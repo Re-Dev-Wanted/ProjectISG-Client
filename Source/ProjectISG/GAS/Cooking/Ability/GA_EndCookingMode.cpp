@@ -2,12 +2,10 @@
 
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "ProjectISG/Contents/Cooking/Props/KitchenFurniture.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
-#include "ProjectISG/Systems/Logging/LoggingEnum.h"
-#include "ProjectISG/Systems/Logging/LoggingStruct.h"
-#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 #include "Task/AT_EndCookingModeCinematic.h"
 
 void UGA_EndCookingMode::ActivateAbility(
@@ -52,6 +50,11 @@ void UGA_EndCookingMode::UnlockPlayer()
 {
 	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		GetAvatarActorFromActorInfo());
+
+	AKitchenFurniture* KitchenFurniture = Cast<AKitchenFurniture>(
+		Player->GetInteractionComponent()->GetTargetTraceResult().GetActor());
+
+	KitchenFurniture->UnlockPlayer();
 
 	Player->bUseControllerRotationYaw = true;
 	Player->GetInteractionComponent()->SetIsInteractive(true);

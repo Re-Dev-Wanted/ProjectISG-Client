@@ -6,6 +6,7 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerState.generated.h"
 
+enum class ECharacterName : uint8;
 class ATimeManager;
 class AGridManager;
 class UInventoryComponent;
@@ -32,9 +33,11 @@ public:
 
 	bool CanBuyProduct(int32 ProductPrice);
 
+	GETTER(ECharacterName, CharacterName)
+
 protected:
 	virtual void BeginPlay() override;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UISGAbilitySystemComponent> AbilitySystemComponent;
 
@@ -53,4 +56,8 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	int32 Gold = 10000;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Character",
+		meta = (AllowPrivateAccess = true))
+	ECharacterName CharacterName;
 };

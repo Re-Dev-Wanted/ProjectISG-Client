@@ -6,7 +6,6 @@
 #include "GA_CookingQTEAction.generated.h"
 
 enum class EItemGrade : uint8;
-class UAT_LogWithScreenShot;
 class UAT_PlayCinematic;
 class ULevelSequence;
 class ALevelSequenceActor;
@@ -18,26 +17,23 @@ class PROJECTISG_API UGA_CookingQTEAction : public UGA_BaseInputAbility
 
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle
-								, const FGameplayAbilityActorInfo* ActorInfo
-								, const FGameplayAbilityActivationInfo
-								ActivationInfo
-								, const FGameplayEventData*
-								TriggerEventData) override;
+	                             , const FGameplayAbilityActorInfo* ActorInfo
+	                             , const FGameplayAbilityActivationInfo
+	                             ActivationInfo
+	                             , const FGameplayEventData*
+	                             TriggerEventData) override;
 
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle
-							, const FGameplayAbilityActorInfo* ActorInfo
-							, const FGameplayAbilityActivationInfo
-							ActivationInfo, bool bReplicateEndAbility
-							, bool bWasCancelled) override;
+	                        , const FGameplayAbilityActorInfo* ActorInfo
+	                        , const FGameplayAbilityActivationInfo
+	                        ActivationInfo, bool bReplicateEndAbility
+	                        , bool bWasCancelled) override;
 
 private:
 	uint32 SelectedFoodRecipeId;
 
 	UPROPERTY()
 	TObjectPtr<UAT_PlayCinematic> AT_PlayCinematic;
-
-	UPROPERTY()
-	TObjectPtr<UAT_LogWithScreenShot> AT_LogCooking;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Options"
 		, meta = (AllowPrivateAccess = true))

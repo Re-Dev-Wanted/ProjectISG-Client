@@ -5,7 +5,9 @@
 
 #include "ProjectISG/Contents/Building/Props/HoedField.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
+#include "ProjectISG/Systems/Animation/Manager/AnimMontageManager.h"
 #include "ProjectISG/Systems/Logging/LoggingEnum.h"
 #include "ProjectISG/Systems/Logging/LoggingStruct.h"
 #include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
@@ -33,10 +35,13 @@ void UGA_Watering::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	(
 		this,
 		NAME_None,
-		Player->GetWateringMontage(),
+		UAnimMontageManager::GetMontage(
+			Player->GetPlayerState<AMainPlayerState>(),
+			EAnimMontageKey::Farming_Watering),
 		FGameplayTagContainer(),
 		*TriggerEventData
 	);
+
 	AT_WateringAnim->Activate();
 	BlockInputForMontage(true);
 	AT_WateringAnim->OnCompleted.

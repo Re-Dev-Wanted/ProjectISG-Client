@@ -21,6 +21,7 @@ void UUIC_SelectedFoodDetailWidget::ShowDataByRecipeId(const uint32 RecipeId)
 		FText::FromString(FoodInfo.GetDisplayName()));
 
 	SelectedFoodDetailView->GetIngredientListScroll()->ClearChildren();
+	
 	for (const auto RecipeData : Recipe.GetRecipeData())
 	{
 		UUIV_FoodIngredientInfoWidget* NewWidget = CreateWidget<

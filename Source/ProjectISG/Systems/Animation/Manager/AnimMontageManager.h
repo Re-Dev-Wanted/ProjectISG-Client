@@ -6,6 +6,8 @@
 #include "UObject/Object.h"
 #include "AnimMontageManager.generated.h"
 
+class AMainPlayerState;
+
 UCLASS()
 class PROJECTISG_API UAnimMontageManager : public UObject
 {
@@ -13,9 +15,9 @@ class PROJECTISG_API UAnimMontageManager : public UObject
 
 public:
 	static void Initialize();
-	static FAnimMontageData GetDataByKey(EAnimMontageKey Key);
-	static TObjectPtr<UAnimMontage> GetMontage(EAnimMontageKey Key, 
-	ECharacterName Character);
+	static FAnimMontageData GetDataByKey(const EAnimMontageKey Key);
+	static TObjectPtr<UAnimMontage> GetMontage(const AMainPlayerState* PS,
+	                                           const EAnimMontageKey Key);
 
 private:
 	static TArray<FAnimMontageData> Datas;

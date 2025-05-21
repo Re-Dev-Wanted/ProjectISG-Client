@@ -27,7 +27,7 @@ private:
 		, meta = (AllowPrivateAccess = true, EditCondition = "IsInputAccess"))
 	TObjectPtr<UInputAction> CloseCookingRecipeUI;
 
-	bool CanCookByRecipeId(const uint32 RecipeId);
+	bool CanCookByRecipeId();
 
 	UFUNCTION()
 	void OnCloseCookingRecipeUI();

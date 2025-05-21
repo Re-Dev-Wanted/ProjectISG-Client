@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Contents/Cooking/CookingStruct.h"
-#include "ProjectISG/Core/UI/Base/Interfaces/UIHandler.h"
 #include "ProjectISG/GAS/Common/Object/BaseInteractiveActor.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "KitchenFurniture.generated.h"
@@ -40,12 +39,15 @@ public:
 	void Client_UnlockPlayer();
 
 	UFUNCTION(Server, Reliable)
-	void Server_SetInteractingPlayer(class AMainPlayerCharacter* Player);
+	void Server_SetInteractingPlayer(AMainPlayerCharacter* Player);
 
 protected:
 	virtual void BeginPlay() override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<USceneComponent> Root;
+
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> Mesh;
 
