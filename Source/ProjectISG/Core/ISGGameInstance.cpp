@@ -8,6 +8,8 @@
 #include "ProjectISG/Contents/Farming/Managers/FarmingManager.h"
 #include "ProjectISG/Contents/Fishing/Managers/FishingManager.h"
 #include "ProjectISG/Contents/Trading/TradingManager.h"
+#include "ProjectISG/Systems/Animation/Manager/AnimMontageManager.h"
+#include "ProjectISG/Systems/Animation/Manager/LevelSequenceManager.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/QuestStory/Manager/QuestStoryManager.h"
 #include "ProjectISG/Utils/ApiUtil.h"
@@ -24,6 +26,8 @@ UISGGameInstance::UISGGameInstance()
 	UFarmingManager::Initialize();
 	UCraftingManager::Initialize();
 	UQuestStoryManager::Initialize();
+	UAnimMontageManager::Initialize();
+	ULevelSequenceManager::Initialize();
 }
 
 void UISGGameInstance::CreateGameSessionIdAndCreateSession()
