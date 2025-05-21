@@ -4,6 +4,8 @@
 #include "Components/Button.h"
 #include "InputAction.h"
 #include "EnhancedInputComponent.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Systems/Inventory/ItemHandler.h"
 
 void UUIC_LootContainerUI::InitializeController(UBaseUIView* NewView,
@@ -27,12 +29,21 @@ void UUIC_LootContainerUI::BindInputAction(UEnhancedInputComponent* InputCompone
 
 void UUIC_LootContainerUI::CloseUI()
 {
+	const AMainPlayerController* PC =  Cast<AMainPlayerController>(GetPlayerController());
+
+	if (PC)
+	{
+		PC->GetUIManageComponent()->ResetWidget();
+	}
+	else
+	{
+		PopUIFromPlayerController();
+	}
+	
 	if (UIHandler)
 	{
 		UIHandler->OnClosed();
 	}
-
-	PopUIFromPlayerController();
 }
 
 void UUIC_LootContainerUI::SetContainer(FGuid Guid, const TArray<FItemMetaInfo>& Items, TScriptInterface<IItemHandler> Handler)

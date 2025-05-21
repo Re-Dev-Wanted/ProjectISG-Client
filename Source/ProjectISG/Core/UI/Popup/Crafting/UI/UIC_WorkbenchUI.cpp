@@ -7,7 +7,9 @@
 #include "Abilities/GameplayAbilityTypes.h"
 #include "Components/Button.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
@@ -120,10 +122,19 @@ void UUIC_WorkbenchUI::OnUpdateSelectedRecipeUI(uint16 RecipeId)
 
 void UUIC_WorkbenchUI::CloseUI()
 {
-	PopUIFromPlayerController();
+	const AMainPlayerController* PC =  Cast<AMainPlayerController>(GetPlayerController());
+
+	if (PC)
+	{
+		PC->GetUIManageComponent()->ResetWidget();
+	}
+	else
+	{
+		PopUIFromPlayerController();
+	}
 
 	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetPlayerController()->GetPawn());
-
+	
 	FGameplayEventData EventData;
 	EventData.EventTag = ISGGameplayTags::Crafting_Active_EndCrafting;
 	EventData.Instigator = Player;

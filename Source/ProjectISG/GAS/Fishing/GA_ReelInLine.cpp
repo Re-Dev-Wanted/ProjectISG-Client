@@ -7,6 +7,7 @@
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "Task/AT_FailFishingCinematic.h"
 #include "Task/AT_SuccessFishingCinematic.h"
 
@@ -93,6 +94,8 @@ void UGA_ReelInLine::OnEndCinematic()
 
 		PC->SetIgnoreLookInput(false);
 		PC->SetIgnoreMoveInput(false);
+
+		PC->GetUIManageComponent()->ResetWidget();
 	}
 
 	TObjectPtr<ABaseActor> HeldItem = Player->GetHandSlotComponent()->GetHeldItem();
