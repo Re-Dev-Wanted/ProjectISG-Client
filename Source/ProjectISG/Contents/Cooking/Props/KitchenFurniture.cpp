@@ -19,17 +19,20 @@ AKitchenFurniture::AKitchenFurniture()
 {
 	bReplicates = true;
 	Super::SetReplicateMovement(true);
-	
+
+	Root = CreateDefaultSubobject<USceneComponent>("Root");
+	SetRootComponent(Root);
+
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	Mesh->SetupAttachment(GetRootComponent());
 
 	KitchenStandPosition = CreateDefaultSubobject<USceneComponent>(
 		"Kitchen Stand Position");
-	KitchenStandPosition->SetupAttachment(Mesh);
+	KitchenStandPosition->SetupAttachment(GetRootComponent());
 
 	KitchenCameraComponent = CreateDefaultSubobject<UCameraComponent>(
 		"Kitchen Camera Component");
-	KitchenCameraComponent->SetupAttachment(Mesh);
+	KitchenCameraComponent->SetupAttachment(GetRootComponent());
 
 
 	FryPanMesh = CreateDefaultSubobject<UStaticMeshComponent>(
@@ -61,10 +64,11 @@ void AKitchenFurniture::BeginPlay()
 
 	ATimeManager* TimeManager = Cast<ATimeManager>(
 		UGameplayStatics::GetActorOfClass(GetWorld(),
-										  ATimeManager::StaticClass()));
+		                                  ATimeManager::StaticClass()));
 	if (TimeManager)
 	{
-		TimeManager->OnContentRestrictionTimeReached.AddDynamic(this, &ThisClass::UnlockPlayer);
+		TimeManager->OnContentRestrictionTimeReached.AddDynamic(
+			this, &ThisClass::UnlockPlayer);
 	}
 }
 
@@ -169,22 +173,26 @@ void AKitchenFurniture::Client_UnlockPlayer_Implementation()
 {
 	if (GetInteractingPlayer() == nullptr)
 	{
-		return;	
+		return;
 	}
 
-	AMainPlayerController* PC = Cast<AMainPlayerController>(GetInteractingPlayer()->GetController());
+	AMainPlayerController* PC = Cast<AMainPlayerController>(
+		GetInteractingPlayer()->GetController());
 	if (PC)
 	{
 		PC->SetIgnoreLookInput(false);
 		PC->SetViewTargetWithBlend(GetInteractingPlayer());
 		GetInteractingPlayer()->bUseControllerRotationYaw = true;
-		GetInteractingPlayer()->GetInteractionComponent()->SetIsInteractive(true);
-		GetInteractingPlayer()->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+		GetInteractingPlayer()->GetInteractionComponent()->
+		                        SetIsInteractive(true);
+		GetInteractingPlayer()->GetCharacterMovement()->SetMovementMode(
+			MOVE_Walking);
 		GetInteractingPlayer()->GetCameraComponent()->Activate();
 	}
 }
 
-void AKitchenFurniture::Server_SetInteractingPlayer_Implementation(AMainPlayerCharacter* Player)
+void AKitchenFurniture::Server_SetInteractingPlayer_Implementation(
+	AMainPlayerCharacter* Player)
 {
 	SetInteractingPlayer(Player);
 }
