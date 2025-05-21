@@ -76,7 +76,7 @@ public:
 	GETTER(TObjectPtr<UPlayerHandSlotComponent>, HandSlotComponent)
 	GETTER(TObjectPtr<UCameraComponent>, ScreenShotCameraComponent)
 
-	UFUNCTION(Server, Reliable)
+	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void Server_SetActorTransformReplicated(const FTransform& Transform);
 
 private:
