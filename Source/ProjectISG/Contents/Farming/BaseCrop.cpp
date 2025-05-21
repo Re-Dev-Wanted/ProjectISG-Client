@@ -167,27 +167,22 @@ EItemGrade ABaseCrop::SetItemGrade()
 {
 	int32 RandomNum = FMath::RandRange(0, 100);
 	UE_LOG(LogTemp, Warning, TEXT("랜덤 숫자 : %d"), RandomNum);
-	if (RandomNum > 96)
+	if (RandomNum > 98)
 	{
-		return EItemGrade::Mythic;
+		return EItemGrade::Unique;
 	}
-	if (RandomNum > 80)
-	{
-		return EItemGrade::Legendary;
-	}
-	if (RandomNum > 64)
-	{
-		return EItemGrade::Epic;
-	}
-	if (RandomNum > 48)
+	else if (RandomNum > 90)
 	{
 		return EItemGrade::Rare;
 	}
-	if (RandomNum > 32)
+	else if (RandomNum > 80)
 	{
 		return EItemGrade::Uncommon;
 	}
-	return EItemGrade::Common;
+	else
+	{
+		return EItemGrade::Common;
+	}
 }
 
 void ABaseCrop::OnInteractive(AActor* Causer)
