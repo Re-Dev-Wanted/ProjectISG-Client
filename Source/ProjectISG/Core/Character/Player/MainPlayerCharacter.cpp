@@ -2,6 +2,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Component/InputActionComponent.h"
 #include "Component/InteractionComponent.h"
 #include "Component/PlayerHandSlotComponent.h"
 #include "Component/PlayerInventoryComponent.h"
@@ -33,11 +34,12 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	CameraComponent->SetRelativeLocation({0, 0, 80});
 	CameraComponent->SetRelativeRotation({0, 0, -18});
 
-	
-	ScreenShotSpringArm = CreateDefaultSubobject<USpringArmComponent>("ScreenShot Spring Arm");
+	ScreenShotSpringArm = CreateDefaultSubobject<USpringArmComponent>(
+		"ScreenShot Spring Arm");
 	ScreenShotSpringArm->SetupAttachment(GetMesh());
-	
-	ScreenShotCameraComponent = CreateDefaultSubobject<UCameraComponent>("ScreenShot Camera");
+
+	ScreenShotCameraComponent = CreateDefaultSubobject<UCameraComponent>(
+		"ScreenShot Camera");
 	ScreenShotCameraComponent->SetupAttachment(ScreenShotSpringArm);
 
 	PlayerInventoryComponent = CreateDefaultSubobject<
@@ -55,6 +57,9 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 
 	HandSlotComponent = CreateDefaultSubobject<UPlayerHandSlotComponent>
 		("Hand Slot Component");
+
+	InputActionComponent = CreateDefaultSubobject<UInputActionComponent>
+		("Input Action Component");
 
 	DiaryComponent = CreateDefaultSubobject<
 		UDiaryComponent>("Diary Component");

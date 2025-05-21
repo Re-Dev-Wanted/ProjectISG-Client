@@ -3,10 +3,10 @@
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
-#include "ProjectISG/Systems/QuestStory/QuestStoryConstants.h"
 
 TArray<FQuestStoryData> UQuestStoryManager::QuestArrayList;
 TMap<FString, FQuestStoryData> UQuestStoryManager::QuestData;
+TMap<FString, TArray<FQuestRequireData>> UQuestStoryManager::QuestRequireData;
 TMap<FString, TArray<FQuestStoryDialogue>>
 UQuestStoryManager::QuestDialogueData;
 TMap<FString, FQuestSceneCutData> UQuestStoryManager::QuestSceneCutData;
@@ -21,6 +21,7 @@ void UQuestStoryManager::Initialize()
 
 		InitializeQuestData();
 		InitializeQuestDialogue();
+		InitializeQuestRequireData();
 		InitializeQuestSceneCut();
 	}
 }
@@ -68,6 +69,38 @@ void UQuestStoryManager::InitializeQuestData()
 	{
 		QuestArrayList.Add(*QuestStoryData);
 		QuestData.Add(QuestStoryData->GetQuestId(), *QuestStoryData);
+	}
+}
+
+void UQuestStoryManager::InitializeQuestRequireData()
+{
+	const static ConstructorHelpers::FObjectFinder<UDataTable>
+		QuestRequireDataTable(
+			TEXT(
+				"'/Game/Systems/QuestStory/Data/DT_QuestRequireData.DT_QuestRequireData'"));
+
+	if (!QuestRequireDataTable.Succeeded())
+	{
+		return;
+	}
+
+	TArray<FQuestRequireData*> TempQuestRequireData;
+	QuestRequireDataTable.Object->GetAllRows<FQuestRequireData>(
+		TEXT(""), TempQuestRequireData);
+
+	for (const FQuestRequireData* QuestRequire : TempQuestRequireData)
+	{
+		if (QuestRequireData.Contains(QuestRequire->GetQuestId()))
+		{
+			QuestRequireData[QuestRequire->GetQuestId()].Add(*QuestRequire);
+		}
+		else
+		{
+			TArray<FQuestRequireData> NewRequireData;
+			NewRequireData.Add(*QuestRequire);
+
+			QuestRequireData.Add(QuestRequire->GetQuestId(), NewRequireData);
+		}
 	}
 }
 
@@ -234,6 +267,53 @@ bool UQuestStoryManager::CheckAndCompleteQuest(AMainPlayerController* PC,
 	return IsSuccess;
 }
 
+TArray<FQuestRequireData> UQuestStoryManager::GetRequireQuestDataById(
+	const FString& QuestId)
+{
+	if (!QuestRequireData.Contains(QuestId))
+	{
+		QuestRequireData.Add(QuestId, TArray<FQuestRequireData>());
+	}
+
+	return QuestRequireData[QuestId];
+}
+
+uint32 UQuestStoryManager::GetRequireQuestDateToAbleFinish(
+	const AMainPlayerController* PC, const FString& QuestId)
+{
+	uint32 Result = 0;
+	if (!QuestRequireData.Contains(QuestId))
+	{
+		QuestRequireData.Add(QuestId, TArray<FQuestRequireData>());
+		return 0;
+	}
+
+	for (FQuestRequireData RequireData : QuestRequireData[QuestId])
+	{
+		switch (RequireData.GetRequireType())
+		{
+		case EQuestRequireType::HasItem:
+			{
+				const AMainPlayerState* PS = PC->GetPlayerState<
+					AMainPlayerState>();
+				if (PS->GetInventoryComponent()->HasItemInInventory(
+					RequireData.GetRequireItemOptions().GetRequireItemId(),
+					RequireData.GetRequireItemOptions().GetRequireItemCount()))
+				{
+					Result += 1;
+				}
+				break;
+			}
+		default:
+			{
+				break;
+			}
+		}
+	}
+
+	return Result;
+}
+
 TArray<FString> UQuestStoryManager::GetQuestRequiredItemTableById(
 	const FString& QuestId)
 {
@@ -296,22 +376,4 @@ void UQuestStoryManager::GiveRewardQuest_Internal(AMainPlayerController* PC,
 			}
 		}
 	}
-}
-
-uint32 UQuestStoryManager::GetQuestAllBehaviorCount(const FString& QuestId)
-{
-	const FQuestStoryData CurrentQuestStoryData = QuestData[QuestId];
-	// 퀘스트 형태가 단순 Dialogue 형태인 경우는 따로 완료해야 할 경우 수가 없어
-	// 1개로 설정한다.
-	if (CurrentQuestStoryData.GetQuestObjective() ==
-		EQuestStoryObjective::Dialogue)
-	{
-		return 1;
-	}
-
-	uint32 Result = 0;
-	// 요구 아이템에 따른 갯수
-	Result += GetQuestRequiredItemTableById(QuestId).Num();
-
-	return Result;
 }
