@@ -23,6 +23,15 @@ enum class EQuestStoryObjective : uint8
 };
 
 UENUM()
+enum class EQuestRequireType : uint8
+{
+	None,
+	HasItem,
+	HasGold,
+	Custom,
+};
+
+UENUM()
 enum class EQuestStoryMetaDataKey: uint8
 {
 	None,

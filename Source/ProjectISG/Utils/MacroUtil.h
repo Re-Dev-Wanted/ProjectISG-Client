@@ -4,6 +4,10 @@
 UFUNCTION(BlueprintCallable) \
 FORCEINLINE type Get##varName() const { return varName; }
 
+#define GETTER_REF(type, varName) \
+UFUNCTION(BlueprintCallable) \
+FORCEINLINE type& Get##varName() { return varName; }
+
 #define GETTER_EDITABLE(type, varName) \
 UFUNCTION(BlueprintCallable) \
 FORCEINLINE type Get##varName() { return varName; }
