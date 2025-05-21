@@ -4,6 +4,8 @@
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
 #include "UIC_MainHUD.generated.h"
 
+enum class EAlertType : uint8;
+
 UCLASS()
 class PROJECTISG_API UUIC_MainHUD : public UBaseUIController
 {
@@ -28,6 +30,9 @@ public:
 	void ToggleAutoQuestUI(const bool IsActive);
 
 	void ToggleCurrentQuestUI(const bool IsActive);
+
+	void AlertToMainHUD(const EAlertType AlertType, const FString& Message,
+	                    const float Time = 2.f);
 
 protected:
 	virtual void AppearUI() override;

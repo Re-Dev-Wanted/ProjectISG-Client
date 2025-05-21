@@ -121,7 +121,7 @@ bool UUIManageComponent::IsPlayerInLocalControlled() const
 	return PC && PC->IsLocalController();
 }
 
-EUIName UUIManageComponent::GetLastStackUI() const
+EUIName UUIManageComponent::GetTopStackUI() const
 {
 	return WidgetStack.Last();
 }

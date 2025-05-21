@@ -30,3 +30,12 @@ enum class EUIName: uint32
 	Loading_LoadingUI, Modal_TimeAlert, Popup_MbtiAsk,
 	Popup_LootContainerUI, Popup_CraftingUI, Popup_QuestListUI,
 };
+
+UENUM()
+enum class EAlertType: uint8
+{
+	None,
+	Info,
+	Warning,
+	Error,
+};

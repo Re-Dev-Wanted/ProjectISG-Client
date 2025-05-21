@@ -10,6 +10,8 @@
 #include "ProjectISG/Core/UI/Gameplay/QuestStory/Widget/AutoQuest/UIV_AutoQuestDialogueWidget.h"
 #include "ProjectISG/Core/UI/Gameplay/QuestStory/Widget/CurrentQuest/UIC_CurrentQuestWidget.h"
 #include "ProjectISG/Core/UI/Gameplay/QuestStory/Widget/CurrentQuest/UIV_CurrentQuestWidget.h"
+#include "ProjectISG/Core/UI/Gameplay/MainHUD/Widget/AlertModal/UIC_HUDAlertModalWidget.h"
+#include "ProjectISG/Core/UI/Gameplay/MainHUD/Widget/AlertModal/UIV_HUDAlertModalWidget.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
 #include "ProjectISG/Core/UI/HUD/Interactive/InteractiveUI.h"
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
@@ -134,4 +136,15 @@ void UUIC_MainHUD::ToggleCurrentQuestUI(const bool IsActive)
 		MainHUDView->GetCurrentQuestWidget()->SetVisibility(
 			ESlateVisibility::Hidden);
 	}
+}
+
+void UUIC_MainHUD::AlertToMainHUD(const EAlertType AlertType,
+                                  const FString& Message, const float Time)
+{
+	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
+	UUIC_HUDAlertModalWidget* AlertModalWidgetController = Cast<
+		UUIC_HUDAlertModalWidget>(MainHUDView->
+		                          GetAlertModalWidget()->GetController());
+
+	AlertModalWidgetController->Alert(AlertType, Message, Time);
 }

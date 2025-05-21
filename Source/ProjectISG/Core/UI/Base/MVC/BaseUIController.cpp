@@ -24,12 +24,18 @@ void UBaseUIController::StartShowUI(const EUILayer Layer)
 	GetView()->PlayAnimation(GetView()->GetDefaultStartAnimation());
 }
 
-void UBaseUIController::EndShowUI()
+void UBaseUIController::EndShowUI(const bool IsWidget)
 {
 	const UWidgetAnimation* EndAnimation = GetView()->
 		GetDefaultEndAnimation();
 	if (!EndAnimation)
 	{
+		if (IsWidget)
+		{
+			View->SetVisibility(ESlateVisibility::Hidden);
+			return;
+		}
+
 		DisappearUI();
 		return;
 	}

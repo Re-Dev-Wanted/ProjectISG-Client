@@ -17,7 +17,7 @@ class PROJECTISG_API UBaseUIController : public UObject
 
 public:
 	void StartShowUI(const EUILayer Layer);
-	void EndShowUI();
+	void EndShowUI(const bool IsWidget = false);
 
 	virtual void InitializeController(UBaseUIView* NewView
 	                                  , UBaseUIModel* NewModel);

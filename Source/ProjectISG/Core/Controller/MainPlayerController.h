@@ -30,6 +30,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PopUI();
 
+	UFUNCTION(BlueprintCallable)
+	void Alert(const EAlertType AlertType, const FString& Message,
+	           const float Time = 2.f);
+
 	// 월드 퀘스트 실행
 	UFUNCTION(BlueprintCallable)
 	void StartQuest(const FString& QuestId);
