@@ -58,14 +58,14 @@ void UInputActionComponent::OnToggleDiaryUI()
 
 	if (!PS->GetTimeManager())
 	{
-		PC->Alert(EAlertType::Error, "알 수 없는 힘으로 가로막혀 있습니다.");
+		PC->Alert(EAlertType::Error, TEXT("알 수 없는 힘으로 가로막혀 있습니다."));
 		return;
 	}
 
 	// 첫날 혹은 0일째에서는 일기 열람을 불가능하게 한다.
 	if (PS->GetTimeManager()->GetDay() <= 1)
 	{
-		PC->Alert(EAlertType::Info, "열람할 일기 내용이 없습니다.");
+		PC->Alert(EAlertType::Info, TEXT("열람할 일기 내용이 없습니다."));
 		return;
 	}
 

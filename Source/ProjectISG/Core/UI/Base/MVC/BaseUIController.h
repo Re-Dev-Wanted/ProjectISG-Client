@@ -48,6 +48,9 @@ protected:
 	virtual void DisappearUI();
 
 private:
+	// 기본적으로 UI가 만들어질 때 다 노출처리가 됨으로 기본 true로 설정하고 진행한다.
+	bool IsVisibleUI = true;
+
 	EUILayer CurrentLayer;
 
 	UPROPERTY()

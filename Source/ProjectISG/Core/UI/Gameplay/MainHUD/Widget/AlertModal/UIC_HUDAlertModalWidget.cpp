@@ -2,6 +2,7 @@
 
 #include "UIV_HUDAlertModalWidget.h"
 #include "Components/TextBlock.h"
+#include "ProjectISG/Core/UI/UIEnum.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
 
 void UUIC_HUDAlertModalWidget::Alert(const EAlertType AlertType,
@@ -10,7 +11,8 @@ void UUIC_HUDAlertModalWidget::Alert(const EAlertType AlertType,
 	UUIV_HUDAlertModalWidget* AlertModalWidget = Cast<UUIV_HUDAlertModalWidget>(
 		GetView());
 
-	AlertModalWidget->SetVisibility(ESlateVisibility::Visible);
+	StartShowUI(EUILayer::Gameplay);
+
 	AlertModalWidget->GetAlertMessage()->SetText(FText::FromString(Message));
 	AlertModalWidget->GetAlertMessage()->SetColorAndOpacity(
 		AlertModalWidget->GetColorMap()[AlertType]);
