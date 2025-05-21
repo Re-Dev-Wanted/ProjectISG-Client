@@ -35,6 +35,8 @@ void UUIC_CookingRecipeUI::AppearUI()
 		IsShowSelectedRecipe
 			? ESlateVisibility::Visible
 			: ESlateVisibility::Hidden);
+
+	CanCookByRecipeId();
 }
 
 void UUIC_CookingRecipeUI::SetSelectedCookingRecipe(const uint32 RecipeId)
@@ -52,7 +54,7 @@ void UUIC_CookingRecipeUI::SetSelectedCookingRecipe(const uint32 RecipeId)
 
 	// 현재 레시피 기준으로 요리 가능한 지 여부를 체크해 버튼 활성화, 비활성화를 수행
 	CookingRecipeUI->GetCookingButton()->Get()->SetIsEnabled(
-		CanCookByRecipeId(RecipeId));
+		CanCookByRecipeId());
 }
 
 void UUIC_CookingRecipeUI::TurnOffSelectedCookingRecipe()
@@ -86,16 +88,35 @@ void UUIC_CookingRecipeUI::OnCloseCookingRecipeUI()
 
 void UUIC_CookingRecipeUI::StartCooking()
 {
+	const uint32 RecipeId = Cast<UUIM_CookingRecipeUI>(GetModel())->
+		GetSelectedRecipe();
+	const FFoodRecipe Recipe = UCookingManager::GetRecipeData()[RecipeId];
+
+	for (const auto [IngredientId, IngredientCount] : Recipe.GetRecipeData())
+	{
+		GetView()->GetOwningPlayerState<AMainPlayerState>()->
+		           GetInventoryComponent()->RemoveItem(
+			           IngredientId, IngredientCount);
+	}
+
 	FGameplayTagContainer ActivateTag;
 	ActivateTag.AddTag(ISGGameplayTags::Cooking_Active_QTEAction);
 
-	GetPlayerController()->GetPlayerState<AMainPlayerState>()->
-	                       GetAbilitySystemComponent()->
-	                       TryActivateAbilitiesByTag(ActivateTag);
+	GetView()->GetOwningPlayerState<AMainPlayerState>()->
+	           GetAbilitySystemComponent()->
+	           TryActivateAbilitiesByTag(ActivateTag);
 }
 
-bool UUIC_CookingRecipeUI::CanCookByRecipeId(const uint32 RecipeId)
+bool UUIC_CookingRecipeUI::CanCookByRecipeId()
 {
+	const int RecipeId = Cast<UUIM_CookingRecipeUI>(GetModel())->
+		GetSelectedRecipe();
+
+	if (RecipeId == INDEX_NONE)
+	{
+		return false;
+	}
+
 	const FFoodRecipe Recipe = UCookingManager::GetRecipeData()[RecipeId];
 	const FItemInfoData FoodInfo = UItemManager::GetItemInfoById(
 		Recipe.GetFoodId());

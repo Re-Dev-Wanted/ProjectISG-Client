@@ -12,7 +12,6 @@
 #include "ProjectISG/Core/UI/Popup/Cooking/UI/CookingQTE/UIC_CookingQTEUI.h"
 #include "ProjectISG/Core/UI/Popup/Cooking/UI/CookingRecipe/UIC_CookingRecipeUI.h"
 #include "ProjectISG/Core/UI/Popup/Cooking/UI/CookingRecipe/UIM_CookingRecipeUI.h"
-#include "ProjectISG/GAS/Common/Ability/Utility/AT_LogWithScreenShot.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/AT_PlayCinematic.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
@@ -29,8 +28,6 @@ void UGA_CookingQTEAction::ActivateAbility(
 	, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-	AT_LogCooking = UAT_LogWithScreenShot::InitialEvent(this);
 
 	if (LevelSequenceActor)
 	{
@@ -167,7 +164,8 @@ void UGA_CookingQTEAction::EndAbility(const FGameplayAbilitySpecHandle Handle
 	FItemMetaInfo NewFoodItem = UItemManager::GetInitialItemMetaDataById(
 		Recipe.GetFoodId());
 	NewFoodItem.SetMetaDataValue(EMetaDataKey::ItemGrade,
-		FEnumUtil::GetClassEnumKeyAsString(GetResultFoodGrade()));
+	                             FEnumUtil::GetClassEnumKeyAsString(
+		                             GetResultFoodGrade()));
 
 	Player->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
 	        AddItem(NewFoodItem);
@@ -209,10 +207,8 @@ void UGA_CookingQTEAction::LoggingToStartCook()
 	LogParams.Detail = UItemManager::GetItemInfoById(Recipe.GetFoodId()).
 		GetDisplayName() + TEXT(" ") + TEXT("1개");
 
-	AT_LogCooking->SetLogParams(LogParams);
-	AT_LogCooking->SetIsLogWithScreenShot(false);
-
-	AT_LogCooking->Activate();
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+	            LoggingDataWithScreenshot(LogParams, true);
 }
 
 void UGA_CookingQTEAction::LoggingToEndCook()
@@ -228,10 +224,8 @@ void UGA_CookingQTEAction::LoggingToEndCook()
 	const FString FoodName = UItemManager::GetItemInfoById(Recipe.GetFoodId()).
 		GetDisplayName();
 
-	LogParams.Detail = FoodName + TEXT(" 1개");
+	LogParams.Detail = FString::Printf(TEXT("%s 1개"), *FoodName);
 
-	AT_LogCooking->SetLogParams(LogParams);
-	AT_LogCooking->SetIsLogWithScreenShot(true);
-
-	AT_LogCooking->Activate();
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+	            LoggingDataWithScreenshot(LogParams, true);
 }
