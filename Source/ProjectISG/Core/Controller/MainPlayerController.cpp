@@ -112,6 +112,17 @@ void AMainPlayerController::PopUI()
 	UIManageComponent->PopWidget();
 }
 
+void AMainPlayerController::Alert(const EAlertType AlertType,
+                                  const FString& Message, const float Time)
+{
+	if (UIManageComponent->GetTopStackUI() != EUIName::Gameplay_MainHUD)
+	{
+		return;
+	}
+
+	GetMainHUD()->AlertToMainHUD(AlertType, Message, Time);
+}
+
 void AMainPlayerController::OpenInventory()
 {
 	if (!IsLocalController())

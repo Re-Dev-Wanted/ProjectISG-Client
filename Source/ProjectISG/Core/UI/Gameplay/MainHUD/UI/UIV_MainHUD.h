@@ -4,6 +4,7 @@
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
 #include "UIV_MainHUD.generated.h"
 
+class UUIV_HUDAlertModalWidget;
 class UUIV_CurrentQuestWidget;
 class UUIV_AutoQuestDialogueWidget;
 class UInteractiveUI;
@@ -21,6 +22,7 @@ public:
 	GETTER(TObjectPtr<UUIV_Time>, TimeUI)
 	GETTER(TObjectPtr<UUIV_AutoQuestDialogueWidget>, AutoQuestDialogueWidget)
 	GETTER(TObjectPtr<UUIV_CurrentQuestWidget>, CurrentQuestWidget)
+	GETTER(TObjectPtr<UUIV_HUDAlertModalWidget>, AlertModalWidget)
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -37,4 +39,7 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UUIV_CurrentQuestWidget> CurrentQuestWidget;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UUIV_HUDAlertModalWidget> AlertModalWidget;
 };
