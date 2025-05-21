@@ -168,19 +168,20 @@ void AMainPlayerCharacter::SetupPlayerInputComponent(
 
 void AMainPlayerCharacter::MoveTo(const FInputActionValue& Value)
 {
-	const FVector2d InputVector = Value.Get<FVector2d>();
+	const FVector2d MovementVector = Value.Get<FVector2d>();
 
-	const FRotator MoveRotation = {
-		0, GetController()->GetControlRotation().Yaw, 0
-	};
-	const FVector ForwardVector = FRotationMatrix(MoveRotation).
-		GetUnitAxis(EAxis::X) * InputVector.X;
-	const FVector RightVector = FRotationMatrix(MoveRotation).
-		GetUnitAxis(EAxis::Y) * InputVector.Y;
+	if (Controller != nullptr)
+	{
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-	const FVector MoveTo = ForwardVector + RightVector;
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 
-	AddMovementInput(MoveTo, 1);
+		AddMovementInput(ForwardDirection, MovementVector.X);
+		AddMovementInput(RightDirection, MovementVector.Y);
+	}
 }
 
 void AMainPlayerCharacter::Look(const FInputActionValue& Value)
