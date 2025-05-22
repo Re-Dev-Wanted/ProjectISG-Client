@@ -6,8 +6,12 @@
 #include "Components/Border.h"
 #include "Components/Image.h"
 #include "Components/Overlay.h"
+#include "Components/TextBlock.h"
+#include "GameFramework/PlayerState.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
+#include "ProjectISG/Core/UI/Popup/SceneList/Widget/SceneDialogue/UIC_SceneDialogueWidget.h"
+#include "ProjectISG/Core/UI/Popup/SceneList/Widget/SceneDialogue/UIV_SceneDialogueWidget.h"
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 #include "ProjectISG/Systems/QuestStory/Manager/QuestStoryManager.h"
 
@@ -33,11 +37,9 @@ void UUIC_SceneListUI::AppearUI()
 		SceneListModel->GetCurrentSceneId());
 
 	SceneListModel->SetCurrentSceneIndex(0);
-	SceneListModel->SetMaxSceneIndex(CutData.GetSceneImages().Num());
+	SceneListModel->SetMaxSceneIndex(CutData.GetSceneCutList().Num());
 
-	GetWorld()->GetTimerManager().SetTimer(SceneCutChangeTimerHandle, this,
-	                                       &ThisClass::MoveToNextScene, 4,
-	                                       true, 0);
+	MoveToNextScene();
 }
 
 void UUIC_SceneListUI::BindInputAction(UEnhancedInputComponent* InputComponent)
@@ -97,6 +99,10 @@ void UUIC_SceneListUI::MoveToNextScene()
 	UUIM_SceneListUI* SceneListModel = Cast<UUIM_SceneListUI>(GetModel());
 	const UUIV_SceneListUI* SceneListView = Cast<UUIV_SceneListUI>(GetView());
 
+	const UQuestManageComponent* QuestManageComponent = GetView()->
+		GetOwningPlayer<
+			AMainPlayerController>()->GetQuestManageComponent();
+
 	if (SceneListModel->GetCurrentSceneIndex() >= SceneListModel->
 		GetMaxSceneIndex())
 	{
@@ -110,7 +116,35 @@ void UUIC_SceneListUI::MoveToNextScene()
 
 	// Index 번째 이미지를 적용시킨다.
 	SceneListView->GetSceneImage()->SetBrushFromTexture(
-		CutData.GetSceneImages()[SceneListModel->GetCurrentSceneIndex()]);
+		CutData.GetSceneCutList()[SceneListModel->GetCurrentSceneIndex()].
+		GetSceneImage());
+
+	// 대화하는 상대방의 텍스트를 설정한다.
+	const FString OwnerText = CutData.GetSceneCutList()[SceneListModel->
+		                          GetCurrentSceneIndex()].
+	                          GetDialogueOwner() == TEXT("{Player}")
+		                          ? GetView()->GetOwningPlayerState()->
+		                                       GetPlayerName()
+		                          : CutData.GetSceneCutList()[SceneListModel->
+			                          GetCurrentSceneIndex()].
+		                          GetDialogueOwner();
+
+	SceneListView->GetSceneDialogue()->GetDialogueOwner()->SetText(
+		FText::FromString(OwnerText));
+
+	// 씬 실행
+	Cast<UUIC_SceneDialogueWidget>(
+			SceneListView->GetSceneDialogue()->GetController())->
+		StartSceneDialogue(QuestManageComponent->GetCurrentPlayingSceneId(),
+		                   SceneListModel->GetCurrentSceneIndex());
+
+	// 다음 씬 실행 전까지 시간 초 설정
+	GetWorld()->GetTimerManager().SetTimer(SceneCutChangeTimerHandle, this,
+	                                       &ThisClass::MoveToNextScene,
+	                                       CutData.GetSceneCutList()[
+		                                       SceneListModel->
+		                                       GetCurrentSceneIndex()].
+	                                       GetSceneTime(), false);
 
 	// 모든 처리 이후 값을 1 증가 시킨다.
 	SceneListModel->SetCurrentSceneIndex(
