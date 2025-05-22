@@ -70,9 +70,7 @@ void UUIC_SceneListUI::OnTriggerSkipSceneAction()
 	if (SceneListModel->GetCurrentLoadingPercent() >= SceneListModel->
 		GetMaxLoadingPercent())
 	{
-		GetWorld()->GetTimerManager().ClearTimer(SceneCutChangeTimerHandle);
-		GetView()->GetOwningPlayer<AMainPlayerController>()->PopUI();
-		// TODO: 추후 행동에 대한 Delegate를 받아도 상관없을 것 같다
+		OnEndSceneList();
 	}
 }
 
@@ -102,13 +100,7 @@ void UUIC_SceneListUI::MoveToNextScene()
 	if (SceneListModel->GetCurrentSceneIndex() >= SceneListModel->
 		GetMaxSceneIndex())
 	{
-		GetWorld()->GetTimerManager().ClearTimer(SceneCutChangeTimerHandle);
-		GetView()->GetOwningPlayer<AMainPlayerController>()->PopUI();
-
-		if (OnSceneListEndNotified.IsBound())
-		{
-			OnSceneListEndNotified.Execute();
-		}
+		OnEndSceneList();
 
 		return;
 	}
@@ -123,4 +115,16 @@ void UUIC_SceneListUI::MoveToNextScene()
 	// 모든 처리 이후 값을 1 증가 시킨다.
 	SceneListModel->SetCurrentSceneIndex(
 		SceneListModel->GetCurrentSceneIndex() + 1);
+}
+
+void UUIC_SceneListUI::OnEndSceneList()
+{
+	GetWorld()->GetTimerManager().ClearTimer(SceneCutChangeTimerHandle);
+	GetView()->GetOwningPlayer<AMainPlayerController>()->PopUI();
+
+	if (OnSceneListEndNotified.IsBound())
+	{
+		OnSceneListEndNotified.Execute();
+		OnSceneListEndNotified.Unbind();
+	}
 }

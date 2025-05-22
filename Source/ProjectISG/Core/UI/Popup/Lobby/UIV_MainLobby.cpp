@@ -15,8 +15,8 @@ void UUIV_MainLobby::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	OpenChooseCharacterUIButton->OnClicked.AddDynamic(
-		this, &ThisClass::OnClickedOpenChooseCharacterUIButton);
+	// OpenChooseCharacterUIButton->OnClicked.AddDynamic(
+	// 	this, &ThisClass::OnClickedOpenChooseCharacterUIButton);
 
 	OpenFindSessionUIButton->OnClicked.AddDynamic(
 		this, &ThisClass::OnClickedFindSessionUIButton);
@@ -29,7 +29,7 @@ void UUIV_MainLobby::OnClickedOpenChooseCharacterUIButton()
 	UUIC_MainLobby* MainLobbyController = Cast<UUIC_MainLobby>(GetController());
 	ALobbyPlayerController* LobbyPlayerController = Cast<
 		ALobbyPlayerController>(MainLobbyController->GetPlayerController());
-	LobbyPlayerController->ShowLoadingUI(true);
+	LobbyPlayerController->ShowLoadingUIAndCreateSession(true);
 }
 
 void UUIV_MainLobby::OnClickedFindSessionUIButton()

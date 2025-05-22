@@ -7,6 +7,8 @@
 #include "UIV_MultiPlay.h"
 #include "Components/ScrollBox.h"
 #include "ProjectISG/Core/Controller/LobbyPlayerController.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/Controller/TutorialPlayerController.h"
 #include "ProjectISG/Core/UI/Popup/Lobby/RoomItem/UIV_RoomItem.h"
 #include "ProjectISG/Utils/SessionUtil.h"
 
@@ -39,13 +41,33 @@ void UUIC_MultiPlay::OnCompleteSearchAndTryJoin(bool IsSearchSuccess)
 	{
 		ALobbyPlayerController* LobbyPlayerController = Cast<
 			ALobbyPlayerController>(GetPlayerController());
-		for (int i = 0; i < SessionSearchData.SessionSearch->SearchResults.Num()
-		     ; i++)
+		if (LobbyPlayerController)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("세션을 검색하는 것에 성공하였습니다."));
-			LobbyPlayerController->SessionSearchResult = SessionSearchData.
-				SessionSearch->SearchResults[i];
-			LobbyPlayerController->ShowLoadingUI(false);
+			for (int i = 0; i < SessionSearchData.SessionSearch->SearchResults.
+			                                      Num()
+			     ; i++)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("세션을 검색하는 것에 성공하였습니다."));
+				LobbyPlayerController->SessionSearchResult = SessionSearchData.
+					SessionSearch->SearchResults[i];
+				LobbyPlayerController->ShowLoadingUIAndCreateSession(false);
+			}
+		}
+		else
+		{
+			ATutorialPlayerController* TutorialPlayerController = Cast<ATutorialPlayerController>(GetPlayerController());
+			if (TutorialPlayerController)
+			{
+				for (int i = 0; i < SessionSearchData.SessionSearch->
+				     SearchResults.Num()
+				     ; i++)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("세션을 검색하는 것에 성공하였습니다."));
+					TutorialPlayerController->SessionSearchResult = SessionSearchData.
+					                          SessionSearch->SearchResults[i];
+					TutorialPlayerController->StartScene6(false);
+				}
+			}
 		}
 	}
 	else
