@@ -25,8 +25,9 @@ enum class ELevelSequenceKey : uint8
 	CookingStart,
 	CookingEnd,
 	CookingQTEBigPot,
-	CookingQTEWoking,
+	CookingQTEWok,
 	CookingQTEKnife,
+	CookingQTEFryingPan,
 };
 
 UENUM()

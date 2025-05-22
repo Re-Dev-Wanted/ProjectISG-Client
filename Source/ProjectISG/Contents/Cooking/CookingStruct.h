@@ -56,8 +56,5 @@ struct PROJECTISG_API FCookingQTESequence
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly)
-	TObjectPtr<ULevelSequence> Sequence;
-
-	UPROPERTY(EditDefaultsOnly)
 	ECookingTool CookingTool = ECookingTool::None;
 };

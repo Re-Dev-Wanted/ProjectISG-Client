@@ -1,11 +1,12 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "ProjectISG/Contents/Cooking/CookingStruct.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/GA_BaseInputAbility.h"
 #include "GA_CookingQTEAction.generated.h"
 
 enum class EItemGrade : uint8;
+enum class ECookingTool : uint8;
+
 class UAT_PlayCinematic;
 class ULevelSequence;
 class ALevelSequenceActor;
@@ -37,15 +38,17 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Options"
 		, meta = (AllowPrivateAccess = true))
-	TArray<FCookingQTESequence> QTESequenceList;
+	TArray<ECookingTool> QTESequenceList;
 
-	TQueue<FCookingQTESequence> RemainQTEQueue;
+	TQueue<ECookingTool> RemainQTEQueue;
 
 	UPROPERTY()
 	ALevelSequenceActor* LevelSequenceActor;
 
 	UFUNCTION()
 	void OnPlayReadySequence(ALevelSequenceActor* TargetSequenceActor);
+
+	TObjectPtr<ULevelSequence> GetCookingSequence();
 
 	UFUNCTION()
 	void OnEndSequence();
