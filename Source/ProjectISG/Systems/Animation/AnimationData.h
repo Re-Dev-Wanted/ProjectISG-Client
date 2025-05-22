@@ -22,6 +22,8 @@ UENUM()
 enum class ELevelSequenceKey : uint8
 {
 	None,
+	CookingStart,
+	CookingEnd,
 };
 
 UENUM()
