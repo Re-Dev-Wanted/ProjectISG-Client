@@ -44,7 +44,7 @@ protected:
 	uint16 ItemId = 0;
 
 	UPROPERTY(Replicated)
-	TObjectPtr<class ABaseActor> HeldItem = nullptr;
+	TObjectPtr<ABaseActor> HeldItem = nullptr;
 
 private:
 	UFUNCTION()
@@ -55,5 +55,5 @@ private:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_ChangeItemId(uint16 ChangeItemId,
-	                            class ABaseActor* ChangeHeldItem);
+	                            ABaseActor* ChangeHeldItem);
 };
