@@ -35,12 +35,13 @@ void ALobbyPlayerController::PopUI()
 	UIManageComponent->PopWidget();
 }
 
-void ALobbyPlayerController::ShowLoadingUI(bool bIsServerTravel)
+void ALobbyPlayerController::ShowLoadingUIAndCreateSession(bool bIsServerTravel)
 {
-	UIManageComponent->PopWidget();
-	UIManageComponent->PushWidget(EUIName::Loading_LoadingUI);
+	PopUI();
+	PushUI(EUIName::Loading_LoadingUI);
 
-	UISGGameInstance* GameInstance = Cast<UISGGameInstance>(GetWorld()->GetGameInstance());
+	UISGGameInstance* GameInstance = Cast<UISGGameInstance>(
+		GetWorld()->GetGameInstance());
 	if (GameInstance)
 	{
 		GameInstance->SetIsServerTravel(bIsServerTravel);

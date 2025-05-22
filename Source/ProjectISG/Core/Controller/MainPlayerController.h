@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "OnlineSessionSettings.h"
 #include "GameFramework/PlayerController.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
 #include "ProjectISG/Utils/MacroUtil.h"
@@ -46,7 +47,13 @@ public:
 	void Client_StartQuestToPlayer(const FString& QuestId);
 
 	UFUNCTION(BlueprintCallable)
-	void StartScene(const FString& SceneId) const;
+	void StartScene(const FString SceneId) const;
+
+
+	void CheckTutorialStart();
+	void ShowLoadingUIAndCreateSession(bool bIsServerTravel);
+	FOnlineSessionSearchResult SessionSearchResult;
+
 
 #pragma region GetUI
 	TObjectPtr<UUIC_MainHUD> GetMainHUD() const;

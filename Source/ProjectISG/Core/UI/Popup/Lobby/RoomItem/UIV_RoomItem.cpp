@@ -7,6 +7,7 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "ProjectISG/Core/Controller/LobbyPlayerController.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Utils/SessionUtil.h"
 
 void UUIV_RoomItem::NativeConstruct()
@@ -20,24 +21,44 @@ void UUIV_RoomItem::NativeConstruct()
 void UUIV_RoomItem::OnClickedJoinButton()
 {
 	UUIC_RoomItem* RoomItemController = Cast<UUIC_RoomItem>(GetController());
-	ALobbyPlayerController* LobbyPlayerController = Cast<ALobbyPlayerController>(RoomItemController->GetPlayerController());
+	ALobbyPlayerController* LobbyPlayerController = Cast<
+		ALobbyPlayerController>(RoomItemController->GetPlayerController());
 
-	LobbyPlayerController->SessionSearchResult = this->SessionSearchResult;
-	LobbyPlayerController->ShowLoadingUI(false);
+	if (LobbyPlayerController)
+	{
+		LobbyPlayerController->SessionSearchResult = this->SessionSearchResult;
+		LobbyPlayerController->ShowLoadingUIAndCreateSession(false);
+	}
+	else
+	{
+		AMainPlayerController* MainPlayerController = Cast<
+			AMainPlayerController>(RoomItemController->GetPlayerController());
+		if (MainPlayerController)
+		{
+			MainPlayerController->SessionSearchResult = this->
+				SessionSearchResult;
+			MainPlayerController->ShowLoadingUIAndCreateSession(false);
+		}
+	}
 }
 
 void UUIV_RoomItem::SetInfo(const FOnlineSessionSearchResult& SearchResult)
 {
 	SessionSearchResult = SearchResult;
-	
+
 	FString RoomName;
 	SearchResult.Session.SessionSettings.Get(TEXT("RoomName"), RoomName);
 
-	RoomNameText->SetText(FText::FromString(FSessionUtil::DecodeData(RoomName)));
-	
-	const uint8 MaxPlayerCount = SearchResult.Session.SessionSettings.NumPublicConnections;
-	const uint8 RemainPlayerCount = SearchResult.Session.NumOpenPublicConnections;
+	RoomNameText->
+		SetText(FText::FromString(FSessionUtil::DecodeData(RoomName)));
 
-	CurrentPlayerText->SetText(FText::FromString(FString::FromInt(MaxPlayerCount - RemainPlayerCount)));
+	const uint8 MaxPlayerCount = SearchResult.Session.SessionSettings.
+	                                          NumPublicConnections;
+	const uint8 RemainPlayerCount = SearchResult.Session.
+	                                             NumOpenPublicConnections;
+
+	CurrentPlayerText->SetText(
+		FText::FromString(
+			FString::FromInt(MaxPlayerCount - RemainPlayerCount)));
 	MaxPlayerText->SetText(FText::FromString(FString::FromInt(MaxPlayerCount)));
 }

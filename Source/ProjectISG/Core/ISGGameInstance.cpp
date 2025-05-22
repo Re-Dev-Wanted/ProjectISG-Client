@@ -1,6 +1,7 @@
 ﻿#include "ISGGameInstance.h"
 
 #include "Controller/LobbyPlayerController.h"
+#include "Controller/MainPlayerController.h"
 #include "GameFramework/PlayerState.h"
 #include "Interfaces/IHttpResponse.h"
 #include "ProjectISG/Contents/Cooking/Managers/CookingManager.h"
@@ -129,16 +130,29 @@ void UISGGameInstance::OnCompleteCreate(FName SessionName, bool IsCreateSuccess)
 
 void UISGGameInstance::JoinFoundSession()
 {
-	ALobbyPlayerController* LobbyPlayerController = Cast<
-		ALobbyPlayerController>(GetWorld()->GetFirstPlayerController());
-
 	OnJoinSessionCompleteDelegate =
 		FOnJoinSessionCompleteDelegate::CreateUObject(
 			this, &ThisClass::OnJoinSession);
 
-	FSessionUtil::JoinSession(GetWorld(),
-	                          LobbyPlayerController->SessionSearchResult,
-	                          OnJoinSessionCompleteDelegate);
+	ALobbyPlayerController* LobbyPlayerController = Cast<
+		ALobbyPlayerController>(GetWorld()->GetFirstPlayerController());
+	if (LobbyPlayerController)
+	{
+		FSessionUtil::JoinSession(GetWorld(),
+		                          LobbyPlayerController->SessionSearchResult,
+		                          OnJoinSessionCompleteDelegate);
+	}
+	else
+	{
+		AMainPlayerController* MainPlayerController = Cast<
+			AMainPlayerController>(GetWorld()->GetFirstPlayerController());
+		if (MainPlayerController)
+		{
+			FSessionUtil::JoinSession(GetWorld(),
+			                          MainPlayerController->SessionSearchResult,
+			                          OnJoinSessionCompleteDelegate);
+		}
+	}
 }
 
 void UISGGameInstance::OnJoinSession(FName SessionName,

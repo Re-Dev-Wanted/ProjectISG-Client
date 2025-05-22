@@ -1,13 +1,15 @@
 ﻿#include "MainPlayerController.h"
 
+#include "ProjectISG/Core/ISGGameInstance.h"
 #include "ProjectISG/Core/GameMode/MainGameState.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
-#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Popup/Inventory/UI/UIC_InventoryUI.h"
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
+
+class UISGGameInstance;
 
 AMainPlayerController::AMainPlayerController()
 {
@@ -67,9 +69,23 @@ void AMainPlayerController::StartQuestToPlayer(const FString& QuestId)
 	QuestManageComponent->StartQuest(QuestId);
 }
 
-void AMainPlayerController::StartScene(const FString& SceneId) const
+void AMainPlayerController::StartScene(const FString SceneId) const
 {
+	UE_LOG(LogTemp, Warning, TEXT("StartScene"));
 	QuestManageComponent->StartScene(SceneId);
+}
+
+void AMainPlayerController::ShowLoadingUIAndCreateSession(bool bIsServerTravel)
+{
+	PopUI();
+	PushUI(EUIName::Loading_LoadingUI);
+
+	UISGGameInstance* GameInstance = Cast<UISGGameInstance>(
+		GetWorld()->GetGameInstance());
+	if (GameInstance)
+	{
+		GameInstance->SetIsServerTravel(bIsServerTravel);
+	}
 }
 
 TObjectPtr<UUIC_MainHUD> AMainPlayerController::GetMainHUD() const
@@ -155,4 +171,16 @@ void AMainPlayerController::Server_SetOwnerActor_Implementation(
 	AActor* ResponseActor)
 {
 	ResponseActor->SetOwner(this);
+}
+
+void AMainPlayerController::CheckTutorialStart()
+{
+	FString MapName = GEngine->GetWorldFromContextObjectChecked(GetWorld())->
+	                           GetMapName();
+
+	if (MapName == FString::Printf(TEXT("TrainStation")))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("씬 1 실행"));
+		StartScene(TEXT("Scene_1"));
+	}
 }
