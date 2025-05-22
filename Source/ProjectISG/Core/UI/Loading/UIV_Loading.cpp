@@ -23,7 +23,7 @@ void UUIV_Loading::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 		
 		if (GameInstance->GetIsServerTravel())
 		{
-			GameInstance->CreateGameSessionIdAndCreateSession();
+			GameInstance->CreateSession();
 		}
 		else
 		{

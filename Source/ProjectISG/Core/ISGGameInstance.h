@@ -15,7 +15,7 @@ public:
 	UISGGameInstance();
 
 #pragma region SessionFunc
-	void CreateGameSessionIdAndCreateSession();
+	void CreateGameSessionId();
 
 	void CreateSession();
 

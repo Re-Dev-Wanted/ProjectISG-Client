@@ -35,6 +35,12 @@ void ALobbyPlayerController::PopUI()
 	UIManageComponent->PopWidget();
 }
 
+void ALobbyPlayerController::ShowMBTIAskUI()
+{
+	PopUI();
+	PushUI(EUIName::Popup_MbtiAsk);
+}
+
 void ALobbyPlayerController::ShowLoadingUIAndCreateSession(bool bIsServerTravel)
 {
 	PopUI();

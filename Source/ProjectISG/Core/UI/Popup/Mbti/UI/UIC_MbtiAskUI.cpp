@@ -6,7 +6,10 @@
 #include "Components/EditableText.h"
 #include "Components/MultiLineEditableTextBox.h"
 #include "Interfaces/IHttpResponse.h"
+#include "Kismet/GameplayStatics.h"
 #include "ProjectISG/Contents/Diary/DiaryStruct.h"
+#include "ProjectISG/Core/ISGGameInstance.h"
+#include "ProjectISG/Core/Controller/LobbyPlayerController.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/GameMode/MainGameState.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
@@ -39,8 +42,10 @@ void UUIC_MbtiAskUI::AskNewMbti()
 	// 이미 종료된 상태에서 재질문을 던지게 되면 UI 종료 후 다음 Flow로 가는 로직이 수행된다.
 	if (MbtiAskUIModel->GetCompleted())
 	{
-		GetView()->GetOwningPlayer<AMainPlayerController>()->PopUI();
+		//GetView()->GetOwningPlayer<AMainPlayerController>()->PopUI();
 		// TODO: Delegate로 이후 동작을 받아오기
+		ALobbyPlayerController* LobbyPlayerController = Cast<ALobbyPlayerController>(GetView()->GetOwningPlayer());
+		UGameplayStatics::OpenLevelBySoftObjectPtr(GetWorld(), MbtiAskUIModel->GetTrainLevel());
 
 		return;
 	}
@@ -50,7 +55,7 @@ void UUIC_MbtiAskUI::AskNewMbti()
 
 	FPostMbtiAskParams Params;
 	Params.user_id = FSessionUtil::GetCurrentId(GetWorld());
-	Params.session_id = GetWorld()->GetGameState<AMainGameState>()->
+	Params.session_id = GetWorld()->GetGameInstance<UISGGameInstance>()->
 	                                GetSessionId();
 
 	FJsonObjectConverter::UStructToJsonObjectString(Params, Request.Params);

@@ -32,7 +32,7 @@ UISGGameInstance::UISGGameInstance()
 	ULevelSequenceManager::Initialize();
 }
 
-void UISGGameInstance::CreateGameSessionIdAndCreateSession()
+void UISGGameInstance::CreateGameSessionId()
 {
 	FApiRequest Request;
 	Request.Path = TEXT("/diary/new_session");
@@ -65,7 +65,8 @@ void UISGGameInstance::CreateGameSessionIdAndCreateSession()
 						SessionCreateSuccess = true;
 						UE_LOG(LogTemp, Warning, TEXT("파싱된 새 세션 ID: %s"),
 						       *SessionId);
-						CreateSession();
+
+						Cast<ALobbyPlayerController>(GetWorld()->GetFirstPlayerController())->ShowMBTIAskUI();
 					}
 					else
 					{
