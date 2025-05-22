@@ -28,6 +28,16 @@ void UPlayerHandSlotComponent::InitializeComponent()
 		Player->GetPlayerState());
 }
 
+void UPlayerHandSlotComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (EndPlayReason == EEndPlayReason::Type::Quit)
+	{
+		HeldItem->Destroy();
+	}
+}
+
 void UPlayerHandSlotComponent::GetLifetimeReplicatedProps(
 	TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
