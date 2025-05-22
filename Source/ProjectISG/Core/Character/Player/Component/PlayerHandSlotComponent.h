@@ -37,6 +37,8 @@ public:
 protected:
 	virtual void InitializeComponent() override;
 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 	UPROPERTY()
 	TObjectPtr<AMainPlayerCharacter> Player;
 
