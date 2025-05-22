@@ -34,8 +34,6 @@ void AMainPlayerController::BeginPlay()
 		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
 		StartScene(FString::Printf(TEXT("Scene_7")));
 	}
-
-	StartScene(TEXT("Start_001"));
 }
 
 void AMainPlayerController::OnRep_PlayerState()
