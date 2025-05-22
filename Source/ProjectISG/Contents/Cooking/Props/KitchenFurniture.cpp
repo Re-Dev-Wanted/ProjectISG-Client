@@ -175,6 +175,8 @@ void AKitchenFurniture::UnEquipCookingToolToAct()
 	WokMesh->AttachToComponent(GetRootComponent(),
 	                           FAttachmentTransformRules::SnapToTargetIncludingScale);
 	WokMesh->SetRelativeLocation(FVector::ZeroVector);
+
+	BigPotMesh->SetHiddenInGame(true);
 }
 
 void AKitchenFurniture::UnlockPlayer()

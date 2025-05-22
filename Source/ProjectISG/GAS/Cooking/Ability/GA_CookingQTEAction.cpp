@@ -244,7 +244,7 @@ void UGA_CookingQTEAction::LoggingToStartCook()
 		GetDisplayName() + TEXT(" ") + TEXT("1개");
 
 	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-	            LoggingDataWithScreenshot(LogParams, true);
+	            LoggingDataWithScreenshot(LogParams, false);
 }
 
 void UGA_CookingQTEAction::LoggingToEndCook()

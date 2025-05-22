@@ -16,11 +16,16 @@ class PROJECTISG_API UUIM_CookingQTEKeyPressWidget : public UBaseUIModel
 public:
 	GETTER(uint8, MinAccessValue)
 	GETTER(uint8, MaxAccessValue)
-	GETTER_SETTER(TArray<ECookingQTEKey>, RemainQTEKeys)
+	GETTER(TArray<ECookingQTEKey>, RemainQTEKeys)
 	GETTER_SETTER(TArray<TObjectPtr<UUIV_CookingQTEKeyWidget>>, KeyWidgets)
 	GETTER_SETTER(uint8, CurrentQTEIndex)
 	GETTER(float, RemainTime)
 	GETTER_SETTER(float, ElapsedTime)
+
+	void SetRemainQTEKeys(TArray<ECookingQTEKey>& NewData)
+	{
+		RemainQTEKeys = MoveTemp(NewData);
+	}
 
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Play"
