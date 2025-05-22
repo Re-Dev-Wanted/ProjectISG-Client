@@ -57,6 +57,7 @@ struct PROJECTISG_API FItemInfoData : public FTableRowBase
 	GENERATED_USTRUCT_BODY()
 
 	GETTER(FString, DisplayName)
+	GETTER(FString, Description)
 	GETTER(EItemType, ItemType)
 	GETTER(TSoftObjectPtr<UTexture2D>, Thumbnail)
 	GETTER(TSubclassOf<AActor>, ShowItemActor)
@@ -76,50 +77,45 @@ struct PROJECTISG_API FItemInfoData : public FTableRowBase
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "Data",
 		meta=(AllowPrivateAccess = true))
-	;
 	FString DisplayName;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Data",
 		meta=(AllowPrivateAccess = true))
-	;
+	FString Description;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Data",
+		meta=(AllowPrivateAccess = true))
 	EItemType ItemType = EItemType::Undefined;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Data",
 		meta=(AllowPrivateAccess = true))
-	;
 	TSoftObjectPtr<UTexture2D> Thumbnail;
 
 	// 드롭될 때 나올 아이템 액터 정보
 	// TODO: 액터는 추후 아이템 액터 공통화로 처리한다.
 	UPROPERTY(EditDefaultsOnly, Category = "Data",
 		meta=(AllowPrivateAccess = true))
-	;
 	TSubclassOf<AActor> ShowItemActor;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Data",
 		meta=(AllowPrivateAccess = true))
-	;
 	TSubclassOf<AActor> DroppedItemActor;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Data",
 		meta=(AllowPrivateAccess = true))
-	;
 	TSubclassOf<AActor> PlaceItemActor;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Data",
 		meta = (AllowPrivateAccess = true,
 			ClampMin = 0, ClampMax = 1000, UIMin = 0, UIMax = 1000))
-	;
 	uint32 MaxItemCount = 0;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Data",
 		meta=(AllowPrivateAccess = true))
-	;
 	TMap<EMetaDataKey, FString> MetaData;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Data",
 		meta=(AllowPrivateAccess = true))
-	;
 	TMap<EConstDataKey, FString> ConstData;
 };
 
@@ -137,7 +133,8 @@ struct PROJECTISG_API FItemMetaInfo
 		return MetaData;
 	}
 
-	FORCEINLINE void SetMetaDataValue(const EMetaDataKey Key, const FString& Value)
+	FORCEINLINE void SetMetaDataValue(const EMetaDataKey Key,
+	                                  const FString& Value)
 	{
 		MetaData.Add(Key, Value);
 	}
@@ -191,7 +188,6 @@ struct PROJECTISG_API FItemMetaInfo
 	{
 		return Id > 0;
 	}
-
 
 private:
 	// 0인 경우 아이템이 안들어가게 처리해야함.

@@ -162,8 +162,8 @@ void ULoggingSubSystem::CreateLogDataStringForMultipart(
 	// 필수 필드 추가
 #if WITH_EDITOR
 	AddTextField(
-	TEXT("session_id"),TEXT("e1827901-2536-4fb9-b76a-ca8e149015cb"), true);
-	AddTextField(TEXT("user_id"), TEXT("1"),false);
+		TEXT("session_id"),TEXT("e1827901-2536-4fb9-b76a-ca8e149015cb"), true);
+	AddTextField(TEXT("user_id"), TEXT("1"), false);
 #else
 	AddTextField(
 		TEXT("session_id"),

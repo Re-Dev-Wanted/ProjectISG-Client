@@ -2,6 +2,8 @@
 
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Systems/Animation/Manager/LevelSequenceManager.h"
 #include "Task/AT_StartCookingModeCinematic.h"
 
 void UGA_StartCookingMode::ActivateAbility(
@@ -18,7 +20,10 @@ void UGA_StartCookingMode::ActivateAbility(
 	Player->GetController<AMainPlayerController>()->PopUI();
 
 	AT_StartCookingModeCinematic = UAT_StartCookingModeCinematic::InitialEvent(
-		this, StartCookingCinematic);
+		this, ULevelSequenceManager::GetLevelSequence(
+			Player->GetPlayerState<AMainPlayerState>(),
+			ELevelSequenceKey::CookingStart));
+
 	AT_StartCookingModeCinematic->OnStartCookingModeCinematicEndNotified.
 	                              AddDynamic(this, &ThisClass::OnEndCinematic);
 	AT_StartCookingModeCinematic->ReadyForActivation();

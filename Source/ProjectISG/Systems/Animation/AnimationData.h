@@ -4,7 +4,6 @@
 #include "LevelSequence.h"
 #include "Animation/AnimMontage.h"
 #include "ProjectISG/Utils/MacroUtil.h"
-#include "UObject/Object.h"
 #include "AnimationData.generated.h"
 
 UENUM()
@@ -23,6 +22,12 @@ UENUM()
 enum class ELevelSequenceKey : uint8
 {
 	None,
+	CookingStart,
+	CookingEnd,
+	CookingQTEBigPot,
+	CookingQTEWok,
+	CookingQTEKnife,
+	CookingQTEFryingPan,
 };
 
 UENUM()

@@ -14,6 +14,7 @@
 #include "ProjectISG/Core/UI/Popup/Cooking/UI/CookingRecipe/UIM_CookingRecipeUI.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/AT_PlayCinematic.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
+#include "ProjectISG/Systems/Animation/Manager/LevelSequenceManager.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
@@ -69,7 +70,7 @@ void UGA_CookingQTEAction::PlayNextSequence()
 		GetAvatarActorFromActorInfo());
 
 	AT_PlayCinematic = UAT_PlayCinematic::InitialEvent(
-		this, RemainQTEQueue.Peek()->Sequence, LevelSequenceActor);
+		this, GetCookingSequence(), LevelSequenceActor);
 
 	AT_PlayCinematic->OnPlayCinematicOnReadyNotified.Unbind();
 	AT_PlayCinematic->OnPlayCinematicOnReadyNotified.BindUObject(
@@ -87,6 +88,41 @@ void UGA_CookingQTEAction::PlayNextSequence()
 		        ControllerInstances[EUIName::Popup_CookingQTE])->SetHiddenQTE();
 
 	AT_PlayCinematic->ReadyForActivation();
+}
+
+TObjectPtr<ULevelSequence> UGA_CookingQTEAction::GetCookingSequence()
+{
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		GetAvatarActorFromActorInfo());
+	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
+
+	switch (*RemainQTEQueue.Peek())
+	{
+	case ECookingTool::Wok:
+		{
+			return ULevelSequenceManager::GetLevelSequence(
+				PS, ELevelSequenceKey::CookingQTEWok);
+		}
+	case ECookingTool::BigPot:
+		{
+			return ULevelSequenceManager::GetLevelSequence(
+				PS, ELevelSequenceKey::CookingQTEBigPot);
+		}
+	case ECookingTool::FryingPan:
+		{
+			return ULevelSequenceManager::GetLevelSequence(
+				PS, ELevelSequenceKey::CookingQTEFryingPan);
+		}
+	case ECookingTool::Knife:
+		{
+			return ULevelSequenceManager::GetLevelSequence(
+				PS, ELevelSequenceKey::CookingQTEKnife);
+		}
+	default:
+		{
+			return nullptr;
+		}
+	}
 }
 
 void UGA_CookingQTEAction::OnEndSequence()
@@ -122,7 +158,7 @@ void UGA_CookingQTEAction::OnPlayReadySequence(
 		Player->GetInteractionComponent()->GetTargetTraceResult().GetActor());
 
 	KitchenFurniture->EquipCookingToolToAct({
-		Player->GetMesh(), RemainQTEQueue.Peek()->CookingTool
+		Player->GetMesh(), *RemainQTEQueue.Peek()
 	});
 }
 
@@ -208,7 +244,7 @@ void UGA_CookingQTEAction::LoggingToStartCook()
 		GetDisplayName() + TEXT(" ") + TEXT("1개");
 
 	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-	            LoggingDataWithScreenshot(LogParams, true);
+	            LoggingDataWithScreenshot(LogParams, false);
 }
 
 void UGA_CookingQTEAction::LoggingToEndCook()

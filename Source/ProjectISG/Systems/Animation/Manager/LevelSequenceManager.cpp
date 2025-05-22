@@ -1,5 +1,7 @@
 #include "LevelSequenceManager.h"
 
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+
 bool ULevelSequenceManager::IsInitialized;
 TArray<FLevelSequenceData> ULevelSequenceManager::Datas;
 TMap<ELevelSequenceKey, FLevelSequenceData> ULevelSequenceManager::DataMap;
@@ -13,12 +15,15 @@ void ULevelSequenceManager::Initialize()
 
 	IsInitialized = true;
 
-	const static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(TEXT("/Game/Systems/Animation/DT_LevelSequenceData.DT_LevelSequenceData"));
+	const static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(
+		TEXT(
+			"/Game/Systems/Animation/DT_LevelSequenceData.DT_LevelSequenceData"));
 
 	if (DataTable.Succeeded())
 	{
 		TArray<FLevelSequenceData*> TempItemInfoList;
-		DataTable.Object->GetAllRows<FLevelSequenceData>(TEXT(""), TempItemInfoList);
+		DataTable.Object->GetAllRows<FLevelSequenceData>(
+			TEXT(""), TempItemInfoList);
 
 		for (const FLevelSequenceData* InfoItem : TempItemInfoList)
 		{
@@ -39,13 +44,13 @@ FLevelSequenceData ULevelSequenceManager::GetDataByKey(ELevelSequenceKey Key)
 }
 
 TObjectPtr<ULevelSequence> ULevelSequenceManager::GetLevelSequence(
-	ELevelSequenceKey Key, ECharacterName Character)
+	const AMainPlayerState* PS, const ELevelSequenceKey Key)
 {
 	if (DataMap.Contains(Key))
 	{
-		if (DataMap[Key].GetSequenceData().Contains(Character))
+		if (DataMap[Key].GetSequenceData().Contains(PS->GetCharacterName()))
 		{
-			return DataMap[Key].GetSequenceData()[Character];
+			return DataMap[Key].GetSequenceData()[PS->GetCharacterName()];
 		}
 	}
 
