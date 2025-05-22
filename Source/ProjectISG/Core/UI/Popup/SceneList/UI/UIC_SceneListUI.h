@@ -42,4 +42,6 @@ private:
 
 	UFUNCTION()
 	void MoveToNextScene();
+
+	void OnEndSceneList();
 };
