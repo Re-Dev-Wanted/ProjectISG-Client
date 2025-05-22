@@ -29,7 +29,8 @@ void UScreenShotComponent::SaveCaptureFrameImage(const UObject* Object,
 {
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
 
-	SceneCapture->SetWorldTransform(Player->GetScreenShotCameraComponent()->GetComponentTransform());
+	SceneCapture->SetWorldTransform(
+		Player->GetScreenShotCameraComponent()->GetComponentTransform());
 
 	SceneCapture->TextureTarget =
 		UKismetRenderingLibrary::CreateRenderTarget2D(
@@ -42,7 +43,7 @@ void UScreenShotComponent::SaveCaptureFrameImage(const UObject* Object,
 			false
 		);
 	SceneCapture->CaptureScene();
-	
+
 	// RenderTarget에서 리소스 얻기
 	// GameThread_GetRenderTargetResource 는 이름 그대로 메인 스레드인
 	// 게임 Thread에서 진행되기 때문에 다른 스레드에서 실행시키려고 한다면
@@ -82,6 +83,11 @@ void UScreenShotComponent::SaveCaptureFrameImage(const UObject* Object,
 		      AsyncTask(ENamedThreads::GameThread,
 		                [this, Object, OnCaptureFrameNotified, CompressedData]
 		                {
+			                if (!OnCaptureFrameNotified.IsBound())
+			                {
+				                return;
+			                }
+
 			                OnCaptureFrameNotified.Execute(CompressedData);
 		                });
 	      });

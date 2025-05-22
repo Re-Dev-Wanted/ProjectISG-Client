@@ -5,7 +5,7 @@
 UENUM()
 enum class ECookingTool : uint8
 {
-	None, FryingPan, Wok
+	None, FryingPan, Wok, BigPot, Knife
 };
 
 UENUM()

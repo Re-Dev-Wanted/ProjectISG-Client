@@ -22,6 +22,12 @@ UENUM()
 enum class ELevelSequenceKey : uint8
 {
 	None,
+	CookingStart,
+	CookingEnd,
+	CookingQTEBigPot,
+	CookingQTEWok,
+	CookingQTEKnife,
+	CookingQTEFryingPan,
 };
 
 UENUM()

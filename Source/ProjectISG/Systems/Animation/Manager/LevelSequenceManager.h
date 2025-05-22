@@ -6,6 +6,8 @@
 #include "UObject/Object.h"
 #include "LevelSequenceManager.generated.h"
 
+class AMainPlayerState;
+
 UCLASS()
 class PROJECTISG_API ULevelSequenceManager : public UObject
 {
@@ -14,8 +16,8 @@ class PROJECTISG_API ULevelSequenceManager : public UObject
 public:
 	static void Initialize();
 	static FLevelSequenceData GetDataByKey(ELevelSequenceKey Key);
-	static TObjectPtr<ULevelSequence> GetLevelSequence(ELevelSequenceKey Key, 
-	ECharacterName Character);
+	static TObjectPtr<ULevelSequence> GetLevelSequence(
+		const AMainPlayerState* PS, const ELevelSequenceKey Key);
 
 private:
 	static TArray<FLevelSequenceData> Datas;
