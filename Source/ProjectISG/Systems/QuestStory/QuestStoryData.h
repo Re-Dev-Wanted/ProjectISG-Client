@@ -176,6 +176,30 @@ private:
 	// TMap<FString, FString> QuestBehaviorMetaData;
 };
 
+USTRUCT(BlueprintType)
+struct PROJECTISG_API FQuestSceneImageData
+{
+	GENERATED_USTRUCT_BODY()
+
+	GETTER(TObjectPtr<UTexture2D>, SceneImage)
+	GETTER_REF(FText, SceneComment)
+	GETTER_REF(FString, DialogueOwner)
+	GETTER(float, SceneTime)
+
+private:
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UTexture2D> SceneImage;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	FText SceneComment;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	FString DialogueOwner;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	float SceneTime = 0.f;
+};
+
 // 스토리 진행 상 컷 신이 필요한 경우에 대한 대응 처리
 // 이미지 데이터 배열을 저장하고 불러와 이미지를 할당해주는 역할
 USTRUCT(BlueprintType)
@@ -184,14 +208,14 @@ struct PROJECTISG_API FQuestSceneCutData : public FTableRowBase
 	GENERATED_USTRUCT_BODY()
 
 	GETTER(FString, QuestSceneId)
-	TArray<TObjectPtr<UTexture2D>>& GetSceneImages() { return SceneImages; }
+	GETTER_REF(TArray<FQuestSceneImageData>, SceneCutList)
 
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	FString QuestSceneId;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TArray<TObjectPtr<UTexture2D>> SceneImages;
+	TArray<FQuestSceneImageData> SceneCutList;
 };
 
 USTRUCT(BlueprintType)
