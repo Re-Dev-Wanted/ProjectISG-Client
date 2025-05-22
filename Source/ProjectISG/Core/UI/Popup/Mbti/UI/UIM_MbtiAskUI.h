@@ -14,9 +14,13 @@ public:
 	GETTER_SETTER(FString, Question)
 	GETTER_SETTER(FText, Answer)
 	GETTER_SETTER(bool, Completed)
+	GETTER(TSoftObjectPtr<UWorld>, TrainLevel)
 
 private:
 	FString Question;
 	FText Answer;
 	bool Completed;
+
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UWorld> TrainLevel;
 };

@@ -22,6 +22,7 @@ public:
 
 	void PushUI(const EUIName UIName);
 	void PopUI();
+	void ShowMBTIAskUI();
 	void ShowLoadingUIAndCreateSession(bool bIsServerTravel);
 
 	GETTER(TObjectPtr<class UUIManageComponent>, UIManageComponent)
