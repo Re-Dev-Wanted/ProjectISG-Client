@@ -5,9 +5,11 @@
 
 #include "Components/BoxComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Controller/TutorialPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
+#include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 
 
 ATicketMachine::ATicketMachine()
@@ -53,6 +55,8 @@ void ATicketMachine::OnInteractive(AActor* Causer)
 		bIsBoughtTicket = true;
 		Player->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
 		        AddItem(UItemManager::GetInitialItemMetaDataById(26));
+		Player->GetController<ATutorialPlayerController>()->GetQuestManageComponent()->EndQuest(true);
+		Player->GetController<ATutorialPlayerController>()->GetQuestManageComponent()->StartQuest(TEXT("Tutorial_002"));
 	}
 }
 

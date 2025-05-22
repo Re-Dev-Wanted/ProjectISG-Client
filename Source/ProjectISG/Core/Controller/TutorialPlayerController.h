@@ -15,20 +15,27 @@ class PROJECTISG_API ATutorialPlayerController : public AMainPlayerController
 	GENERATED_BODY()
 
 protected:
+	
 	virtual void BeginPlay() override;
 
 public:
+	UFUNCTION()
+	void StartSceneEnd();
+	
 	UFUNCTION()
 	void OpenMainLevel();
 	
 	void StartScene6(bool IsServerTravel);
 
 public:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = Settings)
 	TSoftObjectPtr<UWorld> MoveLevel;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = Settings)
 	FString StartSceneName;
+
+	UPROPERTY(EditAnywhere, Category = Settings)
+	FString StartQuestId;
 
 	bool bIsServerTravel = false;
 
