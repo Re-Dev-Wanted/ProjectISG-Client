@@ -21,12 +21,11 @@ void UPlayerHandSlotComponent::InitializeComponent()
 	SetIsReplicated(true);
 
 	Player = Cast<AMainPlayerCharacter>(GetOwner());
+	Player->OnUpdateSelectedItem.AddDynamic(
+		this, &UPlayerHandSlotComponent::OnChange);
 
-	if (Player)
-	{
-		Player->OnUpdateSelectedItem.AddDynamic(
-			this, &UPlayerHandSlotComponent::OnChange);
-	}
+	const AMainPlayerState* PS = Cast<AMainPlayerState>(
+		Player->GetPlayerState());
 }
 
 void UPlayerHandSlotComponent::GetLifetimeReplicatedProps(
@@ -166,5 +165,8 @@ void UPlayerHandSlotComponent::OnChangeHandItemSlot()
 	                                   GetInventoryComponent()->
 	                                   GetInventoryList()[CurrentIndex];
 
-	OnChange(ItemMetaInfo.GetId());
+	if (ItemMetaInfo.GetId() != ItemId)
+	{
+		OnChange(ItemMetaInfo.GetId());
+	}
 }

@@ -78,6 +78,7 @@ bool UInventoryComponent::ChangeItem(AActor* Causer,
                                      const uint16 Index)
 {
 	InventoryList[Index] = ItemInfo;
+	UpdateInventory();
 
 	return true;
 }
@@ -86,6 +87,7 @@ void UInventoryComponent::SwapItem(AActor* Causer, const uint16 Prev,
                                    const uint16 Next)
 {
 	SwapItemInInventory(Prev, Next);
+	UpdateInventory();
 }
 
 void UInventoryComponent::BeginPlay()

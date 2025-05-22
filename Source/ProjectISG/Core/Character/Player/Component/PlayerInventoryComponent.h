@@ -36,8 +36,10 @@ protected:
 
 private:
 	bool IsOpenedInventory = false;
+
 	UPROPERTY(Replicated, EditAnywhere)
 	int CurrentSlotIndex = 0;
+
 	uint8 MaxMainSlotIndex = 8;
 
 	UFUNCTION()
