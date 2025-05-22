@@ -56,7 +56,7 @@ void USleepManager::TickComponent(float DeltaTime, ELevelTick TickType,
 	else
 	{
 		Sleep();
-		//ForceSleep();
+		ForceSleep();
 	}
 }
 

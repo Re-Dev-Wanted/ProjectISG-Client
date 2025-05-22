@@ -38,11 +38,12 @@ void UQuestManageComponent::StartScene(const FString& NewSceneId)
 
 void UQuestManageComponent::EndQuest(const bool IsSuccess)
 {
+	const AMainPlayerController* PC = Cast<AMainPlayerController>(GetOwner());
 	if (IsSuccess)
 	{
 		UE_LOG(LogTemp, Display,
-		       TEXT("Quest Manage Component: 여기에 퀘스트 완료 시 보상 처리"))
-
+			   TEXT("Quest Manage Component: 여기에 퀘스트 완료 시 보상 처리"))
+		PC->GetMainHUD()->ToggleAutoQuestUI(false);
 		EndQuestIdList.Add(CurrentPlayingQuestId);
 	}
 }

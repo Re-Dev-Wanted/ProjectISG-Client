@@ -21,6 +21,7 @@ public:
 
 	void StartScene(const FString& NewSceneId);
 
+	UFUNCTION(BlueprintCallable)
 	void EndQuest(const bool IsSuccess);
 
 private:

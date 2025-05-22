@@ -76,7 +76,7 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UUIManageComponent> UIManageComponent;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UQuestManageComponent> QuestManageComponent;
 
 #pragma region Quest
