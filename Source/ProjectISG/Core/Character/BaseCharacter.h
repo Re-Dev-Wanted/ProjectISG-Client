@@ -28,19 +28,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<class UISGAttributeSet> AttributeSet;
 
-	// attribute를 초기화 하기위한 GameplayEffect
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Options|GAS")
-	TSubclassOf<class UGameplayEffect> DefaultPrimaryAttributes;
-
-	void InitializePrimaryAttributes();
-
-	//void AddCharacterAbilities();
-
 	virtual void InitializeAbilitySystem()
 	{
 	};
-
-	// UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
-	// 	Category = "Options|GAS")
-	// TArray<TSubclassOf<class UGameplayAbility>> StartupAbilities;
 };

@@ -19,7 +19,6 @@ AMainPlayerState::AMainPlayerState()
 	AttributeSet = CreateDefaultSubobject<UISGAttributeSet>(
 		TEXT("Attribute Set"));
 
-
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(
 		"Inventory Component");
 

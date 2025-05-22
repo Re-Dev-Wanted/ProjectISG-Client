@@ -28,6 +28,9 @@ void UUIC_DiaryListUI::InitializeController(UBaseUIView* NewView
 	DiaryListView->GetNextButton()->OnClicked.AddDynamic(
 		this, &ThisClass::MoveToNextPage);
 
+	DiaryListView->GetExitButton()->OnClicked.AddDynamic(
+		this, &ThisClass::PopUIFromPlayerController);
+
 	InitializeData();
 }
 
@@ -113,6 +116,8 @@ void UUIC_DiaryListUI::UpdateDiaryPerPage(const int Page)
 		DiaryData.diaries[Page];
 
 	DiaryListView->GetDiaryDayText()->SetText(FText::FromString(InGameDate));
+	DiaryListView->GetUserId()->SetText(
+		FText::FromString(FSessionUtil::GetCurrentId(GetWorld())));
 	DiaryListView->GetDiaryDescription()->SetText(FText::FromString(Content));
 	DiaryListView->GetDiaryImage()->SetImagePath(BestScreenShot);
 
