@@ -6,7 +6,7 @@
 #include "UIC_MultiPlay.h"
 #include "Components/Button.h"
 #include "ProjectISG/Core/Controller/LobbyPlayerController.h"
-#include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/Controller/TutorialPlayerController.h"
 
 
 class ALobbyPlayerController;
@@ -38,11 +38,17 @@ void UUIV_MultiPlay::OnClickedCreateRoomButton()
 		return;
 	}
 
-	AMainPlayerController* PC = Cast<AMainPlayerController>(
-		MultiPlayUIController->GetPlayerController());
-	if (PC)
+	// AMainPlayerController* PC = Cast<AMainPlayerController>(
+	// 	MultiPlayUIController->GetPlayerController());
+	// if (PC)
+	// {
+	// 	PC->ShowLoadingUIAndCreateSession(true);
+	// }
+
+	ATutorialPlayerController* TutorialPlayerController = Cast<ATutorialPlayerController>(MultiPlayUIController->GetPlayerController());
+	if (TutorialPlayerController)
 	{
-		PC->ShowLoadingUIAndCreateSession(true);
+		TutorialPlayerController->StartScene6(true);
 	}
 }
 

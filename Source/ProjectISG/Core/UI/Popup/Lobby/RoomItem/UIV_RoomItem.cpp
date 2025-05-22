@@ -8,6 +8,7 @@
 #include "Components/TextBlock.h"
 #include "ProjectISG/Core/Controller/LobbyPlayerController.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/Controller/TutorialPlayerController.h"
 #include "ProjectISG/Utils/SessionUtil.h"
 
 void UUIV_RoomItem::NativeConstruct()
@@ -31,13 +32,14 @@ void UUIV_RoomItem::OnClickedJoinButton()
 	}
 	else
 	{
-		AMainPlayerController* MainPlayerController = Cast<
-			AMainPlayerController>(RoomItemController->GetPlayerController());
-		if (MainPlayerController)
+		ATutorialPlayerController* TutorialPlayerController = Cast<
+			ATutorialPlayerController>(RoomItemController->GetPlayerController()); 
+		
+		if (TutorialPlayerController)
 		{
-			MainPlayerController->SessionSearchResult = this->
+			TutorialPlayerController->SessionSearchResult = this->
 				SessionSearchResult;
-			MainPlayerController->ShowLoadingUIAndCreateSession(false);
+			TutorialPlayerController->StartScene6(false);
 		}
 	}
 }

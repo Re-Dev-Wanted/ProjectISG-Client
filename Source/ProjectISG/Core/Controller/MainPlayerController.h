@@ -49,11 +49,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StartScene(const FString SceneId) const;
 
-
-	void CheckTutorialStart();
 	void ShowLoadingUIAndCreateSession(bool bIsServerTravel);
-	FOnlineSessionSearchResult SessionSearchResult;
-
 
 #pragma region GetUI
 	TObjectPtr<UUIC_MainHUD> GetMainHUD() const;

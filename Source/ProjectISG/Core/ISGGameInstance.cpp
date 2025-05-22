@@ -2,6 +2,7 @@
 
 #include "Controller/LobbyPlayerController.h"
 #include "Controller/MainPlayerController.h"
+#include "Controller/TutorialPlayerController.h"
 #include "GameFramework/PlayerState.h"
 #include "Interfaces/IHttpResponse.h"
 #include "ProjectISG/Contents/Cooking/Managers/CookingManager.h"
@@ -144,12 +145,11 @@ void UISGGameInstance::JoinFoundSession()
 	}
 	else
 	{
-		AMainPlayerController* MainPlayerController = Cast<
-			AMainPlayerController>(GetWorld()->GetFirstPlayerController());
-		if (MainPlayerController)
+		ATutorialPlayerController* TutorialPlayerController = Cast<ATutorialPlayerController>(GetWorld()->GetFirstPlayerController());
+		if (TutorialPlayerController)
 		{
 			FSessionUtil::JoinSession(GetWorld(),
-			                          MainPlayerController->SessionSearchResult,
+			                          TutorialPlayerController->SessionSearchResult,
 			                          OnJoinSessionCompleteDelegate);
 		}
 	}

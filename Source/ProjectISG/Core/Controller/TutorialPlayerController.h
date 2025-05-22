@@ -18,6 +18,19 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UFUNCTION(BlueprintCallable)
-	void StartGranmaLevel();
+	UFUNCTION()
+	void OpenMainLevel();
+	
+	void StartScene6(bool IsServerTravel);
+
+public:
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UWorld> MoveLevel;
+
+	UPROPERTY(EditAnywhere)
+	FString StartSceneName;
+
+	bool bIsServerTravel = false;
+
+	FOnlineSessionSearchResult SessionSearchResult;
 };

@@ -8,6 +8,7 @@
 #include "Components/ScrollBox.h"
 #include "ProjectISG/Core/Controller/LobbyPlayerController.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/Controller/TutorialPlayerController.h"
 #include "ProjectISG/Core/UI/Popup/Lobby/RoomItem/UIV_RoomItem.h"
 #include "ProjectISG/Utils/SessionUtil.h"
 
@@ -54,18 +55,17 @@ void UUIC_MultiPlay::OnCompleteSearchAndTryJoin(bool IsSearchSuccess)
 		}
 		else
 		{
-			AMainPlayerController* PC = Cast<AMainPlayerController>(
-				GetPlayerController());
-			if (PC)
+			ATutorialPlayerController* TutorialPlayerController = Cast<ATutorialPlayerController>(GetPlayerController());
+			if (TutorialPlayerController)
 			{
 				for (int i = 0; i < SessionSearchData.SessionSearch->
 				     SearchResults.Num()
 				     ; i++)
 				{
 					UE_LOG(LogTemp, Warning, TEXT("세션을 검색하는 것에 성공하였습니다."));
-					PC->SessionSearchResult = SessionSearchData.
+					TutorialPlayerController->SessionSearchResult = SessionSearchData.
 					                          SessionSearch->SearchResults[i];
-					PC->ShowLoadingUIAndCreateSession(false);
+					TutorialPlayerController->StartScene6(false);
 				}
 			}
 		}

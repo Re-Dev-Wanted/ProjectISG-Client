@@ -32,6 +32,7 @@ void AMainPlayerController::BeginPlay()
 	if (IsLocalController() && HasAuthority())
 	{
 		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
+		StartScene(FString::Printf(TEXT("Scene_7")));
 	}
 }
 
@@ -42,6 +43,7 @@ void AMainPlayerController::OnRep_PlayerState()
 	if (IsLocalController())
 	{
 		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
+		StartScene(FString::Printf(TEXT("Scene_7")));
 	}
 }
 
@@ -171,16 +173,4 @@ void AMainPlayerController::Server_SetOwnerActor_Implementation(
 	AActor* ResponseActor)
 {
 	ResponseActor->SetOwner(this);
-}
-
-void AMainPlayerController::CheckTutorialStart()
-{
-	FString MapName = GEngine->GetWorldFromContextObjectChecked(GetWorld())->
-	                           GetMapName();
-
-	if (MapName == FString::Printf(TEXT("TrainStation")))
-	{
-		UE_LOG(LogTemp, Warning, TEXT("씬 1 실행"));
-		StartScene(TEXT("Scene_1"));
-	}
 }
