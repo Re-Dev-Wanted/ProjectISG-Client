@@ -46,6 +46,9 @@ AKitchenFurniture::AKitchenFurniture()
 	WokMesh = CreateDefaultSubobject<UStaticMeshComponent>(
 		"Wok Mesh");
 	WokMesh->SetupAttachment(GetRootComponent());
+
+	BigPotMesh = CreateDefaultSubobject<UStaticMeshComponent>("Big Pot Mesh");
+	BigPotMesh->SetupAttachment(GetRootComponent());
 }
 
 bool AKitchenFurniture::GetCanInteractive() const
@@ -65,6 +68,7 @@ void AKitchenFurniture::BeginPlay()
 	ATimeManager* TimeManager = Cast<ATimeManager>(
 		UGameplayStatics::GetActorOfClass(GetWorld(),
 		                                  ATimeManager::StaticClass()));
+
 	if (TimeManager)
 	{
 		TimeManager->OnContentRestrictionTimeReached.AddDynamic(
@@ -103,6 +107,7 @@ void AKitchenFurniture::OnInteractiveResponse(AActor* Causer)
 {
 	Super::OnInteractiveResponse(Causer);
 	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
+
 	Server_SetInteractingPlayer(Player);
 }
 
@@ -113,7 +118,7 @@ void AKitchenFurniture::EquipCookingToolToAct(
 	{
 	case ECookingTool::FryingPan:
 		{
-			FryPanMesh->SetVisibility(true);
+			FryPanMesh->SetHiddenInGame(false);
 			FryPanMesh->AttachToComponent(Params.AttachPoint,
 			                              FAttachmentTransformRules::SnapToTargetIncludingScale,
 			                              TEXT("hand_r"));
@@ -121,17 +126,29 @@ void AKitchenFurniture::EquipCookingToolToAct(
 		}
 	case ECookingTool::Wok:
 		{
-			ScoopMesh->SetVisibility(true);
+			ScoopMesh->SetHiddenInGame(false);
 			ScoopMesh->AttachToComponent(Params.AttachPoint,
 			                             FAttachmentTransformRules::SnapToTargetIncludingScale,
 			                             TEXT("scoop_socket"));
 			ScoopMesh->SetRelativeRotation(FRotator::ZeroRotator);
 
-			WokMesh->SetVisibility(true);
+			WokMesh->SetHiddenInGame(false);
 			WokMesh->AttachToComponent(Params.AttachPoint,
 			                           FAttachmentTransformRules::SnapToTargetIncludingScale,
 			                           TEXT("wok_socket"));
 			WokMesh->SetRelativeRotation(FRotator::ZeroRotator);
+
+			break;
+		}
+	case ECookingTool::BigPot:
+		{
+			ScoopMesh->SetHiddenInGame(false);
+			ScoopMesh->AttachToComponent(Params.AttachPoint,
+			                             FAttachmentTransformRules::SnapToTargetIncludingScale,
+			                             TEXT("scoop_socket"));
+			ScoopMesh->SetRelativeRotation(FRotator::ZeroRotator);
+
+			BigPotMesh->SetHiddenInGame(false);
 
 			break;
 		}
@@ -144,17 +161,17 @@ void AKitchenFurniture::EquipCookingToolToAct(
 
 void AKitchenFurniture::UnEquipCookingToolToAct()
 {
-	FryPanMesh->SetVisibility(false);
+	FryPanMesh->SetHiddenInGame(true);
 	FryPanMesh->AttachToComponent(GetRootComponent(),
 	                              FAttachmentTransformRules::SnapToTargetIncludingScale);
 	FryPanMesh->SetRelativeLocation(FVector::ZeroVector);
 
-	ScoopMesh->SetVisibility(false);
+	ScoopMesh->SetHiddenInGame(true);
 	ScoopMesh->AttachToComponent(GetRootComponent(),
 	                             FAttachmentTransformRules::SnapToTargetIncludingScale);
 	ScoopMesh->SetRelativeLocation(FVector::ZeroVector);
 
-	WokMesh->SetVisibility(false);
+	WokMesh->SetHiddenInGame(true);
 	WokMesh->AttachToComponent(GetRootComponent(),
 	                           FAttachmentTransformRules::SnapToTargetIncludingScale);
 	WokMesh->SetRelativeLocation(FVector::ZeroVector);
