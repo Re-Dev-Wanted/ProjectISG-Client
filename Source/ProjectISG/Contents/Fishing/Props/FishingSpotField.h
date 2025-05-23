@@ -26,10 +26,10 @@ public:
 	virtual void OnTouchResponse(AActor* Causer) override;
 
 protected:
-	UPROPERTY(VisibleAnywhere)
-	UBoxComponent* Root = nullptr;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* Root = nullptr;
 
-	UPROPERTY(VisibleAnywhere)
-	UCapsuleComponent* BlockCollision = nullptr;
+	// UPROPERTY(VisibleAnywhere)
+	// UCapsuleComponent* BlockCollision = nullptr;
 	
 };
