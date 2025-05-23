@@ -17,7 +17,7 @@ struct FCraftingMaterialUIModel
 	FString Name;
 
 	UPROPERTY()
-	TSoftObjectPtr<UTexture> Thumbnail;
+	TSoftObjectPtr<UTexture2D> Thumbnail;
 
 	UPROPERTY()
 	uint16 RequiredCount;
@@ -39,7 +39,7 @@ struct FCraftingRecipeUIModel
 	FString ItemName;
 
 	UPROPERTY()
-	TSoftObjectPtr<UTexture> Thumbnail;
+	TSoftObjectPtr<UTexture2D> Thumbnail;
 
 	UPROPERTY()
 	TMap<uint16, FCraftingMaterialUIModel> RequiredMaterials;

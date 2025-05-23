@@ -13,7 +13,9 @@ class PROJECTISG_API UMaterialInfoWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void SetWidget(uint16 MaterialId, uint16 OwningCount, uint16 RequiredCount, const FString& Name, UTexture2D* Image);
+	void SetWidget(uint16 MaterialId, uint16 OwningCount, uint16 RequiredCount, const FString& Name);
+
+	void SetImage(UTexture2D* Image);
 	
 protected:
 	virtual void NativeConstruct() override;

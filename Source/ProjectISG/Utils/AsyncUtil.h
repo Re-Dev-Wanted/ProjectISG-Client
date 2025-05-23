@@ -23,6 +23,35 @@ public:
 		LoadAsyncInternal<T>(AssetPath, OnResultCallback);
 	}
 
+	template <typename T>
+	static void LoadAsync(TSoftObjectPtr<T> SoftObjectPtr, T*& OutObject)
+	{
+		if (SoftObjectPtr.IsNull())
+		{
+			OutObject = nullptr;
+			return;
+		}
+
+		FSoftObjectPath AssetPath = SoftObjectPtr.ToSoftObjectPath();
+
+		FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
+
+		Streamable.RequestAsyncLoad
+		(
+			AssetPath,
+			[AssetPath, OutObject]()
+			{
+				UObject* LoadedObject = AssetPath.ResolveObject();
+				if (!LoadedObject)
+				{
+					LoadedObject = AssetPath.TryLoad();
+				}
+
+				OutObject = Cast<T>(LoadedObject);
+			}
+		);
+	}
+
 private:
 	template <typename T>
 	static void LoadAsyncInternal(FSoftObjectPath AssetPath, TFunction<void(T*)> OnResultCallback)
