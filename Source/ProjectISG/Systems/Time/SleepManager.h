@@ -93,6 +93,14 @@ private:
 		meta = (AllowPrivateAccess = "true"), Category = Sleep)
 	int32 CanSleepTime = 9;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+		meta = (AllowPrivateAccess = "true"), Category = Sleep)
+	bool bUseForceSleep = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+	meta = (AllowPrivateAccess = "true"), Category = Sleep)
+	bool bUseSleepManager = true;
+
 public:
 	UPROPERTY()
 	FForceSleep ForceSleepDelegate;
