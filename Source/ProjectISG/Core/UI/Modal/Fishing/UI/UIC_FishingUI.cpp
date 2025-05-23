@@ -40,7 +40,7 @@ void UUIC_FishingUI::OnAction()
 		FGameplayEventData EventData;
 		EventData.EventTag = ISGGameplayTags::Fishing_Active_ReelInLine;
 		EventData.Instigator = Player;
-		EventData.OptionalObject = FishingUIModel;
+		// EventData.OptionalObject = FishingUIModel;
 			
 		Player->GetAbilitySystemComponent()->HandleGameplayEvent(ISGGameplayTags::Fishing_Active_ReelInLine, &EventData);
 	}

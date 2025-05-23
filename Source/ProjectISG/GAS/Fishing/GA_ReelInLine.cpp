@@ -2,6 +2,7 @@
 
 #include "GA_ReelInLine.h"
 
+#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Contents/Fishing/Props/FishingRod.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"

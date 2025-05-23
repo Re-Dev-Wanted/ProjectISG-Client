@@ -43,6 +43,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UAT_FailFishingCinematic> AT_FailFishingCinematic;
 
+public:
 	UFUNCTION()
 	void OnEndCinematic();
 };

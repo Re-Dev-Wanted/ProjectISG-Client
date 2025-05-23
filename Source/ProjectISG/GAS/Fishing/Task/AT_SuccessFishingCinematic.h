@@ -6,6 +6,7 @@
 #include "Abilities/Tasks/AbilityTask.h"
 #include "AT_SuccessFishingCinematic.generated.h"
 
+class UGA_ReelInLine;
 class ALevelSequenceActor;
 class ULevelSequencePlayer;
 class ULevelSequence;
@@ -20,12 +21,16 @@ class PROJECTISG_API UAT_SuccessFishingCinematic : public UAbilityTask
 public:
 	static UAT_SuccessFishingCinematic* InitialEvent(UGameplayAbility* Ability, ULevelSequence* LevelSequence);
 
+	UPROPERTY()
 	FOnSuccessFishingCinematicEndNotified OnSuccessFishingCinematicEndNotified;
 
 	virtual void Activate() override;
 	virtual void ExternalConfirm(bool bEndTask) override;
 
 protected:
+	UPROPERTY()
+	UGA_ReelInLine* RealInLine;
+	
 	UPROPERTY()
 	TObjectPtr<ULevelSequencePlayer> LevelSequencePlayer;
 	
