@@ -30,6 +30,10 @@ protected:
 	                        bool bReplicateEndAbility,
 	                        bool bWasCancelled) override;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Cinematic",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<ULevelSequence> StartFishingCinematic;
+
 	UPROPERTY()
 	TObjectPtr<UAT_StartFishingCinematic> AT_StartFishingCinematic;
 

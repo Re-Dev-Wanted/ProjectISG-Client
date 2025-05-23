@@ -38,9 +38,7 @@ void UGA_EndCraftingMode::ActivateAbility(
 	AWorkbench* Workbench = Cast<AWorkbench>(TargetActor);
 
 	AT_EndCraftingModeCinematic = UAT_EndCraftingMode::InitialEvent(
-		this, ULevelSequenceManager::GetLevelSequence(
-			Player->GetPlayerState<AMainPlayerState>(),
-			ELevelSequenceKey::CraftingEnd), Workbench);
+		this, CraftingEndCinematic, Workbench);
 	AT_EndCraftingModeCinematic->OnEndCraftingCinematicEndNotified.AddDynamic(
 		this, &ThisClass::OnEndCinematic);
 	AT_EndCraftingModeCinematic->ReadyForActivation();

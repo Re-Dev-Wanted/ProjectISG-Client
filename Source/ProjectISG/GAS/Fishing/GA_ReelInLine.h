@@ -29,6 +29,14 @@ protected:
 	                        bool bReplicateEndAbility,
 	                        bool bWasCancelled) override;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Cinematic",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<ULevelSequence> SuccessFishingCinematic;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Cinematic",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<ULevelSequence> FailFishingCinematic;
+
 	UPROPERTY()
 	TObjectPtr<UAT_SuccessFishingCinematic> AT_SuccessFishingCinematic;
 

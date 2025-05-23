@@ -100,23 +100,19 @@ TObjectPtr<ULevelSequence> UGA_CookingQTEAction::GetCookingSequence()
 	{
 	case ECookingTool::Wok:
 		{
-			return ULevelSequenceManager::GetLevelSequence(
-				PS, ELevelSequenceKey::CookingQTEWok);
+			return CookingQTEWokCinematic;
 		}
 	case ECookingTool::BigPot:
 		{
-			return ULevelSequenceManager::GetLevelSequence(
-				PS, ELevelSequenceKey::CookingQTEBigPot);
+			return CookingQTEBigPotCinematic;
 		}
 	case ECookingTool::FryingPan:
 		{
-			return ULevelSequenceManager::GetLevelSequence(
-				PS, ELevelSequenceKey::CookingQTEFryingPan);
+			return CookingQTEFryingPanCinematic;
 		}
 	case ECookingTool::Knife:
 		{
-			return ULevelSequenceManager::GetLevelSequence(
-				PS, ELevelSequenceKey::CookingQTEKnife);
+			return CookingQTEKnifeCinematic;
 		}
 	default:
 		{

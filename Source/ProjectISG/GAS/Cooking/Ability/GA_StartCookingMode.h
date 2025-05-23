@@ -22,6 +22,10 @@ protected:
 	                             TriggerEventData) override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Cinematic",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<ULevelSequence> StartCookingCinematic;
+
 	UPROPERTY()
 	TObjectPtr<UAT_StartCookingModeCinematic> AT_StartCookingModeCinematic;
 

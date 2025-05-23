@@ -50,9 +50,7 @@ void UGA_ReelInLine::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		{
 			AT_SuccessFishingCinematic =
 				UAT_SuccessFishingCinematic::InitialEvent(
-					this, ULevelSequenceManager::GetLevelSequence(
-						Player->GetPlayerState<AMainPlayerState>(),
-						ELevelSequenceKey::FishingSuccess));
+					this, SuccessFishingCinematic);
 			AT_SuccessFishingCinematic->OnSuccessFishingCinematicEndNotified.
 			                            AddDynamic(
 				                            this, &UGA_ReelInLine::
@@ -62,9 +60,7 @@ void UGA_ReelInLine::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		else
 		{
 			AT_FailFishingCinematic = UAT_FailFishingCinematic::InitialEvent(
-				this, ULevelSequenceManager::GetLevelSequence(
-					Player->GetPlayerState<AMainPlayerState>(),
-					ELevelSequenceKey::FishingFail));
+				this, FailFishingCinematic);
 			AT_FailFishingCinematic->OnFailFishingCinematicEndNotified.
 			                         AddDynamic(
 				                         this, &UGA_ReelInLine::OnEndCinematic);

@@ -20,6 +20,10 @@ protected:
 	                             const FGameplayEventData*
 	                             TriggerEventData) override;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Cinematic",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<ULevelSequence> CraftingEndCinematic;
+
 	UPROPERTY()
 	TObjectPtr<UAT_EndCraftingMode> AT_EndCraftingModeCinematic;
 

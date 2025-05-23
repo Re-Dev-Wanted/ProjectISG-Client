@@ -55,9 +55,7 @@ void UGA_StartCraftingMode::ActivateAbility(
 	}
 
 	AT_StartCraftingModeCinematic = UAT_StartCraftingMode::InitialEvent(
-		this, ULevelSequenceManager::GetLevelSequence(
-			Player->GetPlayerState<AMainPlayerState>(),
-			ELevelSequenceKey::CraftingReady));
+		this, CraftingReadyCinematic);
 
 	AT_StartCraftingModeCinematic->OnStartCraftingCinematicEndNotified.
 	                               AddDynamic(this, &ThisClass::OnEndCinematic);

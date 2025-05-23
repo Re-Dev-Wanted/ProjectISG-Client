@@ -31,6 +31,19 @@ protected:
 	                        , bool bWasCancelled) override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Cinematic",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<ULevelSequence> CookingQTEWokCinematic;
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Cinematic",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<ULevelSequence> CookingQTEFryingPanCinematic;
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Cinematic",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<ULevelSequence> CookingQTEBigPotCinematic;
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Cinematic",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<ULevelSequence> CookingQTEKnifeCinematic;
+
 	uint32 SelectedFoodRecipeId;
 
 	UPROPERTY()

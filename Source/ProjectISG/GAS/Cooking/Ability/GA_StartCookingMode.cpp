@@ -20,9 +20,7 @@ void UGA_StartCookingMode::ActivateAbility(
 	Player->GetController<AMainPlayerController>()->PopUI();
 
 	AT_StartCookingModeCinematic = UAT_StartCookingModeCinematic::InitialEvent(
-		this, ULevelSequenceManager::GetLevelSequence(
-			Player->GetPlayerState<AMainPlayerState>(),
-			ELevelSequenceKey::CookingStart));
+		this, StartCookingCinematic);
 
 	AT_StartCookingModeCinematic->OnStartCookingModeCinematicEndNotified.
 	                              AddDynamic(this, &ThisClass::OnEndCinematic);

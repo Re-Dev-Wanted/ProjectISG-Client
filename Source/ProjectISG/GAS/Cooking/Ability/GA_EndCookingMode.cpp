@@ -24,9 +24,7 @@ void UGA_EndCookingMode::ActivateAbility(
 	Player->GetController<AMainPlayerController>()->PopUI();
 
 	AT_EndCookingModeCinematic = UAT_EndCookingModeCinematic::InitialEvent(
-		this, ULevelSequenceManager::GetLevelSequence(
-			Player->GetPlayerState<AMainPlayerState>(),
-			ELevelSequenceKey::CookingEnd));
+		this, EndCookingCinematic);
 
 	AT_EndCookingModeCinematic->OnEndCookingModeCinematicEndNotified.
 	                            AddDynamic(this, &ThisClass::OnEndCinematic);
