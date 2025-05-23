@@ -21,7 +21,6 @@ class PROJECTISG_API UAT_SuccessFishingCinematic : public UAbilityTask
 public:
 	static UAT_SuccessFishingCinematic* InitialEvent(UGameplayAbility* Ability, ULevelSequence* LevelSequence);
 
-	UPROPERTY()
 	FOnSuccessFishingCinematicEndNotified OnSuccessFishingCinematicEndNotified;
 
 	virtual void Activate() override;
