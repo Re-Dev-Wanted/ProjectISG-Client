@@ -60,7 +60,7 @@ public:
 	GETTER(ECropState, CurrentState)
 	GETTER_SETTER(int32, CropTotalGrowDay);
 	GETTER_SETTER(int32, WaterDuration);
-	GETTER(uint16, CropId);
+	GETTER(uint16, ItemId);
 
 	FOnDryField OnDryField;
 
@@ -107,7 +107,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Settings,
 		meta = (AllowPrivateAccess = true))
-	uint16 CropId;
+	uint16 ItemId;
 
 	UPROPERTY(EditAnywhere, Category = Settings,
 		meta = (AllowPrivateAccess = true))
