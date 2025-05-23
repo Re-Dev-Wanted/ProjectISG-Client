@@ -19,12 +19,14 @@ void UItemListGroup::SetGroup(int32 GroupIndex, const TArray<FCraftingRecipeUIMo
 		
 		UItemInfoWidget* Widget = CreateWidget<UItemInfoWidget>(this, WidgetFactory);
 
+		Widget->SetWidget(Model.Id, Model.ItemName, OnSelectedRecipe);
+
 		AsyncUtil::LoadAsync<UTexture2D>
 		(
 			Model.Thumbnail,
-			[this, Widget, Model, OnSelectedRecipe](UTexture2D* Thumbnail)
+			[this, Widget](UTexture2D* Thumbnail)
 			{
-				Widget->SetWidget(Model.Id, Model.ItemName, Thumbnail, OnSelectedRecipe);
+				Widget->SetImage(Thumbnail);
 			}
 		);
 		
