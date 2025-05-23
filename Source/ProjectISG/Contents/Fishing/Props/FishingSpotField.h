@@ -29,7 +29,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* Root = nullptr;
 
-	// UPROPERTY(VisibleAnywhere)
-	// UCapsuleComponent* BlockCollision = nullptr;
+	UPROPERTY(VisibleAnywhere)
+	UStaticMeshComponent* BlockCollision = nullptr;
 	
 };

@@ -14,13 +14,13 @@ AFishingSpotField::AFishingSpotField()
 	
 	Root = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Root"));
 	SetRootComponent(Root);
-	// Root->SetCollisionResponseToChannel(ECC_Visibility, ECollisionResponse::ECR_Block);
+	Root->SetCollisionResponseToChannel(ECC_Visibility, ECollisionResponse::ECR_Block);
 
-	// BlockCollision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Block"));
-	// BlockCollision->SetupAttachment(Root);
-	Root->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	Root->SetCollisionResponseToAllChannels(ECR_Ignore);
-	Root->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
+	BlockCollision = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Block"));
+	BlockCollision->SetupAttachment(Root);
+	BlockCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	BlockCollision->SetCollisionResponseToAllChannels(ECR_Ignore);
+	BlockCollision->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
 }
 
 bool AFishingSpotField::GetCanTouch() const

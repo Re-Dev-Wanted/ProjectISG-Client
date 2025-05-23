@@ -49,8 +49,6 @@ void UGA_CastBobber::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 	if (AFishingRod* FishingRod = Cast<AFishingRod>(Equipment))
 	{
-		FishingRod->StartCasting(ActorInfo->AvatarActor.Get(),
-		                         TargetTraceResult.ImpactPoint);
 
 		if (Player->IsLocallyControlled())
 		{
@@ -98,6 +96,25 @@ void UGA_CastBobber::OnEndCinematic()
 	if (!Player)
 	{
 		return;
+	}
+
+	const TObjectPtr<ABaseActor> Equipment = Player->GetHandSlotComponent()->
+		GetHeldItem();
+
+	if (!Equipment)
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true,
+			   false);
+		return;
+	}
+
+	const FHitResult TargetTraceResult = Player->GetInteractionComponent()->
+												 GetTargetTraceResult();
+
+	if (AFishingRod* FishingRod = Cast<AFishingRod>(Equipment))
+	{
+		FishingRod->StartCasting(CurrentActorInfo->AvatarActor.Get(),
+						 TargetTraceResult.ImpactPoint);
 	}
 
 	AMainPlayerController* PlayerController = Cast<AMainPlayerController>(

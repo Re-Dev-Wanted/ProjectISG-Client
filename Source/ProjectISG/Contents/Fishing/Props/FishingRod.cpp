@@ -88,8 +88,8 @@ void AFishingRod::OnStartFishing()
 	FishData = UFishingManager::GetRandomData();
 	float WaitTime = FishData.GetWaitTime();
 
-	// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT
-	// ("OnStartFishing %fs"), WaitTime));
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT
+	("OnStartFishing %fs"), WaitTime));
 
 	GetWorld()->
 		GetTimerManager()
@@ -237,14 +237,17 @@ void AFishingRod::StartCasting(AActor* Causer, FVector Destination)
 	{
 		return;
 	}
-
-	Bobber->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	Bobber->SetActorLocation(CastingStartPoint->GetComponentLocation());
-
+	
 	FVector EndLocation = Destination + Causer->GetActorForwardVector() *
 		CastingDistance;
 
-	Bobber->SuggestProjectileVelocity(Causer->GetActorLocation(), EndLocation);
+	Bobber->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	// Bobber->SetActorLocation(CastingStartPoint->GetComponentLocation());
+	Bobber->SetActorLocation(EndLocation + FVector::UpVector * 50.f);
+
+
+	// Bobber->SuggestProjectileVelocity(CastingStartPoint->GetComponentLocation(), EndLocation);
+	Bobber->SuggestProjectileVelocity(EndLocation + FVector::UpVector * 50.f, EndLocation);
 }
 
 void AFishingRod::ReelInLine()

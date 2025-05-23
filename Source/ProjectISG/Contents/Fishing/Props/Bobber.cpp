@@ -18,28 +18,29 @@ ABobber::ABobber()
 
 void ABobber::SuggestProjectileVelocity(const FVector& StartLocation, const FVector& EndLocation)
 {
-	FVector Velocity;
+	// FVector Velocity;
 
 	SetCollisionAndPhysicsEnabled(true);
 	
-	bool bSuggest = UGameplayStatics::SuggestProjectileVelocity_CustomArc(
-		this,
-		Velocity,
-		StartLocation,
-		EndLocation,
-		GetWorld()->GetGravityZ(),
-		0.75f
-	);
-
-	if (bSuggest)
-	{
-		FPredictProjectilePathParams PredictParams(10.0f, StartLocation, Velocity, 5.0f);
-		PredictParams.DrawDebugTime = 5.0f;     
-		PredictParams.DrawDebugType = EDrawDebugTrace::Type::ForDuration;
-		PredictParams.OverrideGravityZ = GetWorld()->GetGravityZ();
-		FPredictProjectilePathResult result;
-		UGameplayStatics::PredictProjectilePath(this, PredictParams, result);
-	}
+	
+	// bool bSuggest = UGameplayStatics::SuggestProjectileVelocity_CustomArc(
+	// 	this,
+	// 	Velocity,
+	// 	StartLocation,
+	// 	EndLocation,
+	// 	-980.f,
+	// 	0.9f
+	// );
+	//
+	// if (bSuggest)
+	// {
+	// 	FPredictProjectilePathParams PredictParams(10.0f, StartLocation, Velocity, 5.0f);
+	// 	PredictParams.DrawDebugTime = 5.0f;     
+	// 	PredictParams.DrawDebugType = EDrawDebugTrace::Type::ForDuration;
+	// 	PredictParams.OverrideGravityZ = GetWorld()->GetGravityZ();
+	// 	FPredictProjectilePathResult result;
+	// 	UGameplayStatics::PredictProjectilePath(this, PredictParams, result);
+	// }
 }
 
 void ABobber::OnBite(USkeletalMesh* Fish)
