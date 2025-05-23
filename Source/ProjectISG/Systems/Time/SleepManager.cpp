@@ -90,7 +90,6 @@ void USleepManager::ForceSleep()
 		// 서버의 수면 로그 보낸다.
 		if (bSleepCinematicStart == false)
 		{
-			OpenDiaryDelegate.Broadcast();
 			LoggingToSleep();
 		}
 
@@ -194,6 +193,8 @@ void USleepManager::AssignBedEachPlayer()
 
 	// 침대에 눕는 어빌리티를 실행시킨다.
 	ForceSleepDelegate.Broadcast();
+	OpenDiaryDelegate.Broadcast();
+
 }
 
 void USleepManager::ChangeAllPlayerSleepValue(bool value)
