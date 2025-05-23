@@ -43,7 +43,6 @@ void UUIV_MainLobby::OnClickedFindSessionUIButton()
 	UUIC_MainLobby* MainLobbyController = Cast<UUIC_MainLobby>(GetController());
 	ALobbyPlayerController* LobbyPlayerController = Cast<
 		ALobbyPlayerController>(MainLobbyController->GetPlayerController());
-	LobbyPlayerController->PopUI();
 	LobbyPlayerController->PushUI(EUIName::Popup_MultiPlay);
 }
 
