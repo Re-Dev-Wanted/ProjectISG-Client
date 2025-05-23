@@ -44,8 +44,10 @@ void UUIC_MbtiAskUI::AskNewMbti()
 	{
 		//GetView()->GetOwningPlayer<AMainPlayerController>()->PopUI();
 		// TODO: Delegate로 이후 동작을 받아오기
-		ALobbyPlayerController* LobbyPlayerController = Cast<ALobbyPlayerController>(GetView()->GetOwningPlayer());
-		UGameplayStatics::OpenLevelBySoftObjectPtr(GetWorld(), MbtiAskUIModel->GetTrainLevel());
+		ALobbyPlayerController* LobbyPlayerController = Cast<
+			ALobbyPlayerController>(GetView()->GetOwningPlayer());
+		UGameplayStatics::OpenLevelBySoftObjectPtr(
+			GetWorld(), MbtiAskUIModel->GetTrainLevel());
 
 		return;
 	}
@@ -99,7 +101,7 @@ void UUIC_MbtiAskUI::AnswerMbti()
 
 	FPostMbtiAnswerkParams Params;
 	Params.user_id = FSessionUtil::GetCurrentId(GetWorld());
-	Params.session_id = GetWorld()->GetGameState<AMainGameState>()->
+	Params.session_id = GetWorld()->GetGameInstance<UISGGameInstance>()->
 	                                GetSessionId();
 	Params.response = MbtiAskUIModel->GetAnswer().ToString();
 
