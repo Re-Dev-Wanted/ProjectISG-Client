@@ -29,7 +29,6 @@ UISGGameInstance::UISGGameInstance()
 	UCraftingManager::Initialize();
 	UQuestStoryManager::Initialize();
 	UAnimMontageManager::Initialize();
-	ULevelSequenceManager::Initialize();
 }
 
 void UISGGameInstance::CreateGameSessionId()
