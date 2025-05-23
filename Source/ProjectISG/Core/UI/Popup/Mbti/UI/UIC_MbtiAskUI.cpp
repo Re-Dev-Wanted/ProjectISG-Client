@@ -10,8 +10,6 @@
 #include "ProjectISG/Contents/Diary/DiaryStruct.h"
 #include "ProjectISG/Core/ISGGameInstance.h"
 #include "ProjectISG/Core/Controller/LobbyPlayerController.h"
-#include "ProjectISG/Core/Controller/MainPlayerController.h"
-#include "ProjectISG/Core/GameMode/MainGameState.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
 #include "ProjectISG/Utils/ApiUtil.h"
 #include "ProjectISG/Utils/SessionUtil.h"

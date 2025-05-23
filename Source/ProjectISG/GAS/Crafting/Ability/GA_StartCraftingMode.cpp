@@ -5,14 +5,18 @@
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Popup/Crafting/UI/UIC_WorkbenchUI.h"
+#include "ProjectISG/Systems/Animation/Manager/LevelSequenceManager.h"
 #include "ProjectISG/Systems/Grid/Components/PlacementIndicatorComponent.h"
 #include "Task/AT_StartCraftingMode.h"
 
-void UGA_StartCraftingMode::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                            const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-                                            const FGameplayEventData* TriggerEventData)
+void UGA_StartCraftingMode::ActivateAbility(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
@@ -25,7 +29,8 @@ void UGA_StartCraftingMode::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		return;
 	}
 
-	TObjectPtr<ABaseActor> HeldItem = Player->GetHandSlotComponent()->GetHeldItem();
+	TObjectPtr<ABaseActor> HeldItem = Player->GetHandSlotComponent()->
+	                                          GetHeldItem();
 
 	if (HeldItem)
 	{
@@ -33,13 +38,13 @@ void UGA_StartCraftingMode::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	}
 
 	AMainPlayerController* PC = Player->GetController<AMainPlayerController>();
-	
+
 	if (!PC)
 	{
 		OnEndCinematic();
 		return;
 	}
-	
+
 	if (Player->IsLocallyControlled())
 	{
 		PC->SetIgnoreMoveInput(true);
@@ -49,8 +54,13 @@ void UGA_StartCraftingMode::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		Player->GetPlacementIndicatorComponent()->SetIsActive(false);
 	}
 
-	AT_StartCraftingModeCinematic = UAT_StartCraftingMode::InitialEvent(this, CraftingReadyCinematic);
-	AT_StartCraftingModeCinematic->OnStartCraftingCinematicEndNotified.AddDynamic(this, &ThisClass::OnEndCinematic);
+	AT_StartCraftingModeCinematic = UAT_StartCraftingMode::InitialEvent(
+		this, ULevelSequenceManager::GetLevelSequence(
+			Player->GetPlayerState<AMainPlayerState>(),
+			ELevelSequenceKey::CraftingReady));
+
+	AT_StartCraftingModeCinematic->OnStartCraftingCinematicEndNotified.
+	                               AddDynamic(this, &ThisClass::OnEndCinematic);
 	AT_StartCraftingModeCinematic->ReadyForActivation();
 }
 
@@ -69,7 +79,7 @@ void UGA_StartCraftingMode::OnEndCinematic()
 		return;
 	}
 
-	AMainPlayerController* PC = Cast<AMainPlayerController>( 
+	AMainPlayerController* PC = Cast<AMainPlayerController>(
 		Player->GetController());
 
 	if (Player->IsLocallyControlled())
@@ -77,18 +87,19 @@ void UGA_StartCraftingMode::OnEndCinematic()
 		PC->PushUI(EUIName::Popup_CraftingUI);
 
 		UUIC_WorkbenchUI* UIController = Cast<UUIC_WorkbenchUI>
-		(PC->GetUIManageComponent()->ControllerInstances[EUIName::Popup_CraftingUI]);
+		(PC->GetUIManageComponent()->ControllerInstances[
+			EUIName::Popup_CraftingUI]);
 
-		AActor* TargetActor = const_cast<AActor*>(CurrentEventData.Target.Get());
+		AActor* TargetActor = const_cast<AActor*>(CurrentEventData.Target.
+			Get());
 		AWorkbench* Workbench = Cast<AWorkbench>(TargetActor);
 
 		if (Workbench)
-		{			
+		{
 			UIController->SetUIHandler(Workbench);
 		}
-
 	}
 
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true,
+	           false);
 }

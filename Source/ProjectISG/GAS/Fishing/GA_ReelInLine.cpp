@@ -7,12 +7,16 @@
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Systems/Animation/Manager/LevelSequenceManager.h"
 #include "Task/AT_FailFishingCinematic.h"
 #include "Task/AT_SuccessFishingCinematic.h"
 
 void UGA_ReelInLine::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                     const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+                                     const FGameplayAbilityActorInfo* ActorInfo,
+                                     const FGameplayAbilityActivationInfo
+                                     ActivationInfo,
                                      const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
@@ -26,61 +30,81 @@ void UGA_ReelInLine::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 
-	TObjectPtr<ABaseActor> HeldItem = Player->GetHandSlotComponent()->GetHeldItem();
+	TObjectPtr<ABaseActor> HeldItem = Player->GetHandSlotComponent()->
+	                                          GetHeldItem();
 
 	if (!HeldItem)
 	{
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo,
+		           true, false);
 		return;
 	}
 
 	if (const AFishingRod* ConstActor = Cast<AFishingRod>(HeldItem))
 	{
 		AFishingRod* FishingRod = const_cast<AFishingRod*>(ConstActor);
-		
+
 		FishingRod->ReelInLine();
 
 		if (FishingRod->GetIsBiteFish())
 		{
-			AT_SuccessFishingCinematic = UAT_SuccessFishingCinematic::InitialEvent(this, SuccessFishingCinematic);
-			AT_SuccessFishingCinematic->OnSuccessFishingCinematicEndNotified.AddDynamic(this, &UGA_ReelInLine::OnEndCinematic);
+			AT_SuccessFishingCinematic =
+				UAT_SuccessFishingCinematic::InitialEvent(
+					this, ULevelSequenceManager::GetLevelSequence(
+						Player->GetPlayerState<AMainPlayerState>(),
+						ELevelSequenceKey::FishingSuccess));
+			AT_SuccessFishingCinematic->OnSuccessFishingCinematicEndNotified.
+			                            AddDynamic(
+				                            this, &UGA_ReelInLine::
+				                            OnEndCinematic);
 			AT_SuccessFishingCinematic->ReadyForActivation();
 		}
 		else
 		{
-			AT_FailFishingCinematic = UAT_FailFishingCinematic::InitialEvent(this, FailFishingCinematic);
-			AT_FailFishingCinematic->OnFailFishingCinematicEndNotified.AddDynamic(this, &UGA_ReelInLine::OnEndCinematic);
+			AT_FailFishingCinematic = UAT_FailFishingCinematic::InitialEvent(
+				this, ULevelSequenceManager::GetLevelSequence(
+					Player->GetPlayerState<AMainPlayerState>(),
+					ELevelSequenceKey::FishingFail));
+			AT_FailFishingCinematic->OnFailFishingCinematicEndNotified.
+			                         AddDynamic(
+				                         this, &UGA_ReelInLine::OnEndCinematic);
 			AT_FailFishingCinematic->ReadyForActivation();
 		}
-		
+
 		return;
 	}
 
 	OnEndCinematic();
 }
 
-void UGA_ReelInLine::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-	const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+void UGA_ReelInLine::EndAbility(const FGameplayAbilitySpecHandle Handle,
+                                const FGameplayAbilityActorInfo* ActorInfo,
+                                const FGameplayAbilityActivationInfo
+                                ActivationInfo, bool bReplicateEndAbility,
+                                bool bWasCancelled)
 {
-	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(ActorInfo->AvatarActor.Get());
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		ActorInfo->AvatarActor.Get());
 
 	if (!Player)
 	{
-		Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+		Super::EndAbility(Handle, ActorInfo, ActivationInfo,
+		                  bReplicateEndAbility, bWasCancelled);
 		return;
 	}
 
 	GetWorld()->
-	GetTimerManager()
-	.SetTimerForNextTick
-	(
-		[Player]()
-		{
-			Player->GetInteractionComponent()->SetIsInteractive(true);
-		}
-	);
-	
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+		GetTimerManager()
+		.SetTimerForNextTick
+		(
+			[Player]()
+			{
+				Player->GetInteractionComponent()->SetIsInteractive(true);
+			}
+		);
+
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility,
+	                  bWasCancelled);
 }
 
 void UGA_ReelInLine::OnEndCinematic()
@@ -90,7 +114,8 @@ void UGA_ReelInLine::OnEndCinematic()
 
 	if (Player->IsLocallyControlled())
 	{
-		AMainPlayerController* PC = Player->GetController<AMainPlayerController>();
+		AMainPlayerController* PC = Player->GetController<
+			AMainPlayerController>();
 
 		PC->SetIgnoreLookInput(false);
 		PC->SetIgnoreMoveInput(false);
@@ -98,20 +123,23 @@ void UGA_ReelInLine::OnEndCinematic()
 		PC->GetUIManageComponent()->ResetWidget();
 	}
 
-	TObjectPtr<ABaseActor> HeldItem = Player->GetHandSlotComponent()->GetHeldItem();
+	TObjectPtr<ABaseActor> HeldItem = Player->GetHandSlotComponent()->
+	                                          GetHeldItem();
 
 	if (!HeldItem)
 	{
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo,
+		           true, false);
 		return;
 	}
-	
+
 	if (const AFishingRod* ConstActor = Cast<AFishingRod>(HeldItem))
 	{
 		AFishingRod* FishingRod = const_cast<AFishingRod*>(ConstActor);
 
 		FishingRod->OnEndReelInLine(CurrentActorInfo->AvatarActor.Get());
 	}
-	
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
+
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true,
+	           false);
 }

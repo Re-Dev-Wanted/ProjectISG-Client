@@ -48,8 +48,6 @@ FLevelSequenceData ULevelSequenceManager::GetDataByKey(ELevelSequenceKey Key)
 TObjectPtr<ULevelSequence> ULevelSequenceManager::GetLevelSequence(
 	const AMainPlayerState* PS, const ELevelSequenceKey Key)
 {
-	Initialize();
-
 	if (DataMap.Contains(Key))
 	{
 		if (DataMap[Key].GetSequenceData().Contains(PS->GetCharacterName()))

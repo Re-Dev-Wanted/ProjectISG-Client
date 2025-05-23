@@ -14,18 +14,15 @@ class PROJECTISG_API UGA_StartCraftingMode : public UGA_BaseInputAbility
 
 protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-		const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo,
-		const FGameplayEventData* TriggerEventData) override;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Options|Cinematic",
-		meta = (AllowPrivateAccess = true))
-	TObjectPtr<ULevelSequence> CraftingReadyCinematic;
+	                             const FGameplayAbilityActorInfo* ActorInfo,
+	                             const FGameplayAbilityActivationInfo
+	                             ActivationInfo,
+	                             const FGameplayEventData*
+	                             TriggerEventData) override;
 
 	UPROPERTY()
 	TObjectPtr<UAT_StartCraftingMode> AT_StartCraftingModeCinematic;
 
 	UFUNCTION()
 	void OnEndCinematic();
-	
 };

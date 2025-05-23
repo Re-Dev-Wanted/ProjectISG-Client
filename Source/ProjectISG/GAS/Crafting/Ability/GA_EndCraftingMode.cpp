@@ -5,12 +5,16 @@
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Systems/Animation/Manager/LevelSequenceManager.h"
 #include "ProjectISG/Systems/Grid/Components/PlacementIndicatorComponent.h"
 #include "Task/AT_EndCraftingMode.h"
 
-void UGA_EndCraftingMode::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                          const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
-                                          const FGameplayEventData* TriggerEventData)
+void UGA_EndCraftingMode::ActivateAbility(
+	const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
@@ -30,11 +34,15 @@ void UGA_EndCraftingMode::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 		OnEndCinematic();
 		return;
 	}
-	
+
 	AWorkbench* Workbench = Cast<AWorkbench>(TargetActor);
 
-	AT_EndCraftingModeCinematic = UAT_EndCraftingMode::InitialEvent(this, EndCraftingCinematic, Workbench);
-	AT_EndCraftingModeCinematic->OnEndCraftingCinematicEndNotified.AddDynamic(this, &ThisClass::OnEndCinematic);
+	AT_EndCraftingModeCinematic = UAT_EndCraftingMode::InitialEvent(
+		this, ULevelSequenceManager::GetLevelSequence(
+			Player->GetPlayerState<AMainPlayerState>(),
+			ELevelSequenceKey::CraftingEnd), Workbench);
+	AT_EndCraftingModeCinematic->OnEndCraftingCinematicEndNotified.AddDynamic(
+		this, &ThisClass::OnEndCinematic);
 	AT_EndCraftingModeCinematic->ReadyForActivation();
 }
 
@@ -43,7 +51,8 @@ void UGA_EndCraftingMode::OnEndCinematic()
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>
 		(CurrentActorInfo->AvatarActor.Get());
 
-	TObjectPtr<ABaseActor> HeldItem = Player->GetHandSlotComponent()->GetHeldItem();
+	TObjectPtr<ABaseActor> HeldItem = Player->GetHandSlotComponent()->
+	                                          GetHeldItem();
 
 	if (HeldItem)
 	{
@@ -60,7 +69,7 @@ void UGA_EndCraftingMode::OnEndCinematic()
 		return;
 	}
 
-	AMainPlayerController* PC = Cast<AMainPlayerController>( 
+	AMainPlayerController* PC = Cast<AMainPlayerController>(
 		Player->GetController());
 
 	if (Player->IsLocallyControlled())
@@ -77,12 +86,12 @@ void UGA_EndCraftingMode::OnEndCinematic()
 
 	AActor* TargetActor = const_cast<AActor*>(CurrentEventData.Target.Get());
 	AWorkbench* Workbench = Cast<AWorkbench>(TargetActor);
-	
+
 	if (Workbench)
-	{			
+	{
 		Workbench->OnClosed();
 	}
 
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
-
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true,
+	           false);
 }
