@@ -15,21 +15,23 @@ void ULevelSequenceManager::Initialize()
 
 	IsInitialized = true;
 
-	const static ConstructorHelpers::FObjectFinder<UDataTable> DataTable(
+	const UDataTable* DataTable = LoadObject<UDataTable>(nullptr,
 		TEXT(
 			"/Game/Systems/Animation/DT_LevelSequenceData.DT_LevelSequenceData"));
 
-	if (DataTable.Succeeded())
+	if (!DataTable)
 	{
-		TArray<FLevelSequenceData*> TempItemInfoList;
-		DataTable.Object->GetAllRows<FLevelSequenceData>(
-			TEXT(""), TempItemInfoList);
+		return;
+	}
 
-		for (const FLevelSequenceData* InfoItem : TempItemInfoList)
-		{
-			Datas.Add(*InfoItem);
-			DataMap.Add(InfoItem->GetKey(), *InfoItem);
-		}
+	TArray<FLevelSequenceData*> TempItemInfoList;
+	DataTable->GetAllRows<FLevelSequenceData>(
+		TEXT(""), TempItemInfoList);
+
+	for (const FLevelSequenceData* InfoItem : TempItemInfoList)
+	{
+		Datas.Add(*InfoItem);
+		DataMap.Add(InfoItem->GetKey(), *InfoItem);
 	}
 }
 

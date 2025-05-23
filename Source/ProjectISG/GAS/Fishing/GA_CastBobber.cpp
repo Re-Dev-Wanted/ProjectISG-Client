@@ -7,8 +7,10 @@
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Modal/Fishing/UI/UIC_FishingUI.h"
+#include "ProjectISG/Systems/Animation/Manager/LevelSequenceManager.h"
 #include "ProjectISG/Systems/Logging/LoggingEnum.h"
 #include "ProjectISG/Systems/Logging/LoggingStruct.h"
 #include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
@@ -42,8 +44,8 @@ void UGA_CastBobber::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 
-	FHitResult TargetTraceResult = Player->GetInteractionComponent()->
-	                                       GetTargetTraceResult();
+	const FHitResult TargetTraceResult = Player->GetInteractionComponent()->
+	                                             GetTargetTraceResult();
 
 	if (AFishingRod* FishingRod = Cast<AFishingRod>(Equipment))
 	{
@@ -62,7 +64,10 @@ void UGA_CastBobber::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		}
 
 		AT_StartFishingCinematic = UAT_StartFishingCinematic::InitialEvent(
-			this, StartFishingCinematic);
+			this, ULevelSequenceManager::GetLevelSequence(
+				Player->GetPlayerState<AMainPlayerState>(),
+				ELevelSequenceKey::FishingStart));
+
 		AT_StartFishingCinematic->OnStartFishingCinematicEndNotified.AddDynamic(
 			this, &UGA_CastBobber::OnEndCinematic);
 		AT_StartFishingCinematic->ReadyForActivation();

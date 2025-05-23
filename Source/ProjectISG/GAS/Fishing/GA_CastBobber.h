@@ -17,20 +17,24 @@ class PROJECTISG_API UGA_CastBobber : public UGA_BaseInputAbility
 	GENERATED_BODY()
 
 protected:
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-	                             const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+	                             const FGameplayAbilityActorInfo* ActorInfo,
+	                             const FGameplayAbilityActivationInfo
+	                             ActivationInfo,
+	                             const FGameplayEventData*
+	                             TriggerEventData) override;
 
-	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
-
-	UPROPERTY(EditDefaultsOnly, Category = Cinematic)
-	TObjectPtr<ULevelSequence> StartFishingCinematic;
+	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle,
+	                        const FGameplayAbilityActorInfo* ActorInfo,
+	                        const FGameplayAbilityActivationInfo ActivationInfo,
+	                        bool bReplicateEndAbility,
+	                        bool bWasCancelled) override;
 
 	UPROPERTY()
 	TObjectPtr<UAT_StartFishingCinematic> AT_StartFishingCinematic;
 
 	UFUNCTION()
 	void OnEndCinematic();
-	
+
 	void Logging();
 };
