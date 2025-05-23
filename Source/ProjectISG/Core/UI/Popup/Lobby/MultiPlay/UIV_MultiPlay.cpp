@@ -21,6 +21,8 @@ void UUIV_MultiPlay::NativeConstruct()
 		this, &ThisClass::OnClickedJoinSessionButton);
 	FindRoom->OnClicked.AddDynamic(this, &ThisClass::OnClickedFindRoomButton);
 
+	ExitButton->OnClicked.AddDynamic(this, &ThisClass::OnClickedExitButton);
+
 	UUIC_MultiPlay* MultiPlayController = Cast<UUIC_MultiPlay>(GetController());
 	MultiPlayController->FindSession();
 }
@@ -64,4 +66,20 @@ void UUIV_MultiPlay::OnClickedFindRoomButton()
 	UUIC_MultiPlay* MultiPlayUIController = Cast<UUIC_MultiPlay>(
 		GetController());
 	MultiPlayUIController->FindSession();
+}
+
+void UUIV_MultiPlay::OnClickedExitButton()
+{
+	UUIC_MultiPlay* MultiPlayUIController = Cast<UUIC_MultiPlay>(
+		GetController());
+	ALobbyPlayerController* LobbyPlayerController = Cast<ALobbyPlayerController>(MultiPlayUIController->GetPlayerController());
+	if (LobbyPlayerController)
+	{
+		LobbyPlayerController->PopUI();
+	}
+	else
+	{
+		ATutorialPlayerController* TutorialPlayerController = Cast<ATutorialPlayerController>(MultiPlayUIController->GetPlayerController());
+		TutorialPlayerController->PopUI();
+	}
 }

@@ -88,8 +88,8 @@ void AFishingRod::OnStartFishing()
 	FishData = UFishingManager::GetRandomData();
 	float WaitTime = FishData.GetWaitTime();
 
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT
-	("OnStartFishing %fs"), WaitTime));
+	// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT
+	// ("OnStartFishing %fs"), WaitTime));
 
 	GetWorld()->
 		GetTimerManager()

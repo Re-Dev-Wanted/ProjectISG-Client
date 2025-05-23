@@ -29,6 +29,9 @@ protected:
 	UFUNCTION()
 	void OnClickedFindRoomButton();
 
+	UFUNCTION()
+	void OnClickedExitButton();
+	
 private:
 #pragma region Widget
 	UPROPERTY(meta = (BindWidget))
@@ -42,5 +45,8 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	class UButton* FindRoom;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UButton* ExitButton;
 #pragma endregion
 };
