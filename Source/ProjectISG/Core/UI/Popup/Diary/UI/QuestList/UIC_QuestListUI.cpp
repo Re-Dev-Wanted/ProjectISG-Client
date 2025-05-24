@@ -65,6 +65,7 @@ void UUIC_QuestListUI::InitializeQuestList()
 	for (FQuestStoryData& CurrentQuestData :
 	     UQuestStoryManager::GetAllQuestData())
 	{
+		// 보이지 않는 조건에 대한 처리
 		if (CurrentQuestData.GetQuestMetaData().Contains(EQuestStoryMetaDataKey::IsHideInQuestBook)
 			&& CurrentQuestData.GetQuestMetaData()[EQuestStoryMetaDataKey::IsHideInQuestBook] == TEXT("true"))
 		{
