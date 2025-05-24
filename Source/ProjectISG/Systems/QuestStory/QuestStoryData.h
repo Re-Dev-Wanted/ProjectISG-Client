@@ -6,24 +6,7 @@
 
 #include "QuestStoryData.generated.h"
 
-
 enum class EMetaDataKey : uint32;
-
-USTRUCT(BlueprintType)
-struct PROJECTISG_API FQuestRewardData
-{
-	GENERATED_USTRUCT_BODY()
-
-	GETTER(EQuestStoryRewardType, RewardType)
-	GETTER(FString, RewardId)
-
-private:
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	EQuestStoryRewardType RewardType = EQuestStoryRewardType::None;
-
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	FString RewardId;
-};
 
 // 실제 퀘스트 가장 큰 데이터
 USTRUCT(BlueprintType)
@@ -42,11 +25,6 @@ struct PROJECTISG_API FQuestStoryData : public FTableRowBase
 	FORCEINLINE TMap<EQuestStoryMetaDataKey, FString>& GetQuestMetaData()
 	{
 		return QuestMetaData;
-	}
-
-	FORCEINLINE TArray<FQuestRewardData>& GetQuestRewardData()
-	{
-		return QuestRewardData;
 	}
 
 private:
@@ -73,13 +51,10 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess = true))
 	TMap<EQuestStoryMetaDataKey, FString> QuestMetaData;
-
-	UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess = true))
-	TArray<FQuestRewardData> QuestRewardData;
 };
 
 USTRUCT(BlueprintType)
-struct FHasItemQuestData
+struct FItemQuestData
 {
 	GENERATED_BODY()
 
@@ -103,7 +78,7 @@ private:
 };
 
 USTRUCT(BlueprintType)
-struct FHasGoldQuestData
+struct FGoldQuestData
 {
 	GENERATED_BODY()
 
@@ -121,8 +96,8 @@ struct PROJECTISG_API FQuestRequireData : public FTableRowBase
 
 	GETTER(FString, QuestId)
 	GETTER(EQuestRequireType, RequireType)
-	GETTER_REF(FHasItemQuestData, RequireItemOptions)
-	GETTER_REF(FHasGoldQuestData, RequireGoldOptions)
+	GETTER_REF(FItemQuestData, RequireItemOptions)
+	GETTER_REF(FGoldQuestData, RequireGoldOptions)
 
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -134,12 +109,40 @@ private:
 	UPROPERTY(EditDefaultsOnly,
 		meta = (AllowPrivateAccess = true, EditCondition =
 			"RequireType == EQuestRequireType::HasItem"))
-	FHasItemQuestData RequireItemOptions = FHasItemQuestData();
+	FItemQuestData RequireItemOptions = FItemQuestData();
 
 	UPROPERTY(EditDefaultsOnly,
 		meta = (AllowPrivateAccess = true, EditCondition =
 			"RequireType == EQuestRequireType::HasGold"))
-	FHasGoldQuestData RequireGoldOptions = FHasGoldQuestData();
+	FGoldQuestData RequireGoldOptions = FGoldQuestData();
+};
+
+USTRUCT(BlueprintType)
+struct PROJECTISG_API FQuestRewardData : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+	GETTER(FString, QuestId)
+	GETTER(EQuestRewardType, RewardType)
+	GETTER_REF(FItemQuestData, RewardItemOptions)
+	GETTER_REF(FGoldQuestData, RewardGoldOptions)
+
+private:
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	FString QuestId;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	EQuestRewardType RewardType = EQuestRewardType::None;
+
+	UPROPERTY(EditDefaultsOnly,
+		meta = (AllowPrivateAccess = true, EditCondition =
+			"RewardType == EQuestRewardType::HasItem"))
+	FItemQuestData RewardItemOptions = FItemQuestData();
+
+	UPROPERTY(EditDefaultsOnly,
+		meta = (AllowPrivateAccess = true, EditCondition =
+			"RewardType == EQuestRewardType::HasGold"))
+	FGoldQuestData RewardGoldOptions = FGoldQuestData();
 };
 
 // 퀘스트 대사에 대한 데이터

@@ -32,6 +32,15 @@ enum class EQuestRequireType : uint8
 };
 
 UENUM()
+enum class EQuestRewardType : uint8
+{
+	None,
+	Item,
+	Gold,
+	Custom,
+};
+
+UENUM()
 enum class EQuestStoryMetaDataKey: uint8
 {
 	None,
