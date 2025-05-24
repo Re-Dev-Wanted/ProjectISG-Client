@@ -48,11 +48,3 @@ enum class EQuestStoryMetaDataKey: uint8
 	RemoveItemToClear,
 	NextQuest,
 };
-
-UENUM()
-enum class EQuestStoryRewardType: uint8
-{
-	None,
-	Item,
-	Gold,
-};

@@ -112,10 +112,10 @@ void UUIC_QuestListUI::SetQuestRequireItemData(
 		GetView()->GetOwningPlayerState());
 
 	const uint32 ItemId = RequireQuest.GetRequireItemOptions().
-	                                   GetRequireItemId();
+	                                   GetItemId();
 
 	const uint32 RequireCount = RequireQuest.GetRequireItemOptions().
-	                                         GetRequireItemCount();
+	                                         GetItemCount();
 
 	const FItemInfoData ItemInfoData =
 		UItemManager::GetItemInfoById(ItemId);

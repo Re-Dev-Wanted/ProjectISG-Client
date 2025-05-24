@@ -42,11 +42,12 @@ private:
 	static TArray<FQuestStoryData> QuestArrayList;
 	static TMap<FString, TArray<FQuestStoryDialogue>> QuestDialogueData;
 	static TMap<FString, FQuestSceneCutData> QuestSceneCutData;
-	static TMap<FString, FQuestItemReward> QuestRewardItemData;
+	static TMap<FString, TArray<FQuestRewardData>> QuestRewardData;
 	static TMap<FString, TArray<FQuestRequireData>> QuestRequireData;
 
 	static void InitializeQuestData();
 	static void InitializeQuestRequireData();
+	static void InitializeQuestRewardData();
 	static void InitializeQuestDialogue();
 	static void InitializeQuestSceneCut();
 

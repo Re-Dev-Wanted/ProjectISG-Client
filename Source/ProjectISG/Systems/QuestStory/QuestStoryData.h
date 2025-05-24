@@ -58,23 +58,23 @@ struct FItemQuestData
 {
 	GENERATED_BODY()
 
-	GETTER(uint32, RequireItemId)
-	GETTER(uint32, RequireItemCount)
+	GETTER(uint32, ItemId)
+	GETTER(uint32, ItemCount)
 
-	FORCEINLINE TMap<EMetaDataKey, FString>& GetRequireItemMetaData()
+	FORCEINLINE TMap<EMetaDataKey, FString>& GetItemMetaData()
 	{
-		return RequireItemMetaData;
+		return ItemMetaData;
 	}
 
 private:
 	UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess = true))
-	uint32 RequireItemId = 0;
+	uint32 ItemId = 0;
 
 	UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess = true))
-	uint32 RequireItemCount = 0;
+	uint32 ItemCount = 0;
 
 	UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess = true))
-	TMap<EMetaDataKey, FString> RequireItemMetaData;
+	TMap<EMetaDataKey, FString> ItemMetaData;
 };
 
 USTRUCT(BlueprintType)
@@ -82,11 +82,11 @@ struct FGoldQuestData
 {
 	GENERATED_BODY()
 
-	GETTER(uint32, RequireGoldAmount)
+	GETTER(uint32, GoldAmount)
 
 private:
 	UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess = true))
-	uint32 RequireGoldAmount = 0;
+	uint32 GoldAmount = 0;
 };
 
 USTRUCT(BlueprintType)
@@ -136,12 +136,12 @@ private:
 
 	UPROPERTY(EditDefaultsOnly,
 		meta = (AllowPrivateAccess = true, EditCondition =
-			"RewardType == EQuestRewardType::HasItem"))
+			"RewardType == EQuestRewardType::Item"))
 	FItemQuestData RewardItemOptions = FItemQuestData();
 
 	UPROPERTY(EditDefaultsOnly,
 		meta = (AllowPrivateAccess = true, EditCondition =
-			"RewardType == EQuestRewardType::HasGold"))
+			"RewardType == EQuestRewardType::Gold"))
 	FGoldQuestData RewardGoldOptions = FGoldQuestData();
 };
 
@@ -219,34 +219,4 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TArray<FQuestSceneImageData> SceneCutList;
-};
-
-USTRUCT(BlueprintType)
-struct PROJECTISG_API FQuestRewardTemplate : public FTableRowBase
-{
-	GENERATED_USTRUCT_BODY()
-
-private:
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	FString RewardId;
-};
-
-USTRUCT(BlueprintType)
-struct PROJECTISG_API FQuestItemReward : public FQuestRewardTemplate
-{
-	GENERATED_USTRUCT_BODY()
-
-	GETTER(uint32, Count)
-
-	FORCEINLINE TMap<EMetaDataKey, FString>& GetItemMetaData()
-	{
-		return ItemMetaData;
-	}
-
-private:
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	uint32 Count = 0;
-
-	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TMap<EMetaDataKey, FString> ItemMetaData;
 };
