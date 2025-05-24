@@ -203,6 +203,21 @@ private:
 	TMap<EMetaDataKey, FString> MetaData;
 };
 
+// ItemMetaInfo의 TypeHash 처리
+FORCEINLINE uint32 GetTypeHash(const FItemMetaInfo& ItemMetaInfo)
+{
+	uint32 DefaultHash = 0;
+	DefaultHash = HashCombine(DefaultHash, GetTypeHash(ItemMetaInfo.GetId()));
+
+	// MetaData의 Key, Value를 각각 Combine시킨다.
+	for (TTuple<EMetaDataKey, FString> MetaData : ItemMetaInfo.GetMetaData())
+	{
+		DefaultHash = HashCombine(DefaultHash, GetTypeHash(MetaData));
+	}
+	
+	return DefaultHash;
+}
+
 
 USTRUCT(BlueprintType)
 struct FItemMetaInfo_Net
