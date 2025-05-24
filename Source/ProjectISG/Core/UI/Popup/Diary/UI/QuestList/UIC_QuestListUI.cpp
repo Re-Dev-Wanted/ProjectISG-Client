@@ -65,12 +65,8 @@ void UUIC_QuestListUI::InitializeQuestList()
 	for (FQuestStoryData& CurrentQuestData :
 	     UQuestStoryManager::GetAllQuestData())
 	{
-		if (!CurrentQuestData.GetQuestMetaData().Contains(EQuestStoryMetaDataKey::IsHideInQuestBook))
-		{
-			break;
-		}
-
-		if (CurrentQuestData.GetQuestMetaData()[EQuestStoryMetaDataKey::IsHideInQuestBook] == TEXT("true"))
+		if (CurrentQuestData.GetQuestMetaData().Contains(EQuestStoryMetaDataKey::IsHideInQuestBook)
+			&& CurrentQuestData.GetQuestMetaData()[EQuestStoryMetaDataKey::IsHideInQuestBook] == TEXT("true"))
 		{
 			break;
 		}
