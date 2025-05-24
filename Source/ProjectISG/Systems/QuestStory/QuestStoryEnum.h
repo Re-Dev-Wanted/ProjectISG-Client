@@ -35,7 +35,7 @@ UENUM()
 enum class EQuestStoryMetaDataKey: uint8
 {
 	None,
-	RequireItem,
+	IsHideInQuestBook,
 	RemoveItemToClear,
 	NextQuest,
 };

@@ -126,8 +126,8 @@ void UUIC_MainHUD::ToggleCurrentQuestUI(const bool IsActive)
 
 		MainHUDView->GetCurrentQuestWidget()->GetQuestTitle()->SetText(
 			FText::FromString(QuestData.GetQuestTitle()));
-		MainHUDView->GetCurrentQuestWidget()->GetQuestDescription()->SetText(
-			FText::FromString(QuestData.GetQuestDescription()));
+		MainHUDView->GetCurrentQuestWidget()->GetQuestHint()->SetText(
+			FText::FromString(QuestData.GetQuestHint()));
 
 		CurrentQuestWidgetController->StartCurrentQuestAnimation();
 	}

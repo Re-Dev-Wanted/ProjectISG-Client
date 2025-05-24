@@ -14,7 +14,7 @@ class PROJECTISG_API UUIV_CurrentQuestWidget : public UBaseUIView
 public:
 	GETTER(TObjectPtr<UWidgetAnimation>, QuestAppearAnimation)
 	GETTER(TObjectPtr<UTextBlock>, QuestTitle)
-	GETTER(TObjectPtr<UTextBlock>, QuestDescription)
+	GETTER(TObjectPtr<UTextBlock>, QuestHint)
 
 private:
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
@@ -24,5 +24,5 @@ private:
 	TObjectPtr<UTextBlock> QuestTitle;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> QuestDescription;
+	TObjectPtr<UTextBlock> QuestHint;
 };

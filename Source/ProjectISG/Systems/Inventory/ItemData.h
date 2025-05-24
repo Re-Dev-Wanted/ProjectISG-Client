@@ -123,7 +123,7 @@ private:
 USTRUCT(BlueprintType)
 struct PROJECTISG_API FItemMetaInfo
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 	GETTER_SETTER(uint16, Id)
 	GETTER(uint32, CurrentCount)

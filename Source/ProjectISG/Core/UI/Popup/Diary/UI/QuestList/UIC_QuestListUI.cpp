@@ -62,9 +62,19 @@ void UUIC_QuestListUI::InitializeQuestList()
 
 	QuestListUIView->GetQuestListView()->ClearListItems();
 
-	for (FQuestStoryData CurrentQuestData :
+	for (FQuestStoryData& CurrentQuestData :
 	     UQuestStoryManager::GetAllQuestData())
 	{
+		if (!CurrentQuestData.GetQuestMetaData().Contains(EQuestStoryMetaDataKey::IsHideInQuestBook))
+		{
+			break;
+		}
+
+		if (CurrentQuestData.GetQuestMetaData()[EQuestStoryMetaDataKey::IsHideInQuestBook] == TEXT("true"))
+		{
+			break;
+		}
+		
 		UQuestItemWidgetObject* QuestItemWidgetObject = NewObject<
 			UQuestItemWidgetObject>();
 		QuestItemWidgetObject->QuestId = CurrentQuestData.GetQuestId();

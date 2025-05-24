@@ -23,7 +23,9 @@ public:
 		const FString& QuestId);
 
 	static uint32 GetRequireQuestDateToAbleFinish(
-		const AMainPlayerController* PC, const FString& QuestId);
+	const AMainPlayerController* PC, const FString& QuestId);
+
+	static bool IsHiddenInQuestBook(const FString& QuestId);
 
 	static bool CheckAndCompleteQuest(AMainPlayerController* PC,
 	                                  const FString& QuestId);
@@ -48,9 +50,8 @@ private:
 	static void InitializeQuestDialogue();
 	static void InitializeQuestSceneCut();
 
-	static TArray<FString>
-	GetQuestRequiredItemTableById(const FString& QuestId);
-
+	// private 함수인만큼 퀘스트 조건에 대한 검증을 하지 않는다.
+	// 사용에 주의하길 바람
 	static void CompleteQuest_Internal(AMainPlayerController* PC,
 	                                   const FString& QuestId);
 
