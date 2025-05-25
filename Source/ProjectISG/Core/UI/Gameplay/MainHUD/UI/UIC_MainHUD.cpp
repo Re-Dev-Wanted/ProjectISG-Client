@@ -33,9 +33,6 @@ void UUIC_MainHUD::AppearUI()
 										GetCurrentSlotIndex();
 
 	MainHUDView->GetMainSlotList()->SelectSlot(CurrentSlot, CurrentSlot);
-
-	ToggleCurrentQuestUI(
-		PC->GetQuestManageComponent()->GetCurrentPlayingQuestId() != TEXT(""));
 }
 
 void UUIC_MainHUD::UpdateMainHotSlot() const
@@ -92,6 +89,7 @@ void UUIC_MainHUD::TogglePlacementIndicatorUI(const bool Visible)
 void UUIC_MainHUD::ToggleAutoQuestUI(const bool IsActive)
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
+
 	MainHUDView->GetAutoQuestDialogueWidget()->SetVisibility(
 		IsActive
 			? ESlateVisibility::SelfHitTestInvisible

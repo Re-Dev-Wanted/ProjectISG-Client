@@ -64,16 +64,19 @@ bool UQuestManageComponent::EndQuest(const bool IsCheckedQuestEnd)
 		}
 	}
 
+	PC->GetMainHUD()->ToggleAutoQuestUI(false);
+	PC->GetMainHUD()->ToggleCurrentQuestUI(false);
+
+	CompletedQuestIdList.Add(CurrentPlayingQuestId);
+
 	// 진행 중인 퀘스트 값 초기화
 	CurrentPlayingQuestId = TEXT("");
-
-	PC->GetMainHUD()->ToggleAutoQuestUI(false);
-	CompletedQuestIdList.Add(CurrentPlayingQuestId);
 
 	return true;
 }
 
-EQuestStatus UQuestManageComponent::GetQuestStatusById(const FString& QuestId)
+EQuestStatus UQuestManageComponent::GetQuestStatusById(
+	const FString& QuestId) const
 {
 	AMainPlayerController* PC = Cast<AMainPlayerController>(GetOwner());
 

@@ -30,7 +30,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool EndQuest(const bool IsCheckedQuestEnd = false);
 
-	EQuestStatus GetQuestStatusById(const FString& QuestId);
+	EQuestStatus GetQuestStatusById(const FString& QuestId) const;
 
 private:
 	FString CurrentPlayingQuestId;

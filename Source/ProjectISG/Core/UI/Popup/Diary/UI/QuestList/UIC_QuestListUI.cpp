@@ -74,6 +74,8 @@ void UUIC_QuestListUI::SetQuestInfo(const FString& QuestId)
 void UUIC_QuestListUI::InitializeQuestList()
 {
 	const UUIV_QuestListUI* QuestListUIView = Cast<UUIV_QuestListUI>(GetView());
+	const UUIM_QuestListUI* QuestListUIModel = Cast<UUIM_QuestListUI>(
+		GetModel());
 
 	QuestListUIView->GetQuestListView()->ClearListItems();
 
@@ -95,10 +97,17 @@ void UUIC_QuestListUI::InitializeQuestList()
 
 		QuestListUIView->GetQuestListView()->AddItem(QuestItemWidgetObject);
 	}
+
+	SetQuestInfoData(QuestListUIModel->GetCurrentSelectQuestId());
 }
 
 void UUIC_QuestListUI::SetQuestInfoData(const FString& QuestId)
 {
+	if (QuestId == TEXT(""))
+	{
+		return;
+	}
+
 	const UUIV_QuestListUI* QuestListUIView = Cast<UUIV_QuestListUI>(GetView());
 	AMainPlayerController* PC = QuestListUIView->GetOwningPlayer<
 		AMainPlayerController>();
@@ -229,9 +238,7 @@ void UUIC_QuestListUI::SetQuestRequireItemData(
 	NewWidget->GetRequireStatus()->SetText(FText::FromString(
 		FString::Printf(TEXT("%d/%d"), CurrentItemCount, RequireCount)));
 
-	const bool HasDoneQuestRequired = CurrentItemCount >= RequireCount;
-
-	if (HasDoneQuestRequired)
+	if (CurrentItemCount >= RequireCount)
 	{
 		NewWidget->GetRequireDescription()->SetColorAndOpacity(
 			QuestListUIView->GetRequiredQuestHasDoneColor());
