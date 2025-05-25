@@ -287,6 +287,17 @@ TArray<FQuestRequireData> UQuestStoryManager::GetRequireQuestDataById(
 	return QuestRequireData[QuestId];
 }
 
+TArray<FQuestRewardData> UQuestStoryManager::GetRewardQuestDataById(
+	const FString& QuestId)
+{
+	if (!QuestRewardData.Contains(QuestId))
+	{
+		QuestRewardData.Add(QuestId, TArray<FQuestRewardData>());
+	}
+
+	return QuestRewardData[QuestId];
+}
+
 uint32 UQuestStoryManager::GetRequireQuestDateToAbleFinish(
 	const AMainPlayerController* PC, const FString& QuestId)
 {

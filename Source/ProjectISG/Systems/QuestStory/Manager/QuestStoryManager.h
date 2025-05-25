@@ -20,6 +20,9 @@ public:
 	static FQuestSceneCutData& GetQuestSceneCutById(const FString& SceneId);
 
 	static TArray<FQuestRequireData> GetRequireQuestDataById(
+	const FString& QuestId);
+	
+	static TArray<FQuestRewardData> GetRewardQuestDataById(
 		const FString& QuestId);
 
 	static uint32 GetRequireQuestDateToAbleFinish(

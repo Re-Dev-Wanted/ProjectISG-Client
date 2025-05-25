@@ -5,10 +5,13 @@
 #include "Components/MultiLineEditableTextBox.h"
 #include "Components/ListView.h"
 #include "Components/Overlay.h"
+#include "Components/ScrollBox.h"
 #include "Components/VerticalBox.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Popup/Diary/Widget/QuestItem/QuestItemWidgetObject.h"
 #include "ProjectISG/Core/UI/Popup/Diary/Widget/QuestRequiredText/UIV_QuestRequiredTextWidget.h"
+#include "ProjectISG/Core/UI/Popup/Diary/Widget/QuestShowItemInfo/UIC_QuestShowItemInfoWidget.h"
+#include "ProjectISG/Core/UI/Popup/Diary/Widget/QuestShowItemInfo/UIV_QuestShowItemInfoWidget.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
@@ -54,6 +57,7 @@ void UUIC_QuestListUI::SetQuestInfo(const FString& QuestId)
 		FText::FromString(QuestData.GetQuestHint()));
 
 	SetQuestRequireData(QuestId);
+	SetQuestRewardData(QuestId);
 }
 
 void UUIC_QuestListUI::InitializeQuestList()
@@ -63,15 +67,17 @@ void UUIC_QuestListUI::InitializeQuestList()
 	QuestListUIView->GetQuestListView()->ClearListItems();
 
 	for (FQuestStoryData& CurrentQuestData :
-	     UQuestStoryManager::GetAllQuestData())
+		UQuestStoryManager::GetAllQuestData())
 	{
 		// 보이지 않는 조건에 대한 처리
-		if (CurrentQuestData.GetQuestMetaData().Contains(EQuestStoryMetaDataKey::IsHideInQuestBook)
-			&& CurrentQuestData.GetQuestMetaData()[EQuestStoryMetaDataKey::IsHideInQuestBook] == TEXT("true"))
+		if (CurrentQuestData.GetQuestMetaData().
+							Contains(EQuestStoryMetaDataKey::IsHideInQuestBook)
+			&& CurrentQuestData.GetQuestMetaData()[
+				EQuestStoryMetaDataKey::IsHideInQuestBook] == TEXT("true"))
 		{
 			break;
 		}
-		
+
 		UQuestItemWidgetObject* QuestItemWidgetObject = NewObject<
 			UQuestItemWidgetObject>();
 		QuestItemWidgetObject->QuestId = CurrentQuestData.GetQuestId();
@@ -86,7 +92,7 @@ void UUIC_QuestListUI::SetQuestRequireData(const FString& QuestId)
 	QuestListUIView->GetQuestRequireList()->ClearChildren();
 
 	for (FQuestRequireData& RequireQuest :
-	     UQuestStoryManager::GetRequireQuestDataById(QuestId))
+		UQuestStoryManager::GetRequireQuestDataById(QuestId))
 	{
 		switch (RequireQuest.GetRequireType())
 		{
@@ -111,44 +117,36 @@ void UUIC_QuestListUI::SetQuestRequireItemData(
 	const AMainPlayerState* PS = Cast<AMainPlayerState>(
 		GetView()->GetOwningPlayerState());
 
-	const uint32 ItemId = RequireQuest.GetRequireItemOptions().
-	                                   GetItemId();
+	const uint32 ItemId = RequireQuest.GetRequireItemOptions().GetItemId();
 
 	const uint32 RequireCount = RequireQuest.GetRequireItemOptions().
-	                                         GetItemCount();
+											GetItemCount();
 
-	const FItemInfoData ItemInfoData =
-		UItemManager::GetItemInfoById(ItemId);
+	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
 
 	UUIV_QuestRequiredTextWidget* NewWidget = CreateWidget<
-		UUIV_QuestRequiredTextWidget>(
-		QuestListUIView,
-		QuestListUIView->GetQuestRequiredTextClass());
+		UUIV_QuestRequiredTextWidget>(QuestListUIView
+									, QuestListUIView->
+									GetQuestRequiredTextClass());
 
 	// 현재 내가 보유하고 있는 아이템 Id 기반의 갯수 가져오기
 	const uint32 CurrentItemCount = PS->GetInventoryComponent()->
-	                                    GetCurrentRemainItemValue().
-	                                    Contains(ItemId)
-		                                ? PS->
-		                                  GetInventoryComponent()->
-		                                  GetCurrentRemainItemValue()[
-			                                ItemId]
-		                                : 0;
+										GetCurrentRemainItemValue().
+										Contains(ItemId)
+										? PS->GetInventoryComponent()->
+											GetCurrentRemainItemValue()[ItemId]
+										: 0;
 
 	NewWidget->SetPadding(FMargin(0, 0, 0, 8));
 
 	NewWidget->GetRequireDescription()->SetText(
 		FText::FromString(
-			FString::Printf(
-				TEXT("%s 획득"), *ItemInfoData.GetDisplayName())));
+			FString::Printf(TEXT("%s 획득"), *ItemInfoData.GetDisplayName())));
 
-	NewWidget->GetRequireStatus()->SetText(
-		FText::FromString(
-			FString::Printf(
-				TEXT("%d/%d"), CurrentItemCount, RequireCount)));
+	NewWidget->GetRequireStatus()->SetText(FText::FromString(
+		FString::Printf(TEXT("%d/%d"), CurrentItemCount, RequireCount)));
 
-	const bool HasDoneQuestRequired = CurrentItemCount >=
-		RequireCount;
+	const bool HasDoneQuestRequired = CurrentItemCount >= RequireCount;
 
 	if (HasDoneQuestRequired)
 	{
@@ -166,4 +164,37 @@ void UUIC_QuestListUI::SetQuestRequireItemData(
 	}
 
 	QuestListUIView->GetQuestRequireList()->AddChild(NewWidget);
+}
+
+void UUIC_QuestListUI::SetQuestRewardData(const FString& QuestId)
+{
+	const UUIV_QuestListUI* QuestListUIView = Cast<UUIV_QuestListUI>(GetView());
+	QuestListUIView->GetQuestRequireList()->ClearChildren();
+
+	TArray<FQuestRewardData> QuestRewardList =
+		UQuestStoryManager::GetRewardQuestDataById(QuestId);
+
+	if (QuestRewardList.IsEmpty())
+	{
+		QuestListUIView->GetQuestRewardList()->SetVisibility(
+			ESlateVisibility::Hidden);
+		return;
+	}
+
+	// 기존 보상 Child 초기화
+	QuestListUIView->GetQuestRewardListScroll()->ClearChildren();
+
+	for (FQuestRewardData& RewardItem : QuestRewardList)
+	{
+		UUIV_QuestShowItemInfoWidget* RewardChild = CreateWidget<
+			UUIV_QuestShowItemInfoWidget>(GetView()
+										, QuestListUIView->
+										GetQuestRewardItemClass());
+
+		RewardChild->SetPadding({0, 0, 4, 0});
+
+		QuestListUIView->GetQuestRewardListScroll()->AddChild(RewardChild);
+		Cast<UUIC_QuestShowItemInfoWidget>(RewardChild->GetController())->
+			SetShowItemInfo(RewardItem);
+	}
 }

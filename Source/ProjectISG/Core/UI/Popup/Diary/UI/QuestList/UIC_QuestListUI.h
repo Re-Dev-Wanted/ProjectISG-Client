@@ -21,6 +21,8 @@ private:
 	void InitializeQuestList();
 
 	void SetQuestRequireData(const FString& QuestId);
+	
+	void SetQuestRewardData(const FString& QuestId);
 
 	void SetQuestRequireItemData(FQuestRequireData& RequireQuest) const;
 };
