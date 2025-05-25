@@ -17,4 +17,8 @@ public:
 private:
 	UFUNCTION()
 	void OnClickQuestItemWidget();
+
+	void SetQuestDefaultInformation(const FString& QuestId);
+	void SetQuestRewardList(const FString& QuestId) const;
+	void SetQuestStatus(const FString& QuestId) const;
 };

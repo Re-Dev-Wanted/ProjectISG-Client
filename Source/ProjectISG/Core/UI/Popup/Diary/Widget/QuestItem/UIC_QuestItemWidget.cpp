@@ -5,13 +5,34 @@
 #include "Components/Border.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
+#include "Components/ScrollBox.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Popup/Diary/UI/QuestList/UIC_QuestListUI.h"
+#include "ProjectISG/Core/UI/Popup/Diary/Widget/QuestShowItemInfo/UIC_QuestShowItemInfoWidget.h"
+#include "ProjectISG/Core/UI/Popup/Diary/Widget/QuestShowItemInfo/UIV_QuestShowItemInfoWidget.h"
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 #include "ProjectISG/Systems/QuestStory/Manager/QuestStoryManager.h"
 
 void UUIC_QuestItemWidget::InitializeData(const FString& QuestId)
+{
+	SetQuestDefaultInformation(QuestId);
+	SetQuestRewardList(QuestId);
+	SetQuestStatus(QuestId);
+}
+
+void UUIC_QuestItemWidget::OnClickQuestItemWidget()
+{
+	UUIC_QuestListUI* QuestListUIController = Cast<UUIC_QuestListUI>(
+		GetView()->GetOwningPlayer<AMainPlayerController>()->
+					GetUIManageComponent()->ControllerInstances[
+			EUIName::Popup_QuestListUI]);
+
+	QuestListUIController->SetQuestInfo(
+		Cast<UUIM_QuestItemWidget>(GetModel())->GetCurrentQuestId());
+}
+
+void UUIC_QuestItemWidget::SetQuestDefaultInformation(const FString& QuestId)
 {
 	const FQuestStoryData Quest = UQuestStoryManager::GetQuestDataById(QuestId);
 
@@ -24,8 +45,6 @@ void UUIC_QuestItemWidget::InitializeData(const FString& QuestId)
 	// 퀘스트 관련 정보 가져오기
 	const AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetView()->GetOwningPlayer());
-	const UQuestManageComponent* QuestManageComponent = PC->
-		GetQuestManageComponent();
 
 	// View 관련 정보 설정 코드
 	QuestItemWidget->GetQuestTitle()->SetText(
@@ -43,8 +62,43 @@ void UUIC_QuestItemWidget::InitializeData(const FString& QuestId)
 
 	QuestItemWidget->GetQuestItemButton()->OnClicked.AddDynamic(
 		this, &ThisClass::OnClickQuestItemWidget);
+}
 
-	switch (QuestManageComponent->GetQuestStatusById(QuestId))
+void UUIC_QuestItemWidget::SetQuestRewardList(const FString& QuestId) const
+{
+	const UUIV_QuestItemWidget* QuestItemWidget = Cast<UUIV_QuestItemWidget>(
+		GetView());
+
+	// 보상 미리보기 UI를 위한 로직
+	QuestItemWidget->GetRewardPreviewList()->ClearChildren();
+
+	for (FQuestRewardData& RewardItem :
+		UQuestStoryManager::GetRewardQuestDataById(QuestId))
+	{
+		UUIV_QuestShowItemInfoWidget* RewardChild = CreateWidget<
+			UUIV_QuestShowItemInfoWidget>(GetView()
+										, QuestItemWidget->
+										GetQuestRewardItemClass());
+
+		RewardChild->SetPadding({0, 0, 4, 0});
+		RewardChild->InitializeMVC();
+
+		QuestItemWidget->GetRewardPreviewList()->AddChild(RewardChild);
+
+		Cast<UUIC_QuestShowItemInfoWidget>(RewardChild->GetController())->
+			SetShowItemInfo(RewardItem);
+	}
+}
+
+void UUIC_QuestItemWidget::SetQuestStatus(const FString& QuestId) const
+{
+	const UUIV_QuestItemWidget* QuestItemWidget = Cast<UUIV_QuestItemWidget>(
+		GetView());
+	// 현재 퀘스트의 상태 보여주는 로직
+	const AMainPlayerController* PC = Cast<AMainPlayerController>(
+		GetView()->GetOwningPlayer());
+
+	switch (PC->GetQuestManageComponent()->GetQuestStatusById(QuestId))
 	{
 	case EQuestStatus::InProgress:
 	case EQuestStatus::CanComplete:
@@ -87,15 +141,4 @@ void UUIC_QuestItemWidget::InitializeData(const FString& QuestId)
 		}
 	default: { break; }
 	}
-}
-
-void UUIC_QuestItemWidget::OnClickQuestItemWidget()
-{
-	UUIC_QuestListUI* QuestListUIController = Cast<UUIC_QuestListUI>(
-		GetView()->GetOwningPlayer<AMainPlayerController>()->
-					GetUIManageComponent()->ControllerInstances[
-			EUIName::Popup_QuestListUI]);
-
-	QuestListUIController->SetQuestInfo(
-		Cast<UUIM_QuestItemWidget>(GetModel())->GetCurrentQuestId());
 }
