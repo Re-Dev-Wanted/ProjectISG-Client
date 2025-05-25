@@ -66,6 +66,15 @@ void UUIC_QuestItemWidget::InitializeData(const FString& QuestId)
 			break;
 		}
 	case EQuestStatus::Available:
+		{
+			QuestItemWidget->GetQuestPlayingNotify()->SetVisibility(
+				ESlateVisibility::Hidden);
+			QuestItemWidget->GetQuestStatus()->SetVisibility(
+				ESlateVisibility::Visible);
+			QuestItemWidget->GetQuestStatus()->SetText(
+				FText::FromString(TEXT("진행 가능")));
+			break;
+		}
 	case EQuestStatus::Unavailable:
 		{
 			QuestItemWidget->GetQuestPlayingNotify()->SetVisibility(

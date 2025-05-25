@@ -259,20 +259,10 @@ void UUIC_QuestListUI::SetQuestRequireItemData(
 void UUIC_QuestListUI::SetQuestRewardData(const FString& QuestId)
 {
 	const UUIV_QuestListUI* QuestListUIView = Cast<UUIV_QuestListUI>(GetView());
-	QuestListUIView->GetQuestRequireList()->ClearChildren();
+	QuestListUIView->GetQuestRewardListScroll()->ClearChildren();
 
 	TArray<FQuestRewardData> QuestRewardList =
 		UQuestStoryManager::GetRewardQuestDataById(QuestId);
-
-	if (QuestRewardList.IsEmpty())
-	{
-		QuestListUIView->GetQuestRewardList()->SetVisibility(
-			ESlateVisibility::Hidden);
-		return;
-	}
-
-	// 기존 보상 Child 초기화
-	QuestListUIView->GetQuestRewardListScroll()->ClearChildren();
 
 	for (FQuestRewardData& RewardItem : QuestRewardList)
 	{
@@ -282,8 +272,10 @@ void UUIC_QuestListUI::SetQuestRewardData(const FString& QuestId)
 										GetQuestRewardItemClass());
 
 		RewardChild->SetPadding({0, 0, 4, 0});
+		RewardChild->InitializeMVC();
 
 		QuestListUIView->GetQuestRewardListScroll()->AddChild(RewardChild);
+
 		Cast<UUIC_QuestShowItemInfoWidget>(RewardChild->GetController())->
 			SetShowItemInfo(RewardItem);
 	}
