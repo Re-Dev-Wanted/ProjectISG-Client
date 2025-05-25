@@ -32,7 +32,6 @@ void UQuestManageComponent::StartQuest(const FString& NewQuestId)
 		return;
 	}
 
-	PC->GetMainHUD()->StartAutoQuest(NewQuestId);
 	PC->GetMainHUD()->ToggleCurrentQuestUI(true);
 }
 
@@ -64,6 +63,9 @@ bool UQuestManageComponent::EndQuest(const bool IsCheckedQuestEnd)
 			return false;
 		}
 	}
+
+	// 진행 중인 퀘스트 값 초기화
+	CurrentPlayingQuestId = TEXT("");
 
 	PC->GetMainHUD()->ToggleAutoQuestUI(false);
 	CompletedQuestIdList.Add(CurrentPlayingQuestId);

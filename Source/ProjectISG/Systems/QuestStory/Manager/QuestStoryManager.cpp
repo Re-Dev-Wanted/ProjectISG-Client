@@ -36,12 +36,22 @@ FQuestStoryData& UQuestStoryManager::GetQuestDataById(const FString& QuestId)
 TArray<FQuestStoryDialogue>& UQuestStoryManager::GetQuestDialogueById(
 	const FString& QuestId)
 {
+	if (!QuestDialogueData.Contains(QuestId))
+	{
+		QuestDialogueData.Add(QuestId, TArray<FQuestStoryDialogue>());
+	}
+
 	return *QuestDialogueData.Find(QuestId);
 }
 
 FQuestSceneCutData& UQuestStoryManager::GetQuestSceneCutById(
 	const FString& SceneId)
 {
+	if (!QuestSceneCutData.Contains(SceneId))
+	{
+		QuestSceneCutData.Add(SceneId, FQuestSceneCutData());
+	}
+
 	return *QuestSceneCutData.Find(SceneId);
 }
 
@@ -275,12 +285,31 @@ bool UQuestStoryManager::CheckCompleteQuest(AMainPlayerController* PC
 	return true;
 }
 
+bool UQuestStoryManager::CheckAndCompleteDialogueQuest(AMainPlayerController* PC
+	, const FString& QuestId)
+{
+	if (!PC->HasAuthority())
+	{
+		return false;
+	}
+
+	if (QuestData[QuestId].GetQuestObjective() ==
+		EQuestStoryObjective::Dialogue)
+	{
+		CompleteQuest_Internal(PC, QuestId);
+		return true;
+	}
+
+	return false;
+}
+
 bool UQuestStoryManager::CheckAndCompleteQuest(AMainPlayerController* PC
 												, const FString& QuestId)
 {
 	if (CheckCompleteQuest(PC, QuestId))
 	{
 		CompleteQuest_Internal(PC, QuestId);
+
 		return true;
 	}
 
@@ -370,6 +399,7 @@ void UQuestStoryManager::CompleteQuest_Internal(AMainPlayerController* PC
 
 	FQuestStoryData CurrentQuestStoryData = QuestData[QuestId];
 
+	// 퀘스트에 필요한 조건 회수 조치 수행
 	for (FQuestRequireData& RequireData : QuestRequireData[QuestId])
 	{
 		switch (RequireData.GetRequireType())
@@ -412,6 +442,7 @@ void UQuestStoryManager::CompleteQuest_Internal(AMainPlayerController* PC
 		}
 	}
 
+	// 다음 퀘스트를 수행한다.
 	if (CurrentQuestStoryData.GetQuestMetaData().Contains(
 		EQuestStoryMetaDataKey::NextQuest))
 	{
@@ -420,6 +451,7 @@ void UQuestStoryManager::CompleteQuest_Internal(AMainPlayerController* PC
 				EQuestStoryMetaDataKey::NextQuest]);
 	}
 
+	// 보상 제공
 	GiveRewardQuest_Internal(PC, QuestId);
 }
 

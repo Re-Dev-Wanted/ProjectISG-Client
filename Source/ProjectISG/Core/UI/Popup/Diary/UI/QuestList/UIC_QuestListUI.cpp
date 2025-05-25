@@ -1,6 +1,6 @@
 ﻿#include "UIC_QuestListUI.h"
 
-#include "AsyncTreeDifferences.h"
+#include "EnhancedInputComponent.h"
 #include "UIM_QuestListUI.h"
 #include "UIV_QuestListUI.h"
 #include "Components/Button.h"
@@ -50,6 +50,14 @@ void UUIC_QuestListUI::AppearUI()
 		FText::FromString(FSessionUtil::GetCurrentId(GetWorld())));
 
 	InitializeQuestList();
+}
+
+void UUIC_QuestListUI::BindInputAction(UEnhancedInputComponent* InputComponent)
+{
+	Super::BindInputAction(InputComponent);
+
+	InputComponent->BindAction(ExitActionInput, ETriggerEvent::Triggered, this
+								, &ThisClass::PopUIFromPlayerController);
 }
 
 void UUIC_QuestListUI::SetQuestInfo(const FString& QuestId)

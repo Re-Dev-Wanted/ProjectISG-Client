@@ -79,6 +79,7 @@ void AMainPlayerController::StartQuestToPlayer(const FString& QuestId)
 		return;
 	}
 
+	GetUIManageComponent()->ResetWidget();
 	QuestManageComponent->StartQuest(QuestId);
 }
 

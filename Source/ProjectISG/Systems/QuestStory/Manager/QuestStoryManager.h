@@ -30,6 +30,9 @@ public:
 
 	static bool IsHiddenInQuestBook(const FString& QuestId);
 
+	static bool CheckAndCompleteDialogueQuest(AMainPlayerController* PC
+											, const FString& QuestId);
+
 	static bool CheckAndCompleteQuest(AMainPlayerController* PC
 									, const FString& QuestId);
 

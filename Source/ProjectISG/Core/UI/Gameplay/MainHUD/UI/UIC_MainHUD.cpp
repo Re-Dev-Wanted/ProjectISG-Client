@@ -22,14 +22,20 @@ void UUIC_MainHUD::AppearUI()
 	Super::AppearUI();
 
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
+	const AMainPlayerController* PC = Cast<AMainPlayerController>(
+		GetView()->GetOwningPlayer());
+
 	MainHUDView->GetMainSlotList()->UpdateItemData();
 
 	const uint8 CurrentSlot = GetView()->GetOwningPlayerPawn<
-		                                     AMainPlayerCharacter>()->
-	                                     GetPlayerInventoryComponent()->
-	                                     GetCurrentSlotIndex();
+											AMainPlayerCharacter>()->
+										GetPlayerInventoryComponent()->
+										GetCurrentSlotIndex();
 
 	MainHUDView->GetMainSlotList()->SelectSlot(CurrentSlot, CurrentSlot);
+
+	ToggleCurrentQuestUI(
+		PC->GetQuestManageComponent()->GetCurrentPlayingQuestId() != TEXT(""));
 }
 
 void UUIC_MainHUD::UpdateMainHotSlot() const
@@ -38,8 +44,8 @@ void UUIC_MainHUD::UpdateMainHotSlot() const
 	MainHUDView->GetMainSlotList()->UpdateItemData();
 }
 
-void UUIC_MainHUD::SelectSlot(const uint8 CurrentSlot,
-                              const uint8 NextSlot) const
+void UUIC_MainHUD::SelectSlot(const uint8 CurrentSlot
+							, const uint8 NextSlot) const
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 	MainHUDView->GetMainSlotList()->SelectSlot(CurrentSlot, NextSlot);
@@ -54,8 +60,8 @@ void UUIC_MainHUD::ToggleInteractiveUI(const bool IsShow)
 	MainHUDView->GetInteractiveUI()->SetInteractive(IsShow);
 }
 
-void UUIC_MainHUD::ToggleInteractiveUI(const FString& DisplayKey,
-                                       const FString& DisplayText)
+void UUIC_MainHUD::ToggleInteractiveUI(const FString& DisplayKey
+										, const FString& DisplayText)
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 
@@ -63,8 +69,8 @@ void UUIC_MainHUD::ToggleInteractiveUI(const FString& DisplayKey,
 	MainHUDView->GetInteractiveUI()->SetInteractive(DisplayKey, DisplayText);
 }
 
-void UUIC_MainHUD::AdditiveToggleInteractiveUI(const FString& DisplayKey,
-                                               const FString& DisplayText)
+void UUIC_MainHUD::AdditiveToggleInteractiveUI(const FString& DisplayKey
+												, const FString& DisplayText)
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 
@@ -81,21 +87,6 @@ void UUIC_MainHUD::TogglePlacementIndicatorUI(const bool Visible)
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 
 	MainHUDView->GetInteractiveUI()->SetPlacementIndicator(Visible);
-}
-
-void UUIC_MainHUD::StartAutoQuest(const FString& QuestId)
-{
-	UUIM_MainHUD* MainHUDModel = Cast<UUIM_MainHUD>(GetModel());
-	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
-
-	MainHUDModel->SetCurrentPlayingAutoQuestId(QuestId);
-	ToggleAutoQuestUI(true);
-
-	Cast<UUIC_AutoQuestDialogueWidget>(
-			MainHUDView->GetAutoQuestDialogueWidget()->GetController())->
-		StartQuestDialogue();
-
-	auto a = MainHUDView->GetCurrentQuestWidget();
 }
 
 void UUIC_MainHUD::ToggleAutoQuestUI(const bool IsActive)
@@ -117,9 +108,9 @@ void UUIC_MainHUD::ToggleCurrentQuestUI(const bool IsActive)
 	if (IsActive)
 	{
 		const FString CurrentQuestId = GetView()->GetOwningPlayer<
-			                                          AMainPlayerController>()->
-		                                          GetQuestManageComponent()->
-		                                          GetCurrentPlayingQuestId();
+													AMainPlayerController>()->
+												GetQuestManageComponent()->
+												GetCurrentPlayingQuestId();
 
 		const FQuestStoryData QuestData = UQuestStoryManager::GetQuestDataById(
 			CurrentQuestId);
@@ -138,13 +129,13 @@ void UUIC_MainHUD::ToggleCurrentQuestUI(const bool IsActive)
 	}
 }
 
-void UUIC_MainHUD::AlertToMainHUD(const EAlertType AlertType,
-                                  const FString& Message, const float Time)
+void UUIC_MainHUD::AlertToMainHUD(const EAlertType AlertType
+								, const FString& Message, const float Time)
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 	UUIC_HUDAlertModalWidget* AlertModalWidgetController = Cast<
-		UUIC_HUDAlertModalWidget>(MainHUDView->
-		                          GetAlertModalWidget()->GetController());
+		UUIC_HUDAlertModalWidget>(
+		MainHUDView->GetAlertModalWidget()->GetController());
 
 	AlertModalWidgetController->Alert(AlertType, Message, Time);
 }
