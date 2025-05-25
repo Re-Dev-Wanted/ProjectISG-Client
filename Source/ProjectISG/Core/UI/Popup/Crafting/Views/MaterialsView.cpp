@@ -38,15 +38,16 @@ void UMaterialsView::OnUpdateUI(const FString& ItemName, const TArray<FCraftingM
 		FCraftingMaterialUIModel Model = Materials[i];
 
 		UMaterialInfoWidget* Widget = CreateWidget<UMaterialInfoWidget>(this, WidgetFactory);
+		
+		uint32 OwningCount = OwningCounts.Find(Model.Id)? OwningCounts[Model.Id] : 0;
+		Widget->SetWidget(Model.Id, OwningCount, Model.RequiredCount, Model.Name);
 
 		AsyncUtil::LoadAsync<UTexture2D>
 		(
 			Model.Thumbnail,
-			[this, Widget, Model, OwningCounts](UTexture2D* Thumbnail)
+			[this, Widget](UTexture2D* Thumbnail)
 			{
-				uint32 OwningCount = OwningCounts.Find(Model.Id)? OwningCounts[Model.Id] : 0;
-				
-				Widget->SetWidget(Model.Id, OwningCount, Model.RequiredCount, Model.Name, Thumbnail);
+				Widget->SetImage(Thumbnail);
 			}
 		);
 
