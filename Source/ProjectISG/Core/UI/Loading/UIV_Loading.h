@@ -18,7 +18,10 @@ protected:
 	virtual void NativeConstruct() override;
 
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-	
+
 public:
-	bool IsCreated = false;
+	GETTER_SETTER(bool, CreateSession)
+	
+private:
+	bool CreateSession = false;
 };

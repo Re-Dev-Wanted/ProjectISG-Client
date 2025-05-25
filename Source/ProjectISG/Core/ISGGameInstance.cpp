@@ -61,7 +61,6 @@ void UISGGameInstance::CreateGameSessionId()
 						TEXT("session_id"), ExtractedSessionId))
 					{
 						SessionId = ExtractedSessionId;
-						SessionCreateSuccess = true;
 						UE_LOG(LogTemp, Warning, TEXT("파싱된 새 세션 ID: %s"),
 						       *SessionId);
 

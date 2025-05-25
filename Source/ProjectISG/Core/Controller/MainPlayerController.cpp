@@ -6,9 +6,12 @@
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Loading/UIC_Loading.h"
+#include "ProjectISG/Core/UI/Loading/UIV_Loading.h"
 #include "ProjectISG/Core/UI/Popup/Inventory/UI/UIC_InventoryUI.h"
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 
+class UUIC_Loading;
 class UISGGameInstance;
 
 AMainPlayerController::AMainPlayerController()
@@ -81,6 +84,10 @@ void AMainPlayerController::ShowLoadingUIAndCreateSession(bool bIsServerTravel)
 {
 	PopUI();
 	PushUI(EUIName::Loading_LoadingUI);
+
+	UUIC_Loading* LoadingController = Cast<UUIC_Loading>(UIManageComponent->ControllerInstances[EUIName::Loading_LoadingUI]);
+	UUIV_Loading* LoadingView = Cast<UUIV_Loading>(LoadingController->GetView());
+	LoadingView->SetCreateSession(true);
 
 	UISGGameInstance* GameInstance = Cast<UISGGameInstance>(
 		GetWorld()->GetGameInstance());
