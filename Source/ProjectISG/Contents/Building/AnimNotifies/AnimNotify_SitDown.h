@@ -14,5 +14,5 @@ class PROJECTISG_API UAnimNotify_SitDown : public UAnimNotify
 	GENERATED_BODY()
 
 protected:
-	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
+	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
 };

@@ -65,7 +65,7 @@ void UInventoryComponent::InitializeItemData()
 
 	AddItem(BranchItemMetaInfo);
 
-	UpdateInventory();
+	UpdateInventory_Internal();
 }
 
 FItemMetaInfo UInventoryComponent::GetItemMetaInfo(const uint16 Index)
@@ -78,7 +78,7 @@ bool UInventoryComponent::ChangeItem(AActor* Causer,
                                      const uint16 Index)
 {
 	InventoryList[Index] = ItemInfo;
-	UpdateInventory();
+	UpdateInventory_Internal();
 
 	return true;
 }
@@ -87,7 +87,7 @@ void UInventoryComponent::SwapItem(AActor* Causer, const uint16 Prev,
                                    const uint16 Next)
 {
 	SwapItemInInventory(Prev, Next);
-	UpdateInventory();
+	UpdateInventory_Internal();
 }
 
 void UInventoryComponent::BeginPlay()
@@ -106,26 +106,45 @@ bool UInventoryComponent::HasItemInInventory(const uint32 Id,
 	return false;
 }
 
-// TODO: 이건 내부 로직에서 아이템 변경될 때 마다 처리하기
+bool UInventoryComponent::HasExactItemInInventory(
+	const FItemMetaInfo& ItemMetaInfo)
+{
+	if (CurrentRemainItemMetaValue.Find(ItemMetaInfo))
+	{
+		return CurrentRemainItemMetaValue[ItemMetaInfo] >= ItemMetaInfo.GetCurrentCount();
+	}
+
+	return false;
+}
+
 void UInventoryComponent::UpdateCurrentRemainItemValue()
 {
-	TMap<uint32, uint32> NewMap;
+	CurrentRemainItemValue.Empty();
+	CurrentRemainItemMetaValue.Empty();
 
 	for (int i = 0; i < InventoryList.Num(); i++)
 	{
-		if (NewMap.Find(InventoryList[i].GetId()))
+		// 아이템 아이디 별에 대한 처리
+		if (CurrentRemainItemValue.Find(InventoryList[i].GetId()))
 		{
-			NewMap[InventoryList[i].GetId()] += InventoryList[i].
+			CurrentRemainItemValue[InventoryList[i].GetId()] += InventoryList[i].
 				GetCurrentCount();
 		}
 		else
 		{
-			NewMap.Add(InventoryList[i].GetId(),
+			CurrentRemainItemValue.Add(InventoryList[i].GetId(),
 			           InventoryList[i].GetCurrentCount());
 		}
+
+		// 아이템 메타 데이터 별 처리
+		if (CurrentRemainItemMetaValue.Find(InventoryList[i]))
+		{
+			CurrentRemainItemMetaValue[InventoryList[i]] += InventoryList[i].GetCurrentCount();
+		} else
+		{
+			CurrentRemainItemMetaValue.Add(InventoryList[i], InventoryList[i].GetCurrentCount());
+		}
 	}
-	CurrentRemainItemValue.Empty();
-	CurrentRemainItemValue.Append(NewMap);
 }
 
 void UInventoryComponent::SwapItemInInventory(const uint16 Prev,
@@ -190,7 +209,7 @@ uint32 UInventoryComponent::AddItemToInventory(const uint16 Index,
 		}
 	}
 
-	UpdateInventory();
+	UpdateInventory_Internal();
 	return RemainCount > 0 ? RemainCount : 0;
 }
 
@@ -202,7 +221,7 @@ bool UInventoryComponent::DropItem(const uint16 Index, const uint32 Count)
 		const FItemMetaInfo ClearItemMeta;
 		InventoryList[Index] = ClearItemMeta;
 
-		UpdateInventory();
+		UpdateInventory_Internal();
 		return true;
 	}
 
@@ -223,7 +242,7 @@ bool UInventoryComponent::DropItem(const uint16 Index, const uint32 Count)
 			InventoryList[Index].GetCurrentCount() - Count);
 	}
 
-	UpdateInventory();
+	UpdateInventory_Internal();
 
 	return true;
 }
@@ -345,7 +364,68 @@ bool UInventoryComponent::RemoveItem(const uint16 Id, const uint32 Count)
 		// 어차피 여기서 다 버려서 0이 될 수 밖에 없다.
 		if (RemainNum == 0)
 		{
-			UpdateInventory();
+			UpdateInventory_Internal();
+			return true;
+		}
+	}
+
+	// 이건 혹시 모르는 예외 사항에 대한 처리
+	return false;
+}
+
+bool UInventoryComponent::RemoveExactItem(const FItemMetaInfo& ItemInfo)
+{
+	uint32 RemainNum = ItemInfo.GetCurrentCount();
+	TArray<uint32> CanRemoveIndexList;
+
+	for (int i = 0; i < GetInventorySlotCount(); i++)
+	{
+		if (InventoryList[i] == ItemInfo)
+		{
+			CanRemoveIndexList.Add(i);
+			RemainNum = UKismetMathLibrary::Max(
+				RemainNum - InventoryList[i].GetCurrentCount(), 0);
+		}
+
+		// RemainNum이 0보다 작거나 같다는 의미는 즉
+		// 더이상 탐색하지 않아도 전부 없앨 수 있다라는 의미다.
+		if (RemainNum <= 0)
+		{
+			break;
+		}
+	}
+
+	// 0보다 큰 상황이라면 사용하기에는 양이 부족하다라는 의미기에 false를 반환한다.
+	if (RemainNum > 0)
+	{
+		return false;
+	}
+
+	// 다시 RemainNum을 돌려둔다. 재사용해서 갯수를 없애는 것에 실질적으로 이용함
+	RemainNum = ItemInfo.GetCurrentCount();
+	for (const uint32 RemoveIndex : CanRemoveIndexList)
+	{
+		// 둘 중 더 작은 값을 없애준다. 만약 RemainNum이 10이고, 아이템의 현재 갯수가 7이라면
+		// 7개만 없애주고, 아이템 갯수가 13개면 10개만 없앤다.
+		const uint32 RemoveCount = UKismetMathLibrary::Min(
+			InventoryList[RemoveIndex].GetCurrentCount(), RemainNum);
+
+		// 우선은 값 설정
+		InventoryList[RemoveIndex].SetCurrentCount(
+			InventoryList[RemoveIndex].GetCurrentCount() - RemoveCount);
+		RemainNum -= RemoveCount;
+
+		// 만약 슬롯이 현재 0개라면 슬롯 초기화를 진행한다.
+		if (InventoryList[RemoveIndex].GetCurrentCount() == 0)
+		{
+			const FItemMetaInfo ClearItemMeta;
+			InventoryList[RemoveIndex] = ClearItemMeta;
+		}
+
+		// 어차피 여기서 다 버려서 0이 될 수 밖에 없다.
+		if (RemainNum == 0)
+		{
+			UpdateInventory_Internal();
 			return true;
 		}
 	}
@@ -355,7 +435,7 @@ bool UInventoryComponent::RemoveItem(const uint16 Id, const uint32 Count)
 }
 
 // TODO: 이 함수가 여러번 호출될 수 있음. 차라리 모든 인벤 업데이트 이후 별도로 처리하는 것 또한 좋아보임
-void UInventoryComponent::UpdateInventory()
+void UInventoryComponent::UpdateInventory_Internal()
 {
 	UpdateCurrentRemainItemValue();
 	OnInventoryUpdateNotified.Broadcast();

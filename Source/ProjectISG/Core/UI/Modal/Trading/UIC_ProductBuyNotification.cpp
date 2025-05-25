@@ -54,7 +54,7 @@ void UUIC_ProductBuyNotification::OnClickedBuyButton()
 
 		Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
 
-		int32 ItemPrice = FindItemPrice(ProductBuyNotificationModel);
+		uint32 ItemPrice = FindItemPrice(ProductBuyNotificationModel);
 
 		UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(
 			PC->GetUIManageComponent()->ControllerInstances[
@@ -73,7 +73,7 @@ void UUIC_ProductBuyNotification::OnClickedBuyButton()
 	}
 }
 
-int32 UUIC_ProductBuyNotification::FindItemPrice(
+uint32 UUIC_ProductBuyNotification::FindItemPrice(
 	class UUIM_ProductBuyNotification* ProductBuyNotificationModel)
 {
 	for (int i = 0; i < UTradingManager::GetProductData().Num(); i++)

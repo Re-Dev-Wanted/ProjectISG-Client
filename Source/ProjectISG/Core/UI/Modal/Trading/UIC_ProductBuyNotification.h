@@ -22,7 +22,7 @@ protected:
 	void OnClickedBuyButton();
 
 private:
-	int32 FindItemPrice(class UUIM_ProductBuyNotification* ProductBuyNotificationModel);
+	uint32 FindItemPrice(class UUIM_ProductBuyNotification* ProductBuyNotificationModel);
 
 	void LoggingToBuyItem();
 };

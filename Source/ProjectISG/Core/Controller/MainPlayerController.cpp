@@ -1,5 +1,6 @@
 ﻿#include "MainPlayerController.h"
 
+#include "GameFramework/PlayerState.h"
 #include "ProjectISG/Core/ISGGameInstance.h"
 #include "ProjectISG/Core/GameMode/MainGameState.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
@@ -61,6 +62,16 @@ void AMainPlayerController::StartQuest(const FString& QuestId)
 	}
 }
 
+void AMainPlayerController::EndQuest()
+{
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	GetWorld()->GetGameState<AMainGameState>()->EndWorldQuest();
+}
+
 void AMainPlayerController::StartQuestToPlayer(const FString& QuestId)
 {
 	if (!IsLocalController())
@@ -68,6 +79,7 @@ void AMainPlayerController::StartQuestToPlayer(const FString& QuestId)
 		return;
 	}
 
+	GetUIManageComponent()->ResetWidget();
 	QuestManageComponent->StartQuest(QuestId);
 }
 
@@ -130,8 +142,8 @@ void AMainPlayerController::PopUI()
 	UIManageComponent->PopWidget();
 }
 
-void AMainPlayerController::Alert(const EAlertType AlertType,
-                                  const FString& Message, const float Time)
+void AMainPlayerController::Alert(const EAlertType AlertType
+								, const FString& Message, const float Time)
 {
 	if (UIManageComponent->GetTopStackUI() != EUIName::Gameplay_MainHUD)
 	{
@@ -163,10 +175,15 @@ void AMainPlayerController::Client_StartQuestToPlayer_Implementation(
 	StartQuestToPlayer(QuestId);
 }
 
+void AMainPlayerController::Client_EndQuestToPlayer_Implementation()
+{
+	QuestManageComponent->EndQuest(false);
+}
+
 void AMainPlayerController::Client_ResetWidgetAndPushTimeAlert_Implementation()
 {
 	UIManageComponent->ResetWidget();
-	UIManageComponent->PushWidget(EUIName::Modal_TimeAlert);
+	Alert(EAlertType::Error, TEXT("밤 9시 이후에는 컨텐츠가 제한됩니다."), 6.0);
 }
 
 void AMainPlayerController::Server_SetOwnerActor_Implementation(
