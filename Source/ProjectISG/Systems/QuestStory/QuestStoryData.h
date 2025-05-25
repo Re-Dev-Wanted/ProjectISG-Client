@@ -21,6 +21,7 @@ struct PROJECTISG_API FQuestStoryData : public FTableRowBase
 	GETTER(FText, QuestScenario)
 	GETTER(EQuestStoryType, QuestType)
 	GETTER(EQuestStoryObjective, QuestObjective)
+	GETTER_REF(TArray<FString>, RequireQuestIdList)
 
 	FORCEINLINE TMap<EQuestStoryMetaDataKey, FString>& GetQuestMetaData()
 	{
@@ -51,6 +52,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess = true))
 	TMap<EQuestStoryMetaDataKey, FString> QuestMetaData;
+
+	UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess = true))
+	TArray<FString> RequireQuestIdList;
 };
 
 USTRUCT(BlueprintType)
@@ -106,13 +110,13 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	EQuestRequireType RequireType = EQuestRequireType::None;
 
-	UPROPERTY(EditDefaultsOnly,
-		meta = (AllowPrivateAccess = true, EditCondition =
+	UPROPERTY(EditDefaultsOnly
+		, meta = (AllowPrivateAccess = true, EditCondition =
 			"RequireType == EQuestRequireType::HasItem"))
 	FItemQuestData RequireItemOptions = FItemQuestData();
 
-	UPROPERTY(EditDefaultsOnly,
-		meta = (AllowPrivateAccess = true, EditCondition =
+	UPROPERTY(EditDefaultsOnly
+		, meta = (AllowPrivateAccess = true, EditCondition =
 			"RequireType == EQuestRequireType::HasGold"))
 	FGoldQuestData RequireGoldOptions = FGoldQuestData();
 };
@@ -134,13 +138,13 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	EQuestRewardType RewardType = EQuestRewardType::None;
 
-	UPROPERTY(EditDefaultsOnly,
-		meta = (AllowPrivateAccess = true, EditCondition =
+	UPROPERTY(EditDefaultsOnly
+		, meta = (AllowPrivateAccess = true, EditCondition =
 			"RewardType == EQuestRewardType::Item"))
 	FItemQuestData RewardItemOptions = FItemQuestData();
 
-	UPROPERTY(EditDefaultsOnly,
-		meta = (AllowPrivateAccess = true, EditCondition =
+	UPROPERTY(EditDefaultsOnly
+		, meta = (AllowPrivateAccess = true, EditCondition =
 			"RewardType == EQuestRewardType::Gold"))
 	FGoldQuestData RewardGoldOptions = FGoldQuestData();
 };

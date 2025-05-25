@@ -25,26 +25,26 @@ enum class EQuestStoryObjective : uint8
 UENUM()
 enum class EQuestRequireType : uint8
 {
-	None,
-	HasItem,
-	HasGold,
-	Custom,
+	None, HasItem, HasGold, Custom,
 };
 
 UENUM()
 enum class EQuestRewardType : uint8
 {
-	None,
-	Item,
-	Gold,
-	Custom,
+	None, Item, Gold, Custom,
 };
 
 UENUM()
 enum class EQuestStoryMetaDataKey: uint8
 {
-	None,
-	IsHideInQuestBook,
-	RemoveItemToClear,
-	NextQuest,
+	None, IsHideInQuestBook, RemoveItemToClear, NextQuest,
 };
+
+UENUM()
+enum class EQuestStatus: uint8
+{
+	None, Available UMETA(DisplayName = "진행 가능")
+	, Unavailable UMETA(DisplayName = "진행 불가능")
+	, InProgress UMETA(DisplayName = "진행 중")
+	, CanComplete UMETA(DisplayName = "완료 가능")
+	, Completed UMETA(DisplayName = "완료됨")};

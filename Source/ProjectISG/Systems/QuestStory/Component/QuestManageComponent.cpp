@@ -2,6 +2,8 @@
 
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
+#include "ProjectISG/Systems/QuestStory/QuestStoryEnum.h"
+#include "ProjectISG/Systems/QuestStory/Manager/QuestStoryManager.h"
 
 UQuestManageComponent::UQuestManageComponent()
 {
@@ -16,7 +18,7 @@ void UQuestManageComponent::StartQuest(const FString& NewQuestId)
 	}
 
 	// 이미 완료된 퀘스트는 수행하지 않는다.
-	if (EndQuestIdList.Contains(NewQuestId))
+	if (CompletedQuestIdList.Contains(NewQuestId))
 	{
 		return;
 	}
@@ -53,9 +55,46 @@ void UQuestManageComponent::EndQuest(const bool IsSuccess)
 	const AMainPlayerController* PC = Cast<AMainPlayerController>(GetOwner());
 	if (IsSuccess)
 	{
-		UE_LOG(LogTemp, Display,
-		       TEXT("Quest Manage Component: 여기에 퀘스트 완료 시 보상 처리"))
+		UE_LOG(LogTemp, Display
+				, TEXT("Quest Manage Component: 여기에 퀘스트 완료 시 보상 처리"))
 		PC->GetMainHUD()->ToggleAutoQuestUI(false);
-		EndQuestIdList.Add(CurrentPlayingQuestId);
+		CompletedQuestIdList.Add(CurrentPlayingQuestId);
 	}
+}
+
+EQuestStatus UQuestManageComponent::GetQuestStatusById(const FString& QuestId)
+{
+	AMainPlayerController* PC = Cast<AMainPlayerController>(GetOwner());
+
+	// 이미 완료된 퀘스트인지 검증
+	if (CompletedQuestIdList.Contains(QuestId))
+	{
+		return EQuestStatus::Completed;
+	}
+
+	// 현재 해당 퀘스트를 진행 중인지 우선 확인
+	if (QuestId == CurrentPlayingQuestId)
+	{
+		// 완료 가능 여부 탐색
+		if (UQuestStoryManager::CheckCompleteQuest(PC, QuestId))
+		{
+			return EQuestStatus::CanComplete;
+		}
+
+		return EQuestStatus::InProgress;
+	}
+
+	// 마지막으로 해당 퀘스트를 진행 가능, 불가능 여부를 판단
+	for (const FString& RequireQuestIdList :
+		UQuestStoryManager::GetQuestDataById(QuestId).GetRequireQuestIdList())
+	{
+		// 요구 완료 퀘스트 중 하나라도 만족 못하는 경우는 진행 불가능
+		if (!CompletedQuestIdList.Contains(RequireQuestIdList))
+		{
+			return EQuestStatus::Unavailable;
+		}
+	}
+
+	// 남은 경우 수는 가능 함으로 둔다.
+	return EQuestStatus::Available;
 }
