@@ -182,7 +182,7 @@ void AMainPlayerController::Client_EndQuestToPlayer_Implementation()
 void AMainPlayerController::Client_ResetWidgetAndPushTimeAlert_Implementation()
 {
 	UIManageComponent->ResetWidget();
-	Alert(EAlertType::Error, TEXT("밤 9시 이후에는 컨텐츠가 제한됩니다."));
+	Alert(EAlertType::Error, TEXT("밤 9시 이후에는 컨텐츠가 제한됩니다."), 6.0);
 }
 
 void AMainPlayerController::Server_SetOwnerActor_Implementation(
