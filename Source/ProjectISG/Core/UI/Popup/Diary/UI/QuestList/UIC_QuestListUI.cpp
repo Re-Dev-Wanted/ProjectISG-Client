@@ -1,12 +1,16 @@
 ﻿#include "UIC_QuestListUI.h"
 
+#include "AsyncTreeDifferences.h"
+#include "UIM_QuestListUI.h"
 #include "UIV_QuestListUI.h"
+#include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/MultiLineEditableTextBox.h"
 #include "Components/ListView.h"
 #include "Components/Overlay.h"
 #include "Components/ScrollBox.h"
 #include "Components/VerticalBox.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Popup/Diary/Widget/QuestItem/QuestItemWidgetObject.h"
 #include "ProjectISG/Core/UI/Popup/Diary/Widget/QuestRequiredText/UIV_QuestRequiredTextWidget.h"
@@ -15,9 +19,20 @@
 #include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 #include "ProjectISG/Systems/QuestStory/Manager/QuestStoryManager.h"
 #include "ProjectISG/Systems/Time/TimeManager.h"
 #include "ProjectISG/Utils/SessionUtil.h"
+
+void UUIC_QuestListUI::InitializeController(UBaseUIView* NewView
+											, UBaseUIModel* NewModel)
+{
+	Super::InitializeController(NewView, NewModel);
+
+	const UUIV_QuestListUI* QuestListUIView = Cast<UUIV_QuestListUI>(GetView());
+	QuestListUIView->GetQuestButton()->OnClicked.AddDynamic(
+		this, &ThisClass::OnClickQuestButton);
+}
 
 void UUIC_QuestListUI::AppearUI()
 {
@@ -39,23 +54,11 @@ void UUIC_QuestListUI::AppearUI()
 
 void UUIC_QuestListUI::SetQuestInfo(const FString& QuestId)
 {
-	const UUIV_QuestListUI* QuestListUIView = Cast<UUIV_QuestListUI>(GetView());
-	const FQuestStoryData QuestData = UQuestStoryManager::GetQuestDataById(
-		QuestId);
+	UUIM_QuestListUI* QuestListUIModel = Cast<UUIM_QuestListUI>(GetModel());
 
-	QuestListUIView->GetQuestInfo()->SetVisibility(ESlateVisibility::Visible);
+	QuestListUIModel->SetCurrentSelectQuestId(QuestId);
 
-	QuestListUIView->GetQuestTitle()->SetText(
-		FText::FromString(QuestData.GetQuestTitle()));
-
-	QuestListUIView->GetQuestTitle()->SetText(
-		FText::FromString(QuestData.GetQuestTitle()));
-
-	QuestListUIView->GetQuestScenario()->SetText(QuestData.GetQuestScenario());
-
-	QuestListUIView->GetQuestHint()->SetText(
-		FText::FromString(QuestData.GetQuestHint()));
-
+	SetQuestInfoData(QuestId);
 	SetQuestRequireData(QuestId);
 	SetQuestRewardData(QuestId);
 }
@@ -83,6 +86,78 @@ void UUIC_QuestListUI::InitializeQuestList()
 		QuestItemWidgetObject->QuestId = CurrentQuestData.GetQuestId();
 
 		QuestListUIView->GetQuestListView()->AddItem(QuestItemWidgetObject);
+	}
+}
+
+void UUIC_QuestListUI::SetQuestInfoData(const FString& QuestId)
+{
+	const UUIV_QuestListUI* QuestListUIView = Cast<UUIV_QuestListUI>(GetView());
+	AMainPlayerController* PC = QuestListUIView->GetOwningPlayer<
+		AMainPlayerController>();
+	const FQuestStoryData QuestData = UQuestStoryManager::GetQuestDataById(
+		QuestId);
+
+	QuestListUIView->GetQuestInfo()->SetVisibility(ESlateVisibility::Visible);
+
+	QuestListUIView->GetQuestTitle()->SetText(
+		FText::FromString(QuestData.GetQuestTitle()));
+
+	QuestListUIView->GetQuestTitle()->SetText(
+		FText::FromString(QuestData.GetQuestTitle()));
+
+	QuestListUIView->GetQuestScenario()->SetText(QuestData.GetQuestScenario());
+
+	QuestListUIView->GetQuestHint()->SetText(
+		FText::FromString(QuestData.GetQuestHint()));
+
+	switch (PC->GetQuestManageComponent()->GetQuestStatusById(QuestId))
+	{
+	case EQuestStatus::Available:
+		{
+			// 서버만이 퀘스트 시작, 종료를 실행할 수 있다.
+			QuestListUIView->GetQuestButton()->SetIsEnabled(PC->HasAuthority());
+			QuestListUIView->GetQuestText()->SetText(
+				FText::FromString(TEXT("퀘스트 시작")));
+
+			break;
+		}
+	case EQuestStatus::Unavailable:
+		{
+			QuestListUIView->GetQuestButton()->SetIsEnabled(false);
+			QuestListUIView->GetQuestText()->SetText(
+				FText::FromString(TEXT("진행 불가")));
+
+			break;
+		}
+	case EQuestStatus::InProgress:
+		{
+			QuestListUIView->GetQuestButton()->SetIsEnabled(false);
+			QuestListUIView->GetQuestText()->SetText(
+				FText::FromString(TEXT("진행 중")));
+
+			break;
+		}
+	case EQuestStatus::CanComplete:
+		{
+			// 서버만이 퀘스트 시작, 종료를 실행할 수 있다.
+			QuestListUIView->GetQuestButton()->SetIsEnabled(PC->HasAuthority());
+			QuestListUIView->GetQuestText()->SetText(
+				FText::FromString(TEXT("완료 가능")));
+
+			break;
+		}
+	case EQuestStatus::Completed:
+		{
+			QuestListUIView->GetQuestButton()->SetIsEnabled(false);
+			QuestListUIView->GetQuestText()->SetText(
+				FText::FromString(TEXT("완료됨")));
+
+			break;
+		}
+	default:
+		{
+			break;
+		}
 	}
 }
 
@@ -196,5 +271,41 @@ void UUIC_QuestListUI::SetQuestRewardData(const FString& QuestId)
 		QuestListUIView->GetQuestRewardListScroll()->AddChild(RewardChild);
 		Cast<UUIC_QuestShowItemInfoWidget>(RewardChild->GetController())->
 			SetShowItemInfo(RewardItem);
+	}
+}
+
+void UUIC_QuestListUI::OnClickQuestButton()
+{
+	const UUIV_QuestListUI* QuestListUIView = Cast<UUIV_QuestListUI>(GetView());
+	const UUIM_QuestListUI* QuestListUIModel = Cast<UUIM_QuestListUI>(
+		GetModel());
+
+	AMainPlayerController* PC = QuestListUIView->GetOwningPlayer<
+		AMainPlayerController>();
+
+	const FQuestStoryData QuestData = UQuestStoryManager::GetQuestDataById(
+		QuestListUIModel->GetCurrentSelectQuestId());
+
+	switch (PC->GetQuestManageComponent()->GetQuestStatusById(
+		QuestListUIModel->GetCurrentSelectQuestId()))
+	{
+	case EQuestStatus::Available:
+		{
+			PopUIFromPlayerController();
+			PC->StartQuest(QuestListUIModel->GetCurrentSelectQuestId());
+
+			break;
+		}
+	case EQuestStatus::CanComplete:
+		{
+			PopUIFromPlayerController();
+			PC->EndQuest();
+
+			break;
+		}
+	default:
+		{
+			break;
+		}
 	}
 }

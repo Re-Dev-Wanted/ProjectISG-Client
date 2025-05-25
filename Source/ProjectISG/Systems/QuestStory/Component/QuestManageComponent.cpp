@@ -50,16 +50,25 @@ void UQuestManageComponent::StartScene(const FString& NewSceneId)
 	PC->PushUI(EUIName::Popup_SceneListUI);
 }
 
-void UQuestManageComponent::EndQuest(const bool IsSuccess)
+bool UQuestManageComponent::EndQuest(const bool IsCheckedQuestEnd)
 {
-	const AMainPlayerController* PC = Cast<AMainPlayerController>(GetOwner());
-	if (IsSuccess)
+	AMainPlayerController* PC = Cast<AMainPlayerController>(GetOwner());
+
+	// IsCheckedQuestEnd = true는 보통 서버에서 이루어진다. IsCheckedQuestEnd 자체는 이제
+	// 서버에서 조건을 제대로 검증하고 퀘스트를 완료하는 역할을 수행한다.
+	if (IsCheckedQuestEnd)
 	{
-		UE_LOG(LogTemp, Display
-				, TEXT("Quest Manage Component: 여기에 퀘스트 완료 시 보상 처리"))
-		PC->GetMainHUD()->ToggleAutoQuestUI(false);
-		CompletedQuestIdList.Add(CurrentPlayingQuestId);
+		if (!UQuestStoryManager::CheckAndCompleteQuest(
+			PC, CurrentPlayingQuestId))
+		{
+			return false;
+		}
 	}
+
+	PC->GetMainHUD()->ToggleAutoQuestUI(false);
+	CompletedQuestIdList.Add(CurrentPlayingQuestId);
+
+	return true;
 }
 
 EQuestStatus UQuestManageComponent::GetQuestStatusById(const FString& QuestId)

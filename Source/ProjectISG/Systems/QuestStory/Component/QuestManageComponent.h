@@ -28,7 +28,7 @@ public:
 	void StartScene(const FString& NewSceneId);
 
 	UFUNCTION(BlueprintCallable)
-	void EndQuest(const bool IsSuccess);
+	bool EndQuest(const bool IsCheckedQuestEnd = false);
 
 	EQuestStatus GetQuestStatusById(const FString& QuestId);
 

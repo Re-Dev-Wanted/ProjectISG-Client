@@ -17,12 +17,20 @@ public:
 protected:
 	virtual void AppearUI() override;
 
+	virtual void InitializeController(UBaseUIView* NewView
+									, UBaseUIModel* NewModel) override;
+
 private:
 	void InitializeQuestList();
 
+	void SetQuestInfoData(const FString& QuestId);
+
 	void SetQuestRequireData(const FString& QuestId);
-	
+
 	void SetQuestRewardData(const FString& QuestId);
 
 	void SetQuestRequireItemData(FQuestRequireData& RequireQuest) const;
+
+	UFUNCTION()
+	void OnClickQuestButton();
 };

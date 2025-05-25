@@ -33,16 +33,13 @@ void UUIC_QuestItemWidget::InitializeData(const FString& QuestId)
 
 	// View 관련 현재 완료 가능한 행동 갯수를 가져오는 코드
 	QuestItemWidget->GetCurrentFinishQuestCount()->SetText(
-		FText::FromString(
-			FString::FromInt(
-				UQuestStoryManager::GetRequireQuestDateToAbleFinish(
-					PC, QuestId))));
+		FText::FromString(FString::FromInt(
+			UQuestStoryManager::GetRequireQuestDateToAbleFinish(PC, QuestId))));
 
 	// View 관련 최대 퀘스트 행동 갯수 가져오는 코드
 	QuestItemWidget->GetMaxFinishQuestCount()->SetText(
-		FText::FromString(
-			FString::FromInt(
-				UQuestStoryManager::GetRequireQuestDataById(QuestId).Num())));
+		FText::FromString(FString::FromInt(
+			UQuestStoryManager::GetRequireQuestDataById(QuestId).Num())));
 
 	QuestItemWidget->GetQuestItemButton()->OnClicked.AddDynamic(
 		this, &ThisClass::OnClickQuestItemWidget);
@@ -65,7 +62,7 @@ void UUIC_QuestItemWidget::InitializeData(const FString& QuestId)
 		// 현재 진행중이지 않은 퀘스트에 대해 완료인지, 아직 수행하지 않았는지는
 		// QuestManageComponent에 있는 완료된 Set 정보에 값이 들어있는지
 		// 확인하고 수행해준다.
-		if (QuestManageComponent->GetEndQuestIdList().Contains(QuestId))
+		if (QuestManageComponent->GetCompletedQuestIdList().Contains(QuestId))
 		{
 			QuestItemWidget->GetQuestStatus()->SetText(
 				FText::FromString(TEXT("완료")));
@@ -82,8 +79,8 @@ void UUIC_QuestItemWidget::OnClickQuestItemWidget()
 {
 	UUIC_QuestListUI* QuestListUIController = Cast<UUIC_QuestListUI>(
 		GetView()->GetOwningPlayer<AMainPlayerController>()->
-		           GetUIManageComponent()
-		           ->ControllerInstances[EUIName::Popup_QuestListUI]);
+					GetUIManageComponent()->ControllerInstances[
+			EUIName::Popup_QuestListUI]);
 
 	QuestListUIController->SetQuestInfo(
 		Cast<UUIM_QuestItemWidget>(GetModel())->GetCurrentQuestId());
