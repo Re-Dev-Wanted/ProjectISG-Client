@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "MaterialsView.generated.h"
 
+class UImage;
 struct FCraftingMaterialUIModel;
 class UMaterialInfoWidget;
 class UScrollBox;
@@ -17,6 +18,10 @@ class PROJECTISG_API UMaterialsView : public UUserWidget
 public:
 	void OnUpdateUI(const FString& ItemName, const TArray<FCraftingMaterialUIModel>& Materials, const TMap<uint16, uint16>& OwningCounts);
 
+	void SetDescription(FString Desc);
+
+	void SetImage(TSoftObjectPtr<UTexture2D> Thumbnail);
+	
 protected:
 	virtual void NativePreConstruct() override;
 
@@ -24,6 +29,12 @@ protected:
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> SelectedItemName;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> ItemDesc;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> ItemIcon;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UScrollBox> ScrollBox;

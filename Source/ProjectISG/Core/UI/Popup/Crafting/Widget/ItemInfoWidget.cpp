@@ -46,7 +46,7 @@ void UItemInfoWidget::OnExecuteClickEvent()
 {
 	if (OnClickedSelectedButton.ExecuteIfBound(Id))
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%d"), Id));
+		// UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("%d"), Id));
 	}
 }
 
