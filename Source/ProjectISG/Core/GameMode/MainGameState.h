@@ -20,7 +20,9 @@ public:
 	GETTER_SETTER(FString, CurrentWorldQuestId)
 
 	void StartWorldQuest(const FString& QuestId);
-	
+
+	void EndWorldQuest();
+
 protected:
 	virtual void GetLifetimeReplicatedProps(
 		TArray<FLifetimeProperty>& OutLifetimeProps) const override;

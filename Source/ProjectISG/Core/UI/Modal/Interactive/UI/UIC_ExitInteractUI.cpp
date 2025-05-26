@@ -11,9 +11,9 @@
 #include "ProjectISG/Core/UI/HUD/Interactive/InteractiveItemUI.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 
-void UUIC_ExitInteractUI::AppearUI(const EUILayer Layer)
+void UUIC_ExitInteractUI::AppearUI()
 {
-	Super::AppearUI(Layer);
+	Super::AppearUI();
 
 	const FInputModeGameOnly InputMode;
 	GetPlayerController()->SetInputMode(InputMode);
@@ -22,10 +22,9 @@ void UUIC_ExitInteractUI::AppearUI(const EUILayer Layer)
 
 void UUIC_ExitInteractUI::SetUI(const FString& Key, const FString& Text)
 {
-	const UUIV_ExitInteractUI* InteractView = Cast<UUIV_ExitInteractUI>(GetView
-	());
+	const UUIV_ExitInteractUI* InteractView = Cast<UUIV_ExitInteractUI>(
+		GetView());
 	InteractView->GetInteractiveUI()->SetInteractive(Key, Text);
-	
 }
 
 void UUIC_ExitInteractUI::BindInputAction(
@@ -33,17 +32,17 @@ void UUIC_ExitInteractUI::BindInputAction(
 {
 	Super::BindInputAction(InputComponent);
 
-	InputComponent->BindAction(ExitInteractAction, ETriggerEvent::Started, 
-	this, &ThisClass::ExitInteract);
+	InputComponent->BindAction(ExitInteractAction, ETriggerEvent::Started, this
+								, &ThisClass::ExitInteract);
 
-	InputComponent->BindAction(RotateAction, ETriggerEvent::Triggered, this, 
-	&ThisClass::Look);
+	InputComponent->BindAction(RotateAction, ETriggerEvent::Triggered, this
+								, &ThisClass::Look);
 }
 
 void UUIC_ExitInteractUI::ExitInteract()
 {
-	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>
-	(GetPlayerController()->GetPawn());
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		GetPlayerController()->GetPawn());
 
 	if (Player)
 	{
@@ -51,10 +50,10 @@ void UUIC_ExitInteractUI::ExitInteract()
 		EventData.EventTag = ISGGameplayTags::Interactive_Active_Exit;
 		EventData.Instigator = Player;
 
-		Player->GetAbilitySystemComponent()->HandleGameplayEvent
-		(ISGGameplayTags::Interactive_Active_Exit, &EventData);
+		Player->GetAbilitySystemComponent()->HandleGameplayEvent(
+			ISGGameplayTags::Interactive_Active_Exit, &EventData);
 	}
-	
+
 	PopUIFromPlayerController();
 }
 
@@ -62,14 +61,14 @@ void UUIC_ExitInteractUI::Look(const FInputActionValue& Value)
 {
 	const FVector2d LookToValue = Value.Get<FVector2d>();
 
-	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>
-	(GetPlayerController()->GetPawn());
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		GetPlayerController()->GetPawn());
 
 	if (!Player)
 	{
 		return;
 	}
-	
+
 	Player->AddControllerYawInput(LookToValue.X);
 	Player->AddControllerPitchInput(LookToValue.Y);
 }

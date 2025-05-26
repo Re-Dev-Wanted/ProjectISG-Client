@@ -11,8 +11,8 @@
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 #include "ProjectISG/Systems/QuestStory/Manager/QuestStoryManager.h"
 
-void UUIC_AutoQuestDialogueWidget::InitializeController(UBaseUIView* NewView,
-	UBaseUIModel* NewModel)
+void UUIC_AutoQuestDialogueWidget::InitializeController(
+	UBaseUIView* NewView, UBaseUIModel* NewModel)
 {
 	Super::InitializeController(NewView, NewModel);
 
@@ -23,9 +23,8 @@ void UUIC_AutoQuestDialogueWidget::InitializeController(UBaseUIView* NewView,
 		this, &ThisClass::OnFinishDialogue);
 
 	AutoQuestDialogueWidgetView->BindToAnimationFinished(
-		AutoQuestDialogueWidgetView->GetDialogueAnimation(),
-		AutoQuestDialogueWidgetView->OnDialogueEndNotified
-	);
+		AutoQuestDialogueWidgetView->GetDialogueAnimation()
+		, AutoQuestDialogueWidgetView->OnDialogueEndNotified);
 }
 
 void UUIC_AutoQuestDialogueWidget::InitializeDialogue()
@@ -47,12 +46,18 @@ void UUIC_AutoQuestDialogueWidget::InitializeDialogue()
 		UQuestStoryManager::GetQuestDialogueById(
 			PlayerQuestManager->GetCurrentPlayingQuestId());
 
+	if (Dialogues.Num() == 0)
+	{
+		OnFinishDialogue();
+		return;
+	}
+
 	const FString OwnerText = Dialogues[CurrentQuestDialogueIndex].
-	                          GetDialogueOwner() == TEXT("{Player}")
-		                          ? GetView()->GetOwningPlayerState()->
-		                                       GetPlayerName()
-		                          : Dialogues[CurrentQuestDialogueIndex].
-		                          GetDialogueOwner();
+							GetDialogueOwner() == TEXT("{Player}")
+								? GetView()->GetOwningPlayerState()->
+											GetPlayerName()
+								: Dialogues[CurrentQuestDialogueIndex].
+								GetDialogueOwner();
 
 	AutoQuestDialogueWidgetView->GetDialogueOwner()->SetText(
 		FText::FromString(OwnerText));
@@ -101,7 +106,7 @@ void UUIC_AutoQuestDialogueWidget::OnFinishDialogue()
 	{
 		PC->GetMainHUD()->ToggleAutoQuestUI(false);
 		// 혹시 Dialogue 타입의 퀘스트인지, 그렇다면 바로 종료시킨다.
-		UQuestStoryManager::CheckAndCompleteQuest(
+		UQuestStoryManager::CheckAndCompleteDialogueQuest(
 			PC, PlayerQuestManager->GetCurrentPlayingQuestId());
 		return;
 	}

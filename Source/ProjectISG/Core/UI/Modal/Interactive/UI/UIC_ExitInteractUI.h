@@ -14,7 +14,7 @@ class PROJECTISG_API UUIC_ExitInteractUI : public UBaseUIController
 	GENERATED_BODY()
 
 public:
-	virtual void AppearUI(const EUILayer Layer) override;
+	virtual void AppearUI() override;
 	
 	void SetUI(const FString& Key, const FString& Text);
 
