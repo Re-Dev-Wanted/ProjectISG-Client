@@ -33,6 +33,7 @@ void UQuestManageComponent::StartQuest(const FString& NewQuestId)
 	}
 
 	PC->GetMainHUD()->ToggleCurrentQuestUI(true);
+	PC->GetMainHUD()->ToggleAutoQuestUI(true);
 }
 
 void UQuestManageComponent::StartScene(const FString& NewSceneId)
@@ -100,7 +101,7 @@ EQuestStatus UQuestManageComponent::GetQuestStatusById(
 
 	// 마지막으로 해당 퀘스트를 진행 가능, 불가능 여부를 판단
 	for (const FString& RequireQuestIdList :
-		UQuestStoryManager::GetQuestDataById(QuestId).GetRequireQuestIdList())
+	     UQuestStoryManager::GetQuestDataById(QuestId).GetRequireQuestIdList())
 	{
 		// 요구 완료 퀘스트 중 하나라도 만족 못하는 경우는 진행 불가능
 		if (!CompletedQuestIdList.Contains(RequireQuestIdList))

@@ -28,9 +28,9 @@ void UUIC_MainHUD::AppearUI()
 	MainHUDView->GetMainSlotList()->UpdateItemData();
 
 	const uint8 CurrentSlot = GetView()->GetOwningPlayerPawn<
-											AMainPlayerCharacter>()->
-										GetPlayerInventoryComponent()->
-										GetCurrentSlotIndex();
+		                                     AMainPlayerCharacter>()->
+	                                     GetPlayerInventoryComponent()->
+	                                     GetCurrentSlotIndex();
 
 	MainHUDView->GetMainSlotList()->SelectSlot(CurrentSlot, CurrentSlot);
 }
@@ -42,7 +42,7 @@ void UUIC_MainHUD::UpdateMainHotSlot() const
 }
 
 void UUIC_MainHUD::SelectSlot(const uint8 CurrentSlot
-							, const uint8 NextSlot) const
+                              , const uint8 NextSlot) const
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 	MainHUDView->GetMainSlotList()->SelectSlot(CurrentSlot, NextSlot);
@@ -58,7 +58,7 @@ void UUIC_MainHUD::ToggleInteractiveUI(const bool IsShow)
 }
 
 void UUIC_MainHUD::ToggleInteractiveUI(const FString& DisplayKey
-										, const FString& DisplayText)
+                                       , const FString& DisplayText)
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 
@@ -67,7 +67,7 @@ void UUIC_MainHUD::ToggleInteractiveUI(const FString& DisplayKey
 }
 
 void UUIC_MainHUD::AdditiveToggleInteractiveUI(const FString& DisplayKey
-												, const FString& DisplayText)
+                                               , const FString& DisplayText)
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 
@@ -94,6 +94,15 @@ void UUIC_MainHUD::ToggleAutoQuestUI(const bool IsActive)
 		IsActive
 			? ESlateVisibility::SelfHitTestInvisible
 			: ESlateVisibility::Hidden);
+
+	if (IsActive)
+	{
+		UUIC_AutoQuestDialogueWidget* AutoQuestDialogueWidgetController =
+			Cast<UUIC_AutoQuestDialogueWidget>(
+				MainHUDView->GetAutoQuestDialogueWidget()->GetController());
+
+		AutoQuestDialogueWidgetController->StartQuestDialogue();
+	}
 }
 
 void UUIC_MainHUD::ToggleCurrentQuestUI(const bool IsActive)
@@ -106,9 +115,9 @@ void UUIC_MainHUD::ToggleCurrentQuestUI(const bool IsActive)
 	if (IsActive)
 	{
 		const FString CurrentQuestId = GetView()->GetOwningPlayer<
-													AMainPlayerController>()->
-												GetQuestManageComponent()->
-												GetCurrentPlayingQuestId();
+			                                          AMainPlayerController>()->
+		                                          GetQuestManageComponent()->
+		                                          GetCurrentPlayingQuestId();
 
 		const FQuestStoryData QuestData = UQuestStoryManager::GetQuestDataById(
 			CurrentQuestId);
@@ -128,7 +137,7 @@ void UUIC_MainHUD::ToggleCurrentQuestUI(const bool IsActive)
 }
 
 void UUIC_MainHUD::AlertToMainHUD(const EAlertType AlertType
-								, const FString& Message, const float Time)
+                                  , const FString& Message, const float Time)
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 	UUIC_HUDAlertModalWidget* AlertModalWidgetController = Cast<

@@ -162,7 +162,7 @@ void UQuestStoryManager::InitializeQuestDialogue()
 
 	// 초기 데이터 삽입
 	for (const FQuestStoryDialogue* StoryDialogueData :
-		TempQuestStoryDialogueTable)
+	     TempQuestStoryDialogueTable)
 	{
 		if (QuestDialogueData.Contains(StoryDialogueData->GetQuestId()))
 		{
@@ -205,10 +205,10 @@ void UQuestStoryManager::InitializeQuestSceneCut()
 		TEXT(""), TempQuestSceneCutList);
 
 	for (const FQuestSceneCutData* TempQuestSceneCutData :
-		TempQuestSceneCutList)
+	     TempQuestSceneCutList)
 	{
 		QuestSceneCutData.Add(TempQuestSceneCutData->GetQuestSceneId()
-							, *TempQuestSceneCutData);
+		                      , *TempQuestSceneCutData);
 	}
 }
 
@@ -225,7 +225,7 @@ bool UQuestStoryManager::IsHiddenInQuestBook(const FString& QuestId)
 }
 
 bool UQuestStoryManager::CheckCompleteQuest(AMainPlayerController* PC
-											, const FString& QuestId)
+                                            , const FString& QuestId)
 {
 	if (!PC->HasAuthority())
 	{
@@ -256,7 +256,7 @@ bool UQuestStoryManager::CheckCompleteQuest(AMainPlayerController* PC
 					RequireData.GetRequireItemOptions().GetItemMetaData());
 
 				if (!InventoryComponent->GetCurrentRemainItemMetaValue().
-										Contains(RequireItem))
+				                         Contains(RequireItem))
 				{
 					return false;
 				}
@@ -270,7 +270,7 @@ bool UQuestStoryManager::CheckCompleteQuest(AMainPlayerController* PC
 		case EQuestRequireType::HasGold:
 			{
 				if (PS->GetGold() < RequireData.GetRequireGoldOptions().
-												GetGoldAmount())
+				                                GetGoldAmount())
 				{
 					return false;
 				}
@@ -304,7 +304,7 @@ bool UQuestStoryManager::CheckAndCompleteDialogueQuest(AMainPlayerController* PC
 }
 
 bool UQuestStoryManager::CheckAndCompleteQuest(AMainPlayerController* PC
-												, const FString& QuestId)
+                                               , const FString& QuestId)
 {
 	if (CheckCompleteQuest(PC, QuestId))
 	{
@@ -375,7 +375,7 @@ uint32 UQuestStoryManager::GetRequireQuestDateToAbleFinish(
 		case EQuestRequireType::HasGold:
 			{
 				if (PS->GetGold() >= RequireData.GetRequireGoldOptions().
-												GetGoldAmount())
+				                                 GetGoldAmount())
 				{
 					Result += 1;
 				}
@@ -393,22 +393,22 @@ uint32 UQuestStoryManager::GetRequireQuestDateToAbleFinish(
 }
 
 void UQuestStoryManager::CompleteQuest_Internal(AMainPlayerController* PC
-												, const FString& QuestId)
+                                                , const FString& QuestId)
 {
 	AMainPlayerState* PS = PC->GetPlayerState<AMainPlayerState>();
 
 	FQuestStoryData CurrentQuestStoryData = QuestData[QuestId];
 
 	// 퀘스트에 필요한 조건 회수 조치 수행
-	for (FQuestRequireData& RequireData : QuestRequireData[QuestId])
+	for (FQuestRequireData& RequireData : GetRequireQuestDataById(QuestId))
 	{
 		switch (RequireData.GetRequireType())
 		{
 		case EQuestRequireType::HasItem:
 			{
 				if (CurrentQuestStoryData.GetQuestMetaData().
-										Contains(
-											EQuestStoryMetaDataKey::RemoveItemToClear)
+				                          Contains(
+					                          EQuestStoryMetaDataKey::RemoveItemToClear)
 					&& CurrentQuestStoryData.GetQuestMetaData()[
 						EQuestStoryMetaDataKey::RemoveItemToClear] == TEXT(
 						"false"))
@@ -432,7 +432,7 @@ void UQuestStoryManager::CompleteQuest_Internal(AMainPlayerController* PC
 			{
 				PS->SetGold(
 					PS->GetGold() - RequireData.GetRequireGoldOptions().
-												GetGoldAmount());
+					                            GetGoldAmount());
 				break;
 			}
 		default:
@@ -475,7 +475,7 @@ void UQuestStoryManager::GiveRewardQuest_Internal(
 				// 골드는 Id 자체가 Value로 취급된다.
 				PS->SetGold(
 					PS->GetGold() + RewardData.GetRewardGoldOptions().
-												GetGoldAmount());
+					                           GetGoldAmount());
 
 				break;
 			}
