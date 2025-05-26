@@ -64,6 +64,7 @@ struct PROJECTISG_API FItemInfoData : public FTableRowBase
 	GETTER(TSubclassOf<AActor>, PlaceItemActor)
 	GETTER(uint32, MaxItemCount)
 
+
 	FORCEINLINE TMap<EMetaDataKey, FString> GetMetaData() const
 	{
 		return MetaData;

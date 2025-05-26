@@ -9,6 +9,7 @@
 #include "ProjectISG/Contents/Cooking/Managers/CookingManager.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/Module/UI_BaseButton.h"
+#include "ProjectISG/Core/UI/Base/Module/UI_EscapeButton.h"
 #include "ProjectISG/Core/UI/Popup/Cooking/Module/SelectedFoodDetail/UIC_SelectedFoodDetailWidget.h"
 #include "ProjectISG/Core/UI/Popup/Cooking/Module/SelectedFoodDetail/UIV_SelectedFoodDetailWidget.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
@@ -29,6 +30,12 @@ void UUIC_CookingRecipeUI::AppearUI()
 	{
 		CookingRecipeUI->GetCookingButton()->Get()->OnClicked.AddDynamic(
 			this, &ThisClass::StartCooking);
+	}
+
+	if (!CookingRecipeUI->GetCloseButton()->GetButton()->OnClicked.IsBound())
+	{
+		CookingRecipeUI->GetCloseButton()->GetButton()->OnClicked.AddDynamic
+		(this, &ThisClass::OnCloseCookingRecipeUI);
 	}
 
 	CookingRecipeUI->GetSelectedFoodDetail()->SetVisibility(
