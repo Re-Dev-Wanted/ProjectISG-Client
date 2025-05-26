@@ -1,6 +1,5 @@
 ﻿#include "MainPlayerController.h"
 
-#include "GameFramework/PlayerState.h"
 #include "ProjectISG/Core/ISGGameInstance.h"
 #include "ProjectISG/Core/GameMode/MainGameState.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
@@ -143,7 +142,7 @@ void AMainPlayerController::PopUI()
 }
 
 void AMainPlayerController::Alert(const EAlertType AlertType
-								, const FString& Message, const float Time)
+                                  , const FString& Message, const float Time)
 {
 	if (UIManageComponent->GetTopStackUI() != EUIName::Gameplay_MainHUD)
 	{
