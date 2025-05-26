@@ -238,6 +238,12 @@ bool UQuestStoryManager::CheckCompleteQuest(AMainPlayerController* PC
 		return true;
 	}
 
+	if (QuestData[QuestId].GetQuestObjective() ==
+		EQuestStoryObjective::Custom)
+	{
+		return false;
+	}
+
 	const AMainPlayerState* PS = PC->GetPlayerState<AMainPlayerState>();
 	const UInventoryComponent* InventoryComponent = PS->GetInventoryComponent();
 

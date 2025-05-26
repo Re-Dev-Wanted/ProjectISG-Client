@@ -32,7 +32,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Alert(const EAlertType AlertType, const FString& Message
-				, const float Time = 2.f);
+	           , const float Time = 2.f);
 
 	// 월드 퀘스트 실행
 	UFUNCTION(BlueprintCallable)
@@ -77,8 +77,12 @@ protected:
 
 	virtual void OnRep_PlayerState() override;
 
+	UFUNCTION()
+	void MainSceneEnd();
+
 private:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
+		meta = (AllowPrivateAccess = true))
 	TObjectPtr<UUIManageComponent> UIManageComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly

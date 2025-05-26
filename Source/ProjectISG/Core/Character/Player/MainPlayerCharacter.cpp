@@ -79,14 +79,6 @@ void AMainPlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-
-	if (HasAuthority() && IsLocallyControlled())
-	{
-		FString SessionId = GetWorld()->GetGameInstance<UISGGameInstance>()->
-		                                GetSessionId();
-		GetWorld()->GetGameState<AMainGameState>()->SetSessionId(SessionId);
-		UE_LOG(LogTemp, Warning, TEXT("세션 복사 : %s"), *SessionId);
-	}
 }
 
 void AMainPlayerCharacter::OnRep_PlayerState()
