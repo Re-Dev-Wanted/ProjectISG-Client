@@ -60,6 +60,7 @@ public:
 
 	GETTER(TObjectPtr<UUIManageComponent>, UIManageComponent)
 	GETTER(TObjectPtr<UQuestManageComponent>, QuestManageComponent)
+	GETTER_SETTER(bool, CustomQuestComplete)
 
 	UFUNCTION(Client, Reliable)
 	void Client_ResetWidgetAndPushTimeAlert();
@@ -92,5 +93,8 @@ private:
 #pragma region Quest
 	UFUNCTION(Server, Reliable)
 	void Server_StartQuest(const FString& QuestId);
+
+	UPROPERTY(EditAnywhere)
+	bool CustomQuestComplete = false;
 #pragma endregion
 };

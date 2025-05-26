@@ -238,12 +238,6 @@ bool UQuestStoryManager::CheckCompleteQuest(AMainPlayerController* PC
 		return true;
 	}
 
-	if (QuestData[QuestId].GetQuestObjective() ==
-		EQuestStoryObjective::Custom)
-	{
-		return false;
-	}
-
 	const AMainPlayerState* PS = PC->GetPlayerState<AMainPlayerState>();
 	const UInventoryComponent* InventoryComponent = PS->GetInventoryComponent();
 
@@ -272,6 +266,8 @@ bool UQuestStoryManager::CheckCompleteQuest(AMainPlayerController* PC
 				{
 					return false;
 				}
+
+				break;
 			}
 		case EQuestRequireType::HasGold:
 			{
@@ -280,6 +276,13 @@ bool UQuestStoryManager::CheckCompleteQuest(AMainPlayerController* PC
 				{
 					return false;
 				}
+
+				break;
+			}
+		case EQuestRequireType::Custom:
+			{
+				return PC->GetCustomQuestComplete();
+				break;
 			}
 		default:
 			{
@@ -289,6 +292,23 @@ bool UQuestStoryManager::CheckCompleteQuest(AMainPlayerController* PC
 	}
 
 	return true;
+}
+
+bool UQuestStoryManager::CheckAndCompleteCustomQuest(
+	AMainPlayerController* PC, const FString& QuestId)
+{
+	if (!PC->HasAuthority())
+	{
+		return false;
+	}
+
+	if (QuestData[QuestId].GetQuestObjective() == EQuestStoryObjective::Custom)
+	{
+		CompleteQuest_Internal(PC, QuestId);
+		return true;
+	}
+
+	return false;
 }
 
 bool UQuestStoryManager::CheckAndCompleteDialogueQuest(AMainPlayerController* PC
@@ -439,6 +459,11 @@ void UQuestStoryManager::CompleteQuest_Internal(AMainPlayerController* PC
 				PS->SetGold(
 					PS->GetGold() - RequireData.GetRequireGoldOptions().
 					                            GetGoldAmount());
+				break;
+			}
+		case EQuestRequireType::Custom:
+			{
+				PC->SetCustomQuestComplete(false);
 				break;
 			}
 		default:

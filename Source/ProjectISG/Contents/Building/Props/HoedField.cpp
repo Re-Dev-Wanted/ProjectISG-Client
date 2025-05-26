@@ -9,11 +9,14 @@
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
+#include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
+#include "ProjectISG/Systems/QuestStory/Manager/QuestStoryManager.h"
 
 AHoedField::AHoedField()
 {
@@ -39,24 +42,26 @@ void AHoedField::OnSpawned()
 	{
 		return;
 	}
-	
+
 	// UKismetSystemLibrary::PrintString(GetWorld(), TEXT("돌맹이 나올것이여"));
 
-	int SlotIndex = Player->GetPlayerInventoryComponent()->GetCurrentSlotIndex();
-	
+	int SlotIndex = Player->GetPlayerInventoryComponent()->
+	                        GetCurrentSlotIndex();
+
 	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 
 	const FItemMetaInfo ItemMetaInfo = PS->GetInventoryComponent()->
-										   GetInventoryList()[SlotIndex];
+	                                       GetInventoryList()[SlotIndex];
 
-	uint16 ItemId = UItemManager::GetChanceBasedSpawnItemIdById(ItemMetaInfo.GetId
-	());
+	uint16 ItemId = UItemManager::GetChanceBasedSpawnItemIdById(
+		ItemMetaInfo.GetId
+		());
 
 	if (ItemId > 0)
 	{
-		const FItemMetaInfo AddItemMetaInfo = 
-		UItemManager::GetInitialItemMetaDataById
-		(ItemId);
+		const FItemMetaInfo AddItemMetaInfo =
+			UItemManager::GetInitialItemMetaDataById
+			(ItemId);
 
 		PS->GetInventoryComponent()->AddItem(AddItemMetaInfo);
 	}
@@ -287,6 +292,8 @@ void AHoedField::OnTouchResponse(AActor* Causer)
 {
 	Super::OnTouchResponse(Causer);
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
+	AMainPlayerController* PC = Cast<AMainPlayerController>(
+		Player->GetController());
 	const uint16 ItemId = Player->GetHandSlotComponent()->GetItemId();
 
 	const FItemInfoData ItemData = UItemManager::GetItemInfoById(ItemId);
@@ -303,6 +310,12 @@ void AHoedField::OnTouchResponse(AActor* Causer)
 	if (UsingType == "Watering" && PlantedCrop.IsValid())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("물주기 (서버)"));
+
+		if (PC->GetQuestManageComponent()->GetCurrentPlayingQuestId() ==
+			FString::Printf(TEXT("Story_001")))
+		{
+			PC->SetCustomQuestComplete(true);
+		}
 		SetWet(true);
 	}
 }
