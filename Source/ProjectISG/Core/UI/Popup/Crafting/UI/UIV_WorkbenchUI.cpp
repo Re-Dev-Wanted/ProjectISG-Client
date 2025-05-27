@@ -12,4 +12,6 @@ void UUIV_WorkbenchUI::OnSetup(const TArray<FCraftingRecipeUIModel>& Array,
 void UUIV_WorkbenchUI::OnUpdateUI(FCraftingRecipeUIModel SelectedModel, const TMap<uint16, uint16>& OwningCounts)
 {
 	MaterialsView->OnUpdateUI(SelectedModel.ItemName, SelectedModel.GetRequiredMaterialsArray(), OwningCounts);
+	MaterialsView->SetDescription(SelectedModel.ItemDesc);
+	MaterialsView->SetImage(SelectedModel.Thumbnail);
 }

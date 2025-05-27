@@ -39,6 +39,9 @@ struct FCraftingRecipeUIModel
 	FString ItemName;
 
 	UPROPERTY()
+	FString ItemDesc;
+
+	UPROPERTY()
 	TSoftObjectPtr<UTexture2D> Thumbnail;
 
 	UPROPERTY()

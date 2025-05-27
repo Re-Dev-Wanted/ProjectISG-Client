@@ -8,6 +8,5 @@
 
 void UUIV_LootContainerUI::SetContainer(FGuid Guid, const TArray<FItemMetaInfo>& Items, TScriptInterface<IItemHandler> Handler) const
 {
-	GuidText->SetText(FText::FromString(Guid.ToString(EGuidFormats::Digits)));
 	ContainerView->SetContainerInfo(InventorySlotClass, Items, Guid, Handler);
 }
