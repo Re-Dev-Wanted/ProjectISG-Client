@@ -7,6 +7,7 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "PlacementIndicatorComponent.generated.h"
 
+class ABaseActor;
 class UInputAction;
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -16,13 +17,13 @@ class PROJECTISG_API UPlacementIndicatorComponent : public UActorComponent
 
 public:
 	UPlacementIndicatorComponent();
-	
+
 	virtual void InitializeComponent() override;
-	
+
 	void Execute();
-	
+
 	UFUNCTION()
-	void OnChange(uint16 ItemId);
+	void OnChange(const uint16 ItemId);
 
 	UFUNCTION()
 	void OnActivate(const TSubclassOf<class APlacement>& Factory);
@@ -37,16 +38,17 @@ public:
 
 protected:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
+	                           FActorComponentTickFunction*
+	                           ThisTickFunction) override;
 
 	UPROPERTY()
-	TObjectPtr<class AMainPlayerCharacter> Player = nullptr; 
+	TObjectPtr<class AMainPlayerCharacter> Player = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<class APlacement> IndicateActor = nullptr;
-	
+	TObjectPtr<APlacement> IndicateActor = nullptr;
+
 	UPROPERTY()
-	TObjectPtr<class APlayerController> PlayerController = nullptr;
+	TObjectPtr<APlayerController> PlayerController = nullptr;
 
 	UPROPERTY()
 	TEnumAsByte<ERotateDirection> RotateDirection = North;
@@ -72,8 +74,8 @@ protected:
 
 	bool bIsIndicatorActive = false;
 
-	bool bIsInfiniteItem = false;
-	
+	bool bCanGeneratedOtherItem = false;
+
 	bool bIsBlocked = false;
 
 	bool IsActive = true;
@@ -83,16 +85,17 @@ protected:
 	UFUNCTION()
 	void BindingInputActions(
 		UEnhancedInputComponent* EnhancedInputComponent);
-	
+
 	UFUNCTION()
 	void OnRotate(const FInputActionValue& InputActionValue);
 
 	UFUNCTION(Server, Reliable)
-	void Server_Execute(FVector Pivot, FVector Location, FRotator Rotation, 
-	TSubclassOf<APlacement> PlacementClass, uint16 ItemId);
+	void Server_Execute(FVector Pivot, FVector Location, FRotator Rotation,
+	                    TSubclassOf<APlacement> PlacementClass, uint16 ItemId);
 
 	UFUNCTION()
-	void ExecuteInternal(FVector Pivot, FVector Location, FRotator Rotation, TSubclassOf<APlacement> PlacementClass, uint16 ItemId);
+	void ExecuteInternal(FVector Pivot, FVector Location, FRotator Rotation,
+	                     TSubclassOf<APlacement> PlacementClass, uint16 ItemId);
 
 	void LineTrace();
 };
