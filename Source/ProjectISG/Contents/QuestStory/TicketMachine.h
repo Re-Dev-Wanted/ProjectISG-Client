@@ -24,6 +24,9 @@ protected:
 	virtual FString GetInteractiveDisplayText() const override;
 
 private:
+	void SetQuestInteractiveActorOverlayMaterial(bool value);
+
+private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
 		Category = Setting)
 	class UBoxComponent* Root;
@@ -39,4 +42,8 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
 		Category = Setting)
 	bool bIsBoughtTicket = false;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
+		Category = Setting)
+	class UMaterial* QuestInteractMaterial;
 };

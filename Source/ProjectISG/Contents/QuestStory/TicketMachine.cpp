@@ -43,6 +43,8 @@ ATicketMachine::ATicketMachine()
 void ATicketMachine::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetQuestInteractiveActorOverlayMaterial(false);
 }
 
 void ATicketMachine::OnInteractive(AActor* Causer)
@@ -71,4 +73,16 @@ bool ATicketMachine::GetCanInteractive() const
 FString ATicketMachine::GetInteractiveDisplayText() const
 {
 	return TEXT("티켓구매");
+}
+
+void ATicketMachine::SetQuestInteractiveActorOverlayMaterial(bool value)
+{
+	if (!value)
+	{
+		Mesh->SetOverlayMaterial(QuestInteractMaterial);
+	}
+	else
+	{
+		Mesh->SetOverlayMaterial(nullptr);
+	}
 }
