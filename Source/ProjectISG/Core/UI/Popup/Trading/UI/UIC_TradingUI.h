@@ -1,14 +1,9 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
 #include "UIC_TradingUI.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PROJECTISG_API UUIC_TradingUI : public UBaseUIController
 {
@@ -27,11 +22,11 @@ protected:
 	void DetectDragItem(uint16 ItemId, uint16 SlotIndex);
 
 public:
+	void OnUpdateSelectedProduct(uint16 ProductId);
+	
 	void UpdateGoldText();
 
 	void UpdateInventory();
-
-	void ClearItemInfoData();
 
 	void SetItemInfoData(const uint8 InventoryIndex);
 

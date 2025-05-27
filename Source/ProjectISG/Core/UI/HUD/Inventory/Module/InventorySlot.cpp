@@ -208,11 +208,11 @@ void UInventorySlot::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 			ClearItemInfoData();
 	}
 
-	if (ControllerInstances.Contains(EUIName::Popup_TradingUI))
-	{
-		Cast<UUIC_TradingUI>(ControllerInstances[EUIName::Popup_TradingUI])->
-			ClearItemInfoData();
-	}
+	// if (ControllerInstances.Contains(EUIName::Popup_TradingUI))
+	// {
+	// 	Cast<UUIC_TradingUI>(ControllerInstances[EUIName::Popup_TradingUI])->
+	// 		ClearItemInfoData();
+	// }
 
 	// TODO: 다른 전용 UI 필요하면 아래에 계속 적어도 무방
 }

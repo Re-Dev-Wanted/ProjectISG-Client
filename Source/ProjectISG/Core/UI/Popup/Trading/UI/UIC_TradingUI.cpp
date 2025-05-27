@@ -7,6 +7,9 @@
 #include "UIM_TradingUI.h"
 #include "UIV_TradingUI.h"
 #include "Components/TextBlock.h"
+#include "ProductInfo/ProductDetailView.h"
+#include "ProductList/UIV_ProductListWidget.h"
+#include "ProjectISG/Contents/Trading/TradingManager.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
@@ -14,6 +17,7 @@
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/Module/ItemInfo.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 class AMainPlayerState;
 class AMainPlayerCharacter;
@@ -24,18 +28,12 @@ void UUIC_TradingUI::BindInputAction(UEnhancedInputComponent* InputComponent)
 
 	InputComponent->BindAction(CloseTradingUI, ETriggerEvent::Triggered, this,
 	                           &ThisClass::OnCloseTradingUI);
-
-	const UUIV_TradingUI* TradingView = Cast<UUIV_TradingUI>(GetView());
-
-	TradingView->GetInventoryList()->OnDragDetectedNotified.AddDynamic(
-		this, &UUIC_TradingUI::DetectDragItem);
 }
 
 void UUIC_TradingUI::AppearUI()
 {
 	Super::AppearUI();
-
-	ClearItemInfoData();
+	
 }
 
 void UUIC_TradingUI::OnCloseTradingUI()
@@ -58,7 +56,7 @@ void UUIC_TradingUI::UpdateGoldText()
 	if (PC && PS && TradingUIView)
 	{
 		FString Str = FString::Printf(TEXT("Gold : %dG"), PS->GetGold());
-		TradingUIView->GetGoldText()->SetText(FText::FromString(Str));
+		// TradingUIView->GetGoldText()->SetText(FText::FromString(Str));
 	}
 }
 
@@ -72,13 +70,6 @@ void UUIC_TradingUI::UpdateInventory()
 	}
 }
 
-void UUIC_TradingUI::ClearItemInfoData()
-{
-	const UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
-	TradingUIView->GetItemInfoTooltip()->
-	               SetVisibility(ESlateVisibility::Hidden);
-}
-
 void UUIC_TradingUI::SetItemInfoData(const uint8 InventoryIndex)
 {
 	const UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
@@ -87,20 +78,25 @@ void UUIC_TradingUI::SetItemInfoData(const uint8 InventoryIndex)
 
 	const FItemMetaInfo ItemMetaInfo = PS->GetInventoryComponent()->
 	                                       GetInventoryList()[InventoryIndex];
-
-	if (ItemMetaInfo.GetId() == 0)
-	{
-		ClearItemInfoData();
-		return;
-	}
-
-	TradingUIView->GetItemInfoTooltip()->ShowItemData(ItemMetaInfo);
 }
-
 
 void UUIC_TradingUI::DetectDragItem(uint16 ItemId, uint16 SlotIndex)
 {
 	UUIM_TradingUI* TradingModel = Cast<UUIM_TradingUI>(GetModel());
 	TradingModel->SetClickedInventoryItem(ItemId);
 	TradingModel->SetClickedInventorySlotIndex(SlotIndex);
+}
+
+void UUIC_TradingUI::OnUpdateSelectedProduct(uint16 ProductId)
+{
+	UE_LOG(LogTemp, Warning, TEXT("%d"), ProductId);
+
+	FProductStruct ProductStruct = UTradingManager::GetProductDataById(ProductId);
+
+	FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ProductId);
+	
+	const UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
+
+	TradingUIView->GetProductDetailView()->UpdateUI(ItemInfoData
+	.GetDisplayName(), ItemInfoData.GetDescription(), ItemInfoData.GetThumbnail());
 }

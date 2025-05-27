@@ -17,7 +17,7 @@ bool UUIV_TradingUI::NativeOnDrop(const FGeometry& InGeometry,
 
 	if (ItemDragDropOperation)
 	{
-		if (ProductList)
+		if (ItemListView)
 		{
 			UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(
 				GetController());

@@ -31,3 +31,29 @@ void UTradingManager::Initialize()
 		}
 	}
 }
+
+uint32 UTradingManager::GetProductPriceById(uint32 Id)
+{
+	for (int i = 0, Count = ProductData.Num(); i < Count; i++)
+	{
+		if (ProductData[i].GetProductId() == Id)
+		{
+			return ProductData[i].GetProductPrice();
+		}
+	}
+
+	return 0;
+}
+
+FProductStruct UTradingManager::GetProductDataById(uint32 Id)
+{
+	for (int i = 0, Count = ProductData.Num(); i < Count; i++)
+	{
+		if (ProductData[i].GetProductId() == Id)
+		{
+			return ProductData[i];
+		}
+	}
+
+	return FProductStruct();
+}

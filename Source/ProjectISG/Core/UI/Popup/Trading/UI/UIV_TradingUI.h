@@ -1,25 +1,18 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
 #include "UIV_TradingUI.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PROJECTISG_API UUIV_TradingUI : public UBaseUIView
 {
 	GENERATED_BODY()
 
 public:
-	GETTER(class UUIV_ProductListWidget*, ProductList)
-	GETTER(class UInventoryList*, InventoryList)
-	GETTER(class UTextBlock*, GoldText)
+	GETTER(class UUIV_ProductListWidget*, ItemListView)
+	GETTER(class UProductDetailView*, ProductDetailView)
 	SETTER(bool, OpenFlag)
-	GETTER(class UItemInfo*, ItemInfoTooltip)
 
 protected:
 	virtual bool NativeOnDrop(const FGeometry& InGeometry,
@@ -33,19 +26,10 @@ protected:
 
 private:
 	UPROPERTY(meta = (BindWidget))
-	class UScrollBox* ProductListScroll;
-
+	class UProductDetailView* ProductDetailView;
+	
 	UPROPERTY(meta = (BindWidget))
-	class UInventoryList* InventoryList;
-
-	UPROPERTY(meta = (BindWidget))
-	class UUIV_ProductListWidget* ProductList;
-
-	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* GoldText;
-
-	UPROPERTY(meta = (BindWidget))
-	class UItemInfo* ItemInfoTooltip;
+	class UUIV_ProductListWidget* ItemListView;
 
 	bool OpenFlag = false;
 };

@@ -187,7 +187,7 @@ void UPlayerInventoryComponent::UpdateInventorySlotItemData()
 			TradingUIController->GetView());
 		if (TradingUIView)
 		{
-			TradingUIView->GetInventoryList()->UpdateItemData();
+			// TradingUIView->GetInventoryList()->UpdateItemData();
 		}
 	}
 }
