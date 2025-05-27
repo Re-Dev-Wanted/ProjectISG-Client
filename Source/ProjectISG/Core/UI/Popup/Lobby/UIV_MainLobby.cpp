@@ -4,9 +4,7 @@
 #include "UIV_MainLobby.h"
 
 #include "UIC_MainLobby.h"
-#include "UIM_MainLobby.h"
 #include "Components/Button.h"
-#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Core/ISGGameInstance.h"
 #include "ProjectISG/Core/Controller/LobbyPlayerController.h"
@@ -17,20 +15,17 @@ void UUIV_MainLobby::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	OpenChooseCharacterUIButton->OnClicked.AddDynamic(
-		this, &ThisClass::OnClickedOpenChooseCharacterUIButton);
+	GameStart->OnClicked.AddDynamic(
+		this, &ThisClass::OnClickedGameStartButton);
 
-	OpenFindSessionUIButton->OnClicked.AddDynamic(
-		this, &ThisClass::OnClickedFindSessionUIButton);
+	Multiplay->OnClicked.AddDynamic(
+		this, &ThisClass::OnClickedMultiplayButton);
 
-	ExitButton->OnClicked.AddDynamic(this, &ThisClass::OnClickedExitButton);
+	Exit->OnClicked.AddDynamic(this, &ThisClass::OnClickedExitButton);
 }
 
-void UUIV_MainLobby::OnClickedOpenChooseCharacterUIButton()
+void UUIV_MainLobby::OnClickedGameStartButton()
 {
-	// UUIC_MainLobby* MainLobbyController = Cast<UUIC_MainLobby>(GetController());
-	// ALobbyPlayerController* LobbyPlayerController = Cast<
-	// 	ALobbyPlayerController>(MainLobbyController->GetPlayerController());
 	UISGGameInstance* ISGGameInstance = Cast<UISGGameInstance>(GetGameInstance());
 	if (ISGGameInstance)
 	{
@@ -38,7 +33,7 @@ void UUIV_MainLobby::OnClickedOpenChooseCharacterUIButton()
 	}
 }
 
-void UUIV_MainLobby::OnClickedFindSessionUIButton()
+void UUIV_MainLobby::OnClickedMultiplayButton()
 {
 	UUIC_MainLobby* MainLobbyController = Cast<UUIC_MainLobby>(GetController());
 	ALobbyPlayerController* LobbyPlayerController = Cast<

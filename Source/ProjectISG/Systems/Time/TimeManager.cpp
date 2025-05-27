@@ -79,6 +79,13 @@ void ATimeManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bIsLobbyTimer)
+	{
+		UpdateCycleTime(DeltaTime);
+		RotateSun();
+		return;
+	}
+
 	if (!TimeStop && !SleepManager->GetbSleepCinematicStart())
 	{
 		if (HasAuthority())

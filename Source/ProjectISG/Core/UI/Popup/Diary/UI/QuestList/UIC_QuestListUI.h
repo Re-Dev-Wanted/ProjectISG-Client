@@ -35,6 +35,8 @@ private:
 
 	void SetQuestRequireItemData(FQuestRequireData& RequireQuest) const;
 
+	void SetQuestRequireCustomData(FQuestRequireData& RequireQuest) const;
+	
 	UFUNCTION()
 	void OnClickQuestButton();
 

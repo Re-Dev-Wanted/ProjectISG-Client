@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "OnlineSessionSettings.h"
 #include "GameFramework/PlayerController.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
 #include "ProjectISG/Utils/MacroUtil.h"
@@ -33,7 +32,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Alert(const EAlertType AlertType, const FString& Message
-				, const float Time = 2.f);
+	           , const float Time = 2.f);
 
 	// 월드 퀘스트 실행
 	UFUNCTION(BlueprintCallable)
@@ -61,6 +60,7 @@ public:
 
 	GETTER(TObjectPtr<UUIManageComponent>, UIManageComponent)
 	GETTER(TObjectPtr<UQuestManageComponent>, QuestManageComponent)
+	GETTER_SETTER(bool, CustomQuestComplete)
 
 	UFUNCTION(Client, Reliable)
 	void Client_ResetWidgetAndPushTimeAlert();
@@ -78,8 +78,12 @@ protected:
 
 	virtual void OnRep_PlayerState() override;
 
+	UFUNCTION()
+	void MainSceneEnd();
+
 private:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
+		meta = (AllowPrivateAccess = true))
 	TObjectPtr<UUIManageComponent> UIManageComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly
@@ -89,5 +93,8 @@ private:
 #pragma region Quest
 	UFUNCTION(Server, Reliable)
 	void Server_StartQuest(const FString& QuestId);
+
+	UPROPERTY(EditAnywhere)
+	bool CustomQuestComplete = false;
 #pragma endregion
 };

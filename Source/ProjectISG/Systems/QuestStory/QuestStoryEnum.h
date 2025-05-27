@@ -19,13 +19,15 @@ enum class EQuestStoryObjective : uint8
 	// 단순 대사 완료 시 퀘스트 자동 완료
 	Dialogue,
 	// 특정 아이템을 수집해 가야 함.
-	CollectItem
+	CollectItem,
+	// 기타
+	Custom,
 };
 
 UENUM()
 enum class EQuestRequireType : uint8
 {
-	None, HasItem, HasGold, Custom,
+	None, HasItem, HasGold, Custom, Interaction,
 };
 
 UENUM()
@@ -43,8 +45,8 @@ enum class EQuestStoryMetaDataKey: uint8
 UENUM()
 enum class EQuestStatus: uint8
 {
-	None, Available UMETA(DisplayName = "진행 가능")
-	, Unavailable UMETA(DisplayName = "진행 불가능")
-	, InProgress UMETA(DisplayName = "진행 중")
-	, CanComplete UMETA(DisplayName = "완료 가능")
-	, Completed UMETA(DisplayName = "완료됨")};
+	None, Available UMETA(DisplayName = "진행 가능") ,
+	Unavailable UMETA(DisplayName = "진행 불가능") ,
+	InProgress UMETA(DisplayName = "진행 중") ,
+	CanComplete UMETA(DisplayName = "완료 가능") ,
+	Completed UMETA(DisplayName = "완료됨")};

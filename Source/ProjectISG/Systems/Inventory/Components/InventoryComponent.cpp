@@ -17,53 +17,11 @@ void UInventoryComponent::InitializeComponent()
 
 void UInventoryComponent::InitializeItemData()
 {
-	FItemMetaInfo HammerItemMetaInfo;
-	HammerItemMetaInfo.SetId(9);
-	HammerItemMetaInfo.SetCurrentCount(1);
+	FItemMetaInfo AltarItemMetaInfo;
+	AltarItemMetaInfo.SetId(53);
+	AltarItemMetaInfo.SetCurrentCount(1);
 
-	InventoryList[0] = HammerItemMetaInfo;
-
-	FItemMetaInfo HoeItemMetaInfo;
-	HoeItemMetaInfo.SetId(10);
-	HoeItemMetaInfo.SetCurrentCount(1);
-
-	InventoryList[2] = HoeItemMetaInfo;
-
-	FItemMetaInfo WateringItemMetaInfo2;
-	WateringItemMetaInfo2.SetId(13);
-	WateringItemMetaInfo2.SetCurrentCount(1);
-
-	InventoryList[3] = WateringItemMetaInfo2;
-
-	FItemMetaInfo FishingRodMetaInfo;
-	FishingRodMetaInfo.SetId(14);
-	FishingRodMetaInfo.SetCurrentCount(1);
-
-	InventoryList[4] = FishingRodMetaInfo;
-
-	FItemMetaInfo BuildItemMetaInfo;
-	BuildItemMetaInfo.SetId(2);
-	BuildItemMetaInfo.SetCurrentCount(1);
-
-	InventoryList[5] = BuildItemMetaInfo;
-
-	FItemMetaInfo BuildItemMetaInfo2;
-	BuildItemMetaInfo2.SetId(12);
-	BuildItemMetaInfo2.SetCurrentCount(1);
-
-	InventoryList[6] = BuildItemMetaInfo2;
-
-	FItemMetaInfo CropItemMetaInfo;
-	CropItemMetaInfo.SetId(3);
-	CropItemMetaInfo.SetCurrentCount(10);
-
-	InventoryList[7] = CropItemMetaInfo;
-
-	FItemMetaInfo BranchItemMetaInfo;
-	BranchItemMetaInfo.SetId(18);
-	BranchItemMetaInfo.SetCurrentCount(10);
-
-	AddItem(BranchItemMetaInfo);
+	AddItem(AltarItemMetaInfo);
 
 	UpdateInventory_Internal();
 }

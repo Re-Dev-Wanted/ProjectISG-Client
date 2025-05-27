@@ -46,10 +46,7 @@ bool UUIV_TradingUI::NativeOnDrop(const FGeometry& InGeometry,
 void UUIV_TradingUI::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(
-				GetController());
-	TradingUIController->UpdateGoldText();
+	
 }
 
 void UUIV_TradingUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)

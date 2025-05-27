@@ -193,6 +193,11 @@ void UUIC_QuestListUI::SetQuestRequireData(const FString& QuestId)
 				SetQuestRequireItemData(RequireQuest);
 				break;
 			}
+		case EQuestRequireType::Custom:
+			{
+				SetQuestRequireCustomData(RequireQuest);
+				break;
+			}
 		default:
 			{
 				break;
@@ -253,6 +258,32 @@ void UUIC_QuestListUI::SetQuestRequireItemData(
 			QuestListUIView->GetRequiredQuestDefaultColor());
 	}
 
+	QuestListUIView->GetQuestRequireList()->AddChild(NewWidget);
+}
+
+void UUIC_QuestListUI::SetQuestRequireCustomData(
+	FQuestRequireData& RequireQuest) const
+{
+	UUIV_QuestListUI* QuestListUIView = Cast<UUIV_QuestListUI>(GetView());
+
+	FString CustomRequireOption = RequireQuest.GetRequireCustomOptions();
+	
+	UUIV_QuestRequiredTextWidget* NewWidget = CreateWidget<
+		UUIV_QuestRequiredTextWidget>(QuestListUIView
+									, QuestListUIView->
+									GetQuestRequiredTextClass());
+
+	NewWidget->SetPadding(FMargin(0, 0, 0, 8));
+	
+	NewWidget->GetRequireDescription()->SetText(
+		FText::FromString(
+			FString::Printf(TEXT("%s"), *CustomRequireOption)));
+	NewWidget->GetRequireStatus()->SetText(FText::FromString(
+		FString::Printf(TEXT(""))));
+
+	NewWidget->GetRequireDescription()->SetColorAndOpacity(
+			QuestListUIView->GetRequiredQuestHasDoneColor());
+	
 	QuestListUIView->GetQuestRequireList()->AddChild(NewWidget);
 }
 

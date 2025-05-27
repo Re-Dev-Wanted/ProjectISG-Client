@@ -6,6 +6,7 @@
 #include "ProjectISG/Core/ISGGameInstance.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Loading/UIC_Loading.h"
+#include "ProjectISG/Core/UI/Loading/UIV_Loading.h"
 
 ALobbyPlayerController::ALobbyPlayerController()
 {
@@ -45,6 +46,10 @@ void ALobbyPlayerController::ShowLoadingUIAndCreateSession(bool bIsServerTravel)
 {
 	PopUI();
 	PushUI(EUIName::Loading_LoadingUI);
+
+	UUIC_Loading* LoadingController = Cast<UUIC_Loading>(UIManageComponent->ControllerInstances[EUIName::Loading_LoadingUI]);
+	UUIV_Loading* LoadingView = Cast<UUIV_Loading>(LoadingController->GetView());
+	LoadingView->SetCreateSession(true);
 
 	UISGGameInstance* GameInstance = Cast<UISGGameInstance>(
 		GetWorld()->GetGameInstance());

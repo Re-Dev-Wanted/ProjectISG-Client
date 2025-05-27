@@ -36,6 +36,7 @@ void UUIC_TradingUI::AppearUI()
 	Super::AppearUI();
 
 	ClearItemInfoData();
+	UpdateGoldText();
 }
 
 void UUIC_TradingUI::OnCloseTradingUI()

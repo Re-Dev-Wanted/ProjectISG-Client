@@ -16,6 +16,7 @@
 #include "ProjectISG/Systems/Logging/LoggingEnum.h"
 #include "ProjectISG/Systems/Logging/LoggingStruct.h"
 #include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
+#include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 
 class AMainPlayerCharacter;
 
@@ -198,6 +199,16 @@ void UPlacementIndicatorComponent::ExecuteInternal(
 				GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()
 				          ->
 				          LoggingDataWithScreenshot(LogParams);
+			}
+
+			// 제단 설치 퀘스트 코드
+			AMainPlayerController* PC = Cast<AMainPlayerController>(PlayerController);
+			if (PC)
+			{
+				if (PC->GetQuestManageComponent()->GetCurrentPlayingQuestId() == FString::Printf(TEXT("Story_005")))
+				{
+					PC->SetCustomQuestComplete(true);
+				}
 			}
 		}
 		else

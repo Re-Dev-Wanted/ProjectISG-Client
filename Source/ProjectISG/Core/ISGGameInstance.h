@@ -20,12 +20,12 @@ public:
 	void CreateSession();
 
 	void JoinFoundSession();
+
+	void DestroySessionAndMoveLevel(TSoftObjectPtr<UWorld> Level);
 #pragma endregion
 
 #pragma region GETTERSETTER
 	GETTER_SETTER(FString, SessionId)
-
-	GETTER_SETTER(bool, SessionCreateSuccess)
 
 	GETTER_SETTER(bool, IsServerTravel)
 #pragma endregion
@@ -40,11 +40,10 @@ protected:
 	                   EOnJoinSessionCompleteResult::Type Type);
 
 private:
-	UPROPERTY()
+	UPROPERTY(EditDefaultsOnly)
 	FString SessionId;
 
-	bool SessionCreateSuccess = false;
-
+	UPROPERTY(EditDefaultsOnly)
 	bool IsServerTravel = false;
 
 	FOnJoinSessionCompleteDelegate OnJoinSessionCompleteDelegate;
