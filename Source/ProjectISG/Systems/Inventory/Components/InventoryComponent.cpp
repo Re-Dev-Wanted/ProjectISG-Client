@@ -205,6 +205,19 @@ bool UInventoryComponent::DropItem(const uint16 Index, const uint32 Count)
 	return true;
 }
 
+FItemMetaInfo UInventoryComponent::GetFirstMetaInfo(const uint16 ItemId)
+{
+	for (const FItemMetaInfo& MetaInfo : InventoryList)
+	{
+		if (MetaInfo.GetId() == ItemId)
+		{
+			return MetaInfo;
+		}
+	}
+
+	return FItemMetaInfo();
+}
+
 uint32 UInventoryComponent::GetCurrentCount(const uint16 Id)
 {
 	int32 Result = 0;

@@ -16,6 +16,8 @@
 #include "ProjectISG/Core/UI/Base/Module/UI_BaseButton.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
+#include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 
 class AMainPlayerState;
 class AMainPlayerCharacter;
@@ -63,12 +65,114 @@ void UUIC_TradingUI::OnCloseTradingUI()
 	UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
 	TradingUIView->GetProductDetailView()->OnHide();
 	
-	PC->PopUI();
+	ResetUIFromPlayerController();
 }
 
 void UUIC_TradingUI::OnTrade()
 {
+	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
+	FProductStruct ProductStruct = UTradingManager::GetProductDataById
+	(TradingUIModel->GetSelectedId());
+
+	AMainPlayerState* PS = GetPlayerController()->GetPlayerState<AMainPlayerState>();
+
+	switch (TradingUIModel->GetCurrentState())
+	{
+	case ETradingState::SELL:
+		{
+			
+			FItemMetaInfo MetaInfo = PS->GetInventoryComponent()->GetFirstMetaInfo
+			(TradingUIModel->GetSelectedId());
+
+			float PriceRatio = UItemManager::GetPriceRatio(MetaInfo);
+			
+			PS->GetInventoryComponent()->RemoveItem
+			(TradingUIModel->GetSelectedId(), 1);
+
+			uint32 SellPrice = ProductStruct.GetProductPrice() * 
+			ProductStruct.GetSellPriceRatio() * PriceRatio;
+
+			PS->SetGold(PS->GetGold() + SellPrice);
+			UpdateGoldText();
+
+			LoggingToSellItem();
+		}
+		break;
+	default:
+		{
+			PS->GetInventoryComponent()->AddItem(
+				UItemManager::GetInitialItemMetaDataById(TradingUIModel->GetSelectedId()
+			));
 	
+			uint32 ItemPrice = ProductStruct.GetProductPrice() * ProductStruct.GetBuyPriceRatio();
+			PS->SetGold(PS->GetGold() - ItemPrice);
+			UpdateGoldText();
+
+			LoggingToBuyItem();
+		}
+		break;
+	}
+
+	RefreshList();
+}
+
+void UUIC_TradingUI::LoggingToBuyItem()
+{
+	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
+
+	FItemInfoData ItemInfoData = UItemManager::GetItemInfoById
+	(TradingUIModel->GetSelectedId());
+	
+	FDiaryLogParams LogParams;
+	LogParams.Location = TEXT("거래장");
+	LogParams.ActionType = ELoggingActionType::TRADE;
+	LogParams.ActionName = ELoggingActionName::buy_item;
+	LogParams.Detail = FString::Printf(TEXT("%s(을)를 %d개 구매했다."), *ItemInfoData.GetDisplayName(), 1);
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+				LoggingData(LogParams);
+}
+
+void UUIC_TradingUI::LoggingToSellItem()
+{
+	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
+
+	FItemInfoData ItemInfoData = UItemManager::GetItemInfoById
+	(TradingUIModel->GetSelectedId());
+	
+	FDiaryLogParams LogParams;
+	LogParams.Location = TEXT("거래장");
+	LogParams.ActionType = ELoggingActionType::TRADE;
+	LogParams.ActionName = ELoggingActionName::sell_item;
+	LogParams.Detail = FString::Printf(TEXT("%s(을)를 %d개 판매했다."), *ItemInfoData.GetDisplayName(), 1);
+
+	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
+				LoggingData(LogParams);
+}
+
+void UUIC_TradingUI::RefreshList()
+{
+	const UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
+	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
+	FProductStruct ProductStruct = UTradingManager::GetProductDataById
+	(TradingUIModel->GetSelectedId());
+
+	if (TradingUIModel->GetCurrentState() == ETradingState::SELL)
+	{
+		AMainPlayerState* PS = GetPlayerController()->GetPlayerState<AMainPlayerState>();
+			
+		uint16 RemainCount = PS->GetInventoryComponent()->GetCurrentCount
+		(TradingUIModel->GetSelectedId());
+
+		if (RemainCount == 0)
+		{
+			TradingUIModel->SetSelectedId(0);
+			TradingUIView->GetProductDetailView()->OnHide();
+			TradingUIView->GetTradeButton()->Get()->SetIsEnabled(false);
+		}
+	}
+
+	TradingUIView->GetItemListView()->SetUpdateUI(TradingUIModel->GetCurrentState());
 }
 
 void UUIC_TradingUI::UpdateGoldText()
@@ -101,7 +205,9 @@ void UUIC_TradingUI::OnUpdateSelectedProduct(uint16 ProductId)
 	FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ProductId);
 	
 	const UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
-	const UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
+	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
+
+	TradingUIModel->SetSelectedId(ProductId);
 
 	uint32 ProductPrice = TradingUIModel->GetCurrentState() == ETradingState::BUY?
 		ProductStruct.GetProductPrice() * ProductStruct.GetBuyPriceRatio() :

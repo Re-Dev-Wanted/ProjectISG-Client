@@ -18,9 +18,19 @@ class PROJECTISG_API UUIM_TradingUI : public UBaseUIModel
 	GENERATED_BODY()
 
 public:
-	GETTER_SETTER(ETradingState, CurrentState)
+	GETTER(ETradingState, CurrentState)
+	GETTER_SETTER(uint16, SelectedId)
+
+	void SetCurrentState(ETradingState State)
+	{
+		CurrentState = State;
+		SelectedId = 0;
+	}
 
 private:
 	UPROPERTY()
 	ETradingState CurrentState;
+
+	UPROPERTY()
+	uint16 SelectedId;
 };

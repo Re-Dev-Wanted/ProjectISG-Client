@@ -22,6 +22,7 @@ public:
 	static EItemGrade GetItemGrade(const FItemMetaInfo& Info);
 	static FString GetItemGradeText(const FItemMetaInfo& Info);
 	static void SetItemGrade(FItemMetaInfo& Info, const EItemGrade ItemGrade);
+	static float GetPriceRatio(const FItemMetaInfo& Info);
 
 private:
 	static TArray<FItemInfoData> ItemInfoList;
