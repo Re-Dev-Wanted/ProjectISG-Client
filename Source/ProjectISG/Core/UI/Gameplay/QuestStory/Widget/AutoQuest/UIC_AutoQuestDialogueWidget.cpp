@@ -104,7 +104,12 @@ void UUIC_AutoQuestDialogueWidget::OnFinishDialogue()
 	if (AutoQuestDialogueWidgetModel->GetCurrentQuestDialogueIndex() >=
 		DialogueCount)
 	{
-		PlayerQuestManager->EndQuest(true);
+		PC->GetMainHUD()->ToggleAutoQuestUI(false);
+		EQuestStoryObjective CurrentQuestStoryObjective = UQuestStoryManager::GetQuestDataById(PC->GetQuestManageComponent()->GetCurrentPlayingQuestId()).GetQuestObjective(); 
+		if (CurrentQuestStoryObjective == EQuestStoryObjective::Dialogue)
+		{
+			PlayerQuestManager->EndQuest(true);
+		}
 		return;
 	}
 
