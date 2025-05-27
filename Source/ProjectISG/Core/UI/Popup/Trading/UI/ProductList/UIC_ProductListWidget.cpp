@@ -6,17 +6,39 @@
 #include "UIV_ProductListWidget.h"
 #include "Components/ListView.h"
 #include "ProjectISG/Contents/Trading/TradingManager.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/Popup/Trading/UI/UIM_TradingUI.h"
 #include "ProjectISG/Core/UI/Popup/Trading/UI/ProductInfo/ProductItemWidgetObject.h"
 #include "ProjectISG/Core/UI/Popup/Trading/UI/ProductInfo/UIC_ProductInfoWidget.h"
 #include "ProjectISG/Core/UI/Popup/Trading/UI/ProductInfo/UIV_ProductInfoWidget.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
+#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 void UUIC_ProductListWidget::InitializeData()
 {
+	SetProductList();
+}
+
+void UUIC_ProductListWidget::OnUpdateList(ETradingState State)
+{
+	switch (State)
+	{
+	case ETradingState::SELL:
+		SetInventoryList();
+		break;
+	default:
+		SetProductList();
+		break;
+	}
+}
+
+void UUIC_ProductListWidget::SetProductList()
+{
 	UUIV_ProductListWidget* ProductListWidgetView = Cast<
 		UUIV_ProductListWidget>(GetView());
-
+	
 	ProductListWidgetView->GetProductList()->ClearListItems();
 
 	const TArray<FProductStruct> ProductDatas = UTradingManager::GetProductData();
@@ -24,12 +46,47 @@ void UUIC_ProductListWidget::InitializeData()
 	for (int i = 0, Count = ProductDatas.Num(); i < Count; i++)
 	{
 		const FProductStruct Product = ProductDatas[i];
-		const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(Product.GetProductId());
 		
 		UProductItemWidgetObject* NewWidget = 
-		NewObject<UProductItemWidgetObject>();
+			NewObject<UProductItemWidgetObject>();
 
 		NewWidget->ProductId = Product.GetProductId();
+
+		ProductListWidgetView->GetProductList()->AddItem(NewWidget);
+	}
+}
+
+void UUIC_ProductListWidget::SetInventoryList()
+{
+	UUIV_ProductListWidget* ProductListWidgetView = Cast<
+		UUIV_ProductListWidget>(GetView());
+	
+	ProductListWidgetView->GetProductList()->ClearListItems();
+
+	const AMainPlayerState* PS =GetPlayerController()
+	->GetPlayerState<AMainPlayerState>();
+
+	if (!PS)
+	{
+		return;
+	}
+
+	for (FItemMetaInfo MetaInfo : PS->GetInventoryComponent()->GetInventoryList())
+	{
+		if (!MetaInfo.IsValid())
+		{
+			continue;
+		}
+
+		if (!UTradingManager::IsTradable(MetaInfo.GetId()))
+		{
+			continue;
+		}
+
+		UProductItemWidgetObject* NewWidget = 
+			NewObject<UProductItemWidgetObject>();
+
+		NewWidget->ProductId = MetaInfo.GetId();
 
 		ProductListWidgetView->GetProductList()->AddItem(NewWidget);
 	}

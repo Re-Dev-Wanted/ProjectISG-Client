@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "ProjectISG/Utils/MacroUtil.h"
 #include "TradingTabButton.generated.h"
 
 class UTextBlock;
@@ -12,8 +13,15 @@ class PROJECTISG_API UTradingTabButton : public UUserWidget
 {
 	GENERATED_BODY()
 
+public:
+	GETTER(TObjectPtr<UButton>, Button)
+
+	void OnActive(bool IsActive);
+
 protected:
 	virtual void NativePreConstruct() override;
+	
+	void SetStyleInternal(FSlateColor ButtonColor, FSlateColor TextColor);
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> Button;

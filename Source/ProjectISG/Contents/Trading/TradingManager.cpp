@@ -57,3 +57,16 @@ FProductStruct UTradingManager::GetProductDataById(uint32 Id)
 
 	return FProductStruct();
 }
+
+bool UTradingManager::IsTradable(uint16 Id)
+{
+	for (int i = 0, Count = ProductData.Num(); i < Count; i++)
+	{
+		if (ProductData[i].GetProductId() == Id)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}

@@ -3,16 +3,23 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 
-void UTradingTabButton::NativePreConstruct()
+void UTradingTabButton::OnActive(bool IsActive)
 {
-	Super::NativePreConstruct();
+	FSlateColor ButtonColor = IsActive? ActiveColor : DeactiveColor;
+	FSlateColor TextColor = IsActive? ActiveTextColor : DeactiveTextColor;
 
+	SetStyleInternal(ButtonColor, TextColor);
+}
+
+void UTradingTabButton::SetStyleInternal(FSlateColor ButtonColor, FSlateColor
+ TextColor)
+{
 	FButtonStyle Style;
 	
 	FSlateBrush SlateBrush;
 
 	SlateBrush.SetImageSize(FDeprecateSlateVector2D(32, 80));
-	SlateBrush.TintColor = ActiveColor;
+	SlateBrush.TintColor = ButtonColor;
 	SlateBrush.DrawAs = ESlateBrushDrawType::RoundedBox;
 
 	FSlateBrushOutlineSettings OutlineSettings;
@@ -31,6 +38,13 @@ void UTradingTabButton::NativePreConstruct()
 	
 	Button->SetStyle(Style);
 
-	ButtonText->SetColorAndOpacity(ActiveTextColor);
+	ButtonText->SetColorAndOpacity(TextColor);
+}
+
+void UTradingTabButton::NativePreConstruct()
+{
+	Super::NativePreConstruct();
+
 	ButtonText->SetText(FText::FromString(Text));
+	SetStyleInternal(ActiveColor, ActiveTextColor);
 }

@@ -16,6 +16,12 @@ protected:
 	virtual void AppearUI() override;
 
 	UFUNCTION()
+	void ChangeBuyState();
+
+	UFUNCTION()
+	void ChangeSellState();
+
+	UFUNCTION()
 	void OnCloseTradingUI();
 
 	UFUNCTION()

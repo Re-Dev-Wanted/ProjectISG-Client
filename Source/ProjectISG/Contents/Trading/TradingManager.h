@@ -20,6 +20,7 @@ public:
 	static TArray<FProductStruct> GetProductData() { return ProductData; }
 	static uint32 GetProductPriceById(uint32 Id);
 	static FProductStruct GetProductDataById(uint32 Id);
+	static bool IsTradable(uint16 Id);
 
 private:
 	static TArray<FProductStruct> ProductData;
