@@ -56,5 +56,5 @@ void UUIC_InventoryUI::BindInputAction(UEnhancedInputComponent* InputComponent)
 	Super::BindInputAction(InputComponent);
 
 	InputComponent->BindAction(CloseInventoryAction, ETriggerEvent::Triggered,
-	                           this, &ThisClass::PopUIFromPlayerController);
+	                           this, &ThisClass::ResetUIFromPlayerController);
 }
