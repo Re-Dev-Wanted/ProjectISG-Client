@@ -46,18 +46,20 @@ void UUIC_AutoQuestDialogueWidget::InitializeDialogue()
 		UQuestStoryManager::GetQuestDialogueById(
 			PlayerQuestManager->GetCurrentPlayingQuestId());
 
+	// 대사가 없으면 대사를 종료시킨다.
 	if (Dialogues.Num() == 0)
 	{
 		OnFinishDialogue();
 		return;
 	}
 
+	// 대사를 말하는 주체에 대한 이름 설정
 	const FString OwnerText = Dialogues[CurrentQuestDialogueIndex].
-							GetDialogueOwner() == TEXT("{Player}")
-								? GetView()->GetOwningPlayerState()->
-											GetPlayerName()
-								: Dialogues[CurrentQuestDialogueIndex].
-								GetDialogueOwner();
+	                          GetDialogueOwner() == TEXT("{Player}")
+		                          ? GetView()->GetOwningPlayerState()->
+		                                       GetPlayerName()
+		                          : Dialogues[CurrentQuestDialogueIndex].
+		                          GetDialogueOwner();
 
 	AutoQuestDialogueWidgetView->GetDialogueOwner()->SetText(
 		FText::FromString(OwnerText));
@@ -84,14 +86,25 @@ void UUIC_AutoQuestDialogueWidget::StartQuestDialogue()
 		AutoQuestDialogueWidgetView->GetDialogueAnimation());
 }
 
+void UUIC_AutoQuestDialogueWidget::SkipQuestDialogue()
+{
+	UUIV_AutoQuestDialogueWidget* AutoQuestDialogueWidgetView = Cast<
+		UUIV_AutoQuestDialogueWidget>(GetView());
+
+	AutoQuestDialogueWidgetView->StopAnimation(
+		AutoQuestDialogueWidgetView->GetDialogueAnimation());
+
+	AutoQuestDialogueWidgetView->SetVisibility(ESlateVisibility::Hidden);
+}
+
 void UUIC_AutoQuestDialogueWidget::OnFinishDialogue()
 {
 	UUIV_AutoQuestDialogueWidget* AutoQuestDialogueWidgetView = Cast<
 		UUIV_AutoQuestDialogueWidget>(GetView());
-	UUIM_AutoQuestDialogueWidget* AutoQuestDialogueWidgetModel = Cast<
+	const UUIM_AutoQuestDialogueWidget* AutoQuestDialogueWidgetModel = Cast<
 		UUIM_AutoQuestDialogueWidget>(GetModel());
 
-	AMainPlayerController* PC = Cast<AMainPlayerController>(
+	const AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetView()->GetOwningPlayer());
 	UQuestManageComponent* PlayerQuestManager = PC->
 		GetQuestManageComponent();
@@ -101,13 +114,17 @@ void UUIC_AutoQuestDialogueWidget::OnFinishDialogue()
 		PlayerQuestManager->GetCurrentPlayingQuestId()).Num();
 
 	// 대화 배열 수 이상까지 가면 더 이상 출력할 대사 없음
+	// 또한 퀘스트 북을 통하지 않는 퀘스트의 경우 (ex. 튜토리얼 케이스)
+	// 에 대사 완료 이후 완료 여부를 검증해 퀘스트를 종료한다.
 	if (AutoQuestDialogueWidgetModel->GetCurrentQuestDialogueIndex() >=
-		DialogueCount)
+		DialogueCount && UQuestStoryManager::IsHiddenInQuestBook(
+			PlayerQuestManager->GetCurrentPlayingQuestId()))
 	{
 		PlayerQuestManager->EndQuest(true);
 		return;
 	}
 
+	// 위 케이스가 아니라면 다시 애니메이션을 재생하면서 다음 대사를 노출시킨다.
 	InitializeDialogue();
 
 	// 애니메이션 재생하기

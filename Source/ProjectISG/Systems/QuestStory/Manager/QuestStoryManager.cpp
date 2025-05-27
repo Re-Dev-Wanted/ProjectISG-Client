@@ -1,7 +1,6 @@
 #include "QuestStoryManager.h"
 
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
-#include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 
@@ -477,15 +476,6 @@ void UQuestStoryManager::CompleteQuest_Internal(AMainPlayerController* PC
 				break;
 			}
 		}
-	}
-
-	// 다음 퀘스트를 수행한다.
-	if (CurrentQuestStoryData.GetQuestMetaData().Contains(
-		EQuestStoryMetaDataKey::NextQuest))
-	{
-		PC->StartQuest(
-			CurrentQuestStoryData.GetQuestMetaData()[
-				EQuestStoryMetaDataKey::NextQuest]);
 	}
 
 	// 보상 제공

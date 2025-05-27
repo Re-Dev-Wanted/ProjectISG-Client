@@ -39,7 +39,7 @@ enum class EQuestRewardType : uint8
 UENUM()
 enum class EQuestStoryMetaDataKey: uint8
 {
-	None, IsHideInQuestBook, RemoveItemToClear, NextQuest,
+	None, IsHideInQuestBook, RemoveItemToClear,
 };
 
 UENUM()
