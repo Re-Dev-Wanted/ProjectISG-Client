@@ -239,7 +239,6 @@ bool UQuestStoryManager::CheckCompleteQuest(AMainPlayerController* PC
 	}
 
 	const AMainPlayerState* PS = PC->GetPlayerState<AMainPlayerState>();
-	const UInventoryComponent* InventoryComponent = PS->GetInventoryComponent();
 
 	for (FQuestRequireData& RequireData : QuestRequireData[QuestId])
 	{
@@ -248,21 +247,10 @@ bool UQuestStoryManager::CheckCompleteQuest(AMainPlayerController* PC
 		case EQuestRequireType::HasItem:
 			{
 				FItemMetaInfo RequireItem;
-				RequireItem.SetId(
-					RequireData.GetRequireItemOptions().GetItemId());
-				RequireItem.SetCurrentCount(
-					RequireData.GetRequireItemOptions().GetItemCount());
-				RequireItem.SetMetaData(
-					RequireData.GetRequireItemOptions().GetItemMetaData());
+				FormattingRequireItem(RequireData, RequireItem);
 
-				if (!InventoryComponent->GetCurrentRemainItemMetaValue().
-				                         Contains(RequireItem))
-				{
-					return false;
-				}
-
-				if (InventoryComponent->GetCurrentRemainItemMetaValue()[
-					RequireItem] < RequireItem.GetCurrentCount())
+				// 아이템 비교 로직에 실패한 경우 false를 반환해준다.
+				if (!IsExactRequireItemOption(PC, RequireData))
 				{
 					return false;
 				}
@@ -282,7 +270,10 @@ bool UQuestStoryManager::CheckCompleteQuest(AMainPlayerController* PC
 		case EQuestRequireType::Custom:
 			{
 				return PC->GetCustomQuestComplete();
-				break;
+			}
+		case EQuestRequireType::None:
+			{
+				return false;
 			}
 		default:
 			{
@@ -383,12 +374,7 @@ uint32 UQuestStoryManager::GetRequireQuestDateToAbleFinish(
 		case EQuestRequireType::HasItem:
 			{
 				FItemMetaInfo RequireItem;
-				RequireItem.SetId(
-					RequireData.GetRequireItemOptions().GetItemId());
-				RequireItem.SetCurrentCount(
-					RequireData.GetRequireItemOptions().GetItemCount());
-				RequireItem.SetMetaData(
-					RequireData.GetRequireItemOptions().GetItemMetaData());
+				FormattingRequireItem(RequireData, RequireItem);
 
 				if (PS->GetInventoryComponent()->HasExactItemInInventory(
 					RequireItem))
@@ -448,12 +434,7 @@ void UQuestStoryManager::CompleteQuest_Internal(AMainPlayerController* PC
 				}
 
 				FItemMetaInfo RequireItem;
-				RequireItem.SetId(
-					RequireData.GetRequireItemOptions().GetItemId());
-				RequireItem.SetCurrentCount(
-					RequireData.GetRequireItemOptions().GetItemCount());
-				RequireItem.SetMetaData(
-					RequireData.GetRequireItemOptions().GetItemMetaData());
+				FormattingRequireItem(RequireData, RequireItem);
 
 				PS->GetInventoryComponent()->RemoveExactItem(RequireItem);
 
@@ -523,4 +504,71 @@ void UQuestStoryManager::GiveRewardQuest_Internal(
 			}
 		}
 	}
+}
+
+void UQuestStoryManager::FormattingRequireItem(
+	FQuestRequireData& RequireData, FItemMetaInfo& ItemMetaInfo)
+{
+	// 기본 MetaData 세팅
+	ItemMetaInfo.SetId(
+		RequireData.GetRequireItemOptions().GetItemId());
+	ItemMetaInfo.SetCurrentCount(
+		RequireData.GetRequireItemOptions().GetItemCount());
+	ItemMetaInfo.SetMetaData(
+		RequireData.GetRequireItemOptions().GetItemMetaData());
+}
+
+bool UQuestStoryManager::IsExactRequireItemOption(AMainPlayerController* PC,
+                                                  FQuestRequireData&
+                                                  RequireData)
+{
+	// Require 타입이 Item 요구가 아니면 굳이 계산할 필요 없다.
+	if (RequireData.GetRequireType() != EQuestRequireType::HasItem)
+	{
+		return false;
+	}
+
+	// Require Item Meta Info에 대해 Formatting하고 시작한다.
+	FItemMetaInfo RequireItemMetaInfo;
+	FormattingRequireItem(RequireData, RequireItemMetaInfo);
+
+	// 부가 데이터를 가져와 해당 데이터 기반으로 분석 기준을 재정립 한다.
+	const TMap<EQuestAdditiveItemMetaData, FString> AdditiveData = RequireData.
+		GetRequireItemOptions().GetItemAdditiveMetaData();
+
+	const AMainPlayerState* PS = PC->GetPlayerState<AMainPlayerState>();
+	const UInventoryComponent* InventoryComponent = PS->GetInventoryComponent();
+
+	// 랭크 무시 관련 태그를 보유한 경우에 대해 처리한다.
+	if (AdditiveData.Contains(EQuestAdditiveItemMetaData::IgnoreItemRank))
+	{
+		// 랭크 무시 시 단순 Id를 기반으로 값이 존재하는지 확인한다.
+		if (InventoryComponent->GetCurrentRemainItemValue().Contains(
+			RequireItemMetaInfo.GetId()))
+		{
+			// RequireItemMetaInfo의 요구하는 갯수만큼 Inventory에 보유하고 있는 지 검증한다.
+			return InventoryComponent->GetCurrentRemainItemValue()[
+				RequireItemMetaInfo.
+				GetId()] >= RequireItemMetaInfo.GetCurrentCount();
+		}
+
+		// Inventory에 비교할 아이템의 ID 값이 존재하지 않으면 애초부터 비교가 불가능하기에
+		// false를 반환한다.
+		return false;
+	}
+
+	// 위에 조건들을 전부 무시하고 나면, 단순히 아이템을 포함하고 있는지 비교한다..
+	if (!InventoryComponent->GetCurrentRemainItemMetaValue().
+	                         Contains(RequireItemMetaInfo))
+	{
+		return false;
+	}
+
+	if (InventoryComponent->GetCurrentRemainItemMetaValue()[
+		RequireItemMetaInfo] < RequireItemMetaInfo.GetCurrentCount())
+	{
+		return false;
+	}
+
+	return true;
 }

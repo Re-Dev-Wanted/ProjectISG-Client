@@ -50,3 +50,10 @@ enum class EQuestStatus: uint8
 	InProgress UMETA(DisplayName = "진행 중") ,
 	CanComplete UMETA(DisplayName = "완료 가능") ,
 	Completed UMETA(DisplayName = "완료됨")};
+
+UENUM()
+enum class EQuestAdditiveItemMetaData
+{
+	None,
+	IgnoreItemRank
+};

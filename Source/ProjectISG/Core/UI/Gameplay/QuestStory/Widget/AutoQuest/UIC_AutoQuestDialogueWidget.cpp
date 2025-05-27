@@ -101,7 +101,7 @@ void UUIC_AutoQuestDialogueWidget::OnFinishDialogue()
 {
 	UUIV_AutoQuestDialogueWidget* AutoQuestDialogueWidgetView = Cast<
 		UUIV_AutoQuestDialogueWidget>(GetView());
-	const UUIM_AutoQuestDialogueWidget* AutoQuestDialogueWidgetModel = Cast<
+	UUIM_AutoQuestDialogueWidget* AutoQuestDialogueWidgetModel = Cast<
 		UUIM_AutoQuestDialogueWidget>(GetModel());
 
 	const AMainPlayerController* PC = Cast<AMainPlayerController>(
@@ -113,14 +113,28 @@ void UUIC_AutoQuestDialogueWidget::OnFinishDialogue()
 	const uint8 DialogueCount = UQuestStoryManager::GetQuestDialogueById(
 		PlayerQuestManager->GetCurrentPlayingQuestId()).Num();
 
+	if (PlayerQuestManager->GetCurrentPlayingQuestId() == TEXT(""))
+	{
+		AutoQuestDialogueWidgetModel->SetCurrentQuestDialogueIndex(0);
+		return;
+	}
+
 	// 대화 배열 수 이상까지 가면 더 이상 출력할 대사 없음
 	// 또한 퀘스트 북을 통하지 않는 퀘스트의 경우 (ex. 튜토리얼 케이스)
 	// 에 대사 완료 이후 완료 여부를 검증해 퀘스트를 종료한다.
 	if (AutoQuestDialogueWidgetModel->GetCurrentQuestDialogueIndex() >=
-		DialogueCount && UQuestStoryManager::IsHiddenInQuestBook(
-			PlayerQuestManager->GetCurrentPlayingQuestId()))
+		DialogueCount)
 	{
-		PlayerQuestManager->EndQuest(true);
+		if (UQuestStoryManager::IsHiddenInQuestBook(
+			PlayerQuestManager->GetCurrentPlayingQuestId()))
+		{
+			PlayerQuestManager->EndQuest(true);
+			return;
+		}
+
+		PC->GetMainHUD()->ToggleAutoQuestUI(false);
+		PC->GetMainHUD()->ToggleCurrentQuestUI(false);
+
 		return;
 	}
 
