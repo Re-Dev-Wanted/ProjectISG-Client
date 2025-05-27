@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Systems/QuestStory/QuestStoryData.h"
 #include "UObject/Object.h"
 #include "QuestStoryManager.generated.h"
@@ -70,4 +71,10 @@ private:
 
 	static void GiveRewardQuest_Internal(AMainPlayerController* PC
 	                                     , const FString& QuestId);
+
+	static void FormattingRequireItem(FQuestRequireData& RequireData,
+	                                  FItemMetaInfo& ItemMetaInfo);
+
+	static bool IsExactRequireItemOption(AMainPlayerController* PC,
+	                                     FQuestRequireData& RequireData);
 };

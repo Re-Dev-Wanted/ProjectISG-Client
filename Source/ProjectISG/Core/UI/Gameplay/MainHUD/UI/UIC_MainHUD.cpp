@@ -1,6 +1,5 @@
 ﻿#include "UIC_MainHUD.h"
 
-#include "UIM_MainHUD.h"
 #include "UIV_MainHUD.h"
 #include "Components/TextBlock.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
@@ -22,9 +21,6 @@ void UUIC_MainHUD::AppearUI()
 	Super::AppearUI();
 
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
-	const AMainPlayerController* PC = Cast<AMainPlayerController>(
-		GetView()->GetOwningPlayer());
-
 	MainHUDView->GetMainSlotList()->UpdateItemData();
 
 	const uint8 CurrentSlot = GetView()->GetOwningPlayerPawn<
@@ -33,6 +29,17 @@ void UUIC_MainHUD::AppearUI()
 	                                     GetCurrentSlotIndex();
 
 	MainHUDView->GetMainSlotList()->SelectSlot(CurrentSlot, CurrentSlot);
+}
+
+void UUIC_MainHUD::DisappearUI()
+{
+	Super::DisappearUI();
+
+	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
+
+	Cast<UUIC_AutoQuestDialogueWidget>(
+			MainHUDView->GetAutoQuestDialogueWidget()->GetController())->
+		SkipQuestDialogue();
 }
 
 void UUIC_MainHUD::UpdateMainHotSlot() const

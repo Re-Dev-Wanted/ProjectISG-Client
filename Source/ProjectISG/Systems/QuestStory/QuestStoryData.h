@@ -70,6 +70,12 @@ struct FItemQuestData
 		return ItemMetaData;
 	}
 
+	FORCEINLINE TMap<EQuestAdditiveItemMetaData, FString>&
+	GetItemAdditiveMetaData()
+	{
+		return ItemAdditiveMetaData;
+	}
+
 private:
 	UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess = true))
 	uint32 ItemId = 0;
@@ -79,6 +85,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess = true))
 	TMap<EMetaDataKey, FString> ItemMetaData;
+
+	UPROPERTY(EditDefaultsOnly, meta=(AllowPrivateAccess = true))
+	TMap<EQuestAdditiveItemMetaData, FString> ItemAdditiveMetaData;
 };
 
 USTRUCT(BlueprintType)
@@ -120,7 +129,7 @@ private:
 		, meta = (AllowPrivateAccess = true, EditCondition =
 			"RequireType == EQuestRequireType::HasGold"))
 	FGoldQuestData RequireGoldOptions = FGoldQuestData();
-	
+
 	UPROPERTY(EditDefaultsOnly
 		, meta = (AllowPrivateAccess = true, EditCondition =
 			"RequireType == EQuestRequireType::Custom"))

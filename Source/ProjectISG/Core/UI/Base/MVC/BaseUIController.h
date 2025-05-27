@@ -25,7 +25,10 @@ public:
 	virtual void InitializeSettingToPlayerController(APlayerController* PC);
 
 	UFUNCTION()
-	virtual void PopUIFromPlayerController();
+	void PopUIFromPlayerController();
+
+	UFUNCTION()
+	void ResetUIFromPlayerController();
 
 	GETTER(TObjectPtr<UBaseUIView>, View)
 	GETTER_EDITABLE(TObjectPtr<UBaseUIModel>, Model)

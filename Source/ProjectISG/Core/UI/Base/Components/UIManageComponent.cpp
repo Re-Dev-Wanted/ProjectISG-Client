@@ -138,7 +138,7 @@ bool UUIManageComponent::HasViewUI(const EUIName Key)
 
 void UUIManageComponent::ResetWidget()
 {
-	while (WidgetStack.IsEmpty() == false)
+	while (!WidgetStack.IsEmpty())
 	{
 		PopWidget();
 	}
