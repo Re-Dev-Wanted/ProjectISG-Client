@@ -44,7 +44,7 @@ void USleepManager::TickComponent(float DeltaTime, ELevelTick TickType,
                                   FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	if (GetOwner()->HasAuthority() == false)
+	if (GetOwner()->HasAuthority() == false || bUseSleepManager == false)
 	{
 		return;
 	}
@@ -56,7 +56,10 @@ void USleepManager::TickComponent(float DeltaTime, ELevelTick TickType,
 	else
 	{
 		Sleep();
-		ForceSleep();
+		if (bUseForceSleep)
+		{
+			ForceSleep();
+		}
 	}
 }
 

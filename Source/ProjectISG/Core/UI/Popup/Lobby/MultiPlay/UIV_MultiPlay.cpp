@@ -31,21 +31,14 @@ void UUIV_MultiPlay::OnClickedCreateRoomButton()
 {
 	UUIC_MultiPlay* MultiPlayUIController = Cast<UUIC_MultiPlay>(
 		GetController());
+	
 	ALobbyPlayerController* LobbyPlayerController = Cast<
 		ALobbyPlayerController>(MultiPlayUIController->GetPlayerController());
-
 	if (LobbyPlayerController)
 	{
 		LobbyPlayerController->ShowLoadingUIAndCreateSession(true);
 		return;
 	}
-
-	// AMainPlayerController* PC = Cast<AMainPlayerController>(
-	// 	MultiPlayUIController->GetPlayerController());
-	// if (PC)
-	// {
-	// 	PC->ShowLoadingUIAndCreateSession(true);
-	// }
 
 	ATutorialPlayerController* TutorialPlayerController = Cast<ATutorialPlayerController>(MultiPlayUIController->GetPlayerController());
 	if (TutorialPlayerController)

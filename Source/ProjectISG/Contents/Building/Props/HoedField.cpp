@@ -2,18 +2,20 @@
 
 #include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
+#include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
+#include "ProjectISG/Systems/QuestStory/Manager/QuestStoryManager.h"
 
 AHoedField::AHoedField()
 {
@@ -24,8 +26,7 @@ AHoedField::AHoedField()
 
 void AHoedField::OnSpawned()
 {
-	//TODO:: 테스트 (20%)
-	float Percent = FMath::RandRange(1.f, 100.f);
+	const float Percent = FMath::RandRange(1.f, 100.f);
 
 	if (Percent > ChanceBasedPercent)
 	{
@@ -39,24 +40,23 @@ void AHoedField::OnSpawned()
 	{
 		return;
 	}
-	
-	// UKismetSystemLibrary::PrintString(GetWorld(), TEXT("돌맹이 나올것이여"));
 
-	int SlotIndex = Player->GetPlayerInventoryComponent()->GetCurrentSlotIndex();
-	
+	const int SlotIndex = Player->GetPlayerInventoryComponent()->
+	                              GetCurrentSlotIndex();
+
 	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 
 	const FItemMetaInfo ItemMetaInfo = PS->GetInventoryComponent()->
-										   GetInventoryList()[SlotIndex];
+	                                       GetInventoryList()[SlotIndex];
 
-	uint16 ItemId = UItemManager::GetChanceBasedSpawnItemIdById(ItemMetaInfo.GetId
-	());
+	const uint16 ItemId = UItemManager::GetChanceBasedSpawnItemIdById(
+		ItemMetaInfo.GetId());
 
 	if (ItemId > 0)
 	{
-		const FItemMetaInfo AddItemMetaInfo = 
-		UItemManager::GetInitialItemMetaDataById
-		(ItemId);
+		const FItemMetaInfo AddItemMetaInfo =
+			UItemManager::GetInitialItemMetaDataById
+			(ItemId);
 
 		PS->GetInventoryComponent()->AddItem(AddItemMetaInfo);
 	}
@@ -66,11 +66,11 @@ void AHoedField::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MeshComp->SetRenderCustomDepth(false);
+	MeshComp->SetRenderCustomDepth(true);
 }
 
 void AHoedField::GetLifetimeReplicatedProps(
-	TArray<class FLifetimeProperty>& OutLifetimeProps) const
+	TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
@@ -102,8 +102,8 @@ bool AHoedField::GetCanTouch() const
 			GetCurrentState() != ECropState::Mature;
 	}
 
-	int SlotIndex = Player->GetPlayerInventoryComponent()->
-	                        GetCurrentSlotIndex();
+	const int SlotIndex = Player->GetPlayerInventoryComponent()->
+	                              GetCurrentSlotIndex();
 
 	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 
@@ -128,10 +128,10 @@ bool AHoedField::GetCanInteractive() const
 
 FString AHoedField::GetTouchDisplayText(AActor* Causer) const
 {
-	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
+	if (const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
-		int SlotIndex = Player->GetPlayerInventoryComponent()->
-		                        GetCurrentSlotIndex();
+		const int SlotIndex = Player->GetPlayerInventoryComponent()->
+		                              GetCurrentSlotIndex();
 
 		const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 
@@ -139,8 +139,8 @@ FString AHoedField::GetTouchDisplayText(AActor* Causer) const
 		                                       GetInventoryList()[SlotIndex];
 
 		const uint16 ItemId = Player->GetHandSlotComponent()->GetItemId();
-		FItemInfoData itemData = UItemManager::GetItemInfoById(ItemId);
-		FString UsingType = UItemManager::GetItemUsingType(ItemId);
+		const FItemInfoData ItemData = UItemManager::GetItemInfoById(ItemId);
+		const FString UsingType = UItemManager::GetItemUsingType(ItemId);
 
 		if (UsingType == "Watering" && PlantedCrop.IsValid())
 		{
@@ -149,10 +149,10 @@ FString AHoedField::GetTouchDisplayText(AActor* Causer) const
 
 		if (UsingType == "Farming" && !PlantedCrop.IsValid())
 		{
-			return FString::Printf(TEXT("%s 심기"), *itemData.GetDisplayName());
+			return FString::Printf(TEXT("%s 심기"), *ItemData.GetDisplayName());
 		}
 
-		uint16 OtherId = UItemManager::GetGeneratedOtherItemIdById(
+		const uint16 OtherId = UItemManager::GetGeneratedOtherItemIdById(
 			ItemMetaInfo.GetId());
 
 		if (OtherId > 0)
@@ -164,9 +164,10 @@ FString AHoedField::GetTouchDisplayText(AActor* Causer) const
 			{
 				if (PlantedCrop.IsValid())
 				{
-					ABaseCrop* Crop = PlantedCrop.Crop;
-					FItemInfoData SeedInfoData = UItemManager::GetItemInfoById(
-						PlantedCrop.CropId);
+					const ABaseCrop* Crop = PlantedCrop.Crop;
+					const FItemInfoData SeedInfoData =
+						UItemManager::GetItemInfoById(
+							PlantedCrop.CropId);
 
 					if (Crop->GetCurrentState() != ECropState::Mature)
 					{
@@ -196,15 +197,13 @@ void AHoedField::OnTouch(AActor* Causer)
 
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
-		int SlotIndex = Player->GetPlayerInventoryComponent()->
-		                        GetCurrentSlotIndex();
+		const int SlotIndex = Player->GetPlayerInventoryComponent()->
+		                              GetCurrentSlotIndex();
 
 		const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 
 		const FItemMetaInfo ItemMetaInfo = PS->GetInventoryComponent()->
 		                                       GetInventoryList()[SlotIndex];
-
-		//FString UsingType = UItemManager::GetItemUsingType(ItemMetaInfo.GetId());
 
 		const uint16 ItemId = Player->GetHandSlotComponent()->GetItemId();
 		const FItemInfoData ItemData = UItemManager::GetItemInfoById(ItemId);
@@ -220,7 +219,6 @@ void AHoedField::OnTouch(AActor* Causer)
 			Player->GetAbilitySystemComponent()->HandleGameplayEvent(
 				ISGGameplayTags::Farming_Active_Watering, &EventData);
 
-			Player->GetInteractionComponent()->Server_OnTouchResponse(Causer);
 			return;
 		}
 
@@ -241,7 +239,7 @@ void AHoedField::OnTouch(AActor* Causer)
 			return;
 		}
 
-		uint16 OtherId = UItemManager::GetGeneratedOtherItemIdById(
+		const uint16 OtherId = UItemManager::GetGeneratedOtherItemIdById(
 			ItemMetaInfo.GetId());
 
 		if (OtherId > 0)
@@ -286,7 +284,10 @@ void AHoedField::OnTouch(AActor* Causer)
 void AHoedField::OnTouchResponse(AActor* Causer)
 {
 	Super::OnTouchResponse(Causer);
-	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
+
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
+	AMainPlayerController* PC = Cast<AMainPlayerController>(
+		Player->GetController());
 	const uint16 ItemId = Player->GetHandSlotComponent()->GetItemId();
 
 	const FItemInfoData ItemData = UItemManager::GetItemInfoById(ItemId);
@@ -298,11 +299,25 @@ void AHoedField::OnTouchResponse(AActor* Causer)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("씨앗심기 (서버)"));
 		PlantCrop(ItemData, ItemId);
+
+		// 사운드 관련 Cue 강제 진행
+		FGameplayCueParameters Param;
+		Param.AbilityLevel = 1;
+		Param.EffectCauser = Player;
+
+		Player->GetAbilitySystemComponent()->ExecuteGameplayCue(
+			ISGGameplayTags::GameplayCue_Actor_Farming, Param);
 	}
 
 	if (UsingType == "Watering" && PlantedCrop.IsValid())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("물주기 (서버)"));
+
+		if (PC->GetQuestManageComponent()->GetCurrentPlayingQuestId() ==
+			FString::Printf(TEXT("Story_001")))
+		{
+			PC->SetCustomQuestComplete(true);
+		}
 		SetWet(true);
 	}
 }

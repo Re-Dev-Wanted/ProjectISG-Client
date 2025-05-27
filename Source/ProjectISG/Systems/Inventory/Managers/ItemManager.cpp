@@ -125,7 +125,7 @@ bool UItemManager::IsInfiniteDurability(const uint16 Id)
 		return false;
 	}
 
-	int32 Num = FCString::Atoi(*FindDataRef);
+	const int32 Num = FCString::Atoi(*FindDataRef);
 
 	return Num < 0;
 }
@@ -220,12 +220,12 @@ EItemGrade UItemManager::GetItemGrade(const FItemMetaInfo& Info)
 	{
 		return EItemGrade::Common;
 	}
-	
+
 	if (Info.GetMetaData()[EMetaDataKey::ItemGrade] == TEXT("Uncommon"))
 	{
 		return EItemGrade::Uncommon;
 	}
-	
+
 	if (Info.GetMetaData()[EMetaDataKey::ItemGrade] == TEXT("Rare"))
 	{
 		return EItemGrade::Rare;
@@ -235,8 +235,8 @@ EItemGrade UItemManager::GetItemGrade(const FItemMetaInfo& Info)
 	{
 		return EItemGrade::Unique;
 	}
-	
-	
+
+
 	return EItemGrade::None;
 }
 

@@ -10,6 +10,7 @@
 #include "ProjectISG/Contents/Diary/DiaryStruct.h"
 #include "ProjectISG/Core/ISGGameInstance.h"
 #include "ProjectISG/Core/Controller/LobbyPlayerController.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
 #include "ProjectISG/Utils/ApiUtil.h"
 #include "ProjectISG/Utils/SessionUtil.h"
@@ -44,6 +45,7 @@ void UUIC_MbtiAskUI::AskNewMbti()
 		// TODO: Delegate로 이후 동작을 받아오기
 		ALobbyPlayerController* LobbyPlayerController = Cast<
 			ALobbyPlayerController>(GetView()->GetOwningPlayer());
+		LobbyPlayerController->PushUI(EUIName::Loading_LoadingUI);
 		UGameplayStatics::OpenLevelBySoftObjectPtr(
 			GetWorld(), MbtiAskUIModel->GetTrainLevel());
 

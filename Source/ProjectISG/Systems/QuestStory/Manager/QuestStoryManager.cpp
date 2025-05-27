@@ -266,6 +266,8 @@ bool UQuestStoryManager::CheckCompleteQuest(AMainPlayerController* PC
 				{
 					return false;
 				}
+
+				break;
 			}
 		case EQuestRequireType::HasGold:
 			{
@@ -274,6 +276,13 @@ bool UQuestStoryManager::CheckCompleteQuest(AMainPlayerController* PC
 				{
 					return false;
 				}
+
+				break;
+			}
+		case EQuestRequireType::Custom:
+			{
+				return PC->GetCustomQuestComplete();
+				break;
 			}
 		default:
 			{
@@ -283,6 +292,23 @@ bool UQuestStoryManager::CheckCompleteQuest(AMainPlayerController* PC
 	}
 
 	return true;
+}
+
+bool UQuestStoryManager::CheckAndCompleteCustomQuest(
+	AMainPlayerController* PC, const FString& QuestId)
+{
+	if (!PC->HasAuthority())
+	{
+		return false;
+	}
+
+	if (QuestData[QuestId].GetQuestObjective() == EQuestStoryObjective::Custom)
+	{
+		CompleteQuest_Internal(PC, QuestId);
+		return true;
+	}
+
+	return false;
 }
 
 bool UQuestStoryManager::CheckAndCompleteDialogueQuest(AMainPlayerController* PC
@@ -435,6 +461,11 @@ void UQuestStoryManager::CompleteQuest_Internal(AMainPlayerController* PC
 					                            GetGoldAmount());
 				break;
 			}
+		case EQuestRequireType::Custom:
+			{
+				PC->SetCustomQuestComplete(false);
+				break;
+			}
 		default:
 			{
 				break;
@@ -471,8 +502,6 @@ void UQuestStoryManager::GiveRewardQuest_Internal(
 		{
 		case EQuestRewardType::Gold:
 			{
-				// 기존 골드에 값을 추가해준다.
-				// 골드는 Id 자체가 Value로 취급된다.
 				PS->SetGold(
 					PS->GetGold() + RewardData.GetRewardGoldOptions().
 					                           GetGoldAmount());

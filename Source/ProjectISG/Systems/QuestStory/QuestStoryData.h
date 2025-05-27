@@ -102,6 +102,7 @@ struct PROJECTISG_API FQuestRequireData : public FTableRowBase
 	GETTER(EQuestRequireType, RequireType)
 	GETTER_REF(FItemQuestData, RequireItemOptions)
 	GETTER_REF(FGoldQuestData, RequireGoldOptions)
+	GETTER(FString, RequireCustomOptions)
 
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -119,6 +120,11 @@ private:
 		, meta = (AllowPrivateAccess = true, EditCondition =
 			"RequireType == EQuestRequireType::HasGold"))
 	FGoldQuestData RequireGoldOptions = FGoldQuestData();
+	
+	UPROPERTY(EditDefaultsOnly
+		, meta = (AllowPrivateAccess = true, EditCondition =
+			"RequireType == EQuestRequireType::Custom"))
+	FString RequireCustomOptions = FString();
 };
 
 USTRUCT(BlueprintType)

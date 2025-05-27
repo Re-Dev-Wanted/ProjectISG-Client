@@ -188,4 +188,7 @@ public:
 	UPROPERTY()
 	FOnContentRestrictionCancelTimeReached
 	OnContentRestrictionCancelTimeReached;
+
+	UPROPERTY(EditAnywhere)
+	bool bIsLobbyTimer = false;
 };
