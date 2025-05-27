@@ -55,8 +55,10 @@ void ATicketMachine::OnInteractive(AActor* Causer)
 		bIsBoughtTicket = true;
 		Player->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
 		        AddItem(UItemManager::GetInitialItemMetaDataById(26));
-		Player->GetController<ATutorialPlayerController>()->GetQuestManageComponent()->EndQuest(true);
-		Player->GetController<ATutorialPlayerController>()->GetQuestManageComponent()->StartQuest(TEXT("Tutorial_002"));
+
+		ATutorialPlayerController* TutorialPlayerController = Player->GetController<ATutorialPlayerController>();
+		//TutorialPlayerController->GetQuestManageComponent()->EndQuest(true);
+		TutorialPlayerController->StartQuest(NextQuest);
 	}
 }
 

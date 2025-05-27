@@ -34,5 +34,9 @@ private:
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
 		Category = Setting)
+	FString NextQuest;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
+		Category = Setting)
 	bool bIsBoughtTicket = false;
 };
