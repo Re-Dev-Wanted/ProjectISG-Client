@@ -1,6 +1,7 @@
 #include "QuestStoryManager.h"
 
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 
@@ -407,6 +408,11 @@ uint32 UQuestStoryManager::GetRequireQuestDateToAbleFinish(
 				}
 
 				break;
+			}
+		case EQuestRequireType::Custom:
+			{
+				// GetCustomQuestComplete 는 bool이라 참이면 1 더해준다.
+				Result += PC->GetCustomQuestComplete();
 			}
 		default:
 			{
