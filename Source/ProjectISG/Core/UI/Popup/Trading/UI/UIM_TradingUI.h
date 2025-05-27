@@ -19,16 +19,8 @@ class PROJECTISG_API UUIM_TradingUI : public UBaseUIModel
 
 public:
 	GETTER_SETTER(ETradingState, CurrentState)
-	GETTER_SETTER(uint32, ClickedInventoryItem)
-	GETTER_SETTER(uint16, ClickedInventorySlotIndex)
 
 private:
 	UPROPERTY()
 	ETradingState CurrentState;
-	
-	UPROPERTY()
-	uint32 ClickedInventoryItem;
-
-	UPROPERTY()
-	uint16 ClickedInventorySlotIndex;
 };

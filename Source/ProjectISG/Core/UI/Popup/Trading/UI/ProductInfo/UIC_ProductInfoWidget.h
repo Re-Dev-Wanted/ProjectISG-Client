@@ -15,7 +15,7 @@ class PROJECTISG_API UUIC_ProductInfoWidget : public UBaseUIController
 	GENERATED_BODY()
 
 public:
-	void SetProductInfo(const uint32 ProductId);
+	void SetProductInfo(const uint32 ProductId, const float Ratio);
 
 protected:
 	virtual void InitializeController(UBaseUIView* NewView,

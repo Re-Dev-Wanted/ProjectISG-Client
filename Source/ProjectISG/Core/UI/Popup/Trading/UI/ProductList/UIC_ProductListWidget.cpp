@@ -50,7 +50,8 @@ void UUIC_ProductListWidget::SetProductList()
 		UProductItemWidgetObject* NewWidget = 
 			NewObject<UProductItemWidgetObject>();
 
-		NewWidget->ProductId = Product.GetProductId();
+		NewWidget->SetProductId(Product.GetProductId());
+		NewWidget->SetPriceRatio(Product.GetBuyPriceRatio());
 
 		ProductListWidgetView->GetProductList()->AddItem(NewWidget);
 	}
@@ -83,10 +84,14 @@ void UUIC_ProductListWidget::SetInventoryList()
 			continue;
 		}
 
+		FProductStruct ProductData = UTradingManager::GetProductDataById
+		(MetaInfo.GetId());
+
 		UProductItemWidgetObject* NewWidget = 
 			NewObject<UProductItemWidgetObject>();
 
-		NewWidget->ProductId = MetaInfo.GetId();
+		NewWidget->SetProductId(MetaInfo.GetId());
+		NewWidget->SetPriceRatio(ProductData.GetSellPriceRatio());
 
 		ProductListWidgetView->GetProductList()->AddItem(NewWidget);
 	}

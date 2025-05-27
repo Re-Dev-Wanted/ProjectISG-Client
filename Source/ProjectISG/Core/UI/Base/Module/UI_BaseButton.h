@@ -16,6 +16,7 @@ class PROJECTISG_API UUI_BaseButton : public UUserWidget
 
 public:
 	FORCEINLINE TObjectPtr<UButton> Get() { return ParentButton; }
+	GETTER(TObjectPtr<UTextBlock>, Text)
 
 protected:
 	virtual void NativePreConstruct() override;

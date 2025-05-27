@@ -14,7 +14,7 @@ public:
 	GETTER(class UTextBlock*, OwnedGoldText)
 	GETTER(class UUIV_ProductListWidget*, ItemListView)
 	GETTER(class UProductDetailView*, ProductDetailView)
-	SETTER(bool, OpenFlag)
+	GETTER(class UUI_BaseButton*, TradeButton)
 
 	class UButton* GetCloseButton() const
 	{
@@ -27,9 +27,6 @@ protected:
 	                          UDragDropOperation* InOperation) override;
 
 	virtual void NativeConstruct() override;
-
-	virtual void
-	NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -44,5 +41,6 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	class UUIV_ProductListWidget* ItemListView;
 
-	bool OpenFlag = false;
+	UPROPERTY(meta = (BindWidget))
+	class UUI_BaseButton* TradeButton;
 };

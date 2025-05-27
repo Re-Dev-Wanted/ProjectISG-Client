@@ -12,7 +12,7 @@ class PROJECTISG_API UUIC_TradingUI : public UBaseUIController
 protected:
 	virtual void
 	BindInputAction(UEnhancedInputComponent* InputComponent) override;
-
+	
 	virtual void AppearUI() override;
 
 	UFUNCTION()
@@ -25,7 +25,7 @@ protected:
 	void OnCloseTradingUI();
 
 	UFUNCTION()
-	void DetectDragItem(uint16 ItemId, uint16 SlotIndex);
+	void OnTrade();
 
 public:
 	void OnUpdateSelectedProduct(uint16 ProductId);
@@ -33,8 +33,6 @@ public:
 	void UpdateGoldText();
 
 	void UpdateInventory();
-
-	void SetItemInfoData(const uint8 InventoryIndex);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Input"

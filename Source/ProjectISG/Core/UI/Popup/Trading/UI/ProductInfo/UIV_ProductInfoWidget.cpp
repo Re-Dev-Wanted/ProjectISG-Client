@@ -21,6 +21,7 @@ void UUIV_ProductInfoWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 	if (UUIC_ProductInfoWidget* Widget = Cast<UUIC_ProductInfoWidget>(GetController
 	()))
 	{
-		Widget->SetProductInfo(ItemWidgetObject->ProductId);
+		Widget->SetProductInfo(ItemWidgetObject->GetProductId(), 
+		ItemWidgetObject->GetPriceRatio());
 	}
 }

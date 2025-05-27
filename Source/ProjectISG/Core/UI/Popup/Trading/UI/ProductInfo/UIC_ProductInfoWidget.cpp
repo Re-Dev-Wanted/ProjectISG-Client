@@ -7,10 +7,8 @@
 #include "UIM_ProductInfoWidget.h"
 #include "UIV_ProductInfoWidget.h"
 #include "Components/Button.h"
-#include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "ProjectISG/Contents/Trading/TradingManager.h"
-#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Modal/Trading/UIC_ProductBuyNotification.h"
@@ -33,7 +31,7 @@ void UUIC_ProductInfoWidget::InitializeController(UBaseUIView* NewView,
 	&UUIC_ProductInfoWidget::OnSelectProductData);
 }
 
-void UUIC_ProductInfoWidget::SetProductInfo(const uint32 ProductId)
+void UUIC_ProductInfoWidget::SetProductInfo(const uint32 ProductId, const float Ratio)
 {
 	const UUIV_ProductInfoWidget* ProductInfoWidget = Cast<
 		UUIV_ProductInfoWidget>(GetView());
@@ -49,7 +47,7 @@ void UUIC_ProductInfoWidget::SetProductInfo(const uint32 ProductId)
 	ProductInfoWidget->GetProductName()->SetText(
 		FText::FromString(ItemInfoData.GetDisplayName()));
 
-	uint32 ProductPrice = UTradingManager::GetProductPriceById(ProductId);
+	uint32 ProductPrice = UTradingManager::GetProductPriceById(ProductId) * Ratio;
 	FString Str = FString::FromInt(ProductPrice);
 	ProductInfoWidget->GetProductPrice()->SetText(FText::FromString(Str));
 }
