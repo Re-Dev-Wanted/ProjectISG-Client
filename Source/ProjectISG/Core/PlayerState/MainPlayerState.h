@@ -55,7 +55,7 @@ private:
 	TObjectPtr<ATimeManager> TimeManager;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	uint32 Gold = 10000;
+	uint32 Gold = 0;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Character",
 		meta = (AllowPrivateAccess = true))
