@@ -1,5 +1,6 @@
 ﻿#include "MaterialsView.h"
 
+#include "Components/Image.h"
 #include "Components/ScrollBox.h"
 #include "Components/TextBlock.h"
 #include "ProjectISG/Core/UI/Popup/Crafting/UI/UIM_WorkbenchUI.h"
@@ -55,4 +56,21 @@ void UMaterialsView::OnUpdateUI(const FString& ItemName, const TArray<FCraftingM
 	}
 
 	SetVisibility(ESlateVisibility::Visible);
+}
+
+void UMaterialsView::SetDescription(FString Desc)
+{
+	ItemDesc->SetText(FText::FromString(Desc));
+}
+
+void UMaterialsView::SetImage(TSoftObjectPtr<UTexture2D> Thumbnail)
+{
+	AsyncUtil::LoadAsync<UTexture2D>
+	(
+		Thumbnail,
+		[this](UTexture2D* Texture)
+		{
+			ItemIcon->SetBrushFromTexture(Texture);
+		}
+	);
 }

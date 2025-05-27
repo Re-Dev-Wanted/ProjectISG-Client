@@ -21,6 +21,7 @@ void UUIM_WorkbenchUI::LoadAll()
 		Model.ItemId = Data.GetItemId();
 		Model.Thumbnail = ItemInfoData.GetThumbnail();
 		Model.ItemName = ItemInfoData.GetDisplayName();
+		Model.ItemDesc = ItemInfoData.GetDescription();
 		Model.RequiredMaterials = LoadMaterialsModel(Data.GetRequiredMaterials());
 
 		Recipes.Add(Model);

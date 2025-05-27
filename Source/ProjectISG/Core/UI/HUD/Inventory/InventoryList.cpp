@@ -21,7 +21,7 @@ void UInventoryList::NativePreConstruct()
 		UInventorySlot* NewSlot = CreateWidget<UInventorySlot>(
 			this, InventorySlotClass);
 
-		NewSlot->SetPadding(4);
+		// NewSlot->SetPadding(4);
 
 		InventoryList->AddChildToGrid(NewSlot, i / ListColumn, i % ListColumn);
 	}
@@ -45,7 +45,7 @@ void UInventoryList::CreateItemData()
 	{
 		UInventorySlot* NewSlot = CreateWidget<UInventorySlot>(
 			this, InventorySlotClass);
-		NewSlot->SetPadding(4);
+		// NewSlot->SetPadding(4);
 
 		NewSlot->OnInventorySlotDragDetected.AddDynamic(
 			this, &UInventoryList::OnDragItemDetected);
