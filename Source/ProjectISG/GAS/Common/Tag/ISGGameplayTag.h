@@ -64,4 +64,6 @@ namespace ISGGameplayTags
 	PROJECTISG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Interactive_Active_Exit)
 	PROJECTISG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(
 		GameplayCue_Actor_FarmWatering)
+	PROJECTISG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(
+		GameplayCue_Actor_Farming)
 }

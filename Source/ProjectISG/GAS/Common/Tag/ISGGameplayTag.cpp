@@ -155,4 +155,8 @@ namespace ISGGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayCue_Actor_FarmWatering
 	                               , "GameplayCue.Actor.FarmWatering"
 	                               , "물주기 Notify Cue");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayCue_Actor_Farming
+	                               , "GameplayCue.Actor.Farming"
+	                               , "땅 개간하기 Notify Cue");
 }
