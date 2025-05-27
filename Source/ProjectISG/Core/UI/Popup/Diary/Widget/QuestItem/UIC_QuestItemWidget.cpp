@@ -25,7 +25,7 @@ void UUIC_QuestItemWidget::OnClickQuestItemWidget()
 {
 	UUIC_QuestListUI* QuestListUIController = Cast<UUIC_QuestListUI>(
 		GetView()->GetOwningPlayer<AMainPlayerController>()->
-					GetUIManageComponent()->ControllerInstances[
+		           GetUIManageComponent()->ControllerInstances[
 			EUIName::Popup_QuestListUI]);
 
 	QuestListUIController->SetQuestInfo(
@@ -46,19 +46,28 @@ void UUIC_QuestItemWidget::SetQuestDefaultInformation(const FString& QuestId)
 	const AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetView()->GetOwningPlayer());
 
+	const uint16 CurrentQuestToClear =
+		UQuestStoryManager::GetRequireQuestDateToAbleFinish(PC, QuestId);
+	const uint16 RequireQuestToClear =
+		UQuestStoryManager::GetRequireQuestDataById(QuestId).Num();
+	const EQuestStatus QuestStatus = PC->GetQuestManageComponent()->
+	                                     GetQuestStatusById(QuestId);
+
 	// View 관련 정보 설정 코드
 	QuestItemWidget->GetQuestTitle()->SetText(
 		FText::FromString(Quest.GetQuestTitle()));
 
 	// View 관련 현재 완료 가능한 행동 갯수를 가져오는 코드
+	// 이미 완료된 퀘스트면 예외 없이 해야 하는 행동 수로 설정해준다.
 	QuestItemWidget->GetCurrentFinishQuestCount()->SetText(
 		FText::FromString(FString::FromInt(
-			UQuestStoryManager::GetRequireQuestDateToAbleFinish(PC, QuestId))));
+			QuestStatus == EQuestStatus::Completed
+				? RequireQuestToClear
+				: CurrentQuestToClear)));
 
 	// View 관련 최대 퀘스트 행동 갯수 가져오는 코드
 	QuestItemWidget->GetMaxFinishQuestCount()->SetText(
-		FText::FromString(FString::FromInt(
-			UQuestStoryManager::GetRequireQuestDataById(QuestId).Num())));
+		FText::FromString(FString::FromInt(RequireQuestToClear)));
 
 	QuestItemWidget->GetQuestItemButton()->OnClicked.AddDynamic(
 		this, &ThisClass::OnClickQuestItemWidget);
@@ -73,12 +82,12 @@ void UUIC_QuestItemWidget::SetQuestRewardList(const FString& QuestId) const
 	QuestItemWidget->GetRewardPreviewList()->ClearChildren();
 
 	for (FQuestRewardData& RewardItem :
-		UQuestStoryManager::GetRewardQuestDataById(QuestId))
+	     UQuestStoryManager::GetRewardQuestDataById(QuestId))
 	{
 		UUIV_QuestShowItemInfoWidget* RewardChild = CreateWidget<
 			UUIV_QuestShowItemInfoWidget>(GetView()
-										, QuestItemWidget->
-										GetQuestRewardItemClass());
+			                              , QuestItemWidget->
+			                              GetQuestRewardItemClass());
 
 		RewardChild->SetPadding({0, 0, 4, 0});
 		RewardChild->InitializeMVC();
