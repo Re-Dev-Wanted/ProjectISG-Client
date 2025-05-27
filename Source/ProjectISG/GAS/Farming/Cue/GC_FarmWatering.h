@@ -30,4 +30,13 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Options",
 		meta = (AllowPrivateAccess = true))
 	TObjectPtr<UNiagaraComponent> WateringEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Options",
+		meta = (AllowPrivateAccess = true))
+	TObjectPtr<USoundBase> WateringSound;
+
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> AudioComponent;
+
+	void SpawnSound();
 };
