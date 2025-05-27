@@ -44,7 +44,6 @@ enum class EConstDataKey : uint32
 	MaxDurability,
 	ItemUseType,
 	SocketName,
-	GameplayTag,
 	GeneratedItemId, // 해당 아이템이 다른 아이템을 만들 경우
 	ChanceBasedSpawnItemId, // 일정 확률로 스폰되는 아이템
 	ItemGrade,
@@ -215,7 +214,7 @@ FORCEINLINE uint32 GetTypeHash(const FItemMetaInfo& ItemMetaInfo)
 	{
 		DefaultHash = HashCombine(DefaultHash, GetTypeHash(MetaData));
 	}
-	
+
 	return DefaultHash;
 }
 

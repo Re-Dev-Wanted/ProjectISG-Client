@@ -158,5 +158,13 @@ namespace ISGGameplayTags
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayCue_Actor_Farming
 	                               , "GameplayCue.Actor.Farming"
-	                               , "땅 개간하기 Notify Cue");
+	                               , "농작물 심기 Notify Cue");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayCue_Actor_FarmPlow
+	                               , "GameplayCue.Actor.FarmPlow"
+	                               , "땅 개간하기 Notify Cue")
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayCue_Actor_FarmRemove
+	                               , "GameplayCue.Actor.FarmRemove"
+	                               , "땅 제거하기 Notify Cue");
 }

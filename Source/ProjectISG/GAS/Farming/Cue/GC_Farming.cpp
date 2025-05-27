@@ -1,7 +1,6 @@
 ﻿#include "GC_Farming.h"
 #include "Components/AudioComponent.h"
 
-
 AGC_Farming::AGC_Farming()
 {
 }
