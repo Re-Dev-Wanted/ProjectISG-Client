@@ -56,8 +56,9 @@ void ATicketMachine::OnInteractive(AActor* Causer)
 		Player->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
 		        AddItem(UItemManager::GetInitialItemMetaDataById(26));
 
-		ATutorialPlayerController* TutorialPlayerController = Player->GetController<ATutorialPlayerController>();
-		//TutorialPlayerController->GetQuestManageComponent()->EndQuest(true);
+		ATutorialPlayerController* TutorialPlayerController = Player->
+			GetController<ATutorialPlayerController>();
+		TutorialPlayerController->GetQuestManageComponent()->EndQuest(true);
 		TutorialPlayerController->StartQuest(NextQuest);
 	}
 }
