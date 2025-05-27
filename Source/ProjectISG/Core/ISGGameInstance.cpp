@@ -5,6 +5,7 @@
 #include "Controller/TutorialPlayerController.h"
 #include "GameFramework/PlayerState.h"
 #include "Interfaces/IHttpResponse.h"
+#include "Kismet/GameplayStatics.h"
 #include "ProjectISG/Contents/Cooking/Managers/CookingManager.h"
 #include "ProjectISG/Contents/Crafting/Managers/CraftingManager.h"
 #include "ProjectISG/Contents/Farming/Managers/FarmingManager.h"
@@ -152,6 +153,13 @@ void UISGGameInstance::JoinFoundSession()
 			                          OnJoinSessionCompleteDelegate);
 		}
 	}
+}
+
+void UISGGameInstance::DestroySessionAndMoveLevel(TSoftObjectPtr<UWorld> Level)
+{
+	FSessionUtil::DestroySession();
+	UGameplayStatics::OpenLevelBySoftObjectPtr(GetWorld(), Level);
+	return;
 }
 
 void UISGGameInstance::OnJoinSession(FName SessionName,

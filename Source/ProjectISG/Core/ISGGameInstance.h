@@ -20,6 +20,8 @@ public:
 	void CreateSession();
 
 	void JoinFoundSession();
+
+	void DestroySessionAndMoveLevel(TSoftObjectPtr<UWorld> Level);
 #pragma endregion
 
 #pragma region GETTERSETTER

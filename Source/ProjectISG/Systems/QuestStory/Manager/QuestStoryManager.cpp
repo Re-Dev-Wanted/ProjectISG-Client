@@ -502,8 +502,6 @@ void UQuestStoryManager::GiveRewardQuest_Internal(
 		{
 		case EQuestRewardType::Gold:
 			{
-				// 기존 골드에 값을 추가해준다.
-				// 골드는 Id 자체가 Value로 취급된다.
 				PS->SetGold(
 					PS->GetGold() + RewardData.GetRewardGoldOptions().
 					                           GetGoldAmount());

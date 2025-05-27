@@ -3,10 +3,14 @@
 
 #include "Altar.h"
 
+#include "ProjectISG/Core/ISGGameInstance.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Popup/SceneList/UI/UIC_SceneListUI.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 
 
 AAltar::AAltar()
@@ -31,19 +35,33 @@ void AAltar::OnInteractive(AActor* Causer)
 	Super::OnInteractive(Causer);
 
 	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
+
+	// 서버만 엔딩 퀘스트에 접근할 수 있기에 클라이언트가 접근하면 return
+	if (Player->HasAuthority() == false)
+	{
+		return;
+	}
+	
 	AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 	AMainPlayerController* PC = Player->GetController<AMainPlayerController>();
 	
-	if (Player && PS)
+	if (Player && PS && PC)
 	{
-		if (PS->GetInventoryComponent()->HasItemInInventory(OfferingFoodId, 1))
+		if (PS->GetInventoryComponent()->HasItemInInventory(OfferingFoodId, 1) &&
+			PC->GetQuestManageComponent()->GetCurrentPlayingQuestId() == FString::Printf(TEXT("Story_006")))
 		{
 			// 공물 음식 삭제
 			PS->GetInventoryComponent()->RemoveItem(OfferingFoodId, 1);
 			// 퀘스트 완료
 			PC->SetCustomQuestComplete(true);
 			// 엔딩처리
-			UE_LOG(LogTemp, Warning, TEXT("엔딩 처리"));
+			PC->GetQuestManageComponent()->StartScene(EndingScene);
+
+			UUIC_SceneListUI* SceneListUIController = Cast<UUIC_SceneListUI>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Popup_SceneListUI]);
+			if (SceneListUIController)
+			{
+				SceneListUIController->OnSceneListEndNotified.BindUObject(this, &ThisClass::MoveToLobby);
+			}
 		}
 	}
 }
@@ -56,5 +74,10 @@ FString AAltar::GetInteractiveDisplayText() const
 bool AAltar::GetCanInteractive() const
 {
 	return true;
+}
+
+void AAltar::MoveToLobby()
+{
+	GetGameInstance<UISGGameInstance>()->DestroySessionAndMoveLevel(LobbyLevel);
 }
 

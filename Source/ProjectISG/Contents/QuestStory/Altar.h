@@ -1,5 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
+﻿
 #pragma once
 
 #include "CoreMinimal.h"
@@ -25,10 +24,21 @@ protected:
 	virtual FString GetInteractiveDisplayText() const override;
 
 	virtual bool GetCanInteractive() const override;
+
+	UFUNCTION()
+	void MoveToLobby();
 	
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
 		Category = Setting)
 	uint32 OfferingFoodId;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
+		Category = Setting)
+	FString EndingScene;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
+		Category = Setting)
+	TSoftObjectPtr<UWorld> LobbyLevel;
 
 };
