@@ -102,8 +102,8 @@ bool AHoedField::GetCanTouch() const
 			GetCurrentState() != ECropState::Mature;
 	}
 
-	int SlotIndex = Player->GetPlayerInventoryComponent()->
-	                        GetCurrentSlotIndex();
+	const int SlotIndex = Player->GetPlayerInventoryComponent()->
+	                              GetCurrentSlotIndex();
 
 	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 
@@ -128,10 +128,10 @@ bool AHoedField::GetCanInteractive() const
 
 FString AHoedField::GetTouchDisplayText(AActor* Causer) const
 {
-	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
+	if (const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
-		int SlotIndex = Player->GetPlayerInventoryComponent()->
-		                        GetCurrentSlotIndex();
+		const int SlotIndex = Player->GetPlayerInventoryComponent()->
+		                              GetCurrentSlotIndex();
 
 		const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 
@@ -197,15 +197,13 @@ void AHoedField::OnTouch(AActor* Causer)
 
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
-		int SlotIndex = Player->GetPlayerInventoryComponent()->
-		                        GetCurrentSlotIndex();
+		const int SlotIndex = Player->GetPlayerInventoryComponent()->
+		                              GetCurrentSlotIndex();
 
 		const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 
 		const FItemMetaInfo ItemMetaInfo = PS->GetInventoryComponent()->
 		                                       GetInventoryList()[SlotIndex];
-
-		//FString UsingType = UItemManager::GetItemUsingType(ItemMetaInfo.GetId());
 
 		const uint16 ItemId = Player->GetHandSlotComponent()->GetItemId();
 		const FItemInfoData ItemData = UItemManager::GetItemInfoById(ItemId);
@@ -220,8 +218,6 @@ void AHoedField::OnTouch(AActor* Causer)
 
 			Player->GetAbilitySystemComponent()->HandleGameplayEvent(
 				ISGGameplayTags::Farming_Active_Watering, &EventData);
-
-			Player->GetInteractionComponent()->Server_OnTouchResponse(Causer);
 
 			return;
 		}
@@ -243,7 +239,7 @@ void AHoedField::OnTouch(AActor* Causer)
 			return;
 		}
 
-		uint16 OtherId = UItemManager::GetGeneratedOtherItemIdById(
+		const uint16 OtherId = UItemManager::GetGeneratedOtherItemIdById(
 			ItemMetaInfo.GetId());
 
 		if (OtherId > 0)
@@ -288,6 +284,7 @@ void AHoedField::OnTouch(AActor* Causer)
 void AHoedField::OnTouchResponse(AActor* Causer)
 {
 	Super::OnTouchResponse(Causer);
+
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
 	AMainPlayerController* PC = Cast<AMainPlayerController>(
 		Player->GetController());
