@@ -50,8 +50,6 @@ bool AGC_FarmWatering::OnRemove_Implementation(AActor* MyTarget,
 	WateringEffect->Deactivate();
 	AudioComponent->Stop();
 
-	UE_LOG(LogTemp, Display, TEXT("테스트 Cue 제거 확인"))
-
 	return Super::OnRemove_Implementation(MyTarget, Parameters);
 }
 
