@@ -6,6 +6,7 @@
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 
 void UBaseUIController::StartShowUI(const EUILayer Layer)
 {
@@ -175,6 +176,13 @@ void UBaseUIController::PopUIFromPlayerController()
 {
 	AMainPlayerController* PC = Cast<AMainPlayerController>(PlayerController);
 	PC->PopUI();
+}
+
+void UBaseUIController::ResetUIFromPlayerController()
+{
+	const AMainPlayerController* PC = Cast<AMainPlayerController>(
+		PlayerController);
+	PC->GetUIManageComponent()->ResetWidget();
 }
 
 void UBaseUIController::ClearInputMappingContext()

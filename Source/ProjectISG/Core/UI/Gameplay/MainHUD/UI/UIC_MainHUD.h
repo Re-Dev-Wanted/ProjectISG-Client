@@ -18,10 +18,10 @@ public:
 
 	void ToggleInteractiveUI(const bool IsShow);
 	void ToggleInteractiveUI(const FString& DisplayKey
-							, const FString& DisplayText);
+	                         , const FString& DisplayText);
 
 	void AdditiveToggleInteractiveUI(const FString& DisplayKey
-									, const FString& DisplayText);
+	                                 , const FString& DisplayText);
 
 	void TogglePlacementIndicatorUI(const bool Visible);
 
@@ -30,8 +30,10 @@ public:
 	void ToggleCurrentQuestUI(const bool IsActive);
 
 	void AlertToMainHUD(const EAlertType AlertType, const FString& Message
-						, const float Time = 2.f);
+	                    , const float Time = 2.f);
 
 protected:
 	virtual void AppearUI() override;
+
+	virtual void DisappearUI() override;
 };
