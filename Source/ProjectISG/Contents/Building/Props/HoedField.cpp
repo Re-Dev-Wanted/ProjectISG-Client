@@ -285,7 +285,7 @@ void AHoedField::OnTouchResponse(AActor* Causer)
 {
 	Super::OnTouchResponse(Causer);
 
-	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer);
 	AMainPlayerController* PC = Cast<AMainPlayerController>(
 		Player->GetController());
 	const uint16 ItemId = Player->GetHandSlotComponent()->GetItemId();
