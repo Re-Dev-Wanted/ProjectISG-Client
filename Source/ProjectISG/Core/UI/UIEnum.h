@@ -27,7 +27,7 @@ enum class EUIName: uint32
 	, Popup_DiaryEdit, Popup_DiaryList, Modal_ExitInteractUI, Modal_FishingUI
 	, Popup_SceneListUI, Popup_MainLobby, Popup_MultiPlay, Popup_ChooseCharacter
 	, Loading_LoadingUI, Popup_MbtiAsk, Popup_LootContainerUI, Popup_CraftingUI
-	, Popup_QuestListUI,
+	, Popup_QuestListUI, Popup_EndingChoice
 };
 
 UENUM()
