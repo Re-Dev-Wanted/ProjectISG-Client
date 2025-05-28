@@ -6,6 +6,8 @@
 
 #include "QuestStoryData.generated.h"
 
+class UMediaSource;
+class UMediaPlayer;
 enum class EMetaDataKey : uint32;
 
 // 실제 퀘스트 가장 큰 데이터
@@ -225,6 +227,18 @@ private:
 	float SceneTime = 0.f;
 };
 
+USTRUCT(BlueprintType)
+struct PROJECTISG_API FQuestSceneMediaData
+{
+	GENERATED_USTRUCT_BODY()
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMediaPlayer> StartCinematic;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMediaSource> StartCinematicSource;
+};
+
 // 스토리 진행 상 컷 신이 필요한 경우에 대한 대응 처리
 // 이미지 데이터 배열을 저장하고 불러와 이미지를 할당해주는 역할
 USTRUCT(BlueprintType)
@@ -233,6 +247,7 @@ struct PROJECTISG_API FQuestSceneCutData : public FTableRowBase
 	GENERATED_USTRUCT_BODY()
 
 	GETTER(FString, QuestSceneId)
+	GETTER(EQuestSceneType, QuestSceneType)
 	GETTER_REF(TArray<FQuestSceneImageData>, SceneCutList)
 
 private:
@@ -240,5 +255,15 @@ private:
 	FString QuestSceneId;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	EQuestSceneType QuestSceneType = EQuestSceneType::None;
+
+	UPROPERTY(EditDefaultsOnly,
+		meta = (AllowPrivateAccess = true, EditCondition =
+			"QuestSceneType == EQuestSceneType::Image"))
 	TArray<FQuestSceneImageData> SceneCutList;
+
+	UPROPERTY(EditDefaultsOnly,
+		meta = (AllowPrivateAccess = true, EditCondition =
+			"QuestSceneType == EQuestSceneType::Media"))
+	FQuestSceneMediaData SceneMedia;
 };
