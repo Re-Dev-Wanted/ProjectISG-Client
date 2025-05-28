@@ -28,9 +28,6 @@ public:
 
 protected:
 	UPROPERTY()
-	UGA_ReelInLine* RealInLine;
-	
-	UPROPERTY()
 	TObjectPtr<ULevelSequencePlayer> LevelSequencePlayer;
 	
 	UPROPERTY()
