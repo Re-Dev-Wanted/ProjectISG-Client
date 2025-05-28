@@ -57,6 +57,8 @@ void ABobber::OnBite(UStaticMesh* Fish)
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFX_Bite, GetActorLocation());
 
 	FishMeshComp->SetStaticMesh(Fish);
+	FTransform Pivot = FishMeshComp->GetSocketTransform(TEXT("BiteSocket"), RTS_Component);
+	FishMeshComp->SetRelativeLocation(-(Pivot.GetLocation() * 0.5f));
 }
 
 void ABobber::RemoveFish()

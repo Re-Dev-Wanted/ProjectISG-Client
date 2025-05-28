@@ -23,6 +23,12 @@ void UInventoryComponent::InitializeItemData()
 
 	AddItem(AltarItemMetaInfo);
 
+	FItemMetaInfo FishingRodItemMetaInfo;
+	FishingRodItemMetaInfo.SetId(14);
+	FishingRodItemMetaInfo.SetCurrentCount(1);
+
+	AddItem(FishingRodItemMetaInfo);
+
 	UpdateInventory_Internal();
 }
 
