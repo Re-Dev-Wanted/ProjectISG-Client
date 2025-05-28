@@ -2,8 +2,6 @@
 
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
-#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
-#include "ProjectISG/Systems/Animation/Manager/LevelSequenceManager.h"
 #include "Task/AT_StartCookingModeCinematic.h"
 
 void UGA_StartCookingMode::ActivateAbility(
