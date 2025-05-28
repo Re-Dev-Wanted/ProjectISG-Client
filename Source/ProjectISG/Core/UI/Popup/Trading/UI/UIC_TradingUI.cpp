@@ -165,12 +165,11 @@ void UUIC_TradingUI::RefreshList()
 	{
 		const uint32 ProductPrice = ProductStruct.GetProductPrice() * ProductStruct.GetBuyPriceRatio();
 		
-		TradingUIView->GetTradeButton()->Get()->SetIsEnabled(PS->GetGold() >= ProductPrice);
+		TradingUIView->GetTradeButton()->Get()->SetIsEnabled(TradingUIModel->GetSelectedId() > 0 && PS->GetGold() >= ProductPrice);
 	}
-
+	
 	TradingUIView->GetItemListView()->SetUpdateUI(
 		TradingUIModel->GetCurrentState());
-	
 }
 
 void UUIC_TradingUI::UpdateGoldText()

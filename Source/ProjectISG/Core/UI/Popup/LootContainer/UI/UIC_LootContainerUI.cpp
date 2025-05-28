@@ -12,12 +12,17 @@ void UUIC_LootContainerUI::InitializeController(UBaseUIView* NewView,
                                                 UBaseUIModel* NewModel)
 {
 	Super::InitializeController(NewView, NewModel);
+}
 
-	UUIV_LootContainerUI* UIView = Cast<UUIV_LootContainerUI>(NewView);
+void UUIC_LootContainerUI::AppearUI()
+{
+	Super::AppearUI();
 
-	UIView->GetBackButton()->OnClicked.AddDynamic(this,
-	                                              &UUIC_LootContainerUI::
-	                                              CloseUI);
+	UUIV_LootContainerUI* UIView = Cast<UUIV_LootContainerUI>(GetView());
+
+	UIView->GetBackButton()->OnClicked.AddUniqueDynamic(this,
+												  &UUIC_LootContainerUI::
+												  CloseUI);
 }
 
 void UUIC_LootContainerUI::BindInputAction(
