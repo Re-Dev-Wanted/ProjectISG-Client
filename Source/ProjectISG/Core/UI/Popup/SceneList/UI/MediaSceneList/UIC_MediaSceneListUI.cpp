@@ -5,6 +5,7 @@
 #include "MediaPlayer.h"
 #include "UIM_MediaSceneListUI.h"
 #include "Components/Border.h"
+#include "Components/Image.h"
 #include "Components/Overlay.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
@@ -15,8 +16,11 @@ void UUIC_MediaSceneListUI::AppearUI()
 	Super::AppearUI();
 	// 해당 타입이 무조건 Media 타입이라고 가정하고 한다.
 	// 잘못된 타입일 시 그냥 터트리는게 맞음.
+	UUIV_MediaSceneListUI* SceneListView = Cast<UUIV_MediaSceneListUI>(
+		GetView());
 	UUIM_MediaSceneListUI* SceneListModel = Cast<UUIM_MediaSceneListUI>(
 		GetModel());
+
 	SceneListModel->SetCurrentSceneId(
 		GetView()->GetOwningPlayer<AMainPlayerController>()->
 		           GetQuestManageComponent()->GetCurrentPlayingSceneId());
@@ -25,20 +29,30 @@ void UUIC_MediaSceneListUI::AppearUI()
 		UQuestStoryManager::GetQuestSceneCutById(
 			SceneListModel->GetCurrentSceneId());
 
-	MediaSceneData.GetSceneMedia().GetStartCinematic()->OnEndReached.
+	SceneListView->GetSceneImage()->SetBrushFromMaterial(
+		MediaSceneData.GetSceneMedia().GetSceneMediaTexture());
+
+	MediaSceneData.GetSceneMedia().GetSceneMediaPlayer()->OnEndReached.
 	               AddDynamic(this, &ThisClass::OnEndMediaScene);
 
-	if (MediaSceneData.GetSceneMedia().GetStartCinematic()->OpenSource(
-		MediaSceneData.GetSceneMedia().GetStartCinematicSource()))
+	if (MediaSceneData.GetSceneMedia().GetSceneMediaPlayer()->
+	                   OpenSource(
+		                   MediaSceneData.GetSceneMedia().
+		                                  GetSceneMediaSource()))
 	{
-		MediaSceneData.GetSceneMedia().GetStartCinematic()->Rewind();
+		MediaSceneData.GetSceneMedia().GetSceneMediaPlayer()->Rewind();
 	}
 }
 
 void UUIC_MediaSceneListUI::OnEndMediaScene()
 {
-	OnEndMediaSceneNotified.Execute();
-	OnEndMediaSceneNotified.Clear();
+	ResetUIFromPlayerController();
+
+	if (OnEndMediaSceneNotified.IsBound())
+	{
+		OnEndMediaSceneNotified.Execute();
+		OnEndMediaSceneNotified.Clear();
+	}
 }
 
 void UUIC_MediaSceneListUI::BindInputAction(

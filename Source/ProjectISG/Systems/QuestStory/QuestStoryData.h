@@ -232,15 +232,19 @@ struct PROJECTISG_API FQuestSceneMediaData
 {
 	GENERATED_USTRUCT_BODY()
 
-	GETTER(TObjectPtr<UMediaPlayer>, StartCinematic)
-	GETTER(TObjectPtr<UMediaSource>, StartCinematicSource)
+	GETTER(TObjectPtr<UMediaPlayer>, SceneMediaPlayer)
+	GETTER(TObjectPtr<UMediaSource>, SceneMediaSource)
+	GETTER(TObjectPtr<UMaterial>, SceneMediaTexture)
 
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UMediaPlayer> StartCinematic;
+	TObjectPtr<UMediaPlayer> SceneMediaPlayer;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<UMediaSource> StartCinematicSource;
+	TObjectPtr<UMediaSource> SceneMediaSource;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UMaterial> SceneMediaTexture;
 };
 
 // 스토리 진행 상 컷 신이 필요한 경우에 대한 대응 처리
