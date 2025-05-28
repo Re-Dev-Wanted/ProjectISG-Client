@@ -3,6 +3,7 @@
 
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/MultiLineEditableTextBox.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
@@ -14,6 +15,7 @@ void UItemInfo::ShowItemData(const FItemMetaInfo& ItemMetaInfo)
 		ItemMetaInfo.GetId());
 
 	ItemDisplayName->SetText(FText::FromString(ItemInfoData.GetDisplayName()));
+	ItemThumbnail->SetBrushFromSoftTexture(ItemInfoData.GetThumbnail());
 	ItemRank->SetText(
 		FText::FromString(UItemManager::GetItemGradeText(ItemMetaInfo)));
 	ItemDescription->SetText(ItemInfoData.GetDescription());
