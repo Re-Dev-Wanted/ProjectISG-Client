@@ -133,7 +133,6 @@ void UUIC_AutoQuestDialogueWidget::OnFinishDialogue()
 		}
 
 		PC->GetMainHUD()->ToggleAutoQuestUI(false);
-		PC->GetMainHUD()->ToggleCurrentQuestUI(false);
 
 		return;
 	}

@@ -174,7 +174,7 @@ struct PROJECTISG_API FQuestStoryDialogue : public FTableRowBase
 
 	GETTER(FString, QuestId)
 	GETTER(uint32, DialogueIndex)
-	GETTER(FString, DialogueText)
+	GETTER(FText, DialogueText)
 	GETTER(FString, DialogueOwner)
 
 private:
