@@ -9,8 +9,6 @@
 #include "ProductInfo/ProductDetailView.h"
 #include "ProductList/UIV_ProductListWidget.h"
 #include "ProjectISG/Contents/Trading/TradingManager.h"
-#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
-#include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
@@ -21,9 +19,6 @@
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/Logging/LoggingStruct.h"
 #include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
-
-class AMainPlayerState;
-class AMainPlayerCharacter;
 
 void UUIC_TradingUI::BindInputAction(UEnhancedInputComponent* InputComponent)
 {
@@ -141,11 +136,16 @@ void UUIC_TradingUI::RefreshList()
 	FProductStruct ProductStruct = UTradingManager::GetProductDataById
 		(TradingUIModel->GetSelectedId());
 
+	AMainPlayerState* PS = GetPlayerController()->GetPlayerState<
+		AMainPlayerState>();
+
+	if (!PS)
+	{
+		return;
+	}
+	
 	if (TradingUIModel->GetCurrentState() == ETradingState::SELL)
 	{
-		AMainPlayerState* PS = GetPlayerController()->GetPlayerState<
-			AMainPlayerState>();
-
 		uint16 RemainCount = PS->GetInventoryComponent()->GetCurrentCount
 			(TradingUIModel->GetSelectedId());
 
@@ -156,7 +156,13 @@ void UUIC_TradingUI::RefreshList()
 			TradingUIView->GetTradeButton()->Get()->SetIsEnabled(false);
 		}
 	}
-
+	else
+	{
+		const uint32 ProductPrice = ProductStruct.GetProductPrice() * ProductStruct.GetBuyPriceRatio();
+		
+		TradingUIView->GetTradeButton()->Get()->SetIsEnabled(TradingUIModel->GetSelectedId() > 0 && PS->GetGold() >= ProductPrice);
+	}
+	
 	TradingUIView->GetItemListView()->SetUpdateUI(
 		TradingUIModel->GetCurrentState());
 }
@@ -172,16 +178,6 @@ void UUIC_TradingUI::UpdateGoldText()
 	{
 		FString Str = FString::FromInt(PS->GetGold());
 		TradingUIView->GetOwnedGoldText()->SetText(FText::FromString(Str));
-	}
-}
-
-void UUIC_TradingUI::UpdateInventory()
-{
-	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
-		GetPlayerController()->GetPawn());
-	if (Player && Player->GetPlayerInventoryComponent())
-	{
-		Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
 	}
 }
 

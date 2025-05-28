@@ -25,12 +25,13 @@ void UUIV_ProductBuyNotification::NativeConstruct()
 	Dec_Button->OnClicked.AddUniqueDynamic(this, &ThisClass::Decrease);
 
 	CountSlider->OnValueChanged.AddUniqueDynamic(this, &ThisClass::OnCountValueChanged);
-	CountSlider->SetMinValue(1);
-	CountText->SetText(FText::FromString(TEXT("x1")));
 }
 
 void UUIV_ProductBuyNotification::OnInitialize()
 {
+	CountSlider->SetMinValue(1);
+	CountText->SetText(FText::FromString(TEXT("x1")));
+	
 	UUIM_ProductBuyNotification* UIModel = Cast<UUIM_ProductBuyNotification>(GetModel());
 
 	FProductStruct ProductStruct = UTradingManager::GetProductDataById(UIModel->GetClickedProductId());
@@ -78,12 +79,14 @@ void UUIV_ProductBuyNotification::OnInitialize()
 
 void UUIV_ProductBuyNotification::Increase()
 {
-	CountSlider->SetValue(CountSlider->GetValue() + 1);
+	int Count = FMath::Clamp(CountSlider->GetValue() + 1, CountSlider->GetMinValue(), CountSlider->GetMaxValue());
+	CountSlider->SetValue(Count);
 }
 
 void UUIV_ProductBuyNotification::Decrease()
 {
-	CountSlider->SetValue(CountSlider->GetValue() - 1);
+	int Count = FMath::Clamp(CountSlider->GetValue() - 1, CountSlider->GetMinValue(), CountSlider->GetMaxValue());
+	CountSlider->SetValue(Count);
 }
 
 void UUIV_ProductBuyNotification::OnCountValueChanged(float Value)

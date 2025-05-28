@@ -3,6 +3,7 @@
 #include "UIM_ProductBuyNotification.h"
 #include "UIV_ProductBuyNotification.h"
 #include "Components/Button.h"
+#include "Kismet/GameplayStatics.h"
 #include "ProjectISG/Contents/Trading/ProductStruct.h"
 #include "ProjectISG/Contents/Trading/TradingManager.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
@@ -44,6 +45,8 @@ void UUIC_ProductBuyNotification::OnInitialize()
 
 void UUIC_ProductBuyNotification::OnClickedButton()
 {
+	UGameplayStatics::PlaySound2D(GetWorld(), ButtonSFX, 1, 1, 0.25f);
+	
 	UUIM_ProductBuyNotification* UIModel = Cast<UUIM_ProductBuyNotification>(GetModel());
 	FProductStruct ProductStruct = UTradingManager::GetProductDataById(UIModel->GetClickedProductId());
 
