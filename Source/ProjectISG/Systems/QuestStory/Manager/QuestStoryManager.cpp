@@ -239,8 +239,8 @@ bool UQuestStoryManager::CheckCompleteQuest(AMainPlayerController* PC
 	}
 
 	const AMainPlayerState* PS = PC->GetPlayerState<AMainPlayerState>();
-
-	for (FQuestRequireData& RequireData : QuestRequireData[QuestId])
+	
+	for (FQuestRequireData& RequireData : GetRequireQuestDataById(QuestId))
 	{
 		switch (RequireData.GetRequireType())
 		{

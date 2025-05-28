@@ -14,6 +14,9 @@ class PROJECTISG_API ATicketMachine : public ABaseInteractiveActor
 public:
 	ATicketMachine();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetVisibleGuideLine();
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -25,6 +28,7 @@ protected:
 
 private:
 	void SetQuestInteractiveActorOverlayMaterial(bool value);
+
 
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),

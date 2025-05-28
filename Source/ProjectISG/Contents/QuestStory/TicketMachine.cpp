@@ -4,6 +4,7 @@
 #include "TicketMachine.h"
 
 #include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/TutorialPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
@@ -55,6 +56,9 @@ void ATicketMachine::OnInteractive(AActor* Causer)
 	if (Player)
 	{
 		bIsBoughtTicket = true;
+		SetQuestInteractiveActorOverlayMaterial(true);
+		SetVisibleGuideLine();
+		
 		Player->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
 		        AddItem(UItemManager::GetInitialItemMetaDataById(26));
 

@@ -125,15 +125,8 @@ void UUIC_AutoQuestDialogueWidget::OnFinishDialogue()
 	if (AutoQuestDialogueWidgetModel->GetCurrentQuestDialogueIndex() >=
 		DialogueCount)
 	{
-		if (UQuestStoryManager::IsHiddenInQuestBook(
-			PlayerQuestManager->GetCurrentPlayingQuestId()))
-		{
-			PlayerQuestManager->EndQuest(true);
-			return;
-		}
-
 		PC->GetMainHUD()->ToggleAutoQuestUI(false);
-		PC->GetMainHUD()->ToggleCurrentQuestUI(false);
+		//PC->GetMainHUD()->ToggleCurrentQuestUI(false);
 
 		return;
 	}
