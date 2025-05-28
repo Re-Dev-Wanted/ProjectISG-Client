@@ -17,12 +17,6 @@ void UInventoryComponent::InitializeComponent()
 
 void UInventoryComponent::InitializeItemData()
 {
-	FItemMetaInfo AltarItemMetaInfo;
-	AltarItemMetaInfo.SetId(53);
-	AltarItemMetaInfo.SetCurrentCount(1);
-
-	AddItem(AltarItemMetaInfo);
-
 	UpdateInventory_Internal();
 }
 

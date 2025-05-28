@@ -113,6 +113,7 @@ void USleepManager::SleepCinematic(float DeltaTime)
 		TimeManager->StopTime(false);
 		TimeManager->AddSleepTimeToCrop.Broadcast();
 		WakeUpDelegate.Broadcast();
+		TimeManager->OnContentRestrictionCancelTimeReached.Broadcast();
 
 		if (bSleepCinematicStart)
 		{
