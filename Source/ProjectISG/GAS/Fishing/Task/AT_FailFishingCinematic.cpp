@@ -50,5 +50,8 @@ void UAT_FailFishingCinematic::ExternalConfirm(bool bEndTask)
 
 void UAT_FailFishingCinematic::OnFinish()
 {
-	OnFailFishingCinematicEndNotified.Broadcast();
+	if (OnFailFishingCinematicEndNotified.IsBound())
+	{
+		OnFailFishingCinematicEndNotified.Broadcast();
+	}
 }
