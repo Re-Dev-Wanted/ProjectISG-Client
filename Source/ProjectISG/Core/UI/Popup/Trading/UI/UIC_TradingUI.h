@@ -37,8 +37,6 @@ public:
 	
 	void UpdateGoldText();
 
-	void UpdateInventory();
-
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Input"
 		, meta = (AllowPrivateAccess = true, EditCondition = "IsInputAccess"))

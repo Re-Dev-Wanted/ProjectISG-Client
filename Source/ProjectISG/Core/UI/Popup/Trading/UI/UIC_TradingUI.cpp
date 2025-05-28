@@ -141,11 +141,16 @@ void UUIC_TradingUI::RefreshList()
 	FProductStruct ProductStruct = UTradingManager::GetProductDataById
 		(TradingUIModel->GetSelectedId());
 
+	AMainPlayerState* PS = GetPlayerController()->GetPlayerState<
+		AMainPlayerState>();
+
+	if (!PS)
+	{
+		return;
+	}
+	
 	if (TradingUIModel->GetCurrentState() == ETradingState::SELL)
 	{
-		AMainPlayerState* PS = GetPlayerController()->GetPlayerState<
-			AMainPlayerState>();
-
 		uint16 RemainCount = PS->GetInventoryComponent()->GetCurrentCount
 			(TradingUIModel->GetSelectedId());
 
@@ -156,9 +161,16 @@ void UUIC_TradingUI::RefreshList()
 			TradingUIView->GetTradeButton()->Get()->SetIsEnabled(false);
 		}
 	}
+	else
+	{
+		const uint32 ProductPrice = ProductStruct.GetProductPrice() * ProductStruct.GetBuyPriceRatio();
+		
+		TradingUIView->GetTradeButton()->Get()->SetIsEnabled(PS->GetGold() >= ProductPrice);
+	}
 
 	TradingUIView->GetItemListView()->SetUpdateUI(
 		TradingUIModel->GetCurrentState());
+	
 }
 
 void UUIC_TradingUI::UpdateGoldText()
@@ -172,16 +184,6 @@ void UUIC_TradingUI::UpdateGoldText()
 	{
 		FString Str = FString::FromInt(PS->GetGold());
 		TradingUIView->GetOwnedGoldText()->SetText(FText::FromString(Str));
-	}
-}
-
-void UUIC_TradingUI::UpdateInventory()
-{
-	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
-		GetPlayerController()->GetPawn());
-	if (Player && Player->GetPlayerInventoryComponent())
-	{
-		Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
 	}
 }
 
