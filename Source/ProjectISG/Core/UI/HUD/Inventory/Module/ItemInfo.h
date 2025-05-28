@@ -5,6 +5,7 @@
 #include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ItemInfo.generated.h"
 
+class UMultiLineEditableTextBox;
 class UTextBlock;
 class UOverlay;
 
@@ -33,4 +34,7 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemRank;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UMultiLineEditableTextBox> ItemDescription;
 };

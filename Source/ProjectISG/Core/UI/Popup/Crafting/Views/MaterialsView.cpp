@@ -15,7 +15,8 @@ void UMaterialsView::NativePreConstruct()
 
 	for (int8 i = 0; i < DebugCount; i++)
 	{
-		UMaterialInfoWidget* Widget = CreateWidget<UMaterialInfoWidget>(this, WidgetFactory);
+		UMaterialInfoWidget* Widget = CreateWidget<UMaterialInfoWidget>(
+			this, WidgetFactory);
 		ScrollBox->AddChild(Widget);
 	}
 }
@@ -28,20 +29,27 @@ void UMaterialsView::NativeConstruct()
 	SetVisibility(ESlateVisibility::Hidden);
 }
 
-void UMaterialsView::OnUpdateUI(const FString& ItemName, const TArray<FCraftingMaterialUIModel>& Materials, const TMap<uint16, uint16>& OwningCounts)
+void UMaterialsView::OnUpdateUI(const FString& ItemName,
+                                const TArray<FCraftingMaterialUIModel>&
+                                Materials,
+                                const TMap<uint16, uint16>& OwningCounts)
 {
 	SelectedItemName->SetText(FText::FromString(ItemName));
-	
+
 	ScrollBox->ClearChildren();
-	
+
 	for (int32 i = 0, Count = Materials.Num(); i < Count; i++)
 	{
 		FCraftingMaterialUIModel Model = Materials[i];
 
-		UMaterialInfoWidget* Widget = CreateWidget<UMaterialInfoWidget>(this, WidgetFactory);
-		
-		uint32 OwningCount = OwningCounts.Find(Model.Id)? OwningCounts[Model.Id] : 0;
-		Widget->SetWidget(Model.Id, OwningCount, Model.RequiredCount, Model.Name);
+		UMaterialInfoWidget* Widget = CreateWidget<UMaterialInfoWidget>(
+			this, WidgetFactory);
+
+		uint32 OwningCount = OwningCounts.Find(Model.Id)
+			                     ? OwningCounts[Model.Id]
+			                     : 0;
+		Widget->SetWidget(Model.Id, OwningCount, Model.RequiredCount,
+		                  Model.Name);
 
 		AsyncUtil::LoadAsync<UTexture2D>
 		(
@@ -58,9 +66,9 @@ void UMaterialsView::OnUpdateUI(const FString& ItemName, const TArray<FCraftingM
 	SetVisibility(ESlateVisibility::Visible);
 }
 
-void UMaterialsView::SetDescription(FString Desc)
+void UMaterialsView::SetDescription(const FText& Desc)
 {
-	ItemDesc->SetText(FText::FromString(Desc));
+	ItemDesc->SetText(Desc);
 }
 
 void UMaterialsView::SetImage(TSoftObjectPtr<UTexture2D> Thumbnail)
