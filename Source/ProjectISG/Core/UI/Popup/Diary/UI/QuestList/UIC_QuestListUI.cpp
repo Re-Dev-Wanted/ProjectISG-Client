@@ -279,8 +279,7 @@ void UUIC_QuestListUI::SetQuestRequireCustomData(
 	NewWidget->GetRequireDescription()->SetText(
 		FText::FromString(
 			FString::Printf(TEXT("%s"), *CustomRequireOption)));
-	NewWidget->GetRequireStatus()->SetText(FText::FromString(
-		FString::Printf(TEXT(""))));
+	NewWidget->GetRequireStatus()->SetText(FText::FromString(TEXT("")));
 
 	NewWidget->GetRequireDescription()->SetColorAndOpacity(
 		QuestListUIView->GetRequiredQuestHasDoneColor());

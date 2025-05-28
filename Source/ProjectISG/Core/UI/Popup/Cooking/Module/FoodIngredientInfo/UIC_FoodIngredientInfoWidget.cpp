@@ -47,10 +47,12 @@ void UUIC_FoodIngredientInfoWidget::SetIngredientInfo(const uint32 IngredientId,
 			                                      IngredientId]
 		                                      : 0;
 
-	FColor Color = CurrentIngredientCount < IngredientCount? FColor::Red : FColor::White;
+	FColor Color = CurrentIngredientCount < IngredientCount
+		               ? FColor::Red
+		               : FColor::White;
 
 	FoodInfoWidget->GetCurrentIngredientCount()->SetText(
-		FText::FromString(FString::FromInt(CurrentIngredientCount)));
+		FText::AsNumber(CurrentIngredientCount));
 
 	FoodInfoWidget->GetCurrentIngredientCount()->SetColorAndOpacity(Color);
 }

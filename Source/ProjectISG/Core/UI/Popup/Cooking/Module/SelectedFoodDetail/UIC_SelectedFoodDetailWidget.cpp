@@ -22,19 +22,19 @@ void UUIC_SelectedFoodDetailWidget::ShowDataByRecipeId(const uint32 RecipeId)
 		FText::FromString(FoodInfo.GetDisplayName()));
 
 	UTexture2D* LoadedTexture = FoodInfo.GetThumbnail().LoadSynchronous();
-	
+
 	SelectedFoodDetailView->GetItemIcon()->SetBrushFromTexture(LoadedTexture);
 
-	SelectedFoodDetailView->GetFoodDesc()->SetText(FText::FromString(FoodInfo.GetDescription()));
+	SelectedFoodDetailView->GetFoodDesc()->SetText(FoodInfo.GetDescription());
 
 	SelectedFoodDetailView->GetIngredientListScroll()->ClearChildren();
-	
+
 	for (const auto RecipeData : Recipe.GetRecipeData())
 	{
 		UUIV_FoodIngredientInfoWidget* NewWidget = CreateWidget<
 			UUIV_FoodIngredientInfoWidget>(GetView()
-											, SelectedFoodDetailView->
-											GetFoodIngredientInfoWidgetClass());
+			                               , SelectedFoodDetailView->
+			                               GetFoodIngredientInfoWidgetClass());
 
 		SelectedFoodDetailView->GetIngredientListScroll()->AddChild(NewWidget);
 		Cast<UUIC_FoodIngredientInfoWidget>(NewWidget->GetController())->
