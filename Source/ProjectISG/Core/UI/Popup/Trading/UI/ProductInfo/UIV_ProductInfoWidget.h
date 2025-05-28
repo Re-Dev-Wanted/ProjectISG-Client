@@ -13,7 +13,7 @@ IUserObjectListEntry
 
 public:
 	GETTER(class UButton*, ProductSelectButton);
-	GETTER(class UProductThumbnailWidget*, ProductThumbnail);
+	GETTER(class UProductThumbnailWidget*, ThumbnailWidget);
 	GETTER(class UTextBlock*, ProductName);
 	GETTER(class UTextBlock*, ProductPrice);
 
@@ -25,7 +25,7 @@ private:
 	class UButton* ProductSelectButton;
 
 	UPROPERTY(meta = (BindWidget))
-	class UProductThumbnailWidget* ProductThumbnail;
+	class UProductThumbnailWidget* ThumbnailWidget;
 
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* ProductName;

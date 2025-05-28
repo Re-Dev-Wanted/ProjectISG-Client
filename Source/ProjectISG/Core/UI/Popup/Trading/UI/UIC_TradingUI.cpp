@@ -13,7 +13,10 @@
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Base/Module/UI_BaseButton.h"
+#include "ProjectISG/Core/UI/Modal/Trading/UIC_ProductBuyNotification.h"
+#include "ProjectISG/Core/UI/Modal/Trading/UIM_ProductBuyNotification.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/Logging/LoggingStruct.h"
@@ -47,12 +50,7 @@ void UUIC_TradingUI::AppearUI()
 	TradingUIView->GetTradeButton()->Get()->OnClicked.AddUniqueDynamic
 	(this, &UUIC_TradingUI::OnTrade);
 
-	TradingUIView->GetTradeButton()->Get()->SetIsEnabled(false);
-
-	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
-	TradingUIModel->SetCurrentState(ETradingState::BUY);
-
-	TradingUIView->GetItemListView()->SetUpdateUI(TradingUIModel->GetCurrentState());
+	RefreshList();
 
 	UpdateGoldText();
 }
@@ -64,56 +62,34 @@ void UUIC_TradingUI::OnCloseTradingUI()
 
 	UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
 	TradingUIView->GetProductDetailView()->OnHide();
+
+	TradingUIView->GetTradeButton()->Get()->SetIsEnabled(false);
+
+	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
+	TradingUIModel->SetCurrentState(ETradingState::BUY);
 	
 	ResetUIFromPlayerController();
 }
 
 void UUIC_TradingUI::OnTrade()
 {
-	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
-	FProductStruct ProductStruct = UTradingManager::GetProductDataById
-	(TradingUIModel->GetSelectedId());
-
-	AMainPlayerState* PS = GetPlayerController()->GetPlayerState<AMainPlayerState>();
-
-	switch (TradingUIModel->GetCurrentState())
+	AMainPlayerController* PC = Cast<AMainPlayerController>(GetPlayerController());
+	if (PC)
 	{
-	case ETradingState::SELL:
-		{
-			
-			FItemMetaInfo MetaInfo = PS->GetInventoryComponent()->GetFirstMetaInfo
-			(TradingUIModel->GetSelectedId());
+		UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
 
-			float PriceRatio = UItemManager::GetPriceRatio(MetaInfo);
-			
-			PS->GetInventoryComponent()->RemoveItem
-			(TradingUIModel->GetSelectedId(), 1);
+		PC->PushUI(EUIName::Modal_BuyNotification);
+		
+		UUIC_ProductBuyNotification* ModalController = Cast<UUIC_ProductBuyNotification>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Modal_BuyNotification]);
+		UUIM_ProductBuyNotification* ModalModel = Cast<UUIM_ProductBuyNotification>(ModalController->GetModel());
 
-			uint32 SellPrice = ProductStruct.GetProductPrice() * 
-			ProductStruct.GetSellPriceRatio() * PriceRatio;
+		ModalModel->SetCount(1);
+		ModalModel->SetClickedProductId(TradingUIModel->GetSelectedId());
+		ModalModel->SetTradingState(TradingUIModel->GetCurrentState());
 
-			PS->SetGold(PS->GetGold() + SellPrice);
-			UpdateGoldText();
-
-			LoggingToSellItem();
-		}
-		break;
-	default:
-		{
-			PS->GetInventoryComponent()->AddItem(
-				UItemManager::GetInitialItemMetaDataById(TradingUIModel->GetSelectedId()
-			));
-	
-			uint32 ItemPrice = ProductStruct.GetProductPrice() * ProductStruct.GetBuyPriceRatio();
-			PS->SetGold(PS->GetGold() - ItemPrice);
-			UpdateGoldText();
-
-			LoggingToBuyItem();
-		}
-		break;
+		ModalController->OnInitialize();
 	}
-
-	RefreshList();
+	
 }
 
 void UUIC_TradingUI::LoggingToBuyItem()

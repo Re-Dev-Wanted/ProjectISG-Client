@@ -31,7 +31,7 @@ void UUIC_ProductInfoWidget::InitializeController(UBaseUIView* NewView,
 	&UUIC_ProductInfoWidget::OnSelectProductData);
 }
 
-void UUIC_ProductInfoWidget::SetProductInfo(const uint32 ProductId, const float Ratio)
+void UUIC_ProductInfoWidget::SetProductInfo(const uint32 ProductId, const uint32 Count, const float Ratio)
 {
 	const UUIV_ProductInfoWidget* ProductInfoWidget = Cast<
 		UUIV_ProductInfoWidget>(GetView());
@@ -43,7 +43,10 @@ void UUIC_ProductInfoWidget::SetProductInfo(const uint32 ProductId, const float 
 	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ProductId);
 
 	UTexture2D* Thumbnail = ItemInfoData.GetThumbnail().LoadSynchronous();
-	ProductInfoWidget->GetProductThumbnail()->SetWidget(Thumbnail, 1);
+	ProductInfoWidget->GetThumbnailWidget()->SetWidget(Thumbnail);
+
+	ProductInfoWidget->GetThumbnailWidget()->SetCount(Count);
+	
 	ProductInfoWidget->GetProductName()->SetText(
 		FText::FromString(ItemInfoData.GetDisplayName()));
 
@@ -54,9 +57,6 @@ void UUIC_ProductInfoWidget::SetProductInfo(const uint32 ProductId, const float 
 
 void UUIC_ProductInfoWidget::OnSelectProductData()
 {
-	// 선택 하면 구매 확인 widget을 생성해서 띄운다.
-	// UE_LOG(LogTemp, Warning, TEXT("구매 확인창 띄우기"));
-	
 	AMainPlayerController* PC = Cast<AMainPlayerController>(GetPlayerController());
 	if (PC)
 	{
@@ -67,16 +67,5 @@ void UUIC_ProductInfoWidget::OnSelectProductData()
 		(PC->GetUIManageComponent()->ControllerInstances[EUIName::Popup_TradingUI]);
 
 		TradingUI->OnUpdateSelectedProduct(ProductId);
-		
-		// PC->PushUI(EUIName::Modal_BuyNotification);
-		//
-		// UUIC_ProductBuyNotification* ProductBuyNotificationController =
-		// 	Cast<UUIC_ProductBuyNotification>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Modal_BuyNotification]);
-		// UUIM_ProductBuyNotification* ProductBuyNotificationModel = Cast<UUIM_ProductBuyNotification>(ProductBuyNotificationController->GetModel());
-		//
-		// if (ProductBuyNotificationController && ProductBuyNotificationModel)
-		// {
-		// 	ProductBuyNotificationModel->SetClickedProductId(ProductId);
-		// }
 	}
 }

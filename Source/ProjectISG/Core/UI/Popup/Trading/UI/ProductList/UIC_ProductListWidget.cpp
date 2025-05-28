@@ -52,6 +52,7 @@ void UUIC_ProductListWidget::SetProductList()
 
 		NewWidget->SetProductId(Product.GetProductId());
 		NewWidget->SetPriceRatio(Product.GetBuyPriceRatio());
+		NewWidget->SetProductCount(0);
 
 		ProductListWidgetView->GetProductList()->AddItem(NewWidget);
 	}
@@ -72,8 +73,11 @@ void UUIC_ProductListWidget::SetInventoryList()
 		return;
 	}
 
-	for (FItemMetaInfo MetaInfo : PS->GetInventoryComponent()->GetInventoryList())
+	for (TPair Pair : PS->GetInventoryComponent()->GetCurrentRemainItemMetaValue())
 	{
+		FItemMetaInfo MetaInfo = Pair.Key;
+		uint32 Count = Pair.Value;
+		
 		if (!MetaInfo.IsValid())
 		{
 			continue;
@@ -92,6 +96,7 @@ void UUIC_ProductListWidget::SetInventoryList()
 
 		NewWidget->SetProductId(MetaInfo.GetId());
 		NewWidget->SetPriceRatio(ProductData.GetSellPriceRatio());
+		NewWidget->SetProductCount(Count);
 
 		ProductListWidgetView->GetProductList()->AddItem(NewWidget);
 	}
