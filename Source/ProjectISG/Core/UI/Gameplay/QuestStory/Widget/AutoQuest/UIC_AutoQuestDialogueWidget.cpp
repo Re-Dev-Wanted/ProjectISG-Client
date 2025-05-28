@@ -64,8 +64,7 @@ void UUIC_AutoQuestDialogueWidget::InitializeDialogue()
 	AutoQuestDialogueWidgetView->GetDialogueOwner()->SetText(
 		FText::FromString(OwnerText));
 	AutoQuestDialogueWidgetView->GetDialogueText()->SetText(
-		FText::FromString(
-			Dialogues[CurrentQuestDialogueIndex].GetDialogueText()));
+		Dialogues[CurrentQuestDialogueIndex].GetDialogueText());
 
 	// 모든 일련의 과정이 완료되면 1을 더해 다음 대사를 준비한다.
 	AutoQuestDialogueWidgetModel->SetCurrentQuestDialogueIndex(
@@ -126,7 +125,6 @@ void UUIC_AutoQuestDialogueWidget::OnFinishDialogue()
 		DialogueCount)
 	{
 		PC->GetMainHUD()->ToggleAutoQuestUI(false);
-		//PC->GetMainHUD()->ToggleCurrentQuestUI(false);
 
 		return;
 	}

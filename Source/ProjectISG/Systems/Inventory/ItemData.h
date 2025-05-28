@@ -56,13 +56,12 @@ struct PROJECTISG_API FItemInfoData : public FTableRowBase
 	GENERATED_USTRUCT_BODY()
 
 	GETTER(FString, DisplayName)
-	GETTER(FString, Description)
+	GETTER(FText, Description)
 	GETTER(EItemType, ItemType)
 	GETTER(TSoftObjectPtr<UTexture2D>, Thumbnail)
 	GETTER(TSubclassOf<AActor>, ShowItemActor)
 	GETTER(TSubclassOf<AActor>, PlaceItemActor)
 	GETTER(uint32, MaxItemCount)
-
 
 	FORCEINLINE TMap<EMetaDataKey, FString> GetMetaData() const
 	{
@@ -80,8 +79,8 @@ private:
 	FString DisplayName;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Data",
-		meta=(AllowPrivateAccess = true))
-	FString Description;
+		meta=(AllowPrivateAccess = true, MultiLine = true))
+	FText Description;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Data",
 		meta=(AllowPrivateAccess = true))

@@ -1,28 +1,9 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "UIV_ProductListWidget.h"
+﻿#include "UIV_ProductListWidget.h"
 
 #include "UIC_ProductListWidget.h"
+#include "ProjectISG/Core/UI/Popup/Trading/UI/TradingTabButton.h"
+#include "ProjectISG/Core/UI/Popup/Trading/UI/UIM_TradingUI.h"
 #include "ProjectISG/Core/UI/Popup/Trading/UI/ProductInfo/UIV_ProductInfoWidget.h"
-#include "Components/GridPanel.h"
-
-void UUIV_ProductListWidget::NativePreConstruct()
-{
-	Super::NativePreConstruct();
-
-	if (ProductInfoWidgetClass)
-	{
-		for (int i = 0; i < DebugProductCount; i++)
-		{
-			UUIV_ProductInfoWidget* ProductInfoWidget = CreateWidget<
-				UUIV_ProductInfoWidget>(this, ProductInfoWidgetClass);
-
-			ProductListGrid->AddChildToGrid(ProductInfoWidget, i / ColumnValue,
-			                                i % ColumnValue);
-		}
-	}
-}
 
 void UUIV_ProductListWidget::NativeConstruct()
 {
@@ -32,4 +13,15 @@ void UUIV_ProductListWidget::NativeConstruct()
 		UUIC_ProductListWidget>(GetController());
 
 	ProductListWidgetController->InitializeData();
+}
+
+void UUIV_ProductListWidget::SetUpdateUI(ETradingState State)
+{
+	BuyTabButton->OnActive(State == ETradingState::BUY);
+	SellTabButton->OnActive(State == ETradingState::SELL);
+
+	UUIC_ProductListWidget* ProductListWidgetController = Cast<
+		UUIC_ProductListWidget>(GetController());
+
+	ProductListWidgetController->OnUpdateList(State);
 }
