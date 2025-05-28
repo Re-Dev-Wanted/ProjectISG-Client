@@ -26,7 +26,7 @@ public:
 		return BackButton->GetButton();
 	}
 	
-	void SetContainer(FGuid Guid, const TArray<FItemMetaInfo>& Items, TScriptInterface<IItemHandler> Handler) const;
+	void SetContainer(const TArray<FItemMetaInfo>& Items, TScriptInterface<IItemHandler> Handler) const;
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Options|UI",

@@ -73,7 +73,7 @@ void ALootContainer::OnInteractive(AActor* Causer)
 				}
 			);
 
-			UIController->SetContainer(FGuid(), OutDatas, this);
+			UIController->SetContainer(OutDatas, this, this);
 		}
 	}
 }

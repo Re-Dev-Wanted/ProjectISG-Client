@@ -15,7 +15,7 @@ class PROJECTISG_API UUIC_LootContainerUI : public UBaseUIController
 	GENERATED_BODY()
 
 public:
-	void SetContainer(FGuid Guid, const TArray<FItemMetaInfo>& Items, TScriptInterface<IItemHandler> Handler);
+	void SetContainer(const TArray<FItemMetaInfo>& Items, const TScriptInterface<IItemHandler>& Handler, const TScriptInterface<IUIHandler>& UIHandler);
 
 protected:
 	virtual void InitializeController(UBaseUIView* NewView, UBaseUIModel* NewModel) override;
@@ -24,10 +24,8 @@ protected:
 
 	virtual void BindInputAction(UEnhancedInputComponent* InputComponent) override;
 
-	TScriptInterface<IUIHandler> UIHandler = nullptr;
-
 	UFUNCTION()
-	void CloseUI();
+	void OnCloseUI();
 
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",
 		meta = (AllowPrivateAccess = true, EditCondition = "IsInputAccess"))
