@@ -34,7 +34,10 @@ void UPlayerHandSlotComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	if (EndPlayReason == EEndPlayReason::Type::Quit)
 	{
-		HeldItem->Destroy();
+		if (HeldItem->IsValidLowLevel())
+		{
+			HeldItem->Destroy();
+		}
 	}
 }
 
