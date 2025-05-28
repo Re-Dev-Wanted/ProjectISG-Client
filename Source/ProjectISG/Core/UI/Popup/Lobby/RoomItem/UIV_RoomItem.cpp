@@ -33,8 +33,9 @@ void UUIV_RoomItem::OnClickedJoinButton()
 	else
 	{
 		ATutorialPlayerController* TutorialPlayerController = Cast<
-			ATutorialPlayerController>(RoomItemController->GetPlayerController()); 
-		
+			ATutorialPlayerController>(
+			RoomItemController->GetPlayerController());
+
 		if (TutorialPlayerController)
 		{
 			TutorialPlayerController->SessionSearchResult = this->
@@ -60,7 +61,6 @@ void UUIV_RoomItem::SetInfo(const FOnlineSessionSearchResult& SearchResult)
 	                                             NumOpenPublicConnections;
 
 	CurrentPlayerText->SetText(
-		FText::FromString(
-			FString::FromInt(MaxPlayerCount - RemainPlayerCount)));
-	MaxPlayerText->SetText(FText::FromString(FString::FromInt(MaxPlayerCount)));
+		FText::AsNumber(MaxPlayerCount - RemainPlayerCount));
+	MaxPlayerText->SetText(FText::AsNumber(MaxPlayerCount));
 }
