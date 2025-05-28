@@ -15,43 +15,38 @@ void UUIC_LootContainerUI::InitializeController(UBaseUIView* NewView,
 
 	UUIV_LootContainerUI* UIView = Cast<UUIV_LootContainerUI>(NewView);
 
-	UIView->GetBackButton()->OnClicked.AddDynamic(this, 
-	&UUIC_LootContainerUI::CloseUI);
+	UIView->GetBackButton()->OnClicked.AddDynamic(this,
+	                                              &UUIC_LootContainerUI::
+	                                              CloseUI);
 }
 
-void UUIC_LootContainerUI::BindInputAction(UEnhancedInputComponent* InputComponent)
+void UUIC_LootContainerUI::BindInputAction(
+	UEnhancedInputComponent* InputComponent)
 {
 	Super::BindInputAction(InputComponent);
 
 	InputComponent->BindAction(CloseAction, ETriggerEvent::Started,
-								   this, &ThisClass::CloseUI);
+	                           this, &ThisClass::CloseUI);
 }
 
 void UUIC_LootContainerUI::CloseUI()
 {
-	const AMainPlayerController* PC =  Cast<AMainPlayerController>(GetPlayerController());
+	ResetUIFromPlayerController();
 
-	if (PC)
-	{
-		PC->GetUIManageComponent()->ResetWidget();
-	}
-	else
-	{
-		PopUIFromPlayerController();
-	}
-	
 	if (UIHandler)
 	{
 		UIHandler->OnClosed();
 	}
 }
 
-void UUIC_LootContainerUI::SetContainer(FGuid Guid, const TArray<FItemMetaInfo>& Items, TScriptInterface<IItemHandler> Handler)
+void UUIC_LootContainerUI::SetContainer(FGuid Guid,
+                                        const TArray<FItemMetaInfo>& Items,
+                                        TScriptInterface<IItemHandler> Handler)
 {
 	UUIV_LootContainerUI* UIView = Cast<UUIV_LootContainerUI>(GetView());
 
 	if (Handler.GetObject()->GetClass()->ImplementsInterface
-	(UUIHandler::StaticClass()))
+		(UUIHandler::StaticClass()))
 	{
 		TScriptInterface<IUIHandler> _Handler;
 		_Handler.SetObject(Handler.GetObject());
@@ -59,6 +54,6 @@ void UUIC_LootContainerUI::SetContainer(FGuid Guid, const TArray<FItemMetaInfo>&
 
 		UIHandler = _Handler;
 	}
-	
+
 	UIView->SetContainer(Guid, Items, Handler);
 }

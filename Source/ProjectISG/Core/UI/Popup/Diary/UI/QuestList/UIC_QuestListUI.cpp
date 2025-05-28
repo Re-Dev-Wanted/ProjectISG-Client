@@ -25,7 +25,7 @@
 #include "ProjectISG/Utils/SessionUtil.h"
 
 void UUIC_QuestListUI::InitializeController(UBaseUIView* NewView
-											, UBaseUIModel* NewModel)
+                                            , UBaseUIModel* NewModel)
 {
 	Super::InitializeController(NewView, NewModel);
 
@@ -57,7 +57,7 @@ void UUIC_QuestListUI::BindInputAction(UEnhancedInputComponent* InputComponent)
 	Super::BindInputAction(InputComponent);
 
 	InputComponent->BindAction(ExitActionInput, ETriggerEvent::Triggered, this
-								, &ThisClass::PopUIFromPlayerController);
+	                           , &ThisClass::ResetUIFromPlayerController);
 }
 
 void UUIC_QuestListUI::SetQuestInfo(const FString& QuestId)
@@ -80,11 +80,11 @@ void UUIC_QuestListUI::InitializeQuestList()
 	QuestListUIView->GetQuestListView()->ClearListItems();
 
 	for (FQuestStoryData& CurrentQuestData :
-		UQuestStoryManager::GetAllQuestData())
+	     UQuestStoryManager::GetAllQuestData())
 	{
 		// 보이지 않는 조건에 대한 처리
 		if (CurrentQuestData.GetQuestMetaData().
-							Contains(EQuestStoryMetaDataKey::IsHideInQuestBook)
+		                     Contains(EQuestStoryMetaDataKey::IsHideInQuestBook)
 			&& CurrentQuestData.GetQuestMetaData()[
 				EQuestStoryMetaDataKey::IsHideInQuestBook] == TEXT("true"))
 		{
@@ -184,7 +184,7 @@ void UUIC_QuestListUI::SetQuestRequireData(const FString& QuestId)
 	QuestListUIView->GetQuestRequireList()->ClearChildren();
 
 	for (FQuestRequireData& RequireQuest :
-		UQuestStoryManager::GetRequireQuestDataById(QuestId))
+	     UQuestStoryManager::GetRequireQuestDataById(QuestId))
 	{
 		switch (RequireQuest.GetRequireType())
 		{
@@ -217,22 +217,23 @@ void UUIC_QuestListUI::SetQuestRequireItemData(
 	const uint32 ItemId = RequireQuest.GetRequireItemOptions().GetItemId();
 
 	const uint32 RequireCount = RequireQuest.GetRequireItemOptions().
-											GetItemCount();
+	                                         GetItemCount();
 
 	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
 
 	UUIV_QuestRequiredTextWidget* NewWidget = CreateWidget<
 		UUIV_QuestRequiredTextWidget>(QuestListUIView
-									, QuestListUIView->
-									GetQuestRequiredTextClass());
+		                              , QuestListUIView->
+		                              GetQuestRequiredTextClass());
 
 	// 현재 내가 보유하고 있는 아이템 Id 기반의 갯수 가져오기
 	const uint32 CurrentItemCount = PS->GetInventoryComponent()->
-										GetCurrentRemainItemValue().
-										Contains(ItemId)
-										? PS->GetInventoryComponent()->
-											GetCurrentRemainItemValue()[ItemId]
-										: 0;
+	                                    GetCurrentRemainItemValue().
+	                                    Contains(ItemId)
+		                                ? PS->GetInventoryComponent()->
+		                                      GetCurrentRemainItemValue()[
+			                                ItemId]
+		                                : 0;
 
 	NewWidget->SetPadding(FMargin(0, 0, 0, 8));
 
@@ -267,14 +268,14 @@ void UUIC_QuestListUI::SetQuestRequireCustomData(
 	UUIV_QuestListUI* QuestListUIView = Cast<UUIV_QuestListUI>(GetView());
 
 	FString CustomRequireOption = RequireQuest.GetRequireCustomOptions();
-	
+
 	UUIV_QuestRequiredTextWidget* NewWidget = CreateWidget<
 		UUIV_QuestRequiredTextWidget>(QuestListUIView
-									, QuestListUIView->
-									GetQuestRequiredTextClass());
+		                              , QuestListUIView->
+		                              GetQuestRequiredTextClass());
 
 	NewWidget->SetPadding(FMargin(0, 0, 0, 8));
-	
+
 	NewWidget->GetRequireDescription()->SetText(
 		FText::FromString(
 			FString::Printf(TEXT("%s"), *CustomRequireOption)));
@@ -282,8 +283,8 @@ void UUIC_QuestListUI::SetQuestRequireCustomData(
 		FString::Printf(TEXT(""))));
 
 	NewWidget->GetRequireDescription()->SetColorAndOpacity(
-			QuestListUIView->GetRequiredQuestHasDoneColor());
-	
+		QuestListUIView->GetRequiredQuestHasDoneColor());
+
 	QuestListUIView->GetQuestRequireList()->AddChild(NewWidget);
 }
 
@@ -299,8 +300,8 @@ void UUIC_QuestListUI::SetQuestRewardData(const FString& QuestId)
 	{
 		UUIV_QuestShowItemInfoWidget* RewardChild = CreateWidget<
 			UUIV_QuestShowItemInfoWidget>(GetView()
-										, QuestListUIView->
-										GetQuestRewardItemClass());
+			                              , QuestListUIView->
+			                              GetQuestRewardItemClass());
 
 		RewardChild->SetPadding({0, 0, 4, 0});
 		RewardChild->InitializeMVC();

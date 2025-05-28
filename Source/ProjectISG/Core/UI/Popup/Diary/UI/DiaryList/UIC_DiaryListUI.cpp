@@ -29,7 +29,7 @@ void UUIC_DiaryListUI::InitializeController(UBaseUIView* NewView
 		this, &ThisClass::MoveToNextPage);
 
 	DiaryListView->GetExitButton()->OnClicked.AddDynamic(
-		this, &ThisClass::PopUIFromPlayerController);
+		this, &ThisClass::ResetUIFromPlayerController);
 
 	InitializeData();
 }
@@ -148,5 +148,5 @@ void UUIC_DiaryListUI::UpdateDiaryPerPage(const int Page)
 
 void UUIC_DiaryListUI::OnCloseDiaryListUI()
 {
-	Cast<AMainPlayerController>(GetPlayerController())->PopUI();
+	ResetUIFromPlayerController();
 }

@@ -2,7 +2,6 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
-#include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "UIC_InventoryUI.generated.h"
 
 class UInputAction;
