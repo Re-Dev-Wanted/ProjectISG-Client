@@ -47,7 +47,24 @@ void UQuestManageComponent::StartScene(const FString& NewSceneId)
 		return;
 	}
 
-	PC->PushUI(EUIName::Popup_SceneListUI);
+	const FQuestSceneCutData SceneData =
+		UQuestStoryManager::GetQuestSceneCutById(NewSceneId);
+
+	switch (SceneData.GetQuestSceneType())
+	{
+	case EQuestSceneType::Image:
+		{
+			PC->PushUI(EUIName::Popup_SceneListUI);
+		}
+	case EQuestSceneType::Media:
+		{
+			PC->PushUI(EUIName::Popup_MediaSceneListUI);
+		}
+	default:
+		{
+			break;
+		}
+	}
 }
 
 bool UQuestManageComponent::EndQuest(const bool IsCheckedQuestEnd)

@@ -20,13 +20,14 @@ struct FInputActionValue;
 class UInputAction;
 class UInputComponent;
 class UInputMappingContext;
+class UMediaSoundComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInputBindingNotified,
-                                            UEnhancedInputComponent*,
-                                            EnhancedInputComponent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInputBindingNotified
+											, UEnhancedInputComponent*
+											, EnhancedInputComponent);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpdateSelectedItem, uint16,
-                                            ItemId);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpdateSelectedItem, uint16
+											, ItemId);
 
 UCLASS()
 class PROJECTISG_API AMainPlayerCharacter : public ABaseCharacter
@@ -39,10 +40,9 @@ public:
 	FOnInputBindingNotified OnInputBindingNotified;
 
 	UE_DEPRECATED(
-		"5.5",
-		"Player State에 있는 On Update Inventory에 바인딩 걸어두면,"
-		" 인벤토리 변경 시 마다 호출되는 로직이 있으므로, 제거하기를 권장함")
-	FOnUpdateSelectedItem OnUpdateSelectedItem;
+		"5.5", "Player State에 있는 On Update Inventory에 바인딩 걸어두면,"
+		" 인벤토리 변경 시 마다 호출되는 로직이 있으므로, 제거하기를 권장함") FOnUpdateSelectedItem
+	OnUpdateSelectedItem;
 
 	GETTER(TObjectPtr<UCameraComponent>, CameraComponent);
 
@@ -66,10 +66,11 @@ protected:
 		TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
+	GETTER(TObjectPtr<UMediaSoundComponent>, MediaSoundComponent)
 	GETTER_SETTER(bool, bIsSleep)
 	GETTER_SETTER(bool, bLieInBed)
-	GETTER(TObjectPtr<UPlacementIndicatorComponent>,
-	       PlacementIndicatorComponent)
+	GETTER(TObjectPtr<UPlacementIndicatorComponent>
+			, PlacementIndicatorComponent)
 	GETTER(TObjectPtr<UDiaryComponent>, DiaryComponent)
 	GETTER(TObjectPtr<UPlayerInventoryComponent>, PlayerInventoryComponent)
 	GETTER(TObjectPtr<UInteractionComponent>, InteractionComponent)
@@ -93,16 +94,16 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UScreenShotComponent> ScreenShotComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-		meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly
+		, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlacementIndicatorComponent> PlacementIndicatorComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-		meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly
+		, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInteractionComponent> InteractionComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
-		meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly
+		, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UPlayerHandSlotComponent> HandSlotComponent;
 #pragma endregion
 
@@ -118,16 +119,19 @@ private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UCameraComponent> ScreenShotCameraComponent;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",
-		meta = (AllowPrivateAccess = true))
+	UPROPERTY()
+	TObjectPtr<UMediaSoundComponent> MediaSoundComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Input"
+		, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",
-		meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Input"
+		, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInputAction> MoveInputAction;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Options|Input",
-		meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Input"
+		, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInputAction> LookInputAction;
 
 	UFUNCTION()
@@ -138,12 +142,12 @@ private:
 
 	// 장진혁
 #pragma region JJH
-	UPROPERTY(Replicated, EditAnywhere, Category = "Sleep",
-		meta = (AllowPrivateAccess = true))
+	UPROPERTY(Replicated, EditAnywhere, Category = "Sleep"
+		, meta = (AllowPrivateAccess = true))
 	bool bIsSleep = false;
 
-	UPROPERTY(Replicated, EditAnywhere, Category = "Sleep",
-		meta = (AllowPrivateAccess = true))
+	UPROPERTY(Replicated, EditAnywhere, Category = "Sleep"
+		, meta = (AllowPrivateAccess = true))
 	bool bLieInBed = false;
 #pragma endregion
 };
