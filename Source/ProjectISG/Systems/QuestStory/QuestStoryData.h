@@ -232,6 +232,10 @@ struct PROJECTISG_API FQuestSceneMediaData
 {
 	GENERATED_USTRUCT_BODY()
 
+	GETTER(TObjectPtr<UMediaPlayer>, StartCinematic)
+	GETTER(TObjectPtr<UMediaSource>, StartCinematicSource)
+
+private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UMediaPlayer> StartCinematic;
 
@@ -249,6 +253,7 @@ struct PROJECTISG_API FQuestSceneCutData : public FTableRowBase
 	GETTER(FString, QuestSceneId)
 	GETTER(EQuestSceneType, QuestSceneType)
 	GETTER_REF(TArray<FQuestSceneImageData>, SceneCutList)
+	GETTER_REF(FQuestSceneMediaData, SceneMedia)
 
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
