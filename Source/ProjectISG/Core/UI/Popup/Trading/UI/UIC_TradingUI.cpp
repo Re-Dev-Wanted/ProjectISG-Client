@@ -9,8 +9,6 @@
 #include "ProductInfo/ProductDetailView.h"
 #include "ProductList/UIV_ProductListWidget.h"
 #include "ProjectISG/Contents/Trading/TradingManager.h"
-#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
-#include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
@@ -21,9 +19,6 @@
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/Logging/LoggingStruct.h"
 #include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
-
-class AMainPlayerState;
-class AMainPlayerCharacter;
 
 void UUIC_TradingUI::BindInputAction(UEnhancedInputComponent* InputComponent)
 {
