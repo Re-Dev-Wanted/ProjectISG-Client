@@ -31,6 +31,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void LoadingNextLevel(TSoftObjectPtr<UWorld> Level);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetVisibleGuideLine();
+
 public:
 	UPROPERTY(EditAnywhere, Category = Settings)
 	FString StartSceneName;

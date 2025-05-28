@@ -4,6 +4,7 @@
 #include "TicketMachine.h"
 
 #include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/TutorialPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
@@ -43,6 +44,8 @@ ATicketMachine::ATicketMachine()
 void ATicketMachine::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SetQuestInteractiveActorOverlayMaterial(false);
 }
 
 void ATicketMachine::OnInteractive(AActor* Causer)
@@ -53,10 +56,16 @@ void ATicketMachine::OnInteractive(AActor* Causer)
 	if (Player)
 	{
 		bIsBoughtTicket = true;
+		SetQuestInteractiveActorOverlayMaterial(true);
+		SetVisibleGuideLine();
+		
 		Player->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()->
 		        AddItem(UItemManager::GetInitialItemMetaDataById(26));
-		Player->GetController<ATutorialPlayerController>()->GetQuestManageComponent()->EndQuest(true);
-		Player->GetController<ATutorialPlayerController>()->GetQuestManageComponent()->StartQuest(TEXT("Tutorial_002"));
+
+		ATutorialPlayerController* TutorialPlayerController = Player->
+			GetController<ATutorialPlayerController>();
+		TutorialPlayerController->GetQuestManageComponent()->EndQuest(true);
+		TutorialPlayerController->StartQuest(NextQuest);
 	}
 }
 
@@ -68,4 +77,16 @@ bool ATicketMachine::GetCanInteractive() const
 FString ATicketMachine::GetInteractiveDisplayText() const
 {
 	return TEXT("티켓구매");
+}
+
+void ATicketMachine::SetQuestInteractiveActorOverlayMaterial(bool value)
+{
+	if (!value)
+	{
+		Mesh->SetOverlayMaterial(QuestInteractMaterial);
+	}
+	else
+	{
+		Mesh->SetOverlayMaterial(nullptr);
+	}
 }

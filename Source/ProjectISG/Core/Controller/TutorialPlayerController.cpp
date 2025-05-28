@@ -23,6 +23,7 @@ void ATutorialPlayerController::StartSceneEnd()
 	if (!StartQuestId.IsEmpty())
 	{
 		StartQuest(StartQuestId);
+		SetVisibleGuideLine();
 	}
 }
 
