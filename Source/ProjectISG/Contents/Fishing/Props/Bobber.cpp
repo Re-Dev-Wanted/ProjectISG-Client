@@ -10,8 +10,9 @@ ABobber::ABobber()
 	LineAttachPoint = CreateDefaultSubobject<USceneComponent>(TEXT("LineAttachPoint"));
 	LineAttachPoint->SetupAttachment(MeshComponent);
 
-	FishMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FishMesh"));
-	FishMesh->SetupAttachment(RootComponent);
+	FishMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FishMesh"));
+	FishMeshComp->SetupAttachment(RootComponent);
+	FishMeshComp->SetRelativeScale3D(FVector::OneVector * 0.5f);
 
 	Root->SetSimulatePhysics(false);
 }
@@ -43,7 +44,7 @@ void ABobber::SuggestProjectileVelocity(const FVector& StartLocation, const FVec
 	// }
 }
 
-void ABobber::OnBite(USkeletalMesh* Fish)
+void ABobber::OnBite(UStaticMesh* Fish)
 {
 	if (!Root->IsSimulatingPhysics())
 	{
@@ -53,14 +54,16 @@ void ABobber::OnBite(USkeletalMesh* Fish)
 	FVector Impulse = FVector::DownVector * ImpulseStrength;
 	Root->AddImpulse(Impulse);
 
-	FishMesh->SetSkeletalMesh(Fish);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFX_Bite, GetActorLocation());
+
+	FishMeshComp->SetStaticMesh(Fish);
 }
 
 void ABobber::RemoveFish()
 {
-	if (FishMesh)
+	if (FishMeshComp)
 	{
-		FishMesh->SetSkeletalMesh(nullptr);
+		FishMeshComp->SetStaticMesh(nullptr);
 	}
 }
 

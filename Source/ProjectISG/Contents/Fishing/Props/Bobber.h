@@ -16,7 +16,7 @@ public:
 
 	void SuggestProjectileVelocity(const FVector& StartLocation, const FVector& EndLocation);
 
-	void OnBite(USkeletalMesh* Fish);
+	void OnBite(UStaticMesh* Fish);
 
 	void RemoveFish();
 
@@ -26,9 +26,12 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* LineAttachPoint;
 
-	UPROPERTY(VisibleAnywhere)
-	USkeletalMeshComponent* FishMesh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* FishMeshComp;
 
 	UPROPERTY(EditAnywhere)
 	float ImpulseStrength = 20000.f;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USoundBase> SFX_Bite;
 };
