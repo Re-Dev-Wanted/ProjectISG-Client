@@ -13,7 +13,7 @@ class PROJECTISG_API UProductDetailView : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	void UpdateUI(FString Name, FString Desc, uint32 Price, 
+	void UpdateUI(FString Name, FText Desc, uint32 Price, 
 	TSoftObjectPtr<UTexture2D> Image);
 
 	void OnHide();

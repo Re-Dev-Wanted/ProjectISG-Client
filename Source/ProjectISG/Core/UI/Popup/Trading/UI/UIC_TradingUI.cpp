@@ -38,17 +38,19 @@ void UUIC_TradingUI::AppearUI()
 	Super::AppearUI();
 
 	UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
-	TradingUIView->GetCloseButton()->OnClicked.AddUniqueDynamic(this, 
-	&ThisClass::OnCloseTradingUI);
+	TradingUIView->GetCloseButton()->OnClicked.AddUniqueDynamic(this,
+		&ThisClass::OnCloseTradingUI);
 
 	TradingUIView->GetItemListView()->GetBuyTabButton()->GetButton()
-	->OnClicked.AddUniqueDynamic(this, &UUIC_TradingUI::ChangeBuyState);
+	             ->OnClicked.AddUniqueDynamic(
+		             this, &UUIC_TradingUI::ChangeBuyState);
 
 	TradingUIView->GetItemListView()->GetSellTabButton()->GetButton()
-	->OnClicked.AddUniqueDynamic(this, &UUIC_TradingUI::ChangeSellState);
+	             ->OnClicked.AddUniqueDynamic(
+		             this, &UUIC_TradingUI::ChangeSellState);
 
 	TradingUIView->GetTradeButton()->Get()->OnClicked.AddUniqueDynamic
-	(this, &UUIC_TradingUI::OnTrade);
+		(this, &UUIC_TradingUI::OnTrade);
 
 	RefreshList();
 
@@ -67,21 +69,26 @@ void UUIC_TradingUI::OnCloseTradingUI()
 
 	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
 	TradingUIModel->SetCurrentState(ETradingState::BUY);
-	
+
 	ResetUIFromPlayerController();
 }
 
 void UUIC_TradingUI::OnTrade()
 {
-	AMainPlayerController* PC = Cast<AMainPlayerController>(GetPlayerController());
+	AMainPlayerController* PC = Cast<AMainPlayerController>(
+		GetPlayerController());
 	if (PC)
 	{
 		UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
 
 		PC->PushUI(EUIName::Modal_BuyNotification);
-		
-		UUIC_ProductBuyNotification* ModalController = Cast<UUIC_ProductBuyNotification>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Modal_BuyNotification]);
-		UUIM_ProductBuyNotification* ModalModel = Cast<UUIM_ProductBuyNotification>(ModalController->GetModel());
+
+		UUIC_ProductBuyNotification* ModalController = Cast<
+			UUIC_ProductBuyNotification>(
+			PC->GetUIManageComponent()->ControllerInstances[
+				EUIName::Modal_BuyNotification]);
+		UUIM_ProductBuyNotification* ModalModel = Cast<
+			UUIM_ProductBuyNotification>(ModalController->GetModel());
 
 		ModalModel->SetCount(1);
 		ModalModel->SetClickedProductId(TradingUIModel->GetSelectedId());
@@ -89,7 +96,6 @@ void UUIC_TradingUI::OnTrade()
 
 		ModalController->OnInitialize();
 	}
-	
 }
 
 void UUIC_TradingUI::LoggingToBuyItem()
@@ -97,16 +103,17 @@ void UUIC_TradingUI::LoggingToBuyItem()
 	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
 
 	FItemInfoData ItemInfoData = UItemManager::GetItemInfoById
-	(TradingUIModel->GetSelectedId());
-	
+		(TradingUIModel->GetSelectedId());
+
 	FDiaryLogParams LogParams;
 	LogParams.Location = TEXT("거래장");
 	LogParams.ActionType = ELoggingActionType::TRADE;
 	LogParams.ActionName = ELoggingActionName::buy_item;
-	LogParams.Detail = FString::Printf(TEXT("%s(을)를 %d개 구매했다."), *ItemInfoData.GetDisplayName(), 1);
+	LogParams.Detail = FString::Printf(
+		TEXT("%s(을)를 %d개 구매했다."), *ItemInfoData.GetDisplayName(), 1);
 
 	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-				LoggingData(LogParams);
+	            LoggingData(LogParams);
 }
 
 void UUIC_TradingUI::LoggingToSellItem()
@@ -114,16 +121,17 @@ void UUIC_TradingUI::LoggingToSellItem()
 	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
 
 	FItemInfoData ItemInfoData = UItemManager::GetItemInfoById
-	(TradingUIModel->GetSelectedId());
-	
+		(TradingUIModel->GetSelectedId());
+
 	FDiaryLogParams LogParams;
 	LogParams.Location = TEXT("거래장");
 	LogParams.ActionType = ELoggingActionType::TRADE;
 	LogParams.ActionName = ELoggingActionName::sell_item;
-	LogParams.Detail = FString::Printf(TEXT("%s(을)를 %d개 판매했다."), *ItemInfoData.GetDisplayName(), 1);
+	LogParams.Detail = FString::Printf(
+		TEXT("%s(을)를 %d개 판매했다."), *ItemInfoData.GetDisplayName(), 1);
 
 	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-				LoggingData(LogParams);
+	            LoggingData(LogParams);
 }
 
 void UUIC_TradingUI::RefreshList()
@@ -131,14 +139,15 @@ void UUIC_TradingUI::RefreshList()
 	const UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
 	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
 	FProductStruct ProductStruct = UTradingManager::GetProductDataById
-	(TradingUIModel->GetSelectedId());
+		(TradingUIModel->GetSelectedId());
 
 	if (TradingUIModel->GetCurrentState() == ETradingState::SELL)
 	{
-		AMainPlayerState* PS = GetPlayerController()->GetPlayerState<AMainPlayerState>();
-			
+		AMainPlayerState* PS = GetPlayerController()->GetPlayerState<
+			AMainPlayerState>();
+
 		uint16 RemainCount = PS->GetInventoryComponent()->GetCurrentCount
-		(TradingUIModel->GetSelectedId());
+			(TradingUIModel->GetSelectedId());
 
 		if (RemainCount == 0)
 		{
@@ -148,7 +157,8 @@ void UUIC_TradingUI::RefreshList()
 		}
 	}
 
-	TradingUIView->GetItemListView()->SetUpdateUI(TradingUIModel->GetCurrentState());
+	TradingUIView->GetItemListView()->SetUpdateUI(
+		TradingUIModel->GetCurrentState());
 }
 
 void UUIC_TradingUI::UpdateGoldText()
@@ -177,23 +187,32 @@ void UUIC_TradingUI::UpdateInventory()
 
 void UUIC_TradingUI::OnUpdateSelectedProduct(uint16 ProductId)
 {
-	FProductStruct ProductStruct = UTradingManager::GetProductDataById(ProductId);
+	FProductStruct ProductStruct = UTradingManager::GetProductDataById(
+		ProductId);
 	FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ProductId);
-	
+
 	const UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
 	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
 
 	TradingUIModel->SetSelectedId(ProductId);
 
-	uint32 ProductPrice = TradingUIModel->GetCurrentState() == ETradingState::BUY?
-		ProductStruct.GetProductPrice() * ProductStruct.GetBuyPriceRatio() :
-		ProductStruct.GetProductPrice() * ProductStruct.GetSellPriceRatio();
+	const uint32 ProductPrice = TradingUIModel->GetCurrentState() ==
+	                            ETradingState::BUY
+		                            ? ProductStruct.GetProductPrice() *
+		                            ProductStruct.GetBuyPriceRatio()
+		                            : ProductStruct.GetProductPrice() *
+		                            ProductStruct.GetSellPriceRatio();
 
 	TradingUIView->GetProductDetailView()->UpdateUI(ItemInfoData
-	.GetDisplayName(), ItemInfoData.GetDescription(), ProductPrice,
-	ItemInfoData.GetThumbnail());
+	                                                .GetDisplayName(),
+	                                                ItemInfoData.
+	                                                GetDescription(),
+	                                                ProductPrice,
+	                                                ItemInfoData.
+	                                                GetThumbnail());
 
-	AMainPlayerState* PS = GetPlayerController()->GetPlayerState<AMainPlayerState>();
+	AMainPlayerState* PS = GetPlayerController()->GetPlayerState<
+		AMainPlayerState>();
 
 	bool IsEnabled = TradingUIModel->GetCurrentState() == ETradingState::SELL ||
 		PS->GetGold() >= ProductPrice;
@@ -209,18 +228,19 @@ void UUIC_TradingUI::ChangeBuyState()
 	{
 		return;
 	}
-	
+
 	TradingUIModel->SetCurrentState(ETradingState::BUY);
 
 	UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
-	
-	TradingUIView->GetItemListView()->SetUpdateUI(TradingUIModel->GetCurrentState());
+
+	TradingUIView->GetItemListView()->SetUpdateUI(
+		TradingUIModel->GetCurrentState());
 
 	TradingUIView->GetProductDetailView()->OnHide();
 
 	TradingUIView->GetTradeButton()->Get()->SetIsEnabled(false);
 	TradingUIView->GetTradeButton()->GetText()->SetText(FText::FromString(TEXT
-	("구매하기")));
+		("구매하기")));
 }
 
 void UUIC_TradingUI::ChangeSellState()
@@ -231,16 +251,17 @@ void UUIC_TradingUI::ChangeSellState()
 	{
 		return;
 	}
-	
+
 	TradingUIModel->SetCurrentState(ETradingState::SELL);
 
 	UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
-	
-	TradingUIView->GetItemListView()->SetUpdateUI(TradingUIModel->GetCurrentState());
+
+	TradingUIView->GetItemListView()->SetUpdateUI(
+		TradingUIModel->GetCurrentState());
 
 	TradingUIView->GetProductDetailView()->OnHide();
 
 	TradingUIView->GetTradeButton()->Get()->SetIsEnabled(false);
 	TradingUIView->GetTradeButton()->GetText()->SetText(FText::FromString(TEXT
-	("판매하기")));
+		("판매하기")));
 }
