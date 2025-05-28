@@ -44,24 +44,21 @@ void AAltar::OnInteractive(AActor* Causer)
 	
 	AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 	AMainPlayerController* PC = Player->GetController<AMainPlayerController>();
-	
+	//PC->GetQuestManageComponent()->GetCurrentPlayingQuestId() == FString::Printf(TEXT("Story_006"))
 	if (Player && PS && PC)
 	{
-		if (PS->GetInventoryComponent()->HasItemInInventory(OfferingFoodId, 1) &&
-			PC->GetQuestManageComponent()->GetCurrentPlayingQuestId() == FString::Printf(TEXT("Story_006")))
+		if (PS->GetInventoryComponent()->HasItemInInventory(OfferingFoodId, 1)
+			)
 		{
 			// 공물 음식 삭제
 			PS->GetInventoryComponent()->RemoveItem(OfferingFoodId, 1);
 			// 퀘스트 완료
 			PC->SetCustomQuestComplete(true);
 			// 엔딩처리
-			PC->GetQuestManageComponent()->StartScene(EndingScene);
+			//
 
-			UUIC_SceneListUI* SceneListUIController = Cast<UUIC_SceneListUI>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Popup_SceneListUI]);
-			if (SceneListUIController)
-			{
-				SceneListUIController->OnSceneListEndNotified.BindUObject(this, &ThisClass::MoveToLobby);
-			}
+			PC->PushUI(EUIName::Popup_EndingChoice);
+
 		}
 	}
 }
