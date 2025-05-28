@@ -1,5 +1,6 @@
 #include "LootContainer.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
@@ -172,6 +173,8 @@ FItemMetaInfo ALootContainer::GetItemMetaInfo(const uint16 Index)
 
 void ALootContainer::OnClosed()
 {
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFX_Close, GetActorLocation());
+	
 	if (!IsValid(GetInteractingPlayer()))
 	{
 		return;
