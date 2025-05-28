@@ -1,44 +1,36 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
+#include "ProjectISG/Core/UI/Popup/Trading/UI/UIC_TradingUI.h"
 #include "UIV_ProductListWidget.generated.h"
 
+enum class ETradingState : uint8;
+class UButton;
 class UUIV_ProductInfoWidget;
-/**
- * 
- */
+
 UCLASS()
 class PROJECTISG_API UUIV_ProductListWidget : public UBaseUIView
 {
 	GENERATED_BODY()
 
 public:
-	GETTER(class UGridPanel*, ProductListGrid);
-	GETTER(TSubclassOf<UUIV_ProductInfoWidget>, ProductInfoWidgetClass);
-	GETTER(uint16, DebugProductCount);
-	GETTER(uint16, ColumnValue);
-
+	GETTER(class UTradingTabButton*, BuyTabButton)
+	GETTER(class UTradingTabButton*, SellTabButton)
+	GETTER(class UListView*, ProductList)
+	
+	void SetUpdateUI(ETradingState State);
+	
 protected:
-	virtual void NativePreConstruct() override;
-
 	virtual void NativeConstruct() override;
-
+	
 private:
 	UPROPERTY(meta = (BindWidget))
-	class UGridPanel* ProductListGrid;
+	class UTradingTabButton* BuyTabButton;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Options|UI",
-		meta = (AllowPrivateAccess = true))
-	TSubclassOf<UUIV_ProductInfoWidget> ProductInfoWidgetClass;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Options",
-		meta = (AllowPrivateAccess = true))
-	uint16 DebugProductCount;
-
-	UPROPERTY(EditAnywhere, Category = "Options",
-		meta = (AllowPrivateAccess = true))
-	uint16 ColumnValue;
+	UPROPERTY(meta = (BindWidget))
+	class UTradingTabButton* SellTabButton;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UListView* ProductList;
 };

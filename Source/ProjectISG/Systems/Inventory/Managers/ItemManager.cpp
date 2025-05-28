@@ -272,3 +272,18 @@ void UItemManager::SetItemGrade(FItemMetaInfo& Info, const EItemGrade ItemGrade)
 	Info.GetMetaData().Add(EMetaDataKey::ItemGrade,
 	                       FEnumUtil::GetClassEnumKeyAsString(ItemGrade));
 }
+
+float UItemManager::GetPriceRatio(const FItemMetaInfo& Info)
+{
+	switch (GetItemGrade(Info))
+	{
+	case EItemGrade::Uncommon:
+		return 1.2f;
+	case EItemGrade::Rare:
+		return 1.5f;
+	case EItemGrade::Unique:
+		return 2.0f;
+	default:
+		return 1.f;
+	}
+}

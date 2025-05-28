@@ -184,12 +184,6 @@ void UInventorySlot::NativeOnMouseEnter(const FGeometry& InGeometry,
 			SetItemInfoData(Index);
 	}
 
-	if (ControllerInstances.Contains(EUIName::Popup_TradingUI))
-	{
-		Cast<UUIC_TradingUI>(ControllerInstances[EUIName::Popup_TradingUI])->
-			SetItemInfoData(Index);
-	}
-
 	// TODO: 다른 전용 UI 필요하면 아래에 계속 적어도 무방
 }
 
@@ -205,12 +199,6 @@ void UInventorySlot::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
 	{
 		Cast<UUIC_InventoryUI>(
 				ControllerInstances[EUIName::Popup_InventoryUI])->
-			ClearItemInfoData();
-	}
-
-	if (ControllerInstances.Contains(EUIName::Popup_TradingUI))
-	{
-		Cast<UUIC_TradingUI>(ControllerInstances[EUIName::Popup_TradingUI])->
 			ClearItemInfoData();
 	}
 

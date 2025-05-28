@@ -17,7 +17,7 @@ bool UUIV_TradingUI::NativeOnDrop(const FGeometry& InGeometry,
 
 	if (ItemDragDropOperation)
 	{
-		if (ProductList)
+		if (ItemListView)
 		{
 			UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(
 				GetController());
@@ -47,16 +47,4 @@ void UUIV_TradingUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 	
-}
-
-void UUIV_TradingUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
-	if (OpenFlag == false)
-	{
-		UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(
-					GetController());
-		TradingUIController->UpdateInventory();
-		OpenFlag = true;
-	}
 }
