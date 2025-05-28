@@ -3,10 +3,13 @@
 
 #include "EnhancedInputComponent.h"
 #include "MediaPlayer.h"
+#include "MediaSoundComponent.h"
+#include "Components/SynthComponent.h"
 #include "UIM_MediaSceneListUI.h"
 #include "Components/Border.h"
 #include "Components/Image.h"
 #include "Components/Overlay.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 #include "ProjectISG/Systems/QuestStory/Manager/QuestStoryManager.h"
@@ -16,14 +19,14 @@ void UUIC_MediaSceneListUI::AppearUI()
 	Super::AppearUI();
 	// 해당 타입이 무조건 Media 타입이라고 가정하고 한다.
 	// 잘못된 타입일 시 그냥 터트리는게 맞음.
-	UUIV_MediaSceneListUI* SceneListView = Cast<UUIV_MediaSceneListUI>(
+	const UUIV_MediaSceneListUI* SceneListView = Cast<UUIV_MediaSceneListUI>(
 		GetView());
 	UUIM_MediaSceneListUI* SceneListModel = Cast<UUIM_MediaSceneListUI>(
 		GetModel());
 
 	SceneListModel->SetCurrentSceneId(
 		GetView()->GetOwningPlayer<AMainPlayerController>()->
-		           GetQuestManageComponent()->GetCurrentPlayingSceneId());
+					GetQuestManageComponent()->GetCurrentPlayingSceneId());
 
 	FQuestSceneCutData MediaSceneData =
 		UQuestStoryManager::GetQuestSceneCutById(
@@ -33,13 +36,17 @@ void UUIC_MediaSceneListUI::AppearUI()
 		MediaSceneData.GetSceneMedia().GetSceneMediaTexture());
 
 	MediaSceneData.GetSceneMedia().GetSceneMediaPlayer()->OnEndReached.
-	               AddDynamic(this, &ThisClass::OnEndMediaScene);
+					AddDynamic(this, &ThisClass::OnEndMediaScene);
 
-	if (MediaSceneData.GetSceneMedia().GetSceneMediaPlayer()->
-	                   OpenSource(
-		                   MediaSceneData.GetSceneMedia().
-		                                  GetSceneMediaSource()))
+	if (MediaSceneData.GetSceneMedia().GetSceneMediaPlayer()->OpenSource(
+		MediaSceneData.GetSceneMedia().GetSceneMediaSource()))
 	{
+		const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+			GetView()->GetOwningPlayerPawn());
+		Player->GetMediaSoundComponent()->SetMediaPlayer(
+			MediaSceneData.GetSceneMedia().GetSceneMediaPlayer());
+		Player->GetMediaSoundComponent()->Start();
+		
 		MediaSceneData.GetSceneMedia().GetSceneMediaPlayer()->Rewind();
 	}
 }
@@ -60,11 +67,11 @@ void UUIC_MediaSceneListUI::BindInputAction(
 {
 	Super::BindInputAction(InputComponent);
 
-	InputComponent->BindAction(SkipSceneAction, ETriggerEvent::Triggered, this,
-	                           &ThisClass::OnTriggerSkipSceneAction);
+	InputComponent->BindAction(SkipSceneAction, ETriggerEvent::Triggered, this
+								, &ThisClass::OnTriggerSkipSceneAction);
 
-	InputComponent->BindAction(SkipSceneAction, ETriggerEvent::Completed, this,
-	                           &ThisClass::OnEndSkipSceneAction);
+	InputComponent->BindAction(SkipSceneAction, ETriggerEvent::Completed, this
+								, &ThisClass::OnEndSkipSceneAction);
 }
 
 void UUIC_MediaSceneListUI::OnTriggerSkipSceneAction()
@@ -79,8 +86,7 @@ void UUIC_MediaSceneListUI::OnTriggerSkipSceneAction()
 	SceneListModel->SetCurrentLoadingPercent(
 		SceneListModel->GetCurrentLoadingPercent() + 1);
 
-	const float CurrentPercent = SceneListModel->
-		GetCurrentLoadingPercent();
+	const float CurrentPercent = SceneListModel->GetCurrentLoadingPercent();
 
 	SetSkipCircularPercent(
 		CurrentPercent / SceneListModel->GetMaxLoadingPercent());
@@ -110,5 +116,5 @@ void UUIC_MediaSceneListUI::SetSkipCircularPercent(const float Percent)
 		GetView());
 
 	SceneListView->GetCircularLoadingWidget()->GetDynamicMaterial()->
-	               SetScalarParameterValue(FName("Percent"), Percent);
+					SetScalarParameterValue(FName("Percent"), Percent);
 }

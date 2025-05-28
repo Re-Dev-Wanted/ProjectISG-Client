@@ -22,7 +22,7 @@ public class ProjectISG : ModuleRules
 			"Json", "JsonUtilities", "HTTP", "UMG", "Slate",
 			"SlateCore", "ProceduralMeshComponent", "MovieScene",
 			"LevelSequence", "MovieSceneTracks", "CableComponent",
-			"ImageWrapper", "Niagara", "MediaAssets"
+			"ImageWrapper", "Niagara", "MediaAssets", "AudioMixer"
 		});
 	}
 }
