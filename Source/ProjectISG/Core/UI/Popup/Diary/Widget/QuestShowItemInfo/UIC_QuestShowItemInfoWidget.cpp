@@ -15,10 +15,8 @@ void UUIC_QuestShowItemInfoWidget::SetShowItemInfo(FQuestRewardData& RewardData)
 		RewardData.GetRewardItemOptions().GetItemId());
 
 	QuestShowItemInfoWidgetView->GetIngredientThumbnail()->
-								SetBrushFromSoftTexture(
-									ItemInfoData.GetThumbnail());
+	                             SetBrushFromSoftTexture(
+		                             ItemInfoData.GetThumbnail());
 	QuestShowItemInfoWidgetView->GetCurrentIngredientCount()->SetText(
-		FText::FromString(
-			FString::FromInt(
-				RewardData.GetRewardItemOptions().GetItemCount())));
+		FText::AsNumber(RewardData.GetRewardItemOptions().GetItemCount()));
 }
