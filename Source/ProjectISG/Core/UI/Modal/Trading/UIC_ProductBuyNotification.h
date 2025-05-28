@@ -25,4 +25,7 @@ protected:
 
 private:
 	void Logging();
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<USoundBase> ButtonSFX;
 };

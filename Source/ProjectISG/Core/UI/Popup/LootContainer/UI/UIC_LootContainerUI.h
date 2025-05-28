@@ -20,6 +20,8 @@ public:
 protected:
 	virtual void InitializeController(UBaseUIView* NewView, UBaseUIModel* NewModel) override;
 
+	virtual void AppearUI() override;
+
 	virtual void BindInputAction(UEnhancedInputComponent* InputComponent) override;
 
 	TScriptInterface<IUIHandler> UIHandler = nullptr;

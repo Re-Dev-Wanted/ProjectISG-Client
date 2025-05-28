@@ -35,3 +35,10 @@ enum class EAlertType: uint8
 {
 	None, Info, Warning, Error,
 };
+
+UENUM()
+enum class ETradingState : uint8
+{
+	BUY,
+	SELL
+};
