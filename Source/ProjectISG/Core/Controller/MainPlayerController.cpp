@@ -9,7 +9,7 @@
 #include "ProjectISG/Core/UI/Loading/UIC_Loading.h"
 #include "ProjectISG/Core/UI/Loading/UIV_Loading.h"
 #include "ProjectISG/Core/UI/Popup/Inventory/UI/UIC_InventoryUI.h"
-#include "ProjectISG/Core/UI/Popup/SceneList/UI/UIC_SceneListUI.h"
+#include "ProjectISG/Core/UI/Popup/SceneList/UI/CutSceneList/UIC_SceneListUI.h"
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 
 class UUIC_Loading;
@@ -36,12 +36,12 @@ void AMainPlayerController::BeginPlay()
 	if (IsLocalController() && HasAuthority())
 	{
 		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
-		StartScene(FString::Printf(TEXT("Scene_7")));
-		UUIC_SceneListUI* SceneListUIController = Cast<UUIC_SceneListUI>(
-			GetUIManageComponent()->ControllerInstances[
-				EUIName::Popup_SceneListUI]);
-		SceneListUIController->OnSceneListEndNotified.BindUObject(
-			this, &ThisClass::MainSceneEnd);
+		StartScene(FString::Printf(TEXT("Test_Media")));
+		// UUIC_SceneListUI* SceneListUIController = Cast<UUIC_SceneListUI>(
+		// 	GetUIManageComponent()->ControllerInstances[
+		// 		EUIName::Popup_SceneListUI]);
+		// SceneListUIController->OnSceneListEndNotified.BindUObject(
+		// 	this, &ThisClass::MainSceneEnd);
 	}
 }
 
@@ -167,7 +167,7 @@ void AMainPlayerController::PopUI()
 }
 
 void AMainPlayerController::Alert(const EAlertType AlertType
-                                  , const FString& Message, const float Time)
+								, const FString& Message, const float Time)
 {
 	if (UIManageComponent->GetTopStackUI() != EUIName::Gameplay_MainHUD)
 	{

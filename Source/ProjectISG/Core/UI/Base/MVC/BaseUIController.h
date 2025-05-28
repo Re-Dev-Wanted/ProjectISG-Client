@@ -44,9 +44,6 @@ protected:
 	UFUNCTION()
 	virtual void AppearUI();
 
-	UE_DEPRECATED("5.5", "Parameter가 없는 AppearUI로 사용하는 것을 권장, 둘다 사용하는 것은 불가능")
-	virtual void AppearUI(const EUILayer Layer);
-
 	UFUNCTION()
 	virtual void DisappearUI();
 

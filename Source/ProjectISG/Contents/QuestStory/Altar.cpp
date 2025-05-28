@@ -1,14 +1,11 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "Altar.h"
+﻿#include "Altar.h"
 
 #include "ProjectISG/Core/ISGGameInstance.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
-#include "ProjectISG/Core/UI/Popup/SceneList/UI/UIC_SceneListUI.h"
+#include "ProjectISG/Core/UI/Popup/SceneList/UI/CutSceneList/UIC_SceneListUI.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 
@@ -16,13 +13,11 @@
 AAltar::AAltar()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	
 }
 
 void AAltar::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void AAltar::Tick(float DeltaTime)
@@ -41,7 +36,7 @@ void AAltar::OnInteractive(AActor* Causer)
 	{
 		return;
 	}
-	
+
 	AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 	AMainPlayerController* PC = Player->GetController<AMainPlayerController>();
 	//PC->GetQuestManageComponent()->GetCurrentPlayingQuestId() == FString::Printf(TEXT("Story_006"))
@@ -77,4 +72,3 @@ void AAltar::MoveToLobby()
 {
 	GetGameInstance<UISGGameInstance>()->DestroySessionAndMoveLevel(LobbyLevel);
 }
-
