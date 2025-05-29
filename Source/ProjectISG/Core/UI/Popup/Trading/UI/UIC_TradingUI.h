@@ -27,10 +27,6 @@ protected:
 	UFUNCTION()
 	void OnTrade();
 
-	void LoggingToBuyItem();
-
-	void LoggingToSellItem();
-
 	void RefreshList();
 public:
 	void OnUpdateSelectedProduct(uint16 ProductId);
