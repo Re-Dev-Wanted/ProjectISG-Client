@@ -3,6 +3,7 @@
 #include "UIV_MainHUD.h"
 #include "Components/TextBlock.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Gameplay/QuestStory/Widget/AutoQuest/UIC_AutoQuestDialogueWidget.h"
@@ -21,13 +22,12 @@ void UUIC_MainHUD::AppearUI()
 	Super::AppearUI();
 
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
+	const AMainPlayerCharacter* Player = GetView()->GetOwningPlayerPawn<
+		AMainPlayerCharacter>();
+
 	MainHUDView->GetMainSlotList()->UpdateItemData();
-
-	const uint8 CurrentSlot = GetView()->GetOwningPlayerPawn<
-		                                     AMainPlayerCharacter>()->
-	                                     GetPlayerInventoryComponent()->
-	                                     GetCurrentSlotIndex();
-
+	const uint8 CurrentSlot = Player->GetPlayerInventoryComponent()->
+	                                  GetCurrentSlotIndex();
 	MainHUDView->GetMainSlotList()->SelectSlot(CurrentSlot, CurrentSlot);
 }
 
