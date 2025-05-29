@@ -242,12 +242,9 @@ void AFishingRod::StartCasting(AActor* Causer, FVector Destination)
 		CastingDistance;
 
 	Bobber->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	// Bobber->SetActorLocation(CastingStartPoint->GetComponentLocation());
-	Bobber->SetActorLocation(EndLocation + FVector::UpVector * 50.f);
+	Bobber->SetActorLocation(CastingStartPoint->GetComponentLocation());
 
-
-	// Bobber->SuggestProjectileVelocity(CastingStartPoint->GetComponentLocation(), EndLocation);
-	Bobber->SuggestProjectileVelocity(EndLocation + FVector::UpVector * 50.f, EndLocation);
+	Bobber->SuggestProjectileVelocity(Bobber->GetActorLocation(), EndLocation);
 }
 
 void AFishingRod::ReelInLine()

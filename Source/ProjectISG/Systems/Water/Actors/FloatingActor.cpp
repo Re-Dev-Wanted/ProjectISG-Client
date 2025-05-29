@@ -65,3 +65,9 @@ void AFloatingActor::EnterWater()
 	}
 }
 
+void AFloatingActor::SetDamping(float Linear, float Angular)
+{
+	Root->SetLinearDamping(Linear);
+	Root->SetAngularDamping(Angular);
+}
+
