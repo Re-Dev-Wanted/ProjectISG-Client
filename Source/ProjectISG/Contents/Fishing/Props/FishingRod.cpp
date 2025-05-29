@@ -57,6 +57,8 @@ void AFishingRod::BeginPlay()
 		Bobber->AttachToComponent(PocketSocketComp,
 		                          FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
+		Bobber->SetActorHiddenInGame(true);
+
 		Thread->SetAttachEndTo(Bobber, TEXT("LineAttachPoint"));
 	}
 
@@ -176,6 +178,8 @@ void AFishingRod::OnEventFinish(bool bLoop)
 		Handle.Invalidate();
 	}
 
+	Bobber->SetActorHiddenInGame(true);
+
 	IsBiteFish = false;
 	FishData = FFishData();
 
@@ -237,8 +241,10 @@ void AFishingRod::StartCasting(AActor* Causer, FVector Destination)
 	{
 		return;
 	}
+
+	Bobber->SetActorHiddenInGame(false);
 	
-	FVector EndLocation = Destination + Causer->GetActorForwardVector() *
+	FVector EndLocation = Destination + CastingStartPoint->GetForwardVector() *
 		CastingDistance;
 
 	Bobber->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
