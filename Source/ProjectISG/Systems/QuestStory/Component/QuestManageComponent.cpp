@@ -55,10 +55,12 @@ void UQuestManageComponent::StartScene(const FString& NewSceneId)
 	case EQuestSceneType::Image:
 		{
 			PC->PushUI(EUIName::Popup_SceneListUI);
+			break;
 		}
 	case EQuestSceneType::Media:
 		{
 			PC->PushUI(EUIName::Popup_MediaSceneListUI);
+			break;
 		}
 	default:
 		{

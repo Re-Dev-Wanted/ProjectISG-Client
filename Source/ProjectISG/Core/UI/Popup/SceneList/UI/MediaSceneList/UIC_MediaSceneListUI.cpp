@@ -88,7 +88,6 @@ void UUIC_MediaSceneListUI::OnTriggerSkipSceneAction()
 		UQuestStoryManager::GetQuestSceneCutById(
 			SceneListModel->GetCurrentSceneId());
 
-
 	SceneListView->GetSkipLoadingWidget()->SetVisibility(
 		ESlateVisibility::Visible);
 	SceneListModel->SetCurrentLoadingPercent(
