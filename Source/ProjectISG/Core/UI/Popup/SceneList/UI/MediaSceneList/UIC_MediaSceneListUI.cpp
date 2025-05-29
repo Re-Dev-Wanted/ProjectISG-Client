@@ -14,9 +14,10 @@
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 #include "ProjectISG/Systems/QuestStory/Manager/QuestStoryManager.h"
 
-void UUIC_MediaSceneListUI::AppearUI()
+void UUIC_MediaSceneListUI::OnPushUI()
 {
-	Super::AppearUI();
+	Super::OnPushUI();
+
 	// 해당 타입이 무조건 Media 타입이라고 가정하고 한다.
 	// 잘못된 타입일 시 그냥 터트리는게 맞음.
 	const UUIV_MediaSceneListUI* SceneListView = Cast<UUIV_MediaSceneListUI>(
@@ -24,6 +25,7 @@ void UUIC_MediaSceneListUI::AppearUI()
 	UUIM_MediaSceneListUI* SceneListModel = Cast<UUIM_MediaSceneListUI>(
 		GetModel());
 
+	// 미디어 관련 정보 가져오기
 	SceneListModel->SetCurrentSceneId(
 		GetView()->GetOwningPlayer<AMainPlayerController>()->
 		           GetQuestManageComponent()->GetCurrentPlayingSceneId());
@@ -32,23 +34,58 @@ void UUIC_MediaSceneListUI::AppearUI()
 		UQuestStoryManager::GetQuestSceneCutById(
 			SceneListModel->GetCurrentSceneId());
 
+	const TObjectPtr<UMediaPlayer> MediaPlayer = MediaSceneData.GetSceneMedia().
+		GetSceneMediaPlayer();
+
+	// 정보를 기반으로 Material 세팅
 	SceneListView->GetSceneImage()->SetBrushFromMaterial(
 		MediaSceneData.GetSceneMedia().GetSceneMediaTexture());
 
-	MediaSceneData.GetSceneMedia().GetSceneMediaPlayer()->OnEndReached.
-	               AddDynamic(this, &ThisClass::OnEndMediaScene);
-
-	if (MediaSceneData.GetSceneMedia().GetSceneMediaPlayer()->OpenSource(
-		MediaSceneData.GetSceneMedia().GetSceneMediaSource()))
+	// 혹시 이미 재생중이면 일시정지 후 종료로 초기화한다.
+	if (MediaPlayer->IsPlaying())
 	{
-		const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
-			GetView()->GetOwningPlayerPawn());
-		Player->GetMediaSoundComponent()->SetMediaPlayer(
-			MediaSceneData.GetSceneMedia().GetSceneMediaPlayer());
-		Player->GetMediaSoundComponent()->Start();
+		// 정상적인 종료가 아니기에 Delegate를 날려준다.
+		MediaPlayer->OnEndReached.Clear();
 
-		MediaSceneData.GetSceneMedia().GetSceneMediaPlayer()->Rewind();
+		MediaPlayer->Pause();
+		MediaPlayer->Close();
 	}
+
+	// Delegate 에 대한 설정이 없다면 여기서 처리해준다.
+	if (!MediaPlayer->OnMediaOpened.IsBound())
+	{
+		MediaPlayer->OnMediaOpened.AddDynamic(
+			this, &ThisClass::OnOpenedMediaScene);
+	}
+
+	if (!MediaPlayer->OnEndReached.IsBound())
+	{
+		MediaPlayer->OnEndReached.AddDynamic(this, &ThisClass::OnEndMediaScene);
+	}
+
+	// 미디어 재생 준비를 시전한다.
+	MediaPlayer->OpenSource(
+		MediaSceneData.GetSceneMedia().GetSceneMediaSource());
+}
+
+void UUIC_MediaSceneListUI::OnOpenedMediaScene(FString OpenUrl)
+{
+	const UUIM_MediaSceneListUI* SceneListModel = Cast<UUIM_MediaSceneListUI>(
+		GetModel());
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		GetView()->GetOwningPlayerPawn());
+
+	FQuestSceneCutData MediaSceneData =
+		UQuestStoryManager::GetQuestSceneCutById(
+			SceneListModel->GetCurrentSceneId());
+
+	// 미디어를 재생한다.
+	MediaSceneData.GetSceneMedia().GetSceneMediaPlayer()->Play();
+
+	// 미디어에 맞는 소리 또한 세팅해주고 재생해준다.
+	Player->GetMediaSoundComponent()->SetMediaPlayer(
+		MediaSceneData.GetSceneMedia().GetSceneMediaPlayer());
+	Player->GetMediaSoundComponent()->Start();
 }
 
 void UUIC_MediaSceneListUI::OnEndMediaScene()
