@@ -14,6 +14,12 @@ class PROJECTISG_API ATicketBarrier : public ABaseInteractiveActor
 public:
 	ATicketBarrier();
 
+	UFUNCTION(BlueprintCallable)
+	void SetQuestInteractiveActorOverlayMaterial(bool value);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetVisibilityBillboard(bool value);
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -29,8 +35,29 @@ private:
 	class UBoxComponent* Root;
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
+	Category = Setting)
+	class UStaticMeshComponent* Mesh0;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
+	Category = Setting)
+	class UStaticMeshComponent* Mesh1;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
+	Category = Setting)
+	class UStaticMeshComponent* Mesh2;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
+	Category = Setting)
+	class UStaticMeshComponent* Mesh3;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
+		Category = Setting)
+	class UMaterial* QuestInteractMaterial;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
 		Category = Setting)
 	bool bPaidTicket = false;
 
 	FString DisplayText;
+	
 };
