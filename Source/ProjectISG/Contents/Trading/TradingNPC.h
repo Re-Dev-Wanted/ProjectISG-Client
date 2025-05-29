@@ -50,4 +50,8 @@ private:
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category = Settings,
 		meta = (AllowPrivateAccess = true))
 	bool CanInteractive = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = Settings)
+	TObjectPtr<USoundBase> SFX_Open;
+	
 };
