@@ -23,4 +23,6 @@ private:
 
 	UFUNCTION()
 	void OnFinishDialogue();
+
+	FTimerHandle QuestDialogueChangeTimerHandle;
 };

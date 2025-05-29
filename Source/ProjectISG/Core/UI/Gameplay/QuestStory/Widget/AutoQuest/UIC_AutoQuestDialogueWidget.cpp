@@ -19,6 +19,7 @@ void UUIC_AutoQuestDialogueWidget::InitializeController(
 	UUIV_AutoQuestDialogueWidget* AutoQuestDialogueWidgetView = Cast<
 		UUIV_AutoQuestDialogueWidget>(NewView);
 
+	// 실질적으로 얘가 재귀를 시켜
 	AutoQuestDialogueWidgetView->OnDialogueEndNotified.BindDynamic(
 		this, &ThisClass::OnFinishDialogue);
 
@@ -29,7 +30,7 @@ void UUIC_AutoQuestDialogueWidget::InitializeController(
 
 void UUIC_AutoQuestDialogueWidget::InitializeDialogue()
 {
-	const UUIV_AutoQuestDialogueWidget* AutoQuestDialogueWidgetView = Cast<
+	UUIV_AutoQuestDialogueWidget* AutoQuestDialogueWidgetView = Cast<
 		UUIV_AutoQuestDialogueWidget>(GetView());
 	UUIM_AutoQuestDialogueWidget* AutoQuestDialogueWidgetModel = Cast<
 		UUIM_AutoQuestDialogueWidget>(GetModel());
@@ -46,8 +47,16 @@ void UUIC_AutoQuestDialogueWidget::InitializeDialogue()
 		UQuestStoryManager::GetQuestDialogueById(
 			PlayerQuestManager->GetCurrentPlayingQuestId());
 
-	// 대사가 없으면 대사를 종료시킨다.
+
+	// 대사가 없는 Dialogue 예외처리
 	if (Dialogues.Num() == 0)
+	{
+		OnFinishDialogue();
+		return;
+	}
+	
+	// 대사가 없으면 대사를 종료시킨다.
+	if (AutoQuestDialogueWidgetModel->GetCurrentQuestDialogueIndex() >= Dialogues.Num())
 	{
 		OnFinishDialogue();
 		return;
@@ -65,6 +74,21 @@ void UUIC_AutoQuestDialogueWidget::InitializeDialogue()
 		FText::FromString(OwnerText));
 	AutoQuestDialogueWidgetView->GetDialogueText()->SetText(
 		Dialogues[CurrentQuestDialogueIndex].GetDialogueText());
+	AutoQuestDialogueWidgetView->PlaySound(
+		Dialogues[CurrentQuestDialogueIndex].GetDialogueTTS());
+	AutoQuestDialogueWidgetView->PlayAnimation(AutoQuestDialogueWidgetView->GetDialogueAnimation());
+
+	TWeakObjectPtr<ThisClass> WeakThis = this;
+	GetWorld()->GetTimerManager().SetTimer(QuestDialogueChangeTimerHandle, 
+										   [WeakThis]()
+										   {
+												   if (WeakThis.IsValid())
+												   {
+													   WeakThis.Get()->InitializeDialogue();
+												   }
+										   },
+										   Dialogues[CurrentQuestDialogueIndex].
+										   GetDialogueTime(), false);
 
 	// 모든 일련의 과정이 완료되면 1을 더해 다음 대사를 준비한다.
 	AutoQuestDialogueWidgetModel->SetCurrentQuestDialogueIndex(
@@ -73,16 +97,13 @@ void UUIC_AutoQuestDialogueWidget::InitializeDialogue()
 
 void UUIC_AutoQuestDialogueWidget::StartQuestDialogue()
 {
-	UUIV_AutoQuestDialogueWidget* AutoQuestDialogueWidgetView = Cast<
-		UUIV_AutoQuestDialogueWidget>(GetView());
 	UUIM_AutoQuestDialogueWidget* AutoQuestDialogueWidgetModel = Cast<
 		UUIM_AutoQuestDialogueWidget>(GetModel());
 
+	UUIV_AutoQuestDialogueWidget* AutoQuestDialogueWidgetView = Cast<UUIV_AutoQuestDialogueWidget>(GetView());
+
 	AutoQuestDialogueWidgetModel->SetCurrentQuestDialogueIndex(0);
 	InitializeDialogue();
-
-	AutoQuestDialogueWidgetView->PlayAnimation(
-		AutoQuestDialogueWidgetView->GetDialogueAnimation());
 }
 
 void UUIC_AutoQuestDialogueWidget::SkipQuestDialogue()
@@ -98,8 +119,6 @@ void UUIC_AutoQuestDialogueWidget::SkipQuestDialogue()
 
 void UUIC_AutoQuestDialogueWidget::OnFinishDialogue()
 {
-	UUIV_AutoQuestDialogueWidget* AutoQuestDialogueWidgetView = Cast<
-		UUIV_AutoQuestDialogueWidget>(GetView());
 	UUIM_AutoQuestDialogueWidget* AutoQuestDialogueWidgetModel = Cast<
 		UUIM_AutoQuestDialogueWidget>(GetModel());
 
@@ -125,14 +144,6 @@ void UUIC_AutoQuestDialogueWidget::OnFinishDialogue()
 		DialogueCount)
 	{
 		PC->GetMainHUD()->ToggleAutoQuestUI(false);
-
 		return;
 	}
-
-	// 위 케이스가 아니라면 다시 애니메이션을 재생하면서 다음 대사를 노출시킨다.
-	InitializeDialogue();
-
-	// 애니메이션 재생하기
-	AutoQuestDialogueWidgetView->PlayAnimation(
-		AutoQuestDialogueWidgetView->GetDialogueAnimation());
 }

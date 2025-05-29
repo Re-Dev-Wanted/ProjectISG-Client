@@ -15,14 +15,16 @@ class PROJECTISG_API UUIC_MediaSceneListUI : public UBaseUIController
 
 public:
 	FOnEndMediaSceneNotified OnEndMediaSceneNotified;
+	virtual void OnPushUI() override;
 
 protected:
-	virtual void AppearUI() override;
-
 	virtual void
 	BindInputAction(UEnhancedInputComponent* InputComponent) override;
 
 private:
+	UFUNCTION()
+	void OnOpenedMediaScene(FString OpenUrl);
+
 	UFUNCTION()
 	void OnEndMediaScene();
 

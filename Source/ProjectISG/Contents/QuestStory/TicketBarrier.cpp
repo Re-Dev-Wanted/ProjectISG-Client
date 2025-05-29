@@ -45,7 +45,7 @@ ATicketBarrier::ATicketBarrier()
 		Mesh3->SetStaticMesh(tempMesh.Object);
 	}
 
-	ConstructorHelpers::FObjectFinder<UMaterial> tempMat (TEXT("'/Game/TrainStation/Materials/Mi_TicketBarrier.Mi_TicketBarrier'"));
+	ConstructorHelpers::FObjectFinder<UMaterialInstance> tempMat (TEXT("'/Game/TrainStation/Materials/Mi_TicketBarrier.Mi_TicketBarrier'"));
 	if (tempMat.Succeeded())
 	{
 		Mesh0->SetMaterial(0, tempMat.Object);

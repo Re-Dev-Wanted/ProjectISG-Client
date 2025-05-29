@@ -36,6 +36,7 @@ public:
 
 	GETTER(EUILayer, CurrentLayer)
 
+	// UI Management Component랑 연동된 함수로, UI Stack에 Push가 이루어진 경우 호출되는 함수다.
 	virtual void OnPushUI();
 
 protected:
