@@ -4,6 +4,7 @@
 
 #include "Bobber.h"
 #include "CableComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Contents/Fishing/Managers/FishingManager.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
@@ -85,6 +86,8 @@ void AFishingRod::OnStartFishing()
 	}
 
 	IsInWater = true;
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFX, Bobber->GetActorLocation());
 
 	//TODO: 물고기를 여기에서 정하지만 옮길 수도 있음
 	FishData = UFishingManager::GetRandomData();
