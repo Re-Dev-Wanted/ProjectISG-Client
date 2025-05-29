@@ -17,6 +17,8 @@ class PROJECTISG_API UUIV_MbtiAskUI : public UBaseUIView
 public:
 	GETTER(TObjectPtr<UMultiLineEditableTextBox>, AskTextBox)
 	GETTER(TObjectPtr<UEditableText>, AnswerTextBox)
+	GETTER(TObjectPtr<UButton>, SaveButton)
+	GETTER(TObjectPtr<UWidgetAnimation>, LoadingAnimation)
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -24,4 +26,10 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UEditableText> AnswerTextBox;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> SaveButton;
+
+	UPROPERTY(Transient, meta = (BindWidgetAnim))
+	TObjectPtr<UWidgetAnimation> LoadingAnimation;
 };

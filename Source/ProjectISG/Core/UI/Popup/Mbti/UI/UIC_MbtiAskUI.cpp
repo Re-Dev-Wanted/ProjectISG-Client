@@ -38,10 +38,11 @@ void UUIC_MbtiAskUI::AppearUI()
 void UUIC_MbtiAskUI::AskNewMbti()
 {
 	UUIM_MbtiAskUI* MbtiAskUIModel = Cast<UUIM_MbtiAskUI>(GetModel());
+	Cast<UUIV_MbtiAskUI>(GetView())->GetAnswerTextBox()->
+	                                 SetIsReadOnly(true);
 	// 이미 종료된 상태에서 재질문을 던지게 되면 UI 종료 후 다음 Flow로 가는 로직이 수행된다.
 	if (MbtiAskUIModel->GetCompleted())
 	{
-		//GetView()->GetOwningPlayer<AMainPlayerController>()->PopUI();
 		// TODO: Delegate로 이후 동작을 받아오기
 		ALobbyPlayerController* LobbyPlayerController = Cast<
 			ALobbyPlayerController>(GetView()->GetOwningPlayer());
@@ -86,6 +87,9 @@ void UUIC_MbtiAskUI::AskNewMbti()
 			FText::FromString(MbtiAskResponse.question));
 		Cast<UUIV_MbtiAskUI>(GetView())->GetAnswerTextBox()->SetText(
 			FText::FromString(TEXT("")));
+		Cast<UUIV_MbtiAskUI>(GetView())->GetAnswerTextBox()->
+		                                 SetIsReadOnly(false);
+		Cast<UUIV_MbtiAskUI>(GetView())->GetAnswerTextBox()->SetFocus();
 	});
 
 	FApiUtil::GetMainAPI()->PostApi(this, Request, MbtiAskResponse);
