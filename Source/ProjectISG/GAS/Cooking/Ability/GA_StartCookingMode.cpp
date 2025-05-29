@@ -1,6 +1,7 @@
 ﻿#include "GA_StartCookingMode.h"
 
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "Task/AT_StartCookingModeCinematic.h"
 
@@ -16,6 +17,7 @@ void UGA_StartCookingMode::ActivateAbility(
 		GetAvatarActorFromActorInfo());
 
 	Player->GetController<AMainPlayerController>()->PopUI();
+	Player->GetHandSlotComponent()->ToggleShowItem(false);
 
 	AT_StartCookingModeCinematic = UAT_StartCookingModeCinematic::InitialEvent(
 		this, StartCookingCinematic);

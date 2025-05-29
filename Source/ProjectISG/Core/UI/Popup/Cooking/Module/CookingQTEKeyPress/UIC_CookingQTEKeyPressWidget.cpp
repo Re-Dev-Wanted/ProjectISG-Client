@@ -62,7 +62,7 @@ void UUIC_CookingQTEKeyPressWidget::StartQTE()
 	DataModel->SetKeyWidgets(NewWidgets);
 
 	// 마지막 View를 공개한다.
-	UIView->SetVisibility(ESlateVisibility::Visible);
+	UIView->SetRenderOpacity(1);
 }
 
 void UUIC_CookingQTEKeyPressWidget::CheckQTE(const uint8 CookingQTEKey)
@@ -105,15 +105,19 @@ void UUIC_CookingQTEKeyPressWidget::CheckQTE(const uint8 CookingQTEKey)
 	DataModel->SetCurrentQTEIndex(DataModel->GetCurrentQTEIndex() + 1);
 
 	// Key 하나 맞출 때 마다 1점 씩 추가하기
-	ISGGameplayTags::AddGameplayTag(GetView()->GetOwningPlayerState<AMainPlayerState>()->GetAbilitySystemComponent(),
+	ISGGameplayTags::AddGameplayTag(
+		GetView()->GetOwningPlayerState<AMainPlayerState>()->
+		           GetAbilitySystemComponent(),
 		ISGGameplayTags::Cooking_Variable_QTEScore, 1);
-	
+
 	if (DataModel->GetCurrentQTEIndex() >= DataModel->GetRemainQTEKeys().Num())
 	{
 		// 기본 점수 10점 매직넘버 추가
-		ISGGameplayTags::AddGameplayTag(GetView()->GetOwningPlayerState<AMainPlayerState>()->GetAbilitySystemComponent(),
+		ISGGameplayTags::AddGameplayTag(
+			GetView()->GetOwningPlayerState<AMainPlayerState>()->
+			           GetAbilitySystemComponent(),
 			ISGGameplayTags::Cooking_Variable_QTEScore, 10);
-		
+
 		Cast<UUIC_CookingQTEUI>(QTEController)->SetQTEStatus(
 			ECookingQTEStatus::Success);
 	}

@@ -3,9 +3,8 @@
 #include "GameplayTagContainer.h"
 #include "Camera/CameraComponent.h"
 #include "AbilitySystemComponent.h"
+#include "NiagaraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/GameStateBase.h"
-#include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectISG/Contents/Cooking/CookingStruct.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
@@ -13,7 +12,6 @@
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Time/TimeManager.h"
-#include "ProjectISG/Utils/EnumUtil.h"
 
 AKitchenFurniture::AKitchenFurniture()
 {
@@ -34,7 +32,6 @@ AKitchenFurniture::AKitchenFurniture()
 		"Kitchen Camera Component");
 	KitchenCameraComponent->SetupAttachment(GetRootComponent());
 
-
 	FryPanMesh = CreateDefaultSubobject<UStaticMeshComponent>(
 		"Fry Pan Mesh");
 	FryPanMesh->SetupAttachment(GetRootComponent());
@@ -49,6 +46,9 @@ AKitchenFurniture::AKitchenFurniture()
 
 	BigPotMesh = CreateDefaultSubobject<UStaticMeshComponent>("Big Pot Mesh");
 	BigPotMesh->SetupAttachment(GetRootComponent());
+
+	KitchenFire = CreateDefaultSubobject<UNiagaraComponent>("Kitchen Fire");
+	KitchenFire->SetupAttachment(Mesh);
 }
 
 bool AKitchenFurniture::GetCanInteractive() const
@@ -74,6 +74,8 @@ void AKitchenFurniture::BeginPlay()
 		TimeManager->OnContentRestrictionTimeReached.AddDynamic(
 			this, &ThisClass::UnlockPlayer);
 	}
+
+	KitchenFire->Deactivate();
 }
 
 void AKitchenFurniture::OnInteractive(AActor* Causer)
@@ -121,7 +123,8 @@ void AKitchenFurniture::EquipCookingToolToAct(
 			FryPanMesh->SetHiddenInGame(false);
 			FryPanMesh->AttachToComponent(Params.AttachPoint,
 			                              FAttachmentTransformRules::SnapToTargetIncludingScale,
-			                              TEXT("hand_r"));
+			                              TEXT("frying_pan_socket"));
+			KitchenFire->Activate();
 			break;
 		}
 	case ECookingTool::Wok:
@@ -137,6 +140,7 @@ void AKitchenFurniture::EquipCookingToolToAct(
 			                           FAttachmentTransformRules::SnapToTargetIncludingScale,
 			                           TEXT("wok_socket"));
 			WokMesh->SetRelativeRotation(FRotator::ZeroRotator);
+			KitchenFire->Activate();
 
 			break;
 		}
@@ -149,6 +153,7 @@ void AKitchenFurniture::EquipCookingToolToAct(
 			ScoopMesh->SetRelativeRotation(FRotator::ZeroRotator);
 
 			BigPotMesh->SetHiddenInGame(false);
+			KitchenFire->Activate();
 
 			break;
 		}
@@ -177,12 +182,13 @@ void AKitchenFurniture::UnEquipCookingToolToAct()
 	WokMesh->SetRelativeLocation(FVector::ZeroVector);
 
 	BigPotMesh->SetHiddenInGame(true);
+	KitchenFire->Deactivate();
 }
 
 void AKitchenFurniture::UnlockPlayer()
 {
 	Client_UnlockPlayer();
-	
+
 	if (HasAuthority())
 	{
 		SetInteractingPlayer(nullptr);

@@ -6,6 +6,7 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "KitchenFurniture.generated.h"
 
+class UNiagaraComponent;
 enum class ECookingTool : uint8;
 class UCameraComponent;
 class UCookingComponent;
@@ -68,4 +69,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> BigPotMesh;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<UNiagaraComponent> KitchenFire;
 };

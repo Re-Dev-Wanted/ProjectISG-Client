@@ -5,6 +5,7 @@
 #include "ProjectISG/Contents/Cooking/Props/KitchenFurniture.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "Task/AT_EndCookingModeCinematic.h"
@@ -64,4 +65,6 @@ void UGA_EndCookingMode::UnlockPlayer()
 	Player->GetInteractionComponent()->SetIsInteractive(true);
 	Player->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	Player->GetCameraComponent()->Activate();
+
+	Player->GetHandSlotComponent()->ToggleShowItem(true);
 }
