@@ -17,18 +17,6 @@ void UInventoryComponent::InitializeComponent()
 
 void UInventoryComponent::InitializeItemData()
 {
-	FItemMetaInfo AltarItemMetaInfo;
-	AltarItemMetaInfo.SetId(53);
-	AltarItemMetaInfo.SetCurrentCount(1);
-
-	AddItem(AltarItemMetaInfo);
-
-	FItemMetaInfo FishingRodItemMetaInfo;
-	FishingRodItemMetaInfo.SetId(14);
-	FishingRodItemMetaInfo.SetCurrentCount(1);
-
-	AddItem(FishingRodItemMetaInfo);
-
 	UpdateInventory_Internal();
 }
 

@@ -100,6 +100,8 @@ void UUIC_AutoQuestDialogueWidget::StartQuestDialogue()
 	UUIM_AutoQuestDialogueWidget* AutoQuestDialogueWidgetModel = Cast<
 		UUIM_AutoQuestDialogueWidget>(GetModel());
 
+	UUIV_AutoQuestDialogueWidget* AutoQuestDialogueWidgetView = Cast<UUIV_AutoQuestDialogueWidget>(GetView());
+
 	AutoQuestDialogueWidgetModel->SetCurrentQuestDialogueIndex(0);
 	InitializeDialogue();
 }
