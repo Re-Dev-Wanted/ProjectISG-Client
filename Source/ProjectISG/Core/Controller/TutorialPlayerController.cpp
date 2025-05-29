@@ -31,7 +31,7 @@ void ATutorialPlayerController::StartSceneEnd()
 void ATutorialPlayerController::StartScene6(bool IsServerTravel)
 {
 	bIsServerTravel = IsServerTravel;
-	StartScene(FString::Printf(TEXT("Scene_6")));
+	StartScene(FString::Printf(TEXT("Test_Media")));
 	UUIC_SceneListUI* SceneListUIController = Cast<UUIC_SceneListUI>(
 		GetUIManageComponent()->ControllerInstances[
 			EUIName::Popup_SceneListUI]);
