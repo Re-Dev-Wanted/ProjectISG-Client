@@ -34,6 +34,9 @@ public:
 
 	void ClearHand();
 
+	// 특정 UI 노출 및 특정 씬 진행 시 사용하는 값으로, 필요에 따라 사용하면 좋다.
+	void ToggleShowItem(const bool IsShow);
+
 protected:
 	virtual void InitializeComponent() override;
 

@@ -101,6 +101,16 @@ void UPlayerHandSlotComponent::ClearHand()
 	}
 }
 
+void UPlayerHandSlotComponent::ToggleShowItem(const bool IsShow)
+{
+	if (!HeldItem)
+	{
+		return;
+	}
+
+	HeldItem->SetActorHiddenInGame(!IsShow);
+}
+
 void UPlayerHandSlotComponent::Server_ChangeItemId_Implementation(
 	uint16 ChangeItemId)
 {
