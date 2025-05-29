@@ -37,6 +37,12 @@ enum class EQuestRewardType : uint8
 };
 
 UENUM()
+enum class EQuestSceneType : uint8
+{
+	None, Image, Media
+};
+
+UENUM()
 enum class EQuestStoryMetaDataKey: uint8
 {
 	None, IsHideInQuestBook, RemoveItemToClear,

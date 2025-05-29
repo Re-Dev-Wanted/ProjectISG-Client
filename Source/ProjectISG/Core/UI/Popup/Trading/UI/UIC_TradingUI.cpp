@@ -93,42 +93,6 @@ void UUIC_TradingUI::OnTrade()
 	}
 }
 
-void UUIC_TradingUI::LoggingToBuyItem()
-{
-	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
-
-	FItemInfoData ItemInfoData = UItemManager::GetItemInfoById
-		(TradingUIModel->GetSelectedId());
-
-	FDiaryLogParams LogParams;
-	LogParams.Location = TEXT("거래장");
-	LogParams.ActionType = ELoggingActionType::TRADE;
-	LogParams.ActionName = ELoggingActionName::buy_item;
-	LogParams.Detail = FString::Printf(
-		TEXT("%s(을)를 %d개 구매했다."), *ItemInfoData.GetDisplayName(), 1);
-
-	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-	            LoggingData(LogParams);
-}
-
-void UUIC_TradingUI::LoggingToSellItem()
-{
-	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
-
-	FItemInfoData ItemInfoData = UItemManager::GetItemInfoById
-		(TradingUIModel->GetSelectedId());
-
-	FDiaryLogParams LogParams;
-	LogParams.Location = TEXT("거래장");
-	LogParams.ActionType = ELoggingActionType::TRADE;
-	LogParams.ActionName = ELoggingActionName::sell_item;
-	LogParams.Detail = FString::Printf(
-		TEXT("%s(을)를 %d개 판매했다."), *ItemInfoData.GetDisplayName(), 1);
-
-	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
-	            LoggingData(LogParams);
-}
-
 void UUIC_TradingUI::RefreshList()
 {
 	const UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());

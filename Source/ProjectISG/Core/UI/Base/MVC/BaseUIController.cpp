@@ -135,12 +135,7 @@ void UBaseUIController::BindInputAction(UEnhancedInputComponent* InputComponent)
 
 void UBaseUIController::AppearUI()
 {
-	AppearUI(GetCurrentLayer());
-}
-
-void UBaseUIController::AppearUI(const EUILayer Layer)
-{
-	if (Layer == EUILayer::Gameplay)
+	if (GetCurrentLayer() == EUILayer::Gameplay)
 	{
 		const FInputModeGameOnly InputMode;
 		PlayerController->SetInputMode(InputMode);

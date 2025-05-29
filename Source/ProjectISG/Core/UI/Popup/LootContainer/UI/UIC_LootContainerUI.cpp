@@ -4,8 +4,7 @@
 #include "Components/Button.h"
 #include "InputAction.h"
 #include "EnhancedInputComponent.h"
-#include "ProjectISG/Core/Controller/MainPlayerController.h"
-#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "UIM_LootContainerUI.h"
 #include "ProjectISG/Systems/Inventory/ItemHandler.h"
 
 void UUIC_LootContainerUI::InitializeController(UBaseUIView* NewView,
@@ -17,12 +16,6 @@ void UUIC_LootContainerUI::InitializeController(UBaseUIView* NewView,
 void UUIC_LootContainerUI::AppearUI()
 {
 	Super::AppearUI();
-
-	UUIV_LootContainerUI* UIView = Cast<UUIV_LootContainerUI>(GetView());
-
-	UIView->GetBackButton()->OnClicked.AddUniqueDynamic(this,
-												  &UUIC_LootContainerUI::
-												  CloseUI);
 }
 
 void UUIC_LootContainerUI::BindInputAction(
@@ -31,34 +24,30 @@ void UUIC_LootContainerUI::BindInputAction(
 	Super::BindInputAction(InputComponent);
 
 	InputComponent->BindAction(CloseAction, ETriggerEvent::Started,
-	                           this, &ThisClass::CloseUI);
+	                           this, &ThisClass::OnCloseUI);
 }
 
-void UUIC_LootContainerUI::CloseUI()
+void UUIC_LootContainerUI::OnCloseUI()
 {
-	ResetUIFromPlayerController();
-
-	if (UIHandler)
+	UUIM_LootContainerUI* UIModel = Cast<UUIM_LootContainerUI>(GetModel());
+	
+	if (UIModel->GetUIHandler())
 	{
-		UIHandler->OnClosed();
+		UIModel->GetUIHandler()->OnClosed();
 	}
+	
+	ResetUIFromPlayerController();
 }
 
-void UUIC_LootContainerUI::SetContainer(FGuid Guid,
-                                        const TArray<FItemMetaInfo>& Items,
-                                        TScriptInterface<IItemHandler> Handler)
+void UUIC_LootContainerUI::SetContainer(const TArray<FItemMetaInfo>& Items,
+	const TScriptInterface<IItemHandler>& Handler,
+	const TScriptInterface<IUIHandler>& UIHandler)
 {
 	UUIV_LootContainerUI* UIView = Cast<UUIV_LootContainerUI>(GetView());
+	UUIM_LootContainerUI* UIModel = Cast<UUIM_LootContainerUI>(GetModel());
 
-	if (Handler.GetObject()->GetClass()->ImplementsInterface
-		(UUIHandler::StaticClass()))
-	{
-		TScriptInterface<IUIHandler> _Handler;
-		_Handler.SetObject(Handler.GetObject());
-		_Handler.SetInterface(Cast<IUIHandler>(Handler.GetObject()));
-
-		UIHandler = _Handler;
-	}
-
-	UIView->SetContainer(Guid, Items, Handler);
+	UIModel->SetUIHandler(UIHandler);
+	UIView->SetContainer(Items, Handler);
+	UIView->GetBackButton()->OnClicked.AddUniqueDynamic(this,
+		&ThisClass::OnCloseUI);
 }

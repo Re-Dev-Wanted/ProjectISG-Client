@@ -9,7 +9,7 @@
 #include "ProjectISG/Core/UI/Loading/UIC_Loading.h"
 #include "ProjectISG/Core/UI/Loading/UIV_Loading.h"
 #include "ProjectISG/Core/UI/Popup/Inventory/UI/UIC_InventoryUI.h"
-#include "ProjectISG/Core/UI/Popup/SceneList/UI/UIC_SceneListUI.h"
+#include "ProjectISG/Core/UI/Popup/SceneList/UI/CutSceneList/UIC_SceneListUI.h"
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 
 class UUIC_Loading;
@@ -112,7 +112,7 @@ void AMainPlayerController::ShowLoadingUIAndCreateSession(bool bIsServerTravel)
 	PopUI();
 	PushUI(EUIName::Loading_LoadingUI);
 
-	UUIC_Loading* LoadingController = Cast<UUIC_Loading>(
+	const UUIC_Loading* LoadingController = Cast<UUIC_Loading>(
 		UIManageComponent->ControllerInstances[EUIName::Loading_LoadingUI]);
 	UUIV_Loading* LoadingView = Cast<
 		UUIV_Loading>(LoadingController->GetView());

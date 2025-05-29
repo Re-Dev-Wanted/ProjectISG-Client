@@ -21,7 +21,7 @@ public:
 	SETTER(TScriptInterface<IItemHandler>, ItemHandler)
 	SETTER(uint16, Index);
 
-	void SetSlotInfo(const FItemMetaInfo& ItemMetaInfo, const FGuid& Guid = FGuid());
+	void SetSlotInfo(const FItemMetaInfo& ItemMetaInfo);
 	void SetSelected(const bool IsSelected) const;
 
 protected:

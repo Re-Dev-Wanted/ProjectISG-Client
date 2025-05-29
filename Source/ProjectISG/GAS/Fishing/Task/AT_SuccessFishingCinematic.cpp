@@ -14,7 +14,6 @@ UAT_SuccessFishingCinematic* UAT_SuccessFishingCinematic::InitialEvent(UGameplay
 {
 	UAT_SuccessFishingCinematic* NewTask = NewAbilityTask<UAT_SuccessFishingCinematic>(Ability);
 	NewTask->LevelSequence = LevelSequence;
-	NewTask->RealInLine = Cast<UGA_ReelInLine>(Ability);
 
 	return NewTask;
 }
@@ -39,7 +38,7 @@ void UAT_SuccessFishingCinematic::Activate()
 		GetAvatarActor()->GetWorld(), LevelSequence,
 		PlaybackSettings, LevelSequenceActor);
 
-	LevelSequencePlayer->OnFinished.AddDynamic(this, 
+	LevelSequencePlayer->OnFinished.AddUniqueDynamic(this, 
 	&UAT_SuccessFishingCinematic::OnFinish);
 	LevelSequenceActor->AddBindingByTag(FName(TEXT("Player")), GetAvatarActor());
 
@@ -55,5 +54,8 @@ void UAT_SuccessFishingCinematic::ExternalConfirm(bool bEndTask)
 
 void UAT_SuccessFishingCinematic::OnFinish()
 {
-	RealInLine->OnEndCinematic();
+	if (OnSuccessFishingCinematicEndNotified.IsBound())
+	{
+		OnSuccessFishingCinematicEndNotified.Broadcast();
+	}
 }

@@ -14,6 +14,20 @@
 #include "Task/AT_FailFishingCinematic.h"
 #include "Task/AT_SuccessFishingCinematic.h"
 
+void UGA_ReelInLine::PreActivate(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo,
+	FOnGameplayAbilityEnded::FDelegate* OnGameplayAbilityEndedDelegate, const FGameplayEventData* TriggerEventData)
+{
+	Super::PreActivate(Handle, ActorInfo, ActivationInfo, OnGameplayAbilityEndedDelegate, TriggerEventData);
+
+	AT_SuccessFishingCinematic =
+				UAT_SuccessFishingCinematic::InitialEvent(
+					this, SuccessFishingCinematic);
+
+	AT_FailFishingCinematic = UAT_FailFishingCinematic::InitialEvent(
+				this, FailFishingCinematic);
+}
+
 void UGA_ReelInLine::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                      const FGameplayAbilityActorInfo* ActorInfo,
                                      const FGameplayAbilityActivationInfo
@@ -49,22 +63,14 @@ void UGA_ReelInLine::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 		if (FishingRod->GetIsBiteFish())
 		{
-			AT_SuccessFishingCinematic =
-				UAT_SuccessFishingCinematic::InitialEvent(
-					this, SuccessFishingCinematic);
 			AT_SuccessFishingCinematic->OnSuccessFishingCinematicEndNotified.
-			                            AddDynamic(
-				                            this, &UGA_ReelInLine::
-				                            OnEndCinematic);
+								AddUniqueDynamic(this, &UGA_ReelInLine::OnEndCinematic);
 			AT_SuccessFishingCinematic->ReadyForActivation();
 		}
 		else
 		{
-			AT_FailFishingCinematic = UAT_FailFishingCinematic::InitialEvent(
-				this, FailFishingCinematic);
 			AT_FailFishingCinematic->OnFailFishingCinematicEndNotified.
-			                         AddDynamic(
-				                         this, &UGA_ReelInLine::OnEndCinematic);
+							 AddUniqueDynamic(this, &UGA_ReelInLine::OnEndCinematic);
 			AT_FailFishingCinematic->ReadyForActivation();
 		}
 

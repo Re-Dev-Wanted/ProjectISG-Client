@@ -133,7 +133,7 @@ void ULootContainerItemSlot::NativeOnDragCancelled(
 	Super::NativeOnDragCancelled(InDragDropEvent, InOperation);
 }
 
-void ULootContainerItemSlot::SetSlotInfo(const FItemMetaInfo& ItemMetaInfo, const FGuid& Guid)
+void ULootContainerItemSlot::SetSlotInfo(const FItemMetaInfo& ItemMetaInfo)
 {
 	SetSlotItemId(ItemMetaInfo.GetId());
 	SetThumbnail(
