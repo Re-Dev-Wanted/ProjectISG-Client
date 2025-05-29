@@ -26,7 +26,7 @@ void UUIC_MediaSceneListUI::AppearUI()
 
 	SceneListModel->SetCurrentSceneId(
 		GetView()->GetOwningPlayer<AMainPlayerController>()->
-					GetQuestManageComponent()->GetCurrentPlayingSceneId());
+		           GetQuestManageComponent()->GetCurrentPlayingSceneId());
 
 	FQuestSceneCutData MediaSceneData =
 		UQuestStoryManager::GetQuestSceneCutById(
@@ -36,7 +36,7 @@ void UUIC_MediaSceneListUI::AppearUI()
 		MediaSceneData.GetSceneMedia().GetSceneMediaTexture());
 
 	MediaSceneData.GetSceneMedia().GetSceneMediaPlayer()->OnEndReached.
-					AddDynamic(this, &ThisClass::OnEndMediaScene);
+	               AddDynamic(this, &ThisClass::OnEndMediaScene);
 
 	if (MediaSceneData.GetSceneMedia().GetSceneMediaPlayer()->OpenSource(
 		MediaSceneData.GetSceneMedia().GetSceneMediaSource()))
@@ -46,7 +46,7 @@ void UUIC_MediaSceneListUI::AppearUI()
 		Player->GetMediaSoundComponent()->SetMediaPlayer(
 			MediaSceneData.GetSceneMedia().GetSceneMediaPlayer());
 		Player->GetMediaSoundComponent()->Start();
-		
+
 		MediaSceneData.GetSceneMedia().GetSceneMediaPlayer()->Rewind();
 	}
 }
@@ -54,6 +54,10 @@ void UUIC_MediaSceneListUI::AppearUI()
 void UUIC_MediaSceneListUI::OnEndMediaScene()
 {
 	ResetUIFromPlayerController();
+
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		GetView()->GetOwningPlayerPawn());
+	Player->GetMediaSoundComponent()->Stop();
 
 	if (OnEndMediaSceneNotified.IsBound())
 	{
@@ -68,10 +72,10 @@ void UUIC_MediaSceneListUI::BindInputAction(
 	Super::BindInputAction(InputComponent);
 
 	InputComponent->BindAction(SkipSceneAction, ETriggerEvent::Triggered, this
-								, &ThisClass::OnTriggerSkipSceneAction);
+	                           , &ThisClass::OnTriggerSkipSceneAction);
 
 	InputComponent->BindAction(SkipSceneAction, ETriggerEvent::Completed, this
-								, &ThisClass::OnEndSkipSceneAction);
+	                           , &ThisClass::OnEndSkipSceneAction);
 }
 
 void UUIC_MediaSceneListUI::OnTriggerSkipSceneAction()
@@ -80,6 +84,10 @@ void UUIC_MediaSceneListUI::OnTriggerSkipSceneAction()
 		GetView());
 	UUIM_MediaSceneListUI* SceneListModel = Cast<UUIM_MediaSceneListUI>(
 		GetModel());
+	FQuestSceneCutData MediaSceneData =
+		UQuestStoryManager::GetQuestSceneCutById(
+			SceneListModel->GetCurrentSceneId());
+
 
 	SceneListView->GetSkipLoadingWidget()->SetVisibility(
 		ESlateVisibility::Visible);
@@ -94,7 +102,7 @@ void UUIC_MediaSceneListUI::OnTriggerSkipSceneAction()
 	if (SceneListModel->GetCurrentLoadingPercent() >= SceneListModel->
 		GetMaxLoadingPercent())
 	{
-		OnEndMediaScene();
+		MediaSceneData.GetSceneMedia().GetSceneMediaPlayer()->Close();
 	}
 }
 
@@ -116,5 +124,5 @@ void UUIC_MediaSceneListUI::SetSkipCircularPercent(const float Percent)
 		GetView());
 
 	SceneListView->GetCircularLoadingWidget()->GetDynamicMaterial()->
-					SetScalarParameterValue(FName("Percent"), Percent);
+	               SetScalarParameterValue(FName("Percent"), Percent);
 }

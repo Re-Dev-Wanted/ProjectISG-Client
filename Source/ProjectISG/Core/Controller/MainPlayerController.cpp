@@ -36,12 +36,12 @@ void AMainPlayerController::BeginPlay()
 	if (IsLocalController() && HasAuthority())
 	{
 		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
-		StartScene(FString::Printf(TEXT("Test_Media")));
-		// UUIC_SceneListUI* SceneListUIController = Cast<UUIC_SceneListUI>(
-		// 	GetUIManageComponent()->ControllerInstances[
-		// 		EUIName::Popup_SceneListUI]);
-		// SceneListUIController->OnSceneListEndNotified.BindUObject(
-		// 	this, &ThisClass::MainSceneEnd);
+		StartScene(FString::Printf(TEXT("Scene_7")));
+		UUIC_SceneListUI* SceneListUIController = Cast<UUIC_SceneListUI>(
+			GetUIManageComponent()->ControllerInstances[
+				EUIName::Popup_SceneListUI]);
+		SceneListUIController->OnSceneListEndNotified.BindUObject(
+			this, &ThisClass::MainSceneEnd);
 	}
 }
 
@@ -112,7 +112,7 @@ void AMainPlayerController::ShowLoadingUIAndCreateSession(bool bIsServerTravel)
 	PopUI();
 	PushUI(EUIName::Loading_LoadingUI);
 
-	UUIC_Loading* LoadingController = Cast<UUIC_Loading>(
+	const UUIC_Loading* LoadingController = Cast<UUIC_Loading>(
 		UIManageComponent->ControllerInstances[EUIName::Loading_LoadingUI]);
 	UUIV_Loading* LoadingView = Cast<
 		UUIV_Loading>(LoadingController->GetView());
@@ -167,7 +167,7 @@ void AMainPlayerController::PopUI()
 }
 
 void AMainPlayerController::Alert(const EAlertType AlertType
-								, const FString& Message, const float Time)
+                                  , const FString& Message, const float Time)
 {
 	if (UIManageComponent->GetTopStackUI() != EUIName::Gameplay_MainHUD)
 	{
