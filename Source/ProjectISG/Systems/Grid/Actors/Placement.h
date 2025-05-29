@@ -73,6 +73,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	USceneComponent* InteractStartPoint;
 
+	UPROPERTY(EditAnywhere)
+	USceneComponent* InteractEndPoint;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FIntVector> Occupied;
 
@@ -95,6 +98,10 @@ public:
 	FVector GetStartInteractPoint() const;
 
 	FRotator GetStartInteractRotation() const;
+
+	FVector GetEndInteractPoint() const;
+
+	FRotator GetEndInteractRotation() const;
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_SetCollisionEnabled(bool bEnable) const;
