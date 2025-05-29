@@ -36,6 +36,8 @@ public:
 
 	GETTER(EUILayer, CurrentLayer)
 
+	virtual void OnPushUI();
+
 protected:
 	virtual void BindInputAction(UEnhancedInputComponent* InputComponent);
 

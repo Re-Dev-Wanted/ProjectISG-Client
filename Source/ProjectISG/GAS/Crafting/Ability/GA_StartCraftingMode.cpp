@@ -29,14 +29,6 @@ void UGA_StartCraftingMode::ActivateAbility(
 		return;
 	}
 
-	TObjectPtr<ABaseActor> HeldItem = Player->GetHandSlotComponent()->
-	                                          GetHeldItem();
-
-	if (HeldItem)
-	{
-		HeldItem->SetHidden(true);
-	}
-
 	AMainPlayerController* PC = Player->GetController<AMainPlayerController>();
 
 	if (!PC)
@@ -53,6 +45,8 @@ void UGA_StartCraftingMode::ActivateAbility(
 		Player->GetInteractionComponent()->SetIsInteractive(false);
 		Player->GetPlacementIndicatorComponent()->SetIsActive(false);
 	}
+
+	Player->GetHandSlotComponent()->ToggleShowItem(false);
 
 	AT_StartCraftingModeCinematic = UAT_StartCraftingMode::InitialEvent(
 		this, CraftingReadyCinematic);

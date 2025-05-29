@@ -290,3 +290,13 @@ void AFishingRod::OnEndReelInLine(AActor* Causer)
 
 	OnEventFinish(false);
 }
+
+void AFishingRod::SetActorHiddenInGame(bool bNewHidden)
+{
+	Super::SetActorHiddenInGame(bNewHidden);
+
+	if (Bobber)
+	{
+		Bobber->SetActorHiddenInGame(bNewHidden);
+	}
+}

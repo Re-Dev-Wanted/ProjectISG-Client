@@ -49,14 +49,6 @@ void UGA_EndCraftingMode::OnEndCinematic()
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>
 		(CurrentActorInfo->AvatarActor.Get());
 
-	TObjectPtr<ABaseActor> HeldItem = Player->GetHandSlotComponent()->
-	                                          GetHeldItem();
-
-	if (HeldItem)
-	{
-		HeldItem->SetHidden(false);
-	}
-
 	if (!Player)
 	{
 		return;
@@ -78,6 +70,8 @@ void UGA_EndCraftingMode::OnEndCinematic()
 		Player->GetInteractionComponent()->SetIsInteractive(true);
 		Player->GetPlacementIndicatorComponent()->SetIsActive(true);
 	}
+
+	Player->GetHandSlotComponent()->ToggleShowItem(true);
 
 	AMainPlayerCharacter* _Player = const_cast<AMainPlayerCharacter*>(Player);
 	_Player->StopAnimMontage(_Player->GetCurrentMontage());

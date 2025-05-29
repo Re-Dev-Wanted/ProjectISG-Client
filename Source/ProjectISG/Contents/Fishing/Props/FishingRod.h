@@ -77,6 +77,8 @@ public:
 
 	void OnEndReelInLine(AActor* Causer);
 
+	virtual void SetActorHiddenInGame(bool bNewHidden) override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FishingSettings)
 	float CastingDistance = 200.f;
 

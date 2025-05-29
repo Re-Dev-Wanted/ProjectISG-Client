@@ -42,9 +42,6 @@ private:
 	TObjectPtr<UInteractiveItemUI> ExecuteInteractUI;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UInteractiveItemUI> LeftRotateUI;
-
-	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInteractiveItemUI> RightRotateUI;
 
 	UPROPERTY(EditDefaultsOnly)

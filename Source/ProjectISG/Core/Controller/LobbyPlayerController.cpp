@@ -4,6 +4,7 @@
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Loading/UIC_Loading.h"
 #include "ProjectISG/Core/UI/Loading/UIV_Loading.h"
+#include "ProjectISG/Core/UI/Popup/Mbti/UI/UIC_MbtiAskUI.h"
 
 ALobbyPlayerController::ALobbyPlayerController()
 {

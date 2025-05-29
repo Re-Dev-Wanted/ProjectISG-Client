@@ -9,8 +9,7 @@ void UInteractiveUI::NativeConstruct()
 
 	//TODO:: 위젯 따로 만들어서 세팅해야한다.
 	ExecuteInteractUI->SetInteractive(TEXT("RM"), TEXT("설치하기"));
-	LeftRotateUI->SetInteractive(TEXT("Q"), TEXT("좌회전"));
-	RightRotateUI->SetInteractive(TEXT("E"), TEXT("우회전"));
+	RightRotateUI->SetInteractive(TEXT("E"), TEXT("회전하기"));
 }
 
 void UInteractiveUI::SetInteractive(bool Visible)
