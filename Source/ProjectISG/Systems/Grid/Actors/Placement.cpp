@@ -45,6 +45,10 @@ APlacement::APlacement()
 		("InteractStartPoint"));
 	InteractStartPoint->SetupAttachment(MeshComp);
 
+	InteractEndPoint = CreateDefaultSubobject<USceneComponent>(TEXT
+		("InteractEndPoint"));
+	InteractEndPoint->SetupAttachment(MeshComp);
+
 	ConstructorHelpers::FObjectFinder<UMaterialInstance> Mat_Instance(
 		TEXT(
 			"/Script/Engine.MaterialInstanceConstant'/Game/Systems/Grid/Materials/SelectBrushMaterial_Inst.SelectBrushMaterial_Inst'"));
@@ -435,6 +439,26 @@ FRotator APlacement::GetStartInteractRotation() const
 	if (InteractStartPoint)
 	{
 		return InteractStartPoint->GetForwardVector().Rotation();
+	}
+
+	return FRotator::ZeroRotator;
+}
+
+FVector APlacement::GetEndInteractPoint() const
+{
+	if (InteractEndPoint)
+	{
+		return InteractEndPoint->GetComponentLocation();
+	}
+
+	return FVector::ZeroVector;
+}
+
+FRotator APlacement::GetEndInteractRotation() const
+{
+	if (InteractEndPoint)
+	{
+		return InteractEndPoint->GetForwardVector().Rotation();
 	}
 
 	return FRotator::ZeroRotator;

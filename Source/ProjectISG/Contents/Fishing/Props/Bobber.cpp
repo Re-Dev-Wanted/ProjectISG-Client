@@ -19,20 +19,21 @@ ABobber::ABobber()
 
 void ABobber::SuggestProjectileVelocity(const FVector& StartLocation, const FVector& EndLocation)
 {
-	// FVector Velocity;
+	FVector Velocity;
 
 	SetCollisionAndPhysicsEnabled(true);
 	
+	bool bSuggest = UGameplayStatics::SuggestProjectileVelocity_CustomArc(
+		this,
+		Velocity,
+		GetActorLocation(),
+		EndLocation,
+		GetWorld()->GetGravityZ(),
+		0.5f
+	);
 	
-	// bool bSuggest = UGameplayStatics::SuggestProjectileVelocity_CustomArc(
-	// 	this,
-	// 	Velocity,
-	// 	StartLocation,
-	// 	EndLocation,
-	// 	-980.f,
-	// 	0.9f
-	// );
-	//
+	Root->SetPhysicsLinearVelocity(Velocity);
+	
 	// if (bSuggest)
 	// {
 	// 	FPredictProjectilePathParams PredictParams(10.0f, StartLocation, Velocity, 5.0f);

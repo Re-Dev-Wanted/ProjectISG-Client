@@ -1,18 +1,14 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿#include "GA_EndSitDown.h"
 
-#include "GA_EndSitDown.h"
-
-#include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
-#include "ProjectISG/Core/Controller/MainPlayerController.h"
-#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Base/Interfaces/UIHandler.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
+#include "ProjectISG/Systems/Animation/Manager/AnimMontageManager.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Components/PlacementIndicatorComponent.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 
 void UGA_EndSitDown::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                      const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
@@ -20,11 +16,31 @@ void UGA_EndSitDown::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(ActorInfo->AvatarActor.Get());
+
+	if (TriggerEventData->Target)
+	{
+		const AActor* Target = TriggerEventData->Target.Get();
+		const APlacement* ConstPlacement = Cast<APlacement>(Target);
+		ConstPlacement->Multicast_SetCollisionEnabled(false);
+
+		APlacement* Placement = const_cast<APlacement*>(ConstPlacement);
+		
+		FVector Point = Placement->GetEndInteractPoint();
+		FRotator Rotation = Placement->GetEndInteractRotation();
+		
+		Player->SetActorLocation(Point);
+		Player->GetController()->SetControlRotation(Rotation);
+		Player->SetActorRotation(Rotation);
+	}
+
 	AT_EndMontageEvent = UPlayMontageWithEvent::InitialEvent
 	(
 		this,
 		NAME_None,
-		EndSitDownMontage,
+		UAnimMontageManager::GetMontage(
+			Player->GetPlayerState<AMainPlayerState>(),
+			EAnimMontageKey::SitDown_End),
 		FGameplayTagContainer(),
 		*TriggerEventData
 	);
@@ -68,6 +84,13 @@ void UGA_EndSitDown::EndMontage(FGameplayTag EventTag, FGameplayEventData EventD
 		}
 		
 		ConstPlacement->Multicast_SetCollisionEnabled(true);
+
+		FVector Point = ConstPlacement->GetEndInteractPoint();
+		FRotator Rotation = ConstPlacement->GetEndInteractRotation();
+	
+		Player->SetActorLocation(Point);
+		Player->GetController()->SetControlRotation(Rotation);
+		Player->SetActorRotation(Rotation);
 	}
 	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, false);
