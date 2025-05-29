@@ -73,6 +73,7 @@ void UUIManageComponent::PushWidget(const EUIName Key)
 	}
 
 	ControllerInstances[Key]->StartShowUI(WidgetLayers[Key]);
+	ControllerInstances[Key]->OnPushUI();
 
 	PrintAllWidgetStackToDebug();
 }

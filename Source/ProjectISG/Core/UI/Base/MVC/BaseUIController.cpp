@@ -217,3 +217,7 @@ void UBaseUIController::OnFinishDefaultTickAnimation()
 
 	GetView()->PlayAnimation(GetView()->GetDefaultTickAnimation());
 }
+
+void UBaseUIController::OnPushUI()
+{
+}

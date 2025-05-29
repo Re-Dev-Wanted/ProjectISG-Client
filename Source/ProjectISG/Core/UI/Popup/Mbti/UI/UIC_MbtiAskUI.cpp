@@ -29,16 +29,16 @@ void UUIC_MbtiAskUI::InitializeController(UBaseUIView* NewView,
 	MbtiAskUIView->GetAnswerTextArea()->OnTextCommitted.AddDynamic(
 		this, &ThisClass::OnCommitText);
 	MbtiAskUIView->GetSaveButton()->OnClicked.AddDynamic(
-		this, &ThisClass::AskNewMbti);
+		this, &ThisClass::AnswerMbti);
 }
 
-void UUIC_MbtiAskUI::AppearUI()
+void UUIC_MbtiAskUI::OnPushUI()
 {
-	Super::AppearUI();
+	Super::OnPushUI();
+
 	UUIM_MbtiAskUI* MbtiAskUIModel = Cast<UUIM_MbtiAskUI>(GetModel());
 	MbtiAskUIModel->SetCurrentQuestNum(0);
 	MbtiAskUIModel->SetCurrentPercentValue(0);
-
 	AskNewMbti();
 }
 
@@ -50,6 +50,7 @@ void UUIC_MbtiAskUI::AskNewMbti()
 
 	Cast<UUIV_MbtiAskUI>(GetView())->GetAnswerTextArea()->
 	                                 SetIsReadOnly(true);
+
 	// 이미 종료된 상태에서 재질문을 던지게 되면 UI 종료 후 다음 Flow로 가는 로직이 수행된다.
 	if (MbtiAskUIModel->GetCompleted())
 	{
@@ -60,7 +61,7 @@ void UUIC_MbtiAskUI::AskNewMbti()
 		return;
 	}
 
-	LobbyPlayerController->PushUI(EUIName::Loading_TempLoadingUI);
+	LobbyPlayerController->PushUI(EUIName::Modal_TempLoadingUI);
 
 	FApiRequest Request;
 	Request.Path = TEXT("/mbti/ask");
@@ -76,8 +77,7 @@ void UUIC_MbtiAskUI::AskNewMbti()
 	                                   FHttpResponsePtr Res,
 	                                   const bool IsSuccess)
 	{
-		Cast<ALobbyPlayerController>(GetView()->GetOwningPlayer())->PushUI(
-			EUIName::Loading_TempLoadingUI);
+		Cast<ALobbyPlayerController>(GetView()->GetOwningPlayer())->PopUI();
 
 		if (!IsSuccess)
 		{
@@ -120,6 +120,10 @@ void UUIC_MbtiAskUI::AnswerMbti()
 {
 	UUIM_MbtiAskUI* MbtiAskUIModel = Cast<UUIM_MbtiAskUI>(GetModel());
 
+	ALobbyPlayerController* LobbyPlayerController = Cast<
+		ALobbyPlayerController>(GetView()->GetOwningPlayer());
+	LobbyPlayerController->PushUI(EUIName::Modal_TempLoadingUI);
+
 	FApiRequest Request;
 	Request.Path = TEXT("/mbti/answer");
 
@@ -135,6 +139,8 @@ void UUIC_MbtiAskUI::AnswerMbti()
 	                                   FHttpResponsePtr Res,
 	                                   const bool IsSuccess)
 	{
+		Cast<ALobbyPlayerController>(GetView()->GetOwningPlayer())->PopUI();
+
 		FPostMbtiAnswerResponse MbtiAnswerResponse;
 
 		FApiUtil::DeserializeJsonObject<FPostMbtiAnswerResponse>(
