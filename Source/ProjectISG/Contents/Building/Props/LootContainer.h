@@ -52,4 +52,7 @@ protected:
 
 	UPROPERTY(Replicated)
 	TArray<FItemMetaInfo_Net> Items;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<USoundBase> SFX_Close;
 };
