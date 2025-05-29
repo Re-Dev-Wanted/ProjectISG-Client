@@ -5,6 +5,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Modal/Interactive/UI/UIC_ExitInteractUI.h"
@@ -41,6 +42,8 @@ void UGA_StartSitDown::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		const AActor* Target = TriggerEventData->Target.Get();
 		const APlacement* ConstPlacement = Cast<APlacement>(Target);
 		ConstPlacement->Multicast_SetCollisionEnabled(false);
+
+		Player->GetHandSlotComponent()->ToggleShowItem(false);
 
 		APlacement* Placement = const_cast<APlacement*>(ConstPlacement);
 		

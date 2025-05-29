@@ -3,6 +3,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/UI/Base/Interfaces/UIHandler.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
 #include "ProjectISG/Systems/Animation/Manager/AnimMontageManager.h"
@@ -72,6 +73,8 @@ void UGA_EndSitDown::EndMontage(FGameplayTag EventTag, FGameplayEventData EventD
 		Player->GetInteractionComponent()->SetIsInteractive(true);
 		Player->GetPlacementIndicatorComponent()->SetIsActive(true);
 	}
+
+	Player->GetHandSlotComponent()->ToggleShowItem(true);
 	
 	if (EventData.Target)
 	{

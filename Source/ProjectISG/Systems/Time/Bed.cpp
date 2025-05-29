@@ -28,7 +28,7 @@ ABed::ABed()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(Root);
 	Mesh->SetRelativeScale3D(FVector(0.f, 0.f, -30.f));
-	Mesh->SetCollisionProfileName(TEXT("NoCollision"));
+	// Mesh->SetCollisionProfileName(TEXT("NoCollision"));
 
 	WakeUpPos = CreateDefaultSubobject<USceneComponent>(TEXT("WakeUpPos"));
 	WakeUpPos->SetupAttachment(Root);
@@ -40,19 +40,19 @@ ABed::ABed()
 		FVector(0.000000, 250.000000, 300.000000));
 	CameraComponent->SetRelativeRotation(FRotator(0.f, -90.f, -45.f));
 
-	ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(
-		TEXT("'/Game/Contents/Sleeping/Bed/Bed_Queen.Bed_Queen'"));
-	if (tempMesh.Succeeded())
-	{
-		Mesh->SetStaticMesh(tempMesh.Object);
-	}
-
-	ConstructorHelpers::FObjectFinder<UMaterial> tempMat(
-		TEXT("'/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial'"));
-	if (tempMat.Succeeded())
-	{
-		Mesh->SetMaterial(0, tempMat.Object);
-	}
+	// ConstructorHelpers::FObjectFinder<UStaticMesh> tempMesh(
+	// 	TEXT("'/Game/Contents/Sleeping/Bed/Bed_Queen.Bed_Queen'"));
+	// if (tempMesh.Succeeded())
+	// {
+	// 	Mesh->SetStaticMesh(tempMesh.Object);
+	// }
+	//
+	// ConstructorHelpers::FObjectFinder<UMaterial> tempMat(
+	// 	TEXT("'/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial'"));
+	// if (tempMat.Succeeded())
+	// {
+	// 	Mesh->SetMaterial(0, tempMat.Object);
+	// }
 
 	Root->SetGenerateOverlapEvents(true);
 }
