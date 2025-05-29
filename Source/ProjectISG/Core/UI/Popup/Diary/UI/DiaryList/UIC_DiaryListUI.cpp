@@ -22,13 +22,13 @@ void UUIC_DiaryListUI::InitializeController(UBaseUIView* NewView
 
 	const UUIV_DiaryListUI* DiaryListView = Cast<UUIV_DiaryListUI>(GetView());
 
-	DiaryListView->GetPrevButton()->OnClicked.AddDynamic(
+	DiaryListView->GetPrevButton()->OnClicked.AddUniqueDynamic(
 		this, &ThisClass::MoveToPrevPage);
 
-	DiaryListView->GetNextButton()->OnClicked.AddDynamic(
+	DiaryListView->GetNextButton()->OnClicked.AddUniqueDynamic(
 		this, &ThisClass::MoveToNextPage);
 
-	DiaryListView->GetExitButton()->OnClicked.AddDynamic(
+	DiaryListView->GetExitButton()->OnClicked.AddUniqueDynamic(
 		this, &ThisClass::ResetUIFromPlayerController);
 
 	InitializeData();

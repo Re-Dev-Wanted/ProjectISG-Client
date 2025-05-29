@@ -14,6 +14,9 @@ class PROJECTISG_API UUIC_QuestItemWidget : public UBaseUIController
 public:
 	void InitializeData(const FString& QuestId);
 
+protected:
+	virtual void AppearUI() override;
+
 private:
 	UFUNCTION()
 	void OnClickQuestItemWidget();
