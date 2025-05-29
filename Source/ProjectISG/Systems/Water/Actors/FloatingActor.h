@@ -34,6 +34,8 @@ public:
 
 	virtual void EnterWater();
 
+	void SetDamping(float Linear, float Angular);
+
 protected:
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* Root;
