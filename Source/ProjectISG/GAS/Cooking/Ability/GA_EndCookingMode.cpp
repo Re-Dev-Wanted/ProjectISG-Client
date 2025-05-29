@@ -6,9 +6,7 @@
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
-#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
-#include "ProjectISG/Systems/Animation/Manager/LevelSequenceManager.h"
 #include "Task/AT_EndCookingModeCinematic.h"
 
 void UGA_EndCookingMode::ActivateAbility(
@@ -22,8 +20,7 @@ void UGA_EndCookingMode::ActivateAbility(
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		GetAvatarActorFromActorInfo());
 
-	Player->GetController<AMainPlayerController>()->GetUIManageComponent()->
-	        ResetWidget();
+	Player->GetController<AMainPlayerController>()->PopUI();
 
 	AT_EndCookingModeCinematic = UAT_EndCookingModeCinematic::InitialEvent(
 		this, EndCookingCinematic);
@@ -44,6 +41,8 @@ void UGA_EndCookingMode::OnEndCinematic()
 	PC->PushUI(EUIName::Gameplay_MainHUD);
 	PC->SetIgnoreLookInput(false);
 	PC->SetViewTargetWithBlend(Player, 0.5f);
+
+	PC->GetUIManageComponent()->ResetWidget();
 
 	UnlockPlayer();
 
