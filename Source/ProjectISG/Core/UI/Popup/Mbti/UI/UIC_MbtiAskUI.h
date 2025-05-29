@@ -10,18 +10,20 @@ class PROJECTISG_API UUIC_MbtiAskUI : public UBaseUIController
 {
 	GENERATED_BODY()
 
-protected:
-	virtual void AppearUI() override;
+public:
+	virtual void OnPushUI() override;
 
+protected:
 	virtual void InitializeController(UBaseUIView* NewView,
 	                                  UBaseUIModel* NewModel) override;
 
 private:
+	FApiResponse MbtiAskResponse;
+
 	void AskNewMbti();
 
+	UFUNCTION()
 	void AnswerMbti();
-
-	FApiResponse MbtiAskResponse;
 
 	UFUNCTION()
 	void OnChangeText(const FText& Text);
