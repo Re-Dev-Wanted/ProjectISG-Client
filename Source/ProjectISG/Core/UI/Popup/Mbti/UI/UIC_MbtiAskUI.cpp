@@ -3,8 +3,10 @@
 #include "JsonObjectConverter.h"
 #include "UIM_MbtiAskUI.h"
 #include "UIV_MbtiAskUI.h"
-#include "Components/EditableText.h"
+#include "Components/Button.h"
+#include "Components/MultiLineEditableText.h"
 #include "Components/MultiLineEditableTextBox.h"
+#include "Components/TextBlock.h"
 #include "Interfaces/IHttpResponse.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectISG/Contents/Diary/DiaryStruct.h"
@@ -22,15 +24,20 @@ void UUIC_MbtiAskUI::InitializeController(UBaseUIView* NewView,
 
 	const UUIV_MbtiAskUI* MbtiAskUIView = Cast<UUIV_MbtiAskUI>(GetView());
 
-	MbtiAskUIView->GetAnswerTextBox()->OnTextChanged.AddDynamic(
+	MbtiAskUIView->GetAnswerTextArea()->OnTextChanged.AddDynamic(
 		this, &ThisClass::OnChangeText);
-	MbtiAskUIView->GetAnswerTextBox()->OnTextCommitted.AddDynamic(
+	MbtiAskUIView->GetAnswerTextArea()->OnTextCommitted.AddDynamic(
 		this, &ThisClass::OnCommitText);
+	MbtiAskUIView->GetSaveButton()->OnClicked.AddDynamic(
+		this, &ThisClass::AskNewMbti);
 }
 
 void UUIC_MbtiAskUI::AppearUI()
 {
 	Super::AppearUI();
+	UUIM_MbtiAskUI* MbtiAskUIModel = Cast<UUIM_MbtiAskUI>(GetModel());
+	MbtiAskUIModel->SetCurrentQuestNum(0);
+	MbtiAskUIModel->SetCurrentPercentValue(0);
 
 	AskNewMbti();
 }
@@ -38,14 +45,14 @@ void UUIC_MbtiAskUI::AppearUI()
 void UUIC_MbtiAskUI::AskNewMbti()
 {
 	UUIM_MbtiAskUI* MbtiAskUIModel = Cast<UUIM_MbtiAskUI>(GetModel());
-	Cast<UUIV_MbtiAskUI>(GetView())->GetAnswerTextBox()->
+	ALobbyPlayerController* LobbyPlayerController = Cast<
+		ALobbyPlayerController>(GetView()->GetOwningPlayer());
+
+	Cast<UUIV_MbtiAskUI>(GetView())->GetAnswerTextArea()->
 	                                 SetIsReadOnly(true);
 	// 이미 종료된 상태에서 재질문을 던지게 되면 UI 종료 후 다음 Flow로 가는 로직이 수행된다.
 	if (MbtiAskUIModel->GetCompleted())
 	{
-		// TODO: Delegate로 이후 동작을 받아오기
-		ALobbyPlayerController* LobbyPlayerController = Cast<
-			ALobbyPlayerController>(GetView()->GetOwningPlayer());
 		LobbyPlayerController->PushUI(EUIName::Loading_LoadingUI);
 		UGameplayStatics::OpenLevelBySoftObjectPtr(
 			GetWorld(), MbtiAskUIModel->GetTrainLevel());
@@ -53,8 +60,10 @@ void UUIC_MbtiAskUI::AskNewMbti()
 		return;
 	}
 
+	LobbyPlayerController->PushUI(EUIName::Loading_TempLoadingUI);
+
 	FApiRequest Request;
-	Request.Path = "/mbti/ask";
+	Request.Path = TEXT("/mbti/ask");
 
 	FPostMbtiAskParams Params;
 	Params.user_id = FSessionUtil::GetCurrentId(GetWorld());
@@ -67,6 +76,9 @@ void UUIC_MbtiAskUI::AskNewMbti()
 	                                   FHttpResponsePtr Res,
 	                                   const bool IsSuccess)
 	{
+		Cast<ALobbyPlayerController>(GetView()->GetOwningPlayer())->PushUI(
+			EUIName::Loading_TempLoadingUI);
+
 		if (!IsSuccess)
 		{
 			return;
@@ -81,15 +93,24 @@ void UUIC_MbtiAskUI::AskNewMbti()
 		Cast<UUIM_MbtiAskUI>(GetModel())->SetQuestion(MbtiAskResponse.question);
 		Cast<UUIM_MbtiAskUI>(GetModel())->SetCompleted(
 			MbtiAskResponse.completed);
+		Cast<UUIM_MbtiAskUI>(GetModel())->SetMaxQuestionNum(
+			MbtiAskResponse.q_num);
+
+		Cast<UUIV_MbtiAskUI>(GetView())->GetAnswerTextArea()->SetFocus();
+		Cast<UUIM_MbtiAskUI>(GetModel())->
+			SetCurrentQuestNum(
+				Cast<UUIM_MbtiAskUI>(GetModel())->GetCurrentQuestNum() + 1);
 
 		// UI View Input 초기화
 		Cast<UUIV_MbtiAskUI>(GetView())->GetAskTextBox()->SetText(
 			FText::FromString(MbtiAskResponse.question));
-		Cast<UUIV_MbtiAskUI>(GetView())->GetAnswerTextBox()->SetText(
+		Cast<UUIV_MbtiAskUI>(GetView())->GetAnswerTextArea()->SetText(
 			FText::FromString(TEXT("")));
-		Cast<UUIV_MbtiAskUI>(GetView())->GetAnswerTextBox()->
+		Cast<UUIV_MbtiAskUI>(GetView())->GetAnswerTextArea()->
 		                                 SetIsReadOnly(false);
-		Cast<UUIV_MbtiAskUI>(GetView())->GetAnswerTextBox()->SetFocus();
+		Cast<UUIV_MbtiAskUI>(GetView())->GetCurrentFlowCount()->SetText(
+			FText::AsNumber(
+				Cast<UUIM_MbtiAskUI>(GetModel())->GetCurrentQuestNum()));
 	});
 
 	FApiUtil::GetMainAPI()->PostApi(this, Request, MbtiAskResponse);
@@ -97,11 +118,10 @@ void UUIC_MbtiAskUI::AskNewMbti()
 
 void UUIC_MbtiAskUI::AnswerMbti()
 {
-	UUIV_MbtiAskUI* MbtiAskUIView = Cast<UUIV_MbtiAskUI>(GetView());
 	UUIM_MbtiAskUI* MbtiAskUIModel = Cast<UUIM_MbtiAskUI>(GetModel());
 
 	FApiRequest Request;
-	Request.Path = "/mbti/answer";
+	Request.Path = TEXT("/mbti/answer");
 
 	FPostMbtiAnswerkParams Params;
 	Params.user_id = FSessionUtil::GetCurrentId(GetWorld());

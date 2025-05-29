@@ -17,11 +17,12 @@ protected:
 	                                  UBaseUIModel* NewModel) override;
 
 private:
+	FApiResponse MbtiAskResponse;
+
+	UFUNCTION()
 	void AskNewMbti();
 
 	void AnswerMbti();
-
-	FApiResponse MbtiAskResponse;
 
 	UFUNCTION()
 	void OnChangeText(const FText& Text);
