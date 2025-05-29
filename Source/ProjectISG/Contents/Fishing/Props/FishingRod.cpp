@@ -178,7 +178,7 @@ void AFishingRod::OnEventFinish(bool bLoop)
 		Handle.Invalidate();
 	}
 
-	Bobber->SetActorHiddenInGame(true);
+Bobber->SetActorHiddenInGame(!bLoop);
 
 	IsBiteFish = false;
 	FishData = FFishData();
