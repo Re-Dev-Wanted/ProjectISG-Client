@@ -15,6 +15,9 @@ void UItemInfo::ShowItemData(const FItemMetaInfo& ItemMetaInfo)
 		ItemMetaInfo.GetId());
 
 	ItemDisplayName->SetText(FText::FromString(ItemInfoData.GetDisplayName()));
+	ItemCategory->SetText(
+		FText::FromString(
+			UItemManager::GetItemCategoryTextById(ItemMetaInfo.GetId())));
 	ItemThumbnail->SetBrushFromSoftTexture(ItemInfoData.GetThumbnail());
 	ItemRank->SetText(
 		FText::FromString(UItemManager::GetItemGradeText(ItemMetaInfo)));

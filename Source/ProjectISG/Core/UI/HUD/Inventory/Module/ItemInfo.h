@@ -40,5 +40,8 @@ private:
 	TObjectPtr<UTextBlock> ItemRank;
 
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> ItemCategory;
+
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UMultiLineEditableTextBox> ItemDescription;
 };
