@@ -140,8 +140,7 @@ void UUIC_TradingUI::UpdateGoldText()
 
 	if (PC && PS && TradingUIView)
 	{
-		FString Str = FString::FromInt(PS->GetGold());
-		TradingUIView->GetOwnedGoldText()->SetText(FText::FromString(Str));
+		TradingUIView->GetOwnedGoldText()->SetText(FText::AsNumber(PS->GetGold()));
 	}
 }
 
