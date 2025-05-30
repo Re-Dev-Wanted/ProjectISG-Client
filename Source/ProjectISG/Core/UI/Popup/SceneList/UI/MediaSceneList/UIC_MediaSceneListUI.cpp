@@ -41,27 +41,11 @@ void UUIC_MediaSceneListUI::OnPushUI()
 	SceneListView->GetSceneImage()->SetBrushFromMaterial(
 		MediaSceneData.GetSceneMedia().GetSceneMediaTexture());
 
-	// 혹시 이미 재생중이면 일시정지 후 종료로 초기화한다.
-	if (MediaPlayer->IsPlaying())
-	{
-		// 정상적인 종료가 아니기에 Delegate를 날려준다.
-		MediaPlayer->OnEndReached.Clear();
+	MediaPlayer->OnMediaOpened.AddUniqueDynamic(
+		this, &ThisClass::OnOpenedMediaScene);
 
-		MediaPlayer->Pause();
-		MediaPlayer->Close();
-	}
-
-	// Delegate 에 대한 설정이 없다면 여기서 처리해준다.
-	if (!MediaPlayer->OnMediaOpened.IsBound())
-	{
-		MediaPlayer->OnMediaOpened.AddDynamic(
-			this, &ThisClass::OnOpenedMediaScene);
-	}
-
-	if (!MediaPlayer->OnEndReached.IsBound())
-	{
-		MediaPlayer->OnEndReached.AddDynamic(this, &ThisClass::OnEndMediaScene);
-	}
+	MediaPlayer->OnEndReached.AddUniqueDynamic(
+		this, &ThisClass::OnEndMediaScene);
 
 	// 미디어 재생 준비를 시전한다.
 	MediaPlayer->OpenSource(
@@ -80,7 +64,10 @@ void UUIC_MediaSceneListUI::OnOpenedMediaScene(FString OpenUrl)
 			SceneListModel->GetCurrentSceneId());
 
 	// 미디어를 재생한다.
-	MediaSceneData.GetSceneMedia().GetSceneMediaPlayer()->Play();
+	if (!MediaSceneData.GetSceneMedia().GetSceneMediaPlayer()->Rewind())
+	{
+		MediaSceneData.GetSceneMedia().GetSceneMediaPlayer()->Play();
+	}
 
 	// 미디어에 맞는 소리 또한 세팅해주고 재생해준다.
 	Player->GetMediaSoundComponent()->SetMediaPlayer(
