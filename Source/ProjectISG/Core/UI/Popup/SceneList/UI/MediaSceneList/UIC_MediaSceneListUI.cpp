@@ -90,7 +90,7 @@ void UUIC_MediaSceneListUI::OnOpenedMediaScene(FString OpenUrl)
 
 void UUIC_MediaSceneListUI::OnEndMediaScene()
 {
-	ResetUIFromPlayerController();
+	UE_LOG(LogTemp, Warning, TEXT("onEndMediaScene"));
 
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		GetView()->GetOwningPlayerPawn());
@@ -98,6 +98,7 @@ void UUIC_MediaSceneListUI::OnEndMediaScene()
 
 	if (OnEndMediaSceneNotified.IsBound())
 	{
+		ResetUIFromPlayerController();
 		OnEndMediaSceneNotified.Execute();
 		OnEndMediaSceneNotified.Clear();
 	}

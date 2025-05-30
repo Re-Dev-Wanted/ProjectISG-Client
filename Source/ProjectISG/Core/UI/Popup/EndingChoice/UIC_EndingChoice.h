@@ -25,6 +25,12 @@ protected:
 
 	UFUNCTION()
 	void MoveToLobby();
+
+	UFUNCTION()
+	void EndingLeaveSceneStart();
+
+	UFUNCTION()
+	void EndingRemainSceneStart();
 private:
 	
 };

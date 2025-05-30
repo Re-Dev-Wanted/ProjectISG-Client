@@ -8,6 +8,7 @@
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Contents/Diary/Component/DiaryComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Systems/Logging/LoggingEnum.h"
 #include "ProjectISG/Systems/Logging/LoggingStruct.h"
 #include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
@@ -83,8 +84,6 @@ void USleepManager::ForceSleep()
 {
 	if (TimeManager->GetHour() >= 23)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ForceSleep()"));
-
 		// 시간을 멈춘다
 		TimeManager->StopTime(true);
 
@@ -186,8 +185,11 @@ void USleepManager::AssignBedEachPlayer()
 		ABed* bed = Cast<ABed>(Beds[idx]);
 		AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(
 			PlayerState->GetPawn());
+		AMainPlayerController* PC = Cast<AMainPlayerController>(player->GetController());
+
 		if (player && bed)
 		{
+			PC->PushUI(EUIName::Modal_TempLoadingUI);
 			bed->SetMainPlayer(player);
 			player->SetbIsSleep(true);
 			player->SetbLieInBed(true);
@@ -208,9 +210,11 @@ void USleepManager::ChangeAllPlayerSleepValue(bool value)
 	{
 		AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(
 			PlayerState->GetPawn());
+		AMainPlayerController* PC = Cast<AMainPlayerController>(player->GetController());
 		if (player)
 		{
 			player->SetbIsSleep(value);
+			PC->PushUI(EUIName::Modal_TempLoadingUI);
 		}
 	}
 }
@@ -254,6 +258,7 @@ bool USleepManager::CheckAllPlayerWriteDiary()
 	{
 		AMainPlayerCharacter* player = Cast<AMainPlayerCharacter>(
 			PlayerState->GetPawn());
+		AMainPlayerController* PC = Cast<AMainPlayerController>(player->GetController());
 		if (player)
 		{
 			if (player->GetDiaryComponent()->GetbWriteDiary() == false)
