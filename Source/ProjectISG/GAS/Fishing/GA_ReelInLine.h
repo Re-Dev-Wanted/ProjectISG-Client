@@ -6,6 +6,7 @@
 #include "ProjectISG/GAS/Common/Ability/Utility/GA_BaseInputAbility.h"
 #include "GA_ReelInLine.generated.h"
 
+class AFishActor;
 class UAT_FailFishingCinematic;
 class UAT_SuccessFishingCinematic;
 class ULevelSequence;
@@ -43,11 +44,20 @@ protected:
 		meta = (AllowPrivateAccess = true))
 	TObjectPtr<ULevelSequence> FailFishingCinematic;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Options|Cinematic",
+		meta = (AllowPrivateAccess = true))
+	TSubclassOf<AFishActor> FishActorFactory;
+
 	UPROPERTY()
 	TObjectPtr<UAT_SuccessFishingCinematic> AT_SuccessFishingCinematic;
 
 	UPROPERTY()
 	TObjectPtr<UAT_FailFishingCinematic> AT_FailFishingCinematic;
+
+	UPROPERTY()
+	TObjectPtr<AFishActor> FishActor;
+
+	FTimerHandle TimerHandle;
 
 public:
 	UFUNCTION()

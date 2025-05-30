@@ -3,6 +3,7 @@
 #include "GA_ReelInLine.h"
 
 #include "Kismet/KismetSystemLibrary.h"
+#include "ProjectISG/Contents/Fishing/Props/FishActor.h"
 #include "ProjectISG/Contents/Fishing/Props/FishingRod.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
@@ -37,7 +38,7 @@ void UGA_ReelInLine::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 
-	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		ActorInfo->AvatarActor.Get());
 
 	if (!Player)
@@ -66,6 +67,32 @@ void UGA_ReelInLine::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 			AT_SuccessFishingCinematic->OnSuccessFishingCinematicEndNotified.
 								AddUniqueDynamic(this, &UGA_ReelInLine::OnEndCinematic);
 			AT_SuccessFishingCinematic->ReadyForActivation();
+
+			TWeakObjectPtr<AMainPlayerCharacter> WeakPlayer = Player;
+			TWeakObjectPtr<AFishingRod> WeakFishingRod = FishingRod;
+
+			GetWorld()->GetTimerManager().SetTimer
+			(
+				TimerHandle,
+				[this, WeakPlayer, WeakFishingRod]()
+				{
+					if (WeakPlayer.IsValid() && WeakFishingRod.IsValid())
+					{
+						FishActor = GetWorld()
+						->SpawnActor<AFishActor>(FishActorFactory);
+
+						FFishData FishData = WeakFishingRod.Get()->GetFishData();
+
+						FishActor->SetMesh(FishData.GetMesh());
+
+						FishActor->AttachToComponent(WeakPlayer.Get()->GetMesh(), 
+						FAttachmentTransformRules
+						::SnapToTargetNotIncludingScale, *FishData.GetSocketName());
+					}
+				},
+				1.f,
+				false
+			);
 		}
 		else
 		{
@@ -126,6 +153,18 @@ void UGA_ReelInLine::OnEndCinematic()
 		PC->GetUIManageComponent()->ResetWidget();
 	}
 
+	if (FishActor)
+	{
+		FishActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+		FishActor->Destroy();
+		FishActor = nullptr;
+	}
+
+	if (TimerHandle.IsValid())
+	{
+		TimerHandle.Invalidate();
+	}
+
 	TObjectPtr<ABaseActor> HeldItem = Player->GetHandSlotComponent()->
 	                                          GetHeldItem();
 
@@ -141,6 +180,7 @@ void UGA_ReelInLine::OnEndCinematic()
 		AFishingRod* FishingRod = const_cast<AFishingRod*>(ConstActor);
 
 		FishingRod->OnEndReelInLine(CurrentActorInfo->AvatarActor.Get());
+		
 	}
 
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true,

@@ -27,6 +27,7 @@ struct PROJECTISG_API FFishData : public FTableRowBase
 	GETTER(EFishGrade, Grade);
 	GETTER(float, WaitTimeMin)
 	GETTER(float, WaitTimeMax)
+	GETTER(FString, SocketName)
 
 protected:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -46,6 +47,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = 5.f, ClampMax = 20.f, AllowPrivateAccess = true))
 	float WaitTimeMax = 5.f;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	FString SocketName;
 
 public:
 	float GetWaitTime() const
