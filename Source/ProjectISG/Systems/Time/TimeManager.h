@@ -13,6 +13,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnContentRestrictionTimeReached);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnContentRestrictionCancelTimeReached);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnForceSleepTimeAlmostReached);
+
 
 UENUM(BlueprintType)
 enum class ETimeOfDay : uint8
@@ -45,6 +47,9 @@ protected:
 
 	UFUNCTION()
 	void ResetAllPlayerWidget();
+
+	UFUNCTION()
+	void PushSleepAlertWidget();
 
 private:
 	void UpdateCycleTime(float DeltaTime);
@@ -188,6 +193,9 @@ public:
 	UPROPERTY()
 	FOnContentRestrictionCancelTimeReached
 	OnContentRestrictionCancelTimeReached;
+
+	UPROPERTY()
+	FOnForceSleepTimeAlmostReached OnForceSleepTimeAlmostReached;
 
 	UPROPERTY(EditAnywhere)
 	bool bIsLobbyTimer = false;

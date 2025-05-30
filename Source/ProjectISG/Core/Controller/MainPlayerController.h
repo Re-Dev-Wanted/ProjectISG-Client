@@ -63,7 +63,10 @@ public:
 	GETTER_SETTER(bool, CustomQuestComplete)
 
 	UFUNCTION(Client, Reliable)
-	void Client_ResetWidgetAndPushTimeAlert();
+	void Client_ResetWidgetAndPushContentsTimeAlert();
+
+	UFUNCTION(Client, Reliable)
+	void Client_PushForceSleepTimeAlert();
 
 	UFUNCTION(Client, Reliable)
 	void Client_EndQuestToPlayer();
