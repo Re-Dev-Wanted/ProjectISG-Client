@@ -64,6 +64,41 @@ FString UItemManager::GetItemUsingType(const uint16 Id)
 	return ItemInfoData.GetConstData().FindRef(EConstDataKey::ItemUseType);
 }
 
+FString UItemManager::GetItemCategoryTextById(const uint16 Id)
+{
+	switch (GetItemInfoById(Id).GetItemType())
+	{
+	case EItemType::Undefined:
+		{
+			return TEXT("없음");
+		}
+	case EItemType::Build:
+		{
+			return TEXT("건축");
+		}
+	case EItemType::Consume:
+		{
+			return TEXT("소비");
+		}
+	case EItemType::Equipment:
+		{
+			return TEXT("장비");
+		}
+	case EItemType::Ingredient:
+		{
+			return TEXT("재료");
+		}
+	case EItemType::Interactive:
+		{
+			return TEXT("상호작용");
+		}
+	default:
+		{
+			return TEXT("없음");
+		}
+	}
+}
+
 bool UItemManager::IsItemCanHousing(const uint16 Id)
 {
 	const FItemInfoData ItemInfoData = GetItemInfoById(Id);
