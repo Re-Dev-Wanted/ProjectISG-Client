@@ -56,6 +56,8 @@ void ALootContainer::OnInteractive(AActor* Causer)
 		
 		if (Player->IsLocallyControlled())
 		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFX_Open, GetActorLocation(), 1, 1, 0.5f);
+			
 			PC->PushUI(EUIName::Popup_LootContainerUI);
 
 			UUIC_LootContainerUI* UIController = Cast<UUIC_LootContainerUI>

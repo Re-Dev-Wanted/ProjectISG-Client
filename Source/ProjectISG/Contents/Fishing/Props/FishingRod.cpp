@@ -4,6 +4,7 @@
 
 #include "Bobber.h"
 #include "CableComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Contents/Fishing/Managers/FishingManager.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
@@ -57,6 +58,8 @@ void AFishingRod::BeginPlay()
 		Bobber->AttachToComponent(PocketSocketComp,
 		                          FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
+		Bobber->SetActorHiddenInGame(true);
+
 		Thread->SetAttachEndTo(Bobber, TEXT("LineAttachPoint"));
 	}
 
@@ -83,6 +86,8 @@ void AFishingRod::OnStartFishing()
 	}
 
 	IsInWater = true;
+
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFX, Bobber->GetActorLocation());
 
 	//TODO: 물고기를 여기에서 정하지만 옮길 수도 있음
 	FishData = UFishingManager::GetRandomData();
@@ -176,6 +181,8 @@ void AFishingRod::OnEventFinish(bool bLoop)
 		Handle.Invalidate();
 	}
 
+Bobber->SetActorHiddenInGame(!bLoop);
+
 	IsBiteFish = false;
 	FishData = FFishData();
 
@@ -237,8 +244,10 @@ void AFishingRod::StartCasting(AActor* Causer, FVector Destination)
 	{
 		return;
 	}
+
+	Bobber->SetActorHiddenInGame(false);
 	
-	FVector EndLocation = Destination + Causer->GetActorForwardVector() *
+	FVector EndLocation = Destination + CastingStartPoint->GetForwardVector() *
 		CastingDistance;
 
 	Bobber->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);

@@ -45,6 +45,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<ABobber> BobberFactory;
 
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USoundBase> SFX;
+
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* SocketComp;
 

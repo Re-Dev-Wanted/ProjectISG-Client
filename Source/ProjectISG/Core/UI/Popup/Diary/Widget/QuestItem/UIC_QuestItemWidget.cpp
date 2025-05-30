@@ -21,6 +21,11 @@ void UUIC_QuestItemWidget::InitializeData(const FString& QuestId)
 	SetQuestStatus(QuestId);
 }
 
+void UUIC_QuestItemWidget::AppearUI()
+{
+	Super::AppearUI();
+}
+
 void UUIC_QuestItemWidget::OnClickQuestItemWidget()
 {
 	UUIC_QuestListUI* QuestListUIController = Cast<UUIC_QuestListUI>(
@@ -69,7 +74,7 @@ void UUIC_QuestItemWidget::SetQuestDefaultInformation(const FString& QuestId)
 	QuestItemWidget->GetMaxFinishQuestCount()->SetText(
 		FText::FromString(FString::FromInt(RequireQuestToClear)));
 
-	QuestItemWidget->GetQuestItemButton()->OnClicked.AddDynamic(
+	QuestItemWidget->GetQuestItemButton()->OnClicked.AddUniqueDynamic(
 		this, &ThisClass::OnClickQuestItemWidget);
 }
 

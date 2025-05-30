@@ -18,9 +18,9 @@ void UUIC_EndingChoice::AppearUI()
 	UUIV_EndingChoice* EndingChoiceView = Cast<UUIV_EndingChoice>(GetView());
 
 	// 버튼 바인드
-	EndingChoiceView->GetLeaveThisWorldButton()->OnClicked.AddDynamic(
+	EndingChoiceView->GetLeaveThisWorldButton()->OnClicked.AddUniqueDynamic(
 		this, &ThisClass::UUIC_EndingChoice::OnLeaveButtonClicked);
-	EndingChoiceView->GetRemainThisWorldButton()->OnClicked.AddDynamic(
+	EndingChoiceView->GetRemainThisWorldButton()->OnClicked.AddUniqueDynamic(
 		this, &ThisClass::UUIC_EndingChoice::OnRemainButtonClicked);
 }
 
