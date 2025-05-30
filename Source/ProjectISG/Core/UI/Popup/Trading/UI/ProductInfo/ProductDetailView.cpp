@@ -17,7 +17,7 @@ void UProductDetailView::UpdateUI(FString Name, FText Desc, uint32 Price,
 	UTexture2D* LoadedTexture = Image.LoadSynchronous();
 
 	ItemIcon->SetBrushFromTexture(LoadedTexture);
-	ProductPrice->SetText(FText::FromString(FString::FromInt(Price)));
+	ProductPrice->SetText(FText::AsNumber(Price));
 }
 
 void UProductDetailView::OnHide()

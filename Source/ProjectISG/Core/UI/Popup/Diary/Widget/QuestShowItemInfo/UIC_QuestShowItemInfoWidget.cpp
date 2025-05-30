@@ -11,12 +11,23 @@ void UUIC_QuestShowItemInfoWidget::SetShowItemInfo(FQuestRewardData& RewardData)
 	const UUIV_QuestShowItemInfoWidget* QuestShowItemInfoWidgetView = Cast<
 		UUIV_QuestShowItemInfoWidget>(GetView());
 
-	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(
-		RewardData.GetRewardItemOptions().GetItemId());
+	if (RewardData.GetRewardType() == EQuestRewardType::Gold)
+	{
+		QuestShowItemInfoWidgetView->GetIngredientThumbnail()->
+									 SetBrushFromSoftTexture(GoldIcon);
 
-	QuestShowItemInfoWidgetView->GetIngredientThumbnail()->
-	                             SetBrushFromSoftTexture(
-		                             ItemInfoData.GetThumbnail());
-	QuestShowItemInfoWidgetView->GetCurrentIngredientCount()->SetText(
-		FText::AsNumber(RewardData.GetRewardItemOptions().GetItemCount()));
+		QuestShowItemInfoWidgetView->GetCurrentIngredientCount()->SetText(
+			FText::AsNumber(RewardData.GetRewardGoldOptions().GetGoldAmount()));
+	}
+	else
+	{
+		const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(
+			RewardData.GetRewardItemOptions().GetItemId());
+		
+		QuestShowItemInfoWidgetView->GetIngredientThumbnail()->
+									 SetBrushFromSoftTexture(
+										 ItemInfoData.GetThumbnail());
+		QuestShowItemInfoWidgetView->GetCurrentIngredientCount()->SetText(
+			FText::AsNumber(RewardData.GetRewardItemOptions().GetItemCount()));
+	}
 }

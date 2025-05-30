@@ -49,7 +49,7 @@ void UUIV_ProductBuyNotification::OnInitialize()
 			Title->SetText(FText::FromString(FString::Printf(TEXT("판매하기: %s"), *ItemInfoData.GetDisplayName())));
 	
 			uint32 Price = ProductStruct.GetProductPrice() * ProductStruct.GetSellPriceRatio();
-			Button->GetText()->SetText(FText::FromString(FString::FromInt(Price)));
+			Button->GetText()->SetText(FText::AsNumber(Price));
 			
 			if (PS)
 			{
@@ -63,7 +63,7 @@ void UUIV_ProductBuyNotification::OnInitialize()
 			Title->SetText(FText::FromString(FString::Printf(TEXT("구매하기: %s"), *ItemInfoData.GetDisplayName())));
 			
 			uint32 Price = ProductStruct.GetProductPrice() * ProductStruct.GetBuyPriceRatio();
-			Button->GetText()->SetText(FText::FromString(FString::FromInt(Price)));
+			Button->GetText()->SetText(FText::AsNumber(Price));
 			
 			if (PS)
 			{
@@ -114,13 +114,13 @@ void UUIV_ProductBuyNotification::OnCountValueChanged(float Value)
 			uint32 Price = ProductStruct.GetProductPrice() * 
 			ProductStruct.GetSellPriceRatio() * PriceRatio * Count;
 		
-			Button->GetText()->SetText(FText::FromString(FString::FromInt(Price)));
+			Button->GetText()->SetText(FText::AsNumber(Price));
 		}
 			break;
 		default:
 		{
 			uint32 Price = ProductStruct.GetProductPrice() * ProductStruct.GetBuyPriceRatio() * Count;
-			Button->GetText()->SetText(FText::FromString(FString::FromInt(Price)));
+			Button->GetText()->SetText(FText::AsNumber(Price));
 		}
 		break;
 	}

@@ -51,8 +51,7 @@ void UUIC_ProductInfoWidget::SetProductInfo(const uint32 ProductId, const uint32
 		FText::FromString(ItemInfoData.GetDisplayName()));
 
 	uint32 ProductPrice = UTradingManager::GetProductPriceById(ProductId) * Ratio;
-	FString Str = FString::FromInt(ProductPrice);
-	ProductInfoWidget->GetProductPrice()->SetText(FText::FromString(Str));
+	ProductInfoWidget->GetProductPrice()->SetText(FText::AsNumber(ProductPrice));
 }
 
 void UUIC_ProductInfoWidget::OnSelectProductData()

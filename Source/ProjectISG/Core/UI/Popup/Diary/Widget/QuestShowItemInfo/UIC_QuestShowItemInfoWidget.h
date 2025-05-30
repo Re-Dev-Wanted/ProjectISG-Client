@@ -11,6 +11,10 @@ class PROJECTISG_API UUIC_QuestShowItemInfoWidget : public UBaseUIController
 {
 	GENERATED_BODY()
 
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = Option)
+	TSoftObjectPtr<UTexture2D> GoldIcon;
+
 public:
 	void SetShowItemInfo(FQuestRewardData& RewardData);
 };
