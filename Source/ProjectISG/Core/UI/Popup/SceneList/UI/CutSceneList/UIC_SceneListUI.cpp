@@ -154,7 +154,9 @@ void UUIC_SceneListUI::MoveToNextScene()
 void UUIC_SceneListUI::OnEndSceneList()
 {
 	GetWorld()->GetTimerManager().ClearTimer(SceneCutChangeTimerHandle);
-	ResetUIFromPlayerController();
+	//ResetUIFromPlayerController();
+	// AMainPlayerController* PC = Cast<AMainPlayerController>(GetPlayerController());
+	// PC->PopUI();
 
 	if (OnSceneListEndNotified.IsBound())
 	{

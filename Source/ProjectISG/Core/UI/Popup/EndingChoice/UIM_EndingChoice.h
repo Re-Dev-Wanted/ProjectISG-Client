@@ -19,6 +19,7 @@ public:
 	GETTER(FString, LeaveScene)
 	GETTER(FString, RemainScene)
 	GETTER(TSoftObjectPtr<UWorld>, LobbyLevel)
+	GETTER(FString, EndingVideoScene)
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -26,6 +27,9 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	FString RemainScene;
+
+	UPROPERTY(EditAnywhere)
+	FString EndingVideoScene;
 	
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UWorld> LobbyLevel;
