@@ -1,8 +1,6 @@
 ﻿#include "Bobber.h"
 
 #include "Components/BoxComponent.h"
-#include "Engine/AssetManager.h"
-#include "Engine/StreamableManager.h"
 #include "Kismet/GameplayStatics.h"
 
 ABobber::ABobber()
@@ -57,17 +55,17 @@ void ABobber::OnBite(UStaticMesh* Fish)
 
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFX_Bite, GetActorLocation());
 
-	FishMeshComp->SetStaticMesh(Fish);
-	FTransform Pivot = FishMeshComp->GetSocketTransform(TEXT("BiteSocket"), RTS_Component);
-	FishMeshComp->SetRelativeLocation(-(Pivot.GetLocation() * 0.5f));
+	// FishMeshComp->SetStaticMesh(Fish);
+	// FTransform Pivot = FishMeshComp->GetSocketTransform(TEXT("BiteSocket"), RTS_Component);
+	// FishMeshComp->SetRelativeLocation(-(Pivot.GetLocation() * 0.5f));
 }
 
 void ABobber::RemoveFish()
 {
-	if (FishMeshComp)
-	{
-		FishMeshComp->SetStaticMesh(nullptr);
-	}
+	// if (FishMeshComp)
+	// {
+	// 	FishMeshComp->SetStaticMesh(nullptr);
+	// }
 }
 
 float ABobber::GetBuoyancyScale() const
