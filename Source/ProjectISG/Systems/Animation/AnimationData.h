@@ -16,6 +16,8 @@ enum class EAnimMontageKey : uint8
 	Farming_Watering,
 	Sleep_Lying,
 	Sleep_WakeUp,
+	Crafting,
+	Idle_OnTable
 };
 
 UENUM()
