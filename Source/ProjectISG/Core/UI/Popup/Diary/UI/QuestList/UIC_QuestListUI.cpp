@@ -50,6 +50,7 @@ void UUIC_QuestListUI::AppearUI()
 		FText::FromString(FSessionUtil::GetCurrentId(GetWorld())));
 
 	InitializeQuestList();
+	
 }
 
 void UUIC_QuestListUI::BindInputAction(UEnhancedInputComponent* InputComponent)
@@ -98,7 +99,7 @@ void UUIC_QuestListUI::InitializeQuestList()
 		QuestListUIView->GetQuestListView()->AddItem(QuestItemWidgetObject);
 	}
 
-	SetQuestInfoData(QuestListUIModel->GetCurrentSelectQuestId());
+	SetQuestInfo(QuestListUIModel->GetCurrentSelectQuestId());
 }
 
 void UUIC_QuestListUI::SetQuestInfoData(const FString& QuestId)
