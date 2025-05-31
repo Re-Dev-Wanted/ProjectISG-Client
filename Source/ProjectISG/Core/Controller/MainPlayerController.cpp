@@ -41,6 +41,7 @@ void AMainPlayerController::BeginPlay()
 			GetUIManageComponent()->ControllerInstances[
 				EUIName::Popup_SceneListUI]);
 		SceneListUIController->OnSceneListEndNotified.BindUObject(
+			
 			this, &ThisClass::MainSceneEnd);
 	}
 }
