@@ -22,7 +22,7 @@ void ULootContainerInventoryList::NativePreConstruct()
 		ULootContainerItemSlot* NewSlot = CreateWidget<ULootContainerItemSlot>(
 			this, InventorySlotClass);
 		
-		NewSlot->SetPadding(4);
+		// NewSlot->SetPadding(4);
 
 		InventoryList->AddChildToGrid(NewSlot, i / ListColumn, i % ListColumn);
 	}
@@ -42,7 +42,7 @@ void ULootContainerInventoryList::UpdateItemData()
 	{
 		ULootContainerItemSlot* NewSlot = CreateWidget<ULootContainerItemSlot>(
 			this, InventorySlotClass);
-		NewSlot->SetPadding(4);
+		// NewSlot->SetPadding(4);
 
 		InventoryList->AddChildToGrid(NewSlot, (i - StartIndex) / ListColumn,
 									  (i - StartIndex) % ListColumn);

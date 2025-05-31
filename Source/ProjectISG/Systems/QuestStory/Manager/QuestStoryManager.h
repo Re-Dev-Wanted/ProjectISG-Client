@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Systems/QuestStory/QuestStoryData.h"
 #include "UObject/Object.h"
 #include "QuestStoryManager.generated.h"
@@ -22,11 +23,25 @@ public:
 	static TArray<FQuestRequireData> GetRequireQuestDataById(
 		const FString& QuestId);
 
+	static TArray<FQuestRewardData> GetRewardQuestDataById(
+		const FString& QuestId);
+
 	static uint32 GetRequireQuestDateToAbleFinish(
 		const AMainPlayerController* PC, const FString& QuestId);
 
-	static bool CheckAndCompleteQuest(AMainPlayerController* PC,
-	                                  const FString& QuestId);
+	static bool IsHiddenInQuestBook(const FString& QuestId);
+
+	static bool CheckAndCompleteDialogueQuest(AMainPlayerController* PC
+	                                          , const FString& QuestId);
+
+	static bool CheckAndCompleteQuest(AMainPlayerController* PC
+	                                  , const FString& QuestId);
+
+	static bool CheckCompleteQuest(AMainPlayerController* PC
+	                               , const FString& QuestId);
+
+	static bool CheckAndCompleteCustomQuest(AMainPlayerController* PC,
+	                                        const FString& QuestId);
 
 	static FORCEINLINE TArray<FQuestStoryData>& GetAllQuestData()
 	{
@@ -40,20 +55,26 @@ private:
 	static TArray<FQuestStoryData> QuestArrayList;
 	static TMap<FString, TArray<FQuestStoryDialogue>> QuestDialogueData;
 	static TMap<FString, FQuestSceneCutData> QuestSceneCutData;
-	static TMap<FString, FQuestItemReward> QuestRewardItemData;
+	static TMap<FString, TArray<FQuestRewardData>> QuestRewardData;
 	static TMap<FString, TArray<FQuestRequireData>> QuestRequireData;
 
 	static void InitializeQuestData();
 	static void InitializeQuestRequireData();
+	static void InitializeQuestRewardData();
 	static void InitializeQuestDialogue();
 	static void InitializeQuestSceneCut();
 
-	static TArray<FString>
-	GetQuestRequiredItemTableById(const FString& QuestId);
+	// private 함수인만큼 퀘스트 조건에 대한 검증을 하지 않는다.
+	// 사용에 주의하길 바람
+	static void CompleteQuest_Internal(AMainPlayerController* PC
+	                                   , const FString& QuestId);
 
-	static void CompleteQuest_Internal(AMainPlayerController* PC,
-	                                   const FString& QuestId);
+	static void GiveRewardQuest_Internal(AMainPlayerController* PC
+	                                     , const FString& QuestId);
 
-	static void GiveRewardQuest_Internal(AMainPlayerController* PC,
-	                                     const FString& QuestId);
+	static void FormattingRequireItem(FQuestRequireData& RequireData,
+	                                  FItemMetaInfo& ItemMetaInfo);
+
+	static bool IsExactRequireItemOption(AMainPlayerController* PC,
+	                                     FQuestRequireData& RequireData);
 };

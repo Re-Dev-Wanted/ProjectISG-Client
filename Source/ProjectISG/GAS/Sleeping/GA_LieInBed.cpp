@@ -5,9 +5,13 @@
 
 #include "AbilitySystemComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
+#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
 #include "ProjectISG/Systems/Animation/Manager/AnimMontageManager.h"
+#include "ProjectISG/Systems/Grid/Components/PlacementIndicatorComponent.h"
 #include "ProjectISG/Systems/Time/Bed.h"
 #include "ProjectISG/Utils/EnumUtil.h"
 
@@ -36,6 +40,14 @@ void UGA_LieInBed::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		const ABed* Bed = Cast<ABed>(Target);
 		Bed->SetCollisionEnabled(false);
 	}
+
+	if (Player->IsLocallyControlled())
+	{
+		Player->GetInteractionComponent()->SetIsInteractive(false);
+		Player->GetPlacementIndicatorComponent()->SetIsActive(false);
+	}
+
+	Player->GetHandSlotComponent()->ToggleShowItem(false);
 
 	AT_LyingAnim = UPlayMontageWithEvent::InitialEvent
 	(

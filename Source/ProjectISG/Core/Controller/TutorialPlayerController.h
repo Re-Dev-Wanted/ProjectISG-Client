@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "MainPlayerController.h"
+#include "OnlineSessionSettings.h"
 #include "TutorialPlayerController.generated.h"
 
 /**
@@ -27,10 +28,13 @@ public:
 	
 	void StartScene6(bool IsServerTravel);
 
-public:
-	UPROPERTY(EditAnywhere, Category = Settings)
-	TSoftObjectPtr<UWorld> MoveLevel;
+	UFUNCTION(BlueprintCallable)
+	void LoadingNextLevel(TSoftObjectPtr<UWorld> Level);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetVisibleGuideLine();
+
+public:
 	UPROPERTY(EditAnywhere, Category = Settings)
 	FString StartSceneName;
 

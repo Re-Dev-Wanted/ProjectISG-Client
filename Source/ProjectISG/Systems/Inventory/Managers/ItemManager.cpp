@@ -64,6 +64,41 @@ FString UItemManager::GetItemUsingType(const uint16 Id)
 	return ItemInfoData.GetConstData().FindRef(EConstDataKey::ItemUseType);
 }
 
+FString UItemManager::GetItemCategoryTextById(const uint16 Id)
+{
+	switch (GetItemInfoById(Id).GetItemType())
+	{
+	case EItemType::Undefined:
+		{
+			return TEXT("없음");
+		}
+	case EItemType::Build:
+		{
+			return TEXT("건축");
+		}
+	case EItemType::Consume:
+		{
+			return TEXT("소비");
+		}
+	case EItemType::Equipment:
+		{
+			return TEXT("장비");
+		}
+	case EItemType::Ingredient:
+		{
+			return TEXT("재료");
+		}
+	case EItemType::Interactive:
+		{
+			return TEXT("상호작용");
+		}
+	default:
+		{
+			return TEXT("없음");
+		}
+	}
+}
+
 bool UItemManager::IsItemCanHousing(const uint16 Id)
 {
 	const FItemInfoData ItemInfoData = GetItemInfoById(Id);
@@ -125,7 +160,7 @@ bool UItemManager::IsInfiniteDurability(const uint16 Id)
 		return false;
 	}
 
-	int32 Num = FCString::Atoi(*FindDataRef);
+	const int32 Num = FCString::Atoi(*FindDataRef);
 
 	return Num < 0;
 }
@@ -220,12 +255,12 @@ EItemGrade UItemManager::GetItemGrade(const FItemMetaInfo& Info)
 	{
 		return EItemGrade::Common;
 	}
-	
+
 	if (Info.GetMetaData()[EMetaDataKey::ItemGrade] == TEXT("Uncommon"))
 	{
 		return EItemGrade::Uncommon;
 	}
-	
+
 	if (Info.GetMetaData()[EMetaDataKey::ItemGrade] == TEXT("Rare"))
 	{
 		return EItemGrade::Rare;
@@ -235,8 +270,8 @@ EItemGrade UItemManager::GetItemGrade(const FItemMetaInfo& Info)
 	{
 		return EItemGrade::Unique;
 	}
-	
-	
+
+
 	return EItemGrade::None;
 }
 
@@ -271,4 +306,19 @@ void UItemManager::SetItemGrade(FItemMetaInfo& Info, const EItemGrade ItemGrade)
 {
 	Info.GetMetaData().Add(EMetaDataKey::ItemGrade,
 	                       FEnumUtil::GetClassEnumKeyAsString(ItemGrade));
+}
+
+float UItemManager::GetPriceRatio(const FItemMetaInfo& Info)
+{
+	switch (GetItemGrade(Info))
+	{
+	case EItemGrade::Uncommon:
+		return 1.2f;
+	case EItemGrade::Rare:
+		return 1.5f;
+	case EItemGrade::Unique:
+		return 2.0f;
+	default:
+		return 1.f;
+	}
 }

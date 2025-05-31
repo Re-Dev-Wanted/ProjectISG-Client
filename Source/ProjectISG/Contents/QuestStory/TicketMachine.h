@@ -14,6 +14,9 @@ class PROJECTISG_API ATicketMachine : public ABaseInteractiveActor
 public:
 	ATicketMachine();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetVisibleGuideLine();
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -22,6 +25,10 @@ protected:
 	virtual bool GetCanInteractive() const override;
 
 	virtual FString GetInteractiveDisplayText() const override;
+
+private:
+	void SetQuestInteractiveActorOverlayMaterial(bool value);
+
 
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
@@ -34,5 +41,13 @@ private:
 
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
 		Category = Setting)
+	FString NextQuest;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
+		Category = Setting)
 	bool bIsBoughtTicket = false;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
+		Category = Setting)
+	class UMaterial* QuestInteractMaterial;
 };

@@ -4,6 +4,7 @@
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
 #include "UIV_SelectedFoodDetailWidget.generated.h"
 
+class UImage;
 class UUIV_FoodIngredientInfoWidget;
 class UScrollBox;
 class UTextBlock;
@@ -18,6 +19,8 @@ public:
 	GETTER(TObjectPtr<UScrollBox>, IngredientListScroll)
 	GETTER(TSubclassOf<UUIV_FoodIngredientInfoWidget>
 			, FoodIngredientInfoWidgetClass)
+	GETTER(TObjectPtr<UTextBlock>, FoodDesc)
+	GETTER(TObjectPtr<UImage>, ItemIcon)
 
 protected:
 	virtual void NativePreConstruct() override;
@@ -25,6 +28,12 @@ protected:
 private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> SelectedFoodName;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> FoodDesc;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> ItemIcon;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UScrollBox> IngredientListScroll;

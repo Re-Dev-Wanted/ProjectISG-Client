@@ -11,7 +11,6 @@
 #include "ProjectISG/Contents/Diary/Component/DiaryComponent.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
-#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Base/Module/UI_HttpImage.h"
 #include "ProjectISG/Core/GameMode/MainGameState.h"
 #include "ProjectISG/Systems/Time/TimeManager.h"
@@ -81,7 +80,7 @@ void UUIC_DiaryEditUI::OnClickToSaveDiary()
 	{
 		AMainPlayerController* PC = Cast<AMainPlayerController>(
 			GetView()->GetOwningPlayer());
-		PC->PopUI();
+		PC->GetUIManageComponent()->ResetWidget();
 		// TODO: 여기에 일기 저장 이후 추가 로직 필요하면 작성할 것
 	});
 

@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "OnlineSessionSettings.h"
 #include "GameFramework/PlayerController.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
 #include "ProjectISG/Utils/MacroUtil.h"
@@ -32,8 +31,8 @@ public:
 	void PopUI();
 
 	UFUNCTION(BlueprintCallable)
-	void Alert(const EAlertType AlertType, const FString& Message,
-	           const float Time = 2.f);
+	void Alert(const EAlertType AlertType, const FString& Message
+	           , const float Time = 2.f);
 
 	// 월드 퀘스트 실행
 	UFUNCTION(BlueprintCallable)
@@ -42,6 +41,9 @@ public:
 	// 특정 플레이어에게만 특정 퀘스트를 진행 시킴
 	UFUNCTION(BlueprintCallable)
 	void StartQuestToPlayer(const FString& QuestId);
+
+	UFUNCTION(BlueprintCallable)
+	void EndQuest();
 
 	UFUNCTION(Client, Reliable)
 	void Client_StartQuestToPlayer(const FString& QuestId);
@@ -58,9 +60,16 @@ public:
 
 	GETTER(TObjectPtr<UUIManageComponent>, UIManageComponent)
 	GETTER(TObjectPtr<UQuestManageComponent>, QuestManageComponent)
+	GETTER_SETTER(bool, CustomQuestComplete)
 
 	UFUNCTION(Client, Reliable)
-	void Client_ResetWidgetAndPushTimeAlert();
+	void Client_ResetWidgetAndPushContentsTimeAlert();
+
+	UFUNCTION(Client, Reliable)
+	void Client_PushForceSleepTimeAlert();
+
+	UFUNCTION(Client, Reliable)
+	void Client_EndQuestToPlayer();
 
 #pragma region SetOwner
 	UFUNCTION(Server, Reliable)
@@ -72,15 +81,23 @@ protected:
 
 	virtual void OnRep_PlayerState() override;
 
+	UFUNCTION()
+	void MainSceneEnd();
+
 private:
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly,
+		meta = (AllowPrivateAccess = true))
 	TObjectPtr<UUIManageComponent> UIManageComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly
+		, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UQuestManageComponent> QuestManageComponent;
 
 #pragma region Quest
 	UFUNCTION(Server, Reliable)
 	void Server_StartQuest(const FString& QuestId);
+
+	UPROPERTY(EditAnywhere)
+	bool CustomQuestComplete = false;
 #pragma endregion
 };

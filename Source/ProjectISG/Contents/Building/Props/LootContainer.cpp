@@ -1,5 +1,6 @@
 #include "LootContainer.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
@@ -55,6 +56,8 @@ void ALootContainer::OnInteractive(AActor* Causer)
 		
 		if (Player->IsLocallyControlled())
 		{
+			UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFX_Open, GetActorLocation(), 1, 1, 0.5f);
+			
 			PC->PushUI(EUIName::Popup_LootContainerUI);
 
 			UUIC_LootContainerUI* UIController = Cast<UUIC_LootContainerUI>
@@ -73,7 +76,7 @@ void ALootContainer::OnInteractive(AActor* Causer)
 				}
 			);
 
-			UIController->SetContainer(FGuid(), OutDatas, this);
+			UIController->SetContainer(OutDatas, this, this);
 		}
 	}
 }
@@ -172,6 +175,8 @@ FItemMetaInfo ALootContainer::GetItemMetaInfo(const uint16 Index)
 
 void ALootContainer::OnClosed()
 {
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFX_Close, GetActorLocation());
+	
 	if (!IsValid(GetInteractingPlayer()))
 	{
 		return;

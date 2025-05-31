@@ -6,8 +6,7 @@
 #include "Components/TextBlock.h"
 #include "Views/LootContainerListView.h"
 
-void UUIV_LootContainerUI::SetContainer(FGuid Guid, const TArray<FItemMetaInfo>& Items, TScriptInterface<IItemHandler> Handler) const
+void UUIV_LootContainerUI::SetContainer(const TArray<FItemMetaInfo>& Items, TScriptInterface<IItemHandler> Handler) const
 {
-	GuidText->SetText(FText::FromString(Guid.ToString(EGuidFormats::Digits)));
-	ContainerView->SetContainerInfo(InventorySlotClass, Items, Guid, Handler);
+	ContainerView->SetContainerInfo(InventorySlotClass, Items, Handler);
 }

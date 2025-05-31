@@ -127,6 +127,9 @@ struct PROJECTISG_API FPostMbtiAskResponse
 
 	UPROPERTY()
 	bool completed = false;
+
+	UPROPERTY()
+	int q_num = 1;
 };
 
 USTRUCT()

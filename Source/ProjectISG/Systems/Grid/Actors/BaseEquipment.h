@@ -14,9 +14,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	
-	UPROPERTY(VisibleAnywhere)
-	class USceneComponent* AnchorComp;
 
 	UPROPERTY(VisibleAnywhere)
 	class UStaticMeshComponent* MeshComp;

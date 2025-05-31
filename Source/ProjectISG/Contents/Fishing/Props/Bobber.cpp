@@ -1,8 +1,6 @@
 ﻿#include "Bobber.h"
 
 #include "Components/BoxComponent.h"
-#include "Engine/AssetManager.h"
-#include "Engine/StreamableManager.h"
 #include "Kismet/GameplayStatics.h"
 
 ABobber::ABobber()
@@ -10,28 +8,30 @@ ABobber::ABobber()
 	LineAttachPoint = CreateDefaultSubobject<USceneComponent>(TEXT("LineAttachPoint"));
 	LineAttachPoint->SetupAttachment(MeshComponent);
 
-	FishMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("FishMesh"));
-	FishMesh->SetupAttachment(RootComponent);
+	FishMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FishMesh"));
+	FishMeshComp->SetupAttachment(RootComponent);
+	FishMeshComp->SetRelativeScale3D(FVector::OneVector * 0.5f);
 
 	Root->SetSimulatePhysics(false);
 }
 
 void ABobber::SuggestProjectileVelocity(const FVector& StartLocation, const FVector& EndLocation)
 {
-	// FVector Velocity;
+	FVector Velocity;
 
 	SetCollisionAndPhysicsEnabled(true);
 	
+	bool bSuggest = UGameplayStatics::SuggestProjectileVelocity_CustomArc(
+		this,
+		Velocity,
+		GetActorLocation(),
+		EndLocation,
+		GetWorld()->GetGravityZ(),
+		0.5f
+	);
 	
-	// bool bSuggest = UGameplayStatics::SuggestProjectileVelocity_CustomArc(
-	// 	this,
-	// 	Velocity,
-	// 	StartLocation,
-	// 	EndLocation,
-	// 	-980.f,
-	// 	0.9f
-	// );
-	//
+	Root->SetPhysicsLinearVelocity(Velocity);
+	
 	// if (bSuggest)
 	// {
 	// 	FPredictProjectilePathParams PredictParams(10.0f, StartLocation, Velocity, 5.0f);
@@ -43,7 +43,7 @@ void ABobber::SuggestProjectileVelocity(const FVector& StartLocation, const FVec
 	// }
 }
 
-void ABobber::OnBite(USkeletalMesh* Fish)
+void ABobber::OnBite(UStaticMesh* Fish)
 {
 	if (!Root->IsSimulatingPhysics())
 	{
@@ -53,15 +53,19 @@ void ABobber::OnBite(USkeletalMesh* Fish)
 	FVector Impulse = FVector::DownVector * ImpulseStrength;
 	Root->AddImpulse(Impulse);
 
-	FishMesh->SetSkeletalMesh(Fish);
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFX_Bite, GetActorLocation());
+
+	// FishMeshComp->SetStaticMesh(Fish);
+	// FTransform Pivot = FishMeshComp->GetSocketTransform(TEXT("BiteSocket"), RTS_Component);
+	// FishMeshComp->SetRelativeLocation(-(Pivot.GetLocation() * 0.5f));
 }
 
 void ABobber::RemoveFish()
 {
-	if (FishMesh)
-	{
-		FishMesh->SetSkeletalMesh(nullptr);
-	}
+	// if (FishMeshComp)
+	// {
+	// 	FishMeshComp->SetStaticMesh(nullptr);
+	// }
 }
 
 float ABobber::GetBuoyancyScale() const

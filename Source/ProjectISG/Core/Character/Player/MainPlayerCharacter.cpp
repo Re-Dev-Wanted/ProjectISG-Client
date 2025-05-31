@@ -1,6 +1,7 @@
 ﻿#include "MainPlayerCharacter.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "MediaSoundComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Component/InputActionComponent.h"
 #include "Component/InteractionComponent.h"
@@ -55,22 +56,24 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	InteractionComponent = CreateDefaultSubobject<UInteractionComponent>(
 		"Interaction Component");
 
-	HandSlotComponent = CreateDefaultSubobject<UPlayerHandSlotComponent>
-		("Hand Slot Component");
+	HandSlotComponent = CreateDefaultSubobject<UPlayerHandSlotComponent>(
+		"Hand Slot Component");
 
-	InputActionComponent = CreateDefaultSubobject<UInputActionComponent>
-		("Input Action Component");
+	InputActionComponent = CreateDefaultSubobject<UInputActionComponent>(
+		"Input Action Component");
 
-	DiaryComponent = CreateDefaultSubobject<
-		UDiaryComponent>("Diary Component");
+	DiaryComponent = CreateDefaultSubobject<UDiaryComponent>("Diary Component");
+
+	MediaSoundComponent = CreateDefaultSubobject<UMediaSoundComponent>(
+		"Media Sound Component");
+	MediaSoundComponent->SetupAttachment(GetRootComponent());
 }
 
 void AMainPlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (const APlayerController* PC = Cast<APlayerController>(
-		GetController()))
+	if (const APlayerController* PC = Cast<APlayerController>(GetController()))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
 			ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
@@ -78,14 +81,6 @@ void AMainPlayerCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
-	}
-
-	if (HasAuthority() && IsLocallyControlled())
-	{
-		FString SessionId = GetWorld()->GetGameInstance<UISGGameInstance>()->
-		                                GetSessionId();
-		GetWorld()->GetGameState<AMainGameState>()->SetSessionId(SessionId);
-		UE_LOG(LogTemp, Warning, TEXT("세션 복사 : %s"), *SessionId);
 	}
 }
 
@@ -154,12 +149,12 @@ void AMainPlayerCharacter::SetupPlayerInputComponent(
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<
 		UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(MoveInputAction,
-		                                   ETriggerEvent::Triggered
-		                                   , this, &ThisClass::MoveTo);
-		EnhancedInputComponent->BindAction(LookInputAction,
-		                                   ETriggerEvent::Triggered
-		                                   , this, &ThisClass::Look);
+		EnhancedInputComponent->BindAction(MoveInputAction
+											, ETriggerEvent::Triggered, this
+											, &ThisClass::MoveTo);
+		EnhancedInputComponent->BindAction(LookInputAction
+											, ETriggerEvent::Triggered, this
+											, &ThisClass::Look);
 
 		OnInputBindingNotified.Broadcast(EnhancedInputComponent);
 	}

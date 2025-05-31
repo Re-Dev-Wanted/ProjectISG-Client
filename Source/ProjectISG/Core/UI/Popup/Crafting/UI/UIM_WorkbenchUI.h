@@ -17,11 +17,10 @@ struct FCraftingMaterialUIModel
 	FString Name;
 
 	UPROPERTY()
-	TSoftObjectPtr<UTexture> Thumbnail;
+	TSoftObjectPtr<UTexture2D> Thumbnail;
 
 	UPROPERTY()
 	uint16 RequiredCount;
-	
 };
 
 USTRUCT(BlueprintType)
@@ -39,7 +38,10 @@ struct FCraftingRecipeUIModel
 	FString ItemName;
 
 	UPROPERTY()
-	TSoftObjectPtr<UTexture> Thumbnail;
+	FText ItemDesc;
+
+	UPROPERTY()
+	TSoftObjectPtr<UTexture2D> Thumbnail;
 
 	UPROPERTY()
 	TMap<uint16, FCraftingMaterialUIModel> RequiredMaterials;
@@ -66,13 +68,14 @@ class PROJECTISG_API UUIM_WorkbenchUI : public UBaseUIModel
 public:
 	GETTER(TArray<FCraftingRecipeUIModel>, Recipes)
 	GETTER(uint16, SelectedRecipeId)
-	
+
 	void LoadAll();
 
 	FCraftingRecipeUIModel GetRecipeUIModel(uint16 RecipeId) const;
 
 private:
-	TMap<uint16, FCraftingMaterialUIModel> LoadMaterialsModel(TMap<uint16, uint16> Map);
+	TMap<uint16, FCraftingMaterialUIModel> LoadMaterialsModel(
+		TMap<uint16, uint16> Map);
 
 	TArray<FCraftingRecipeUIModel> Recipes;
 

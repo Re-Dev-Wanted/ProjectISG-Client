@@ -13,6 +13,7 @@ public:
 	static FItemInfoData& GetItemInfoById(const uint16 Id);
 	static FItemMetaInfo GetInitialItemMetaDataById(const uint16 Id);
 	static FString GetItemUsingType(const uint16 Id);
+	static FString GetItemCategoryTextById(const uint16 Id);
 	static bool IsItemCanHousing(const uint16 Id);
 	static bool IsItemCanInteraction(const uint16 Id);
 	static bool IsInfiniteDurability(const uint16 Id);
@@ -22,6 +23,7 @@ public:
 	static EItemGrade GetItemGrade(const FItemMetaInfo& Info);
 	static FString GetItemGradeText(const FItemMetaInfo& Info);
 	static void SetItemGrade(FItemMetaInfo& Info, const EItemGrade ItemGrade);
+	static float GetPriceRatio(const FItemMetaInfo& Info);
 
 private:
 	static TArray<FItemInfoData> ItemInfoList;

@@ -66,19 +66,19 @@ int32 UUIC_ProductSellNotification::FindItemPrice(
 	{
 		uint32 ProductId = UTradingManager::GetProductData()[i].GetProductId();
 
-		if (ProductId ==
-			TradingUIModel->GetClickedInventoryItem())
-		{
-			ProductPrice = CalcItemPriceByItemGrade(
-				UTradingManager::GetProductData()[i].
-				GetProductPrice());
-		}
+		// if (ProductId ==
+		// 	TradingUIModel->GetClickedInventoryItem())
+		// {
+		// 	ProductPrice = CalcItemPriceByItemGrade(
+		// 		UTradingManager::GetProductData()[i].
+		// 		GetProductPrice());
+		// }
 	}
 
 	AMainPlayerState* PS = GetPlayerController()->GetPlayerState<
 		AMainPlayerState>();
-	PS->GetInventoryComponent()->DropItem(
-		TradingUIModel->GetClickedInventorySlotIndex(), 1);
+	// PS->GetInventoryComponent()->DropItem(
+	// 	TradingUIModel->GetClickedInventorySlotIndex(), 1);
 	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		GetPlayerController()->GetPawn());
 	Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
@@ -103,41 +103,41 @@ int32 UUIC_ProductSellNotification::CalcItemPriceByItemGrade(
 	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(
 		TradingUIController->GetModel());
 
-	FItemMetaInfo ProductInfo = PS->GetInventoryComponent()->GetItemMetaInfo(
-		TradingUIModel->GetClickedInventorySlotIndex());
-	EItemGrade ProductGrade = UItemManager::GetItemGrade(ProductInfo);
-
-	float CalculatedPrice = 0;
-	switch (ProductGrade)
-	{
-	case EItemGrade::Common:
-		{
-			CalculatedPrice = ProductPrice;
-			break;
-		}
-	case EItemGrade::Uncommon:
-		{
-			CalculatedPrice = ProductPrice * 1.2f;
-			break;
-		}
-	case EItemGrade::Rare:
-		{
-			CalculatedPrice = ProductPrice * 1.5f;
-			break;
-		}
-	case EItemGrade::Unique:
-		{
-			CalculatedPrice = ProductPrice * 2.0f;
-			break;
-		}
-	case EItemGrade::None:
-		{
-			CalculatedPrice = ProductPrice;
-			break;
-		}
-	}
+	// FItemMetaInfo ProductInfo = PS->GetInventoryComponent()->GetItemMetaInfo(
+	// 	TradingUIModel->GetClickedInventorySlotIndex());
+	// EItemGrade ProductGrade = UItemManager::GetItemGrade(ProductInfo);
+	//
+	// float CalculatedPrice = 0;
+	// switch (ProductGrade)
+	// {
+	// case EItemGrade::Common:
+	// 	{
+	// 		CalculatedPrice = ProductPrice;
+	// 		break;
+	// 	}
+	// case EItemGrade::Uncommon:
+	// 	{
+	// 		CalculatedPrice = ProductPrice * 1.2f;
+	// 		break;
+	// 	}
+	// case EItemGrade::Rare:
+	// 	{
+	// 		CalculatedPrice = ProductPrice * 1.5f;
+	// 		break;
+	// 	}
+	// case EItemGrade::Unique:
+	// 	{
+	// 		CalculatedPrice = ProductPrice * 2.0f;
+	// 		break;
+	// 	}
+	// case EItemGrade::None:
+	// 	{
+	// 		CalculatedPrice = ProductPrice;
+	// 		break;
+	// 	}
+	// }
 	
-	return static_cast<int32>(CalculatedPrice);
+	return 0; //static_cast<int32>(CalculatedPrice);
 }
 
 void UUIC_ProductSellNotification::LoggingToSellItem()

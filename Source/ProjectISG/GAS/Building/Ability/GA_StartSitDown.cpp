@@ -3,16 +3,18 @@
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_WaitGameplayEvent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Modal/Interactive/UI/UIC_ExitInteractUI.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/PlayMontageWithEvent.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
+#include "ProjectISG/Systems/Animation/Manager/AnimMontageManager.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Components/PlacementIndicatorComponent.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 
 void UGA_StartSitDown::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                        const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
@@ -41,6 +43,8 @@ void UGA_StartSitDown::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		const APlacement* ConstPlacement = Cast<APlacement>(Target);
 		ConstPlacement->Multicast_SetCollisionEnabled(false);
 
+		Player->GetHandSlotComponent()->ToggleShowItem(false);
+
 		APlacement* Placement = const_cast<APlacement*>(ConstPlacement);
 		
 		FVector Point = Placement->GetStartInteractPoint();
@@ -55,7 +59,9 @@ void UGA_StartSitDown::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	(
 		this,
 		NAME_None,
-		StartSitDownMontage,
+		UAnimMontageManager::GetMontage(
+			Player->GetPlayerState<AMainPlayerState>(),
+			EAnimMontageKey::SitDown_Start),
 		FGameplayTagContainer(ISGGameplayTags::Building_Active_NotifySitDown),
 		FGameplayEventData()
 	);

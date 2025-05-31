@@ -19,31 +19,47 @@ enum class EQuestStoryObjective : uint8
 	// 단순 대사 완료 시 퀘스트 자동 완료
 	Dialogue,
 	// 특정 아이템을 수집해 가야 함.
-	CollectItem
+	CollectItem,
+	// 기타
+	Custom,
 };
 
 UENUM()
 enum class EQuestRequireType : uint8
 {
-	None,
-	HasItem,
-	HasGold,
-	Custom,
+	None, HasItem, HasGold, Custom, Interaction,
+};
+
+UENUM()
+enum class EQuestRewardType : uint8
+{
+	None, Item, Gold, Custom,
+};
+
+UENUM()
+enum class EQuestSceneType : uint8
+{
+	None, Image, Media
 };
 
 UENUM()
 enum class EQuestStoryMetaDataKey: uint8
 {
-	None,
-	RequireItem,
-	RemoveItemToClear,
-	NextQuest,
+	None, IsHideInQuestBook, RemoveItemToClear,
 };
 
 UENUM()
-enum class EQuestStoryRewardType: uint8
+enum class EQuestStatus: uint8
+{
+	None, Available UMETA(DisplayName = "진행 가능") ,
+	Unavailable UMETA(DisplayName = "진행 불가능") ,
+	InProgress UMETA(DisplayName = "진행 중") ,
+	CanComplete UMETA(DisplayName = "완료 가능") ,
+	Completed UMETA(DisplayName = "완료됨")};
+
+UENUM()
+enum class EQuestAdditiveItemMetaData
 {
 	None,
-	Item,
-	Gold,
+	IgnoreItemRank
 };

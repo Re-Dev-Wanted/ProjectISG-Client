@@ -30,7 +30,7 @@ UAbilitySystemComponent* AMainPlayerState::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-bool AMainPlayerState::CanBuyProduct(int32 ProductPrice)
+bool AMainPlayerState::CanBuyProduct(uint32 ProductPrice)
 {
 	if (Gold >= ProductPrice)
 	{

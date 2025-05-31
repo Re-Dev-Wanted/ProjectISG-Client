@@ -8,6 +8,8 @@
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIV_MainHUD.h"
+#include "ProjectISG/Core/UI/Gameplay/MainHUD/Widget/AlertModal/UIC_HUDAlertModalWidget.h"
+#include "ProjectISG/Core/UI/Gameplay/MainHUD/Widget/AlertModal/UIV_HUDAlertModalWidget.h"
 #include "ProjectISG/Core/UI/HUD/Time/UIC_Time.h"
 #include "ProjectISG/Core/UI/HUD/Time/UIM_Time.h"
 #include "ProjectISG/Core/UI/HUD/Time/UIV_Time.h"
@@ -73,11 +75,20 @@ void ATimeManager::BeginPlay()
 
 	OnContentRestrictionTimeReached.AddDynamic(
 		this, &ATimeManager::ResetAllPlayerWidget);
+	OnForceSleepTimeAlmostReached.AddDynamic(
+		this, &ATimeManager::PushSleepAlertWidget);
 }
 
 void ATimeManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (bIsLobbyTimer)
+	{
+		UpdateCycleTime(DeltaTime);
+		RotateSun();
+		return;
+	}
 
 	if (!TimeStop && !SleepManager->GetbSleepCinematicStart())
 	{
@@ -146,6 +157,16 @@ void ATimeManager::UpdateCycleTime(float DeltaTime)
 	{
 		Hour = 0;
 		UpdateCycleDate();
+	}
+
+	if (Hour == 22 && Minute == 0 && Second == 0)
+	{
+		OnForceSleepTimeAlmostReached.Broadcast();
+	}
+
+	if (Hour == 20 && Minute == 0 && Second == 0)
+	{
+		OnContentRestrictionTimeReached.Broadcast();
 	}
 }
 
@@ -270,7 +291,6 @@ void ATimeManager::UpdateTimeOfDay(ETimeOfDay TOD)
 			}
 		case ETimeOfDay::Night:
 			{
-				OnContentRestrictionTimeReached.Broadcast();
 				LoggingToNight();
 				break;
 			}
@@ -340,7 +360,27 @@ void ATimeManager::ResetAllPlayerWidget()
 			PlayerState->GetPlayerController());
 		if (PC)
 		{
-			PC->Client_ResetWidgetAndPushTimeAlert();
+			PC->Client_ResetWidgetAndPushContentsTimeAlert();
+		}
+	}
+}
+
+void ATimeManager::PushSleepAlertWidget()
+{
+	if (HasAuthority() == false)
+	{
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("test"));
+	AGameStateBase* GameState = GetWorld()->GetGameState();
+	for (APlayerState* PlayerState : GameState->PlayerArray)
+	{
+		AMainPlayerController* PC = Cast<AMainPlayerController>(
+			PlayerState->GetPlayerController());
+		if (PC)
+		{
+			PC->Client_PushForceSleepTimeAlert();
 		}
 	}
 }

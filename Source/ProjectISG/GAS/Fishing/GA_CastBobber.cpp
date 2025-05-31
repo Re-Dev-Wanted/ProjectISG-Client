@@ -64,7 +64,7 @@ void UGA_CastBobber::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		AT_StartFishingCinematic = UAT_StartFishingCinematic::InitialEvent(
 			this, StartFishingCinematic);
 
-		AT_StartFishingCinematic->OnStartFishingCinematicEndNotified.AddDynamic(
+		AT_StartFishingCinematic->OnStartFishingCinematicEndNotified.AddUniqueDynamic(
 			this, &UGA_CastBobber::OnEndCinematic);
 		AT_StartFishingCinematic->ReadyForActivation();
 

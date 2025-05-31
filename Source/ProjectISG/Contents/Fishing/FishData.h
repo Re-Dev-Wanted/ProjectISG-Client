@@ -23,10 +23,11 @@ struct PROJECTISG_API FFishData : public FTableRowBase
 
 	GETTER(uint16, Id);
 	GETTER(uint16, ItemId);
-	GETTER(TObjectPtr<USkeletalMesh>, Mesh);
+	GETTER(TObjectPtr<UStaticMesh>, Mesh);
 	GETTER(EFishGrade, Grade);
 	GETTER(float, WaitTimeMin)
 	GETTER(float, WaitTimeMax)
+	GETTER(FString, SocketName)
 
 protected:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -36,7 +37,7 @@ protected:
 	uint16 ItemId = 0;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
-	TObjectPtr<USkeletalMesh> Mesh;
+	TObjectPtr<UStaticMesh> Mesh;
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	EFishGrade Grade = EFishGrade::Common;
@@ -46,6 +47,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = 5.f, ClampMax = 20.f, AllowPrivateAccess = true))
 	float WaitTimeMax = 5.f;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	FString SocketName;
 
 public:
 	float GetWaitTime() const

@@ -44,7 +44,6 @@ enum class EConstDataKey : uint32
 	MaxDurability,
 	ItemUseType,
 	SocketName,
-	GameplayTag,
 	GeneratedItemId, // 해당 아이템이 다른 아이템을 만들 경우
 	ChanceBasedSpawnItemId, // 일정 확률로 스폰되는 아이템
 	ItemGrade,
@@ -57,7 +56,7 @@ struct PROJECTISG_API FItemInfoData : public FTableRowBase
 	GENERATED_USTRUCT_BODY()
 
 	GETTER(FString, DisplayName)
-	GETTER(FString, Description)
+	GETTER(FText, Description)
 	GETTER(EItemType, ItemType)
 	GETTER(TSoftObjectPtr<UTexture2D>, Thumbnail)
 	GETTER(TSubclassOf<AActor>, ShowItemActor)
@@ -80,8 +79,8 @@ private:
 	FString DisplayName;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Data",
-		meta=(AllowPrivateAccess = true))
-	FString Description;
+		meta=(AllowPrivateAccess = true, MultiLine = true))
+	FText Description;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Data",
 		meta=(AllowPrivateAccess = true))
@@ -123,7 +122,7 @@ private:
 USTRUCT(BlueprintType)
 struct PROJECTISG_API FItemMetaInfo
 {
-	GENERATED_USTRUCT_BODY()
+	GENERATED_BODY()
 
 	GETTER_SETTER(uint16, Id)
 	GETTER(uint32, CurrentCount)
@@ -202,6 +201,21 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Data")
 	TMap<EMetaDataKey, FString> MetaData;
 };
+
+// ItemMetaInfo의 TypeHash 처리
+FORCEINLINE uint32 GetTypeHash(const FItemMetaInfo& ItemMetaInfo)
+{
+	uint32 DefaultHash = 0;
+	DefaultHash = HashCombine(DefaultHash, GetTypeHash(ItemMetaInfo.GetId()));
+
+	// MetaData의 Key, Value를 각각 Combine시킨다.
+	for (TTuple<EMetaDataKey, FString> MetaData : ItemMetaInfo.GetMetaData())
+	{
+		DefaultHash = HashCombine(DefaultHash, GetTypeHash(MetaData));
+	}
+
+	return DefaultHash;
+}
 
 
 USTRUCT(BlueprintType)

@@ -20,7 +20,9 @@ class PROJECTISG_API UItemInfoWidget : public UUserWidget
 public:
 	FOnClickedSelectedButton OnClickedSelectedButton;
 
-	void SetWidget(uint16 DataId, const FString& Name, UTexture2D* Image, FOnSelectedCraftingRecipe OnSelectedRecipe);
+	void SetWidget(uint16 DataId, const FString& Name, FOnSelectedCraftingRecipe OnSelectedRecipe);
+
+	void SetImage(UTexture2D* Image);
 
 protected:
 	virtual void NativeConstruct() override;

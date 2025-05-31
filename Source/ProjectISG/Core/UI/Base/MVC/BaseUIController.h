@@ -25,13 +25,19 @@ public:
 	virtual void InitializeSettingToPlayerController(APlayerController* PC);
 
 	UFUNCTION()
-	virtual void PopUIFromPlayerController();
+	void PopUIFromPlayerController();
+
+	UFUNCTION()
+	void ResetUIFromPlayerController();
 
 	GETTER(TObjectPtr<UBaseUIView>, View)
 	GETTER_EDITABLE(TObjectPtr<UBaseUIModel>, Model)
 	GETTER(TObjectPtr<APlayerController>, PlayerController)
 
 	GETTER(EUILayer, CurrentLayer)
+
+	// UI Management Component랑 연동된 함수로, UI Stack에 Push가 이루어진 경우 호출되는 함수다.
+	virtual void OnPushUI();
 
 protected:
 	virtual void BindInputAction(UEnhancedInputComponent* InputComponent);
@@ -40,9 +46,6 @@ protected:
 
 	UFUNCTION()
 	virtual void AppearUI();
-
-	UE_DEPRECATED("5.5", "Parameter가 없는 AppearUI로 사용하는 것을 권장, 둘다 사용하는 것은 불가능")
-	virtual void AppearUI(const EUILayer Layer);
 
 	UFUNCTION()
 	virtual void DisappearUI();

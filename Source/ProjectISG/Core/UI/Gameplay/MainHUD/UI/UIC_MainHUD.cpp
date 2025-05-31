@@ -1,9 +1,9 @@
 ﻿#include "UIC_MainHUD.h"
 
-#include "UIM_MainHUD.h"
 #include "UIV_MainHUD.h"
 #include "Components/TextBlock.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Gameplay/QuestStory/Widget/AutoQuest/UIC_AutoQuestDialogueWidget.h"
@@ -22,14 +22,24 @@ void UUIC_MainHUD::AppearUI()
 	Super::AppearUI();
 
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
+	const AMainPlayerCharacter* Player = GetView()->GetOwningPlayerPawn<
+		AMainPlayerCharacter>();
+
 	MainHUDView->GetMainSlotList()->UpdateItemData();
-
-	const uint8 CurrentSlot = GetView()->GetOwningPlayerPawn<
-		                                     AMainPlayerCharacter>()->
-	                                     GetPlayerInventoryComponent()->
-	                                     GetCurrentSlotIndex();
-
+	const uint8 CurrentSlot = Player->GetPlayerInventoryComponent()->
+	                                  GetCurrentSlotIndex();
 	MainHUDView->GetMainSlotList()->SelectSlot(CurrentSlot, CurrentSlot);
+}
+
+void UUIC_MainHUD::DisappearUI()
+{
+	Super::DisappearUI();
+
+	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
+
+	Cast<UUIC_AutoQuestDialogueWidget>(
+			MainHUDView->GetAutoQuestDialogueWidget()->GetController())->
+		SkipQuestDialogue();
 }
 
 void UUIC_MainHUD::UpdateMainHotSlot() const
@@ -38,8 +48,8 @@ void UUIC_MainHUD::UpdateMainHotSlot() const
 	MainHUDView->GetMainSlotList()->UpdateItemData();
 }
 
-void UUIC_MainHUD::SelectSlot(const uint8 CurrentSlot,
-                              const uint8 NextSlot) const
+void UUIC_MainHUD::SelectSlot(const uint8 CurrentSlot
+                              , const uint8 NextSlot) const
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 	MainHUDView->GetMainSlotList()->SelectSlot(CurrentSlot, NextSlot);
@@ -54,8 +64,8 @@ void UUIC_MainHUD::ToggleInteractiveUI(const bool IsShow)
 	MainHUDView->GetInteractiveUI()->SetInteractive(IsShow);
 }
 
-void UUIC_MainHUD::ToggleInteractiveUI(const FString& DisplayKey,
-                                       const FString& DisplayText)
+void UUIC_MainHUD::ToggleInteractiveUI(const FString& DisplayKey
+                                       , const FString& DisplayText)
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 
@@ -63,8 +73,8 @@ void UUIC_MainHUD::ToggleInteractiveUI(const FString& DisplayKey,
 	MainHUDView->GetInteractiveUI()->SetInteractive(DisplayKey, DisplayText);
 }
 
-void UUIC_MainHUD::AdditiveToggleInteractiveUI(const FString& DisplayKey,
-                                               const FString& DisplayText)
+void UUIC_MainHUD::AdditiveToggleInteractiveUI(const FString& DisplayKey
+                                               , const FString& DisplayText)
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 
@@ -83,28 +93,23 @@ void UUIC_MainHUD::TogglePlacementIndicatorUI(const bool Visible)
 	MainHUDView->GetInteractiveUI()->SetPlacementIndicator(Visible);
 }
 
-void UUIC_MainHUD::StartAutoQuest(const FString& QuestId)
-{
-	UUIM_MainHUD* MainHUDModel = Cast<UUIM_MainHUD>(GetModel());
-	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
-
-	MainHUDModel->SetCurrentPlayingAutoQuestId(QuestId);
-	ToggleAutoQuestUI(true);
-
-	Cast<UUIC_AutoQuestDialogueWidget>(
-			MainHUDView->GetAutoQuestDialogueWidget()->GetController())->
-		StartQuestDialogue();
-
-	auto a = MainHUDView->GetCurrentQuestWidget();
-}
-
 void UUIC_MainHUD::ToggleAutoQuestUI(const bool IsActive)
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
+
 	MainHUDView->GetAutoQuestDialogueWidget()->SetVisibility(
 		IsActive
 			? ESlateVisibility::SelfHitTestInvisible
 			: ESlateVisibility::Hidden);
+
+	if (IsActive)
+	{
+		UUIC_AutoQuestDialogueWidget* AutoQuestDialogueWidgetController =
+			Cast<UUIC_AutoQuestDialogueWidget>(
+				MainHUDView->GetAutoQuestDialogueWidget()->GetController());
+
+		AutoQuestDialogueWidgetController->StartQuestDialogue();
+	}
 }
 
 void UUIC_MainHUD::ToggleCurrentQuestUI(const bool IsActive)
@@ -126,8 +131,8 @@ void UUIC_MainHUD::ToggleCurrentQuestUI(const bool IsActive)
 
 		MainHUDView->GetCurrentQuestWidget()->GetQuestTitle()->SetText(
 			FText::FromString(QuestData.GetQuestTitle()));
-		MainHUDView->GetCurrentQuestWidget()->GetQuestDescription()->SetText(
-			FText::FromString(QuestData.GetQuestDescription()));
+		MainHUDView->GetCurrentQuestWidget()->GetQuestHint()->SetText(
+			FText::FromString(QuestData.GetQuestHint()));
 
 		CurrentQuestWidgetController->StartCurrentQuestAnimation();
 	}
@@ -138,13 +143,13 @@ void UUIC_MainHUD::ToggleCurrentQuestUI(const bool IsActive)
 	}
 }
 
-void UUIC_MainHUD::AlertToMainHUD(const EAlertType AlertType,
-                                  const FString& Message, const float Time)
+void UUIC_MainHUD::AlertToMainHUD(const EAlertType AlertType
+                                  , const FString& Message, const float Time)
 {
 	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
 	UUIC_HUDAlertModalWidget* AlertModalWidgetController = Cast<
-		UUIC_HUDAlertModalWidget>(MainHUDView->
-		                          GetAlertModalWidget()->GetController());
+		UUIC_HUDAlertModalWidget>(
+		MainHUDView->GetAlertModalWidget()->GetController());
 
 	AlertModalWidgetController->Alert(AlertType, Message, Time);
 }

@@ -25,17 +25,21 @@ enum class EUIName: uint32
 	Gameplay_MainHUD, Popup_InventoryUI, Popup_CookingRecipeUI,
 	Popup_CookingQTE, Popup_TradingUI, Modal_BuyNotification,
 	Modal_SellNotification, Popup_DiaryEdit, Popup_DiaryList,
-	Modal_ExitInteractUI, Modal_FishingUI, Popup_SceneListUI,
-	Popup_MainLobby, Popup_MultiPlay, Popup_ChooseCharacter,
-	Loading_LoadingUI, Modal_TimeAlert, Popup_MbtiAsk,
+	Modal_ExitInteractUI, Modal_FishingUI, Popup_SceneListUI, Popup_MainLobby,
+	Popup_MultiPlay, Popup_ChooseCharacter, Loading_LoadingUI, Popup_MbtiAsk,
 	Popup_LootContainerUI, Popup_CraftingUI, Popup_QuestListUI,
+	Popup_EndingChoice, Popup_MediaSceneListUI, Modal_TempLoadingUI,
 };
 
 UENUM()
 enum class EAlertType: uint8
 {
-	None,
-	Info,
-	Warning,
-	Error,
+	None, Info, Warning, Error,
+};
+
+UENUM()
+enum class ETradingState : uint8
+{
+	BUY,
+	SELL
 };

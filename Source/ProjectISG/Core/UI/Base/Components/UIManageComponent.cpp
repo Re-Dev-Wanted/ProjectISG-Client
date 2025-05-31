@@ -73,6 +73,7 @@ void UUIManageComponent::PushWidget(const EUIName Key)
 	}
 
 	ControllerInstances[Key]->StartShowUI(WidgetLayers[Key]);
+	ControllerInstances[Key]->OnPushUI();
 
 	PrintAllWidgetStackToDebug();
 }
@@ -138,7 +139,7 @@ bool UUIManageComponent::HasViewUI(const EUIName Key)
 
 void UUIManageComponent::ResetWidget()
 {
-	while (WidgetStack.IsEmpty() == false)
+	while (!WidgetStack.IsEmpty())
 	{
 		PopWidget();
 	}

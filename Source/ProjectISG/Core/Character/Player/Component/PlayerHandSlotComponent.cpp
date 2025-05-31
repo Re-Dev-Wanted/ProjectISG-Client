@@ -34,7 +34,10 @@ void UPlayerHandSlotComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	if (EndPlayReason == EEndPlayReason::Type::Quit)
 	{
-		HeldItem->Destroy();
+		if (HeldItem->IsValidLowLevel())
+		{
+			HeldItem->Destroy();
+		}
 	}
 }
 
@@ -96,6 +99,16 @@ void UPlayerHandSlotComponent::ClearHand()
 		HeldItem = nullptr;
 		DestroyActor->Destroy();
 	}
+}
+
+void UPlayerHandSlotComponent::ToggleShowItem(const bool IsShow)
+{
+	if (!HeldItem)
+	{
+		return;
+	}
+
+	HeldItem->SetActorHiddenInGame(!IsShow);
 }
 
 void UPlayerHandSlotComponent::Server_ChangeItemId_Implementation(

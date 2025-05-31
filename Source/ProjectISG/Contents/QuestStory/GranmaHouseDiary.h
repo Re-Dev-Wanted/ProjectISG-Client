@@ -27,6 +27,25 @@ protected:
 	
 	UFUNCTION(BlueprintImplementableEvent)
 	void LoadPlayLevelAndTeleportPlayer(class AMainPlayerCharacter* Player);
+
+private:
+	void SetQuestInteractiveActorOverlayMaterial(bool value);
+
+private:
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
+		Category = Setting)
+	class UBoxComponent* Root;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
+		Category = Setting)
+	class UStaticMeshComponent* Book;
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
+		Category = Setting)
+	class UStaticMeshComponent* Desk;
 	
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = true),
+		Category = Setting)
+	class UMaterial* QuestInteractMaterial;
 	
 };

@@ -22,6 +22,8 @@ public:
 	FWidgetAnimationDynamicEvent StartAnimationFinishNotified;
 	FWidgetAnimationDynamicEvent EndAnimationFinishNotified;
 
+	virtual void InitializeMVC();
+
 protected:
 	virtual void NativeConstruct() override;
 	GETTER_EDITABLE(TObjectPtr<UBaseUIModel>, Model)
@@ -36,12 +38,12 @@ private:
 	UPROPERTY(Transient, meta=(BindWidgetAnimOptional))
 	TObjectPtr<UWidgetAnimation> DefaultEndAnimation;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Options",
-		meta=(AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, Category = "Options"
+		, meta=(AllowPrivateAccess = true))
 	TSubclassOf<UBaseUIModel> ModelClass;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Options",
-		meta=(AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, Category = "Options"
+		, meta=(AllowPrivateAccess = true))
 	TSubclassOf<UBaseUIController> ControllerClass;
 
 	UPROPERTY()

@@ -1,25 +1,25 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "ProjectISG/Core/UI/Base/Module/UI_EscapeButton.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
 #include "UIV_TradingUI.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PROJECTISG_API UUIV_TradingUI : public UBaseUIView
 {
 	GENERATED_BODY()
 
 public:
-	GETTER(class UUIV_ProductListWidget*, ProductList)
-	GETTER(class UInventoryList*, InventoryList)
-	GETTER(class UTextBlock*, GoldText)
-	SETTER(bool, OpenFlag)
-	GETTER(class UItemInfo*, ItemInfoTooltip)
+	GETTER(class UTextBlock*, OwnedGoldText)
+	GETTER(class UUIV_ProductListWidget*, ItemListView)
+	GETTER(class UProductDetailView*, ProductDetailView)
+	GETTER(class UUI_BaseButton*, TradeButton)
+
+	class UButton* GetCloseButton() const
+	{
+		return CloseButton->GetButton();
+	}
 
 protected:
 	virtual bool NativeOnDrop(const FGeometry& InGeometry,
@@ -28,24 +28,19 @@ protected:
 
 	virtual void NativeConstruct() override;
 
-	virtual void
-	NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
-
 private:
 	UPROPERTY(meta = (BindWidget))
-	class UScrollBox* ProductListScroll;
+	class UTextBlock* OwnedGoldText;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UUI_EscapeButton* CloseButton;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UProductDetailView* ProductDetailView;
+	
+	UPROPERTY(meta = (BindWidget))
+	class UUIV_ProductListWidget* ItemListView;
 
 	UPROPERTY(meta = (BindWidget))
-	class UInventoryList* InventoryList;
-
-	UPROPERTY(meta = (BindWidget))
-	class UUIV_ProductListWidget* ProductList;
-
-	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* GoldText;
-
-	UPROPERTY(meta = (BindWidget))
-	class UItemInfo* ItemInfoTooltip;
-
-	bool OpenFlag = false;
+	class UUI_BaseButton* TradeButton;
 };

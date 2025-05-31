@@ -20,12 +20,6 @@ protected:
 	UFUNCTION()
 	void EndMontage(FGameplayTag EventTag, FGameplayEventData Payload);
 
-	UPROPERTY(EditDefaultsOnly, Category = AnimMontage)
-	TObjectPtr<UAnimMontage> CraftingAnimMontage;
-
-	UPROPERTY(EditDefaultsOnly, Category = AnimMontage)
-	TObjectPtr<UAnimMontage> IdleAnimMontage;
-
 	UPROPERTY()
 	UPlayMontageWithEvent* AT_StartMontageEvent;
 };

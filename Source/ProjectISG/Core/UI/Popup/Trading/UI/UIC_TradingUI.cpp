@@ -1,22 +1,24 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "UIC_TradingUI.h"
+﻿#include "UIC_TradingUI.h"
 
 #include "EnhancedInputComponent.h"
+#include "TradingTabButton.h"
 #include "UIM_TradingUI.h"
 #include "UIV_TradingUI.h"
+#include "Components/Button.h"
 #include "Components/TextBlock.h"
-#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
-#include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
+#include "ProductInfo/ProductDetailView.h"
+#include "ProductList/UIV_ProductListWidget.h"
+#include "ProjectISG/Contents/Trading/TradingManager.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
-#include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
-#include "ProjectISG/Core/UI/HUD/Inventory/Module/ItemInfo.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Base/Module/UI_BaseButton.h"
+#include "ProjectISG/Core/UI/Modal/Trading/UIC_ProductBuyNotification.h"
+#include "ProjectISG/Core/UI/Modal/Trading/UIM_ProductBuyNotification.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
-
-class AMainPlayerState;
-class AMainPlayerCharacter;
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
+#include "ProjectISG/Systems/Logging/LoggingStruct.h"
+#include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
 
 void UUIC_TradingUI::BindInputAction(UEnhancedInputComponent* InputComponent)
 {
@@ -24,18 +26,30 @@ void UUIC_TradingUI::BindInputAction(UEnhancedInputComponent* InputComponent)
 
 	InputComponent->BindAction(CloseTradingUI, ETriggerEvent::Triggered, this,
 	                           &ThisClass::OnCloseTradingUI);
-
-	const UUIV_TradingUI* TradingView = Cast<UUIV_TradingUI>(GetView());
-
-	TradingView->GetInventoryList()->OnDragDetectedNotified.AddDynamic(
-		this, &UUIC_TradingUI::DetectDragItem);
 }
 
 void UUIC_TradingUI::AppearUI()
 {
 	Super::AppearUI();
 
-	ClearItemInfoData();
+	UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
+	TradingUIView->GetCloseButton()->OnClicked.AddUniqueDynamic(this,
+		&ThisClass::OnCloseTradingUI);
+
+	TradingUIView->GetItemListView()->GetBuyTabButton()->GetButton()
+	             ->OnClicked.AddUniqueDynamic(
+		             this, &UUIC_TradingUI::ChangeBuyState);
+
+	TradingUIView->GetItemListView()->GetSellTabButton()->GetButton()
+	             ->OnClicked.AddUniqueDynamic(
+		             this, &UUIC_TradingUI::ChangeSellState);
+
+	TradingUIView->GetTradeButton()->Get()->OnClicked.AddUniqueDynamic
+		(this, &UUIC_TradingUI::OnTrade);
+
+	RefreshList();
+
+	UpdateGoldText();
 }
 
 void UUIC_TradingUI::OnCloseTradingUI()
@@ -44,8 +58,77 @@ void UUIC_TradingUI::OnCloseTradingUI()
 		GetPlayerController());
 
 	UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
-	TradingUIView->SetOpenFlag(false);
-	PC->PopUI();
+	TradingUIView->GetProductDetailView()->OnHide();
+
+	TradingUIView->GetTradeButton()->Get()->SetIsEnabled(false);
+
+	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
+	TradingUIModel->SetCurrentState(ETradingState::BUY);
+
+	ResetUIFromPlayerController();
+}
+
+void UUIC_TradingUI::OnTrade()
+{
+	AMainPlayerController* PC = Cast<AMainPlayerController>(
+		GetPlayerController());
+	if (PC)
+	{
+		UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
+
+		PC->PushUI(EUIName::Modal_BuyNotification);
+
+		UUIC_ProductBuyNotification* ModalController = Cast<
+			UUIC_ProductBuyNotification>(
+			PC->GetUIManageComponent()->ControllerInstances[
+				EUIName::Modal_BuyNotification]);
+		UUIM_ProductBuyNotification* ModalModel = Cast<
+			UUIM_ProductBuyNotification>(ModalController->GetModel());
+
+		ModalModel->SetCount(1);
+		ModalModel->SetClickedProductId(TradingUIModel->GetSelectedId());
+		ModalModel->SetTradingState(TradingUIModel->GetCurrentState());
+
+		ModalController->OnInitialize();
+	}
+}
+
+void UUIC_TradingUI::RefreshList()
+{
+	const UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
+	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
+	FProductStruct ProductStruct = UTradingManager::GetProductDataById
+		(TradingUIModel->GetSelectedId());
+
+	AMainPlayerState* PS = GetPlayerController()->GetPlayerState<
+		AMainPlayerState>();
+
+	if (!PS)
+	{
+		return;
+	}
+	
+	if (TradingUIModel->GetCurrentState() == ETradingState::SELL)
+	{
+		uint16 RemainCount = PS->GetInventoryComponent()->GetCurrentCount
+			(TradingUIModel->GetSelectedId());
+
+		if (RemainCount == 0)
+		{
+			TradingUIModel->SetSelectedId(0);
+			TradingUIView->GetProductDetailView()->OnHide();
+			TradingUIView->GetTradeButton()->Get()->SetIsEnabled(false);
+		}
+	}
+	else
+	{
+		const uint32 ProductPrice = ProductStruct.GetProductPrice() * ProductStruct.GetBuyPriceRatio();
+		
+		TradingUIView->GetTradeButton()->Get()->SetIsEnabled(TradingUIModel->GetSelectedId() > 0 && PS->GetGold() >= ProductPrice);
+	}
+	
+	TradingUIView->GetItemListView()->SetUpdateUI(
+		TradingUIModel->GetCurrentState());
 }
 
 void UUIC_TradingUI::UpdateGoldText()
@@ -57,50 +140,87 @@ void UUIC_TradingUI::UpdateGoldText()
 
 	if (PC && PS && TradingUIView)
 	{
-		FString Str = FString::Printf(TEXT("Gold : %dG"), PS->GetGold());
-		TradingUIView->GetGoldText()->SetText(FText::FromString(Str));
+		TradingUIView->GetOwnedGoldText()->SetText(FText::AsNumber(PS->GetGold()));
 	}
 }
 
-void UUIC_TradingUI::UpdateInventory()
+void UUIC_TradingUI::OnUpdateSelectedProduct(uint16 ProductId)
 {
-	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
-		GetPlayerController()->GetPawn());
-	if (Player && Player->GetPlayerInventoryComponent())
-	{
-		Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
-	}
-}
+	FProductStruct ProductStruct = UTradingManager::GetProductDataById(
+		ProductId);
+	FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ProductId);
 
-void UUIC_TradingUI::ClearItemInfoData()
-{
 	const UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
-	TradingUIView->GetItemInfoTooltip()->
-	               SetVisibility(ESlateVisibility::Hidden);
-}
+	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
 
-void UUIC_TradingUI::SetItemInfoData(const uint8 InventoryIndex)
-{
-	const UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
-	AMainPlayerState* PS = TradingUIView->GetOwningPlayerState<
+	TradingUIModel->SetSelectedId(ProductId);
+
+	const uint32 ProductPrice = TradingUIModel->GetCurrentState() ==
+	                            ETradingState::BUY
+		                            ? ProductStruct.GetProductPrice() *
+		                            ProductStruct.GetBuyPriceRatio()
+		                            : ProductStruct.GetProductPrice() *
+		                            ProductStruct.GetSellPriceRatio();
+
+	TradingUIView->GetProductDetailView()->UpdateUI(ItemInfoData
+	                                                .GetDisplayName(),
+	                                                ItemInfoData.
+	                                                GetDescription(),
+	                                                ProductPrice,
+	                                                ItemInfoData.
+	                                                GetThumbnail());
+
+	AMainPlayerState* PS = GetPlayerController()->GetPlayerState<
 		AMainPlayerState>();
 
-	const FItemMetaInfo ItemMetaInfo = PS->GetInventoryComponent()->
-	                                       GetInventoryList()[InventoryIndex];
+	bool IsEnabled = TradingUIModel->GetCurrentState() == ETradingState::SELL ||
+		PS->GetGold() >= ProductPrice;
 
-	if (ItemMetaInfo.GetId() == 0)
+	TradingUIView->GetTradeButton()->Get()->SetIsEnabled(IsEnabled);
+}
+
+void UUIC_TradingUI::ChangeBuyState()
+{
+	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
+
+	if (TradingUIModel->GetCurrentState() == ETradingState::BUY)
 	{
-		ClearItemInfoData();
 		return;
 	}
 
-	TradingUIView->GetItemInfoTooltip()->ShowItemData(ItemMetaInfo);
+	TradingUIModel->SetCurrentState(ETradingState::BUY);
+
+	UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
+
+	TradingUIView->GetItemListView()->SetUpdateUI(
+		TradingUIModel->GetCurrentState());
+
+	TradingUIView->GetProductDetailView()->OnHide();
+
+	TradingUIView->GetTradeButton()->Get()->SetIsEnabled(false);
+	TradingUIView->GetTradeButton()->GetText()->SetText(FText::FromString(TEXT
+		("구매하기")));
 }
 
-
-void UUIC_TradingUI::DetectDragItem(uint16 ItemId, uint16 SlotIndex)
+void UUIC_TradingUI::ChangeSellState()
 {
-	UUIM_TradingUI* TradingModel = Cast<UUIM_TradingUI>(GetModel());
-	TradingModel->SetClickedInventoryItem(ItemId);
-	TradingModel->SetClickedInventorySlotIndex(SlotIndex);
+	UUIM_TradingUI* TradingUIModel = Cast<UUIM_TradingUI>(GetModel());
+
+	if (TradingUIModel->GetCurrentState() == ETradingState::SELL)
+	{
+		return;
+	}
+
+	TradingUIModel->SetCurrentState(ETradingState::SELL);
+
+	UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
+
+	TradingUIView->GetItemListView()->SetUpdateUI(
+		TradingUIModel->GetCurrentState());
+
+	TradingUIView->GetProductDetailView()->OnHide();
+
+	TradingUIView->GetTradeButton()->Get()->SetIsEnabled(false);
+	TradingUIView->GetTradeButton()->GetText()->SetText(FText::FromString(TEXT
+		("판매하기")));
 }

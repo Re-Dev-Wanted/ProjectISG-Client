@@ -1,14 +1,10 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-#pragma once
+﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "UIV_ProductListWidget.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
 #include "UIC_ProductListWidget.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class PROJECTISG_API UUIC_ProductListWidget : public UBaseUIController
 {
@@ -16,4 +12,11 @@ class PROJECTISG_API UUIC_ProductListWidget : public UBaseUIController
 
 public:
 	void InitializeData();
+	
+	void OnUpdateList(ETradingState State);
+
+protected:
+	void SetProductList();
+
+	void SetInventoryList();
 };

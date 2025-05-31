@@ -6,6 +6,7 @@
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/UIEnum.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 
 void UBaseUIController::StartShowUI(const EUILayer Layer)
 {
@@ -134,12 +135,7 @@ void UBaseUIController::BindInputAction(UEnhancedInputComponent* InputComponent)
 
 void UBaseUIController::AppearUI()
 {
-	AppearUI(GetCurrentLayer());
-}
-
-void UBaseUIController::AppearUI(const EUILayer Layer)
-{
-	if (Layer == EUILayer::Gameplay)
+	if (GetCurrentLayer() == EUILayer::Gameplay)
 	{
 		const FInputModeGameOnly InputMode;
 		PlayerController->SetInputMode(InputMode);
@@ -175,6 +171,13 @@ void UBaseUIController::PopUIFromPlayerController()
 {
 	AMainPlayerController* PC = Cast<AMainPlayerController>(PlayerController);
 	PC->PopUI();
+}
+
+void UBaseUIController::ResetUIFromPlayerController()
+{
+	const AMainPlayerController* PC = Cast<AMainPlayerController>(
+		PlayerController);
+	PC->GetUIManageComponent()->ResetWidget();
 }
 
 void UBaseUIController::ClearInputMappingContext()
@@ -213,4 +216,8 @@ void UBaseUIController::OnFinishDefaultTickAnimation()
 	}
 
 	GetView()->PlayAnimation(GetView()->GetDefaultTickAnimation());
+}
+
+void UBaseUIController::OnPushUI()
+{
 }

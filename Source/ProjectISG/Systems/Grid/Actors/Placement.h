@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameplayTags.h"
 #include "ProjectISG/GAS/Common/Object/BaseInteractiveActor.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "Placement.generated.h"
@@ -17,23 +18,25 @@ class PROJECTISG_API APlacement : public ABaseInteractiveActor
 
 public:
 	APlacement();
-	
+
 	GETTER_SETTER(TSoftObjectPtr<UStaticMesh>, MeshAssetPath)
-	GETTER(FVector, MeshSize)
 	SETTER(float, CachedSnapSize)
 
-	virtual void OnSpawned() {} 
+	virtual void OnSpawned()
+	{
+	}
 
 	virtual bool GetCanTouch() const override;
 
-	virtual FString GetTouchDisplayText(AActor* Causer) const override; 
-	
+	virtual FString GetTouchDisplayText(AActor* Causer) const override;
+
 	virtual void OnTouch(AActor* Causer) override;
 
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void GetLifetimeReplicatedProps(
+		TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	FVector MeshSize = FVector::ZeroVector;
 
@@ -47,16 +50,16 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(VisibleAnywhere)
-	class USceneComponent* Root;
+	USceneComponent* Root;
 
 	UPROPERTY(VisibleAnywhere)
-	class USceneComponent* AnchorComp;
+	USceneComponent* AnchorComp;
 
 	UPROPERTY(VisibleAnywhere)
 	class UBoxComponent* CollisionComp;
 
 	UPROPERTY(VisibleAnywhere)
-	class UStaticMeshComponent* MeshComp;
+	UStaticMeshComponent* MeshComp;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	class UProceduralMeshComponent* ProceduralMeshComp;
@@ -65,10 +68,13 @@ public:
 	TSoftObjectPtr<UStaticMesh> MeshAssetPath;
 
 	UPROPERTY(EditAnywhere)
-	class UMaterialInstance* TempMaterial;
+	UMaterialInstance* TempMaterial;
 
 	UPROPERTY(EditAnywhere)
 	USceneComponent* InteractStartPoint;
+
+	UPROPERTY(EditAnywhere)
+	USceneComponent* InteractEndPoint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FIntVector> Occupied;
@@ -81,7 +87,8 @@ public:
 
 	void SetCollisionEnabled(bool bEnable) const;
 
-	TArray<FIntVector> GetOccupiedGrid(float SnapSize, const FIntVector& Current);
+	TArray<FIntVector> GetOccupiedGrid(float SnapSize,
+	                                   const FIntVector& Current);
 
 	FVector GetActorPivotLocation() const;
 
@@ -92,9 +99,21 @@ public:
 
 	FRotator GetStartInteractRotation() const;
 
+	FVector GetEndInteractPoint() const;
+
+	FRotator GetEndInteractRotation() const;
+
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_SetCollisionEnabled(bool bEnable) const;
 
 	UFUNCTION(Server, Reliable)
 	void Server_SetInteractingPlayer(AActor* Actor);
+
+	UPROPERTY(EditDefaultsOnly, Category = "Options",
+		meta = (AllowPrivateAccess = true))
+	FGameplayTag OnPlaceCueTag;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Options",
+		meta = (AllowPrivateAccess = true))
+	FGameplayTag OnRemoveCueTag;
 };

@@ -4,11 +4,8 @@ ABaseEquipment::ABaseEquipment()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	AnchorComp = CreateDefaultSubobject<USceneComponent>(TEXT("Anchor"));
-	AnchorComp->SetupAttachment(RootComponent);
-
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	MeshComp->SetupAttachment(AnchorComp);
+	MeshComp->SetupAttachment(RootComponent);
 
 	MeshComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -20,5 +17,7 @@ void ABaseEquipment::BeginPlay()
 	Super::BeginPlay();
 
 	SetReplicateMovement(true);
+
+	MeshComp->SetRenderCustomDepth(true);
 }
 

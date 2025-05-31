@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/Contents/Fishing/FishData.h"
+#include "ProjectISG/Systems/Grid/Actors/BaseEquipment.h"
 #include "ProjectISG/Systems/Water/Actors/DynamicEquipment.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "FishingRod.generated.h"
@@ -12,7 +13,7 @@ class ABobber;
 class UCableComponent;
 
 UCLASS()
-class PROJECTISG_API AFishingRod : public ADynamicEquipment
+class PROJECTISG_API AFishingRod : public ABaseEquipment
 {
 	GENERATED_BODY()
 
@@ -43,6 +44,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<ABobber> BobberFactory;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USoundBase> SFX;
 
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* SocketComp;
@@ -75,6 +79,8 @@ public:
 	void ReelInLine();
 
 	void OnEndReelInLine(AActor* Causer);
+
+	virtual void SetActorHiddenInGame(bool bNewHidden) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = FishingSettings)
 	float CastingDistance = 200.f;

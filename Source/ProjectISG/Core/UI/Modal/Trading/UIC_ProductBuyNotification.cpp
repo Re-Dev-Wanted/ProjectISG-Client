@@ -1,17 +1,12 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
-
-#include "UIC_ProductBuyNotification.h"
+﻿#include "UIC_ProductBuyNotification.h"
 
 #include "UIM_ProductBuyNotification.h"
 #include "UIV_ProductBuyNotification.h"
 #include "Components/Button.h"
+#include "Kismet/GameplayStatics.h"
+#include "ProjectISG/Contents/Trading/ProductStruct.h"
 #include "ProjectISG/Contents/Trading/TradingManager.h"
-#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
-#include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
-#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
-#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Popup/Trading/UI/UIC_TradingUI.h"
 #include "ProjectISG/Core/UI/Popup/Trading/UI/UIV_TradingUI.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
@@ -25,75 +20,92 @@ void UUIC_ProductBuyNotification::InitializeController(UBaseUIView* NewView,
 {
 	Super::InitializeController(NewView, NewModel);
 
-	const UUIV_ProductBuyNotification* ProductBuyNotification = Cast<
+	const UUIV_ProductBuyNotification* ProductNotification = Cast<
 		UUIV_ProductBuyNotification>(GetView());
 
-	ProductBuyNotification->GetBuyButton()->OnClicked.AddDynamic(
-		this, &ThisClass::OnClickedBuyButton);
+	ProductNotification->GetButton()->OnClicked.AddUniqueDynamic(
+		this, &ThisClass::OnClickedButton);
+
+	ProductNotification->GetCloseButton()->OnClicked.AddUniqueDynamic(this, &ThisClass::PopUIFromPlayerController);
 }
 
-void UUIC_ProductBuyNotification::OnClickedBuyButton()
+void UUIC_ProductBuyNotification::AppearUI()
 {
-	UE_LOG(LogTemp, Warning, TEXT("구매하기"));
+	Super::AppearUI();
+	
+}
 
-	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
-		GetPlayerController()->GetPawn());
-	if (Player)
+void UUIC_ProductBuyNotification::OnInitialize()
+{
+	UUIV_ProductBuyNotification* ProductNotification = Cast<
+		UUIV_ProductBuyNotification>(GetView());
+
+	ProductNotification->OnInitialize();
+}
+
+void UUIC_ProductBuyNotification::OnClickedButton()
+{
+	UGameplayStatics::PlaySound2D(GetWorld(), ButtonSFX, 1, 1, 0.25f);
+	
+	UUIM_ProductBuyNotification* UIModel = Cast<UUIM_ProductBuyNotification>(GetModel());
+	FProductStruct ProductStruct = UTradingManager::GetProductDataById(UIModel->GetClickedProductId());
+
+	AMainPlayerState* PS = GetPlayerController()->GetPlayerState<AMainPlayerState>();
+
+	switch (UIModel->GetTradingState())
 	{
-		AMainPlayerController* PC = Player->GetController<
-			AMainPlayerController>();
-		PC->PopUI();
-
-		UUIM_ProductBuyNotification* ProductBuyNotificationModel = Cast<
-			UUIM_ProductBuyNotification>(GetModel());
-
-		AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
-		PS->GetInventoryComponent()->AddItem(
-			UItemManager::GetInitialItemMetaDataById(
-				ProductBuyNotificationModel->GetClickedProductId()));
-
-		Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
-
-		int32 ItemPrice = FindItemPrice(ProductBuyNotificationModel);
-
-		UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(
-			PC->GetUIManageComponent()->ControllerInstances[
-				EUIName::Popup_TradingUI]);
-
-		if (PS->GetGold() >= ItemPrice)
+		case ETradingState::SELL:
 		{
+			FItemMetaInfo MetaInfo = PS->GetInventoryComponent()->GetFirstMetaInfo
+			(UIModel->GetClickedProductId());
+	
+			float PriceRatio = UItemManager::GetPriceRatio(MetaInfo);
+				
+			PS->GetInventoryComponent()->RemoveItem
+			(UIModel->GetClickedProductId(), UIModel->GetCount());
+	
+			uint32 SellPrice = ProductStruct.GetProductPrice() * 
+			ProductStruct.GetSellPriceRatio() * PriceRatio * UIModel->GetCount();
+	
+			PS->SetGold(PS->GetGold() + SellPrice);
+		}
+		break;
+		default:
+		{
+			FItemMetaInfo MetaInfo = UItemManager::GetInitialItemMetaDataById(UIModel->GetClickedProductId());
+			MetaInfo.SetCurrentCount(UIModel->GetCount());
+			PS->GetInventoryComponent()->AddItem(MetaInfo);
+		
+			uint32 ItemPrice = ProductStruct.GetProductPrice() * ProductStruct.GetBuyPriceRatio() * UIModel->GetCount();
 			PS->SetGold(PS->GetGold() - ItemPrice);
-			TradingUIController->UpdateGoldText();
-			LoggingToBuyItem();
 		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("골드가 부족합니다."));
-		}
-	}
-}
-
-int32 UUIC_ProductBuyNotification::FindItemPrice(
-	class UUIM_ProductBuyNotification* ProductBuyNotificationModel)
-{
-	for (int i = 0; i < UTradingManager::GetProductData().Num(); i++)
-	{
-		if (UTradingManager::GetProductData()[i].GetProductId() ==
-			ProductBuyNotificationModel->GetClickedProductId())
-		{
-			return UTradingManager::GetProductData()[i].GetProductPrice();
-		}
+		break;
 	}
 
-	return 0;
+	Logging();
+
+	PopUIFromPlayerController();
 }
 
-void UUIC_ProductBuyNotification::LoggingToBuyItem()
+void UUIC_ProductBuyNotification::UpdateCount(int Count)
 {
+	UUIM_ProductBuyNotification* UIModel = Cast<UUIM_ProductBuyNotification>(GetModel());
+	UIModel->SetCount(Count);
+}
+
+void UUIC_ProductBuyNotification::Logging()
+{
+	UUIM_ProductBuyNotification* UIModel = Cast<UUIM_ProductBuyNotification>(GetModel());
+
+	const ETradingState State = UIModel->GetTradingState();
+	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(UIModel->GetClickedProductId());
+	
 	FDiaryLogParams LogParams;
 	LogParams.Location = TEXT("거래장");
 	LogParams.ActionType = ELoggingActionType::TRADE;
-	LogParams.ActionName = ELoggingActionName::buy_item;
+	LogParams.ActionName = State == ETradingState::BUY? ELoggingActionName::buy_item : ELoggingActionName::sell_item;
+	FString Word = State == ETradingState::BUY? TEXT("구매") : TEXT("판매");
+	LogParams.Detail = FString::Printf(TEXT("%s(을)를 %d개 %s했다."), *ItemInfoData.GetDisplayName(), UIModel->GetCount(), *Word);
 
 	GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()->
 	            LoggingData(LogParams);

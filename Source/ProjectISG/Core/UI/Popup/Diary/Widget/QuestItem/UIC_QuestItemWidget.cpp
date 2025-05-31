@@ -5,13 +5,39 @@
 #include "Components/Border.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
+#include "Components/ScrollBox.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Popup/Diary/UI/QuestList/UIC_QuestListUI.h"
+#include "ProjectISG/Core/UI/Popup/Diary/Widget/QuestShowItemInfo/UIC_QuestShowItemInfoWidget.h"
+#include "ProjectISG/Core/UI/Popup/Diary/Widget/QuestShowItemInfo/UIV_QuestShowItemInfoWidget.h"
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 #include "ProjectISG/Systems/QuestStory/Manager/QuestStoryManager.h"
 
 void UUIC_QuestItemWidget::InitializeData(const FString& QuestId)
+{
+	SetQuestDefaultInformation(QuestId);
+	SetQuestRewardList(QuestId);
+	SetQuestStatus(QuestId);
+}
+
+void UUIC_QuestItemWidget::AppearUI()
+{
+	Super::AppearUI();
+}
+
+void UUIC_QuestItemWidget::OnClickQuestItemWidget()
+{
+	UUIC_QuestListUI* QuestListUIController = Cast<UUIC_QuestListUI>(
+		GetView()->GetOwningPlayer<AMainPlayerController>()->
+		           GetUIManageComponent()->ControllerInstances[
+			EUIName::Popup_QuestListUI]);
+
+	QuestListUIController->SetQuestInfo(
+		Cast<UUIM_QuestItemWidget>(GetModel())->GetCurrentQuestId());
+}
+
+void UUIC_QuestItemWidget::SetQuestDefaultInformation(const FString& QuestId)
 {
 	const FQuestStoryData Quest = UQuestStoryManager::GetQuestDataById(QuestId);
 
@@ -24,67 +50,109 @@ void UUIC_QuestItemWidget::InitializeData(const FString& QuestId)
 	// 퀘스트 관련 정보 가져오기
 	const AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetView()->GetOwningPlayer());
-	const UQuestManageComponent* QuestManageComponent = PC->
-		GetQuestManageComponent();
+
+	const uint16 CurrentQuestToClear =
+		UQuestStoryManager::GetRequireQuestDateToAbleFinish(PC, QuestId);
+	const uint16 RequireQuestToClear =
+		UQuestStoryManager::GetRequireQuestDataById(QuestId).Num();
+	const EQuestStatus QuestStatus = PC->GetQuestManageComponent()->
+	                                     GetQuestStatusById(QuestId);
 
 	// View 관련 정보 설정 코드
 	QuestItemWidget->GetQuestTitle()->SetText(
 		FText::FromString(Quest.GetQuestTitle()));
 
 	// View 관련 현재 완료 가능한 행동 갯수를 가져오는 코드
+	// 이미 완료된 퀘스트면 예외 없이 해야 하는 행동 수로 설정해준다.
 	QuestItemWidget->GetCurrentFinishQuestCount()->SetText(
-		FText::FromString(
-			FString::FromInt(
-				UQuestStoryManager::GetRequireQuestDateToAbleFinish(
-					PC, QuestId))));
+		FText::FromString(FString::FromInt(
+			QuestStatus == EQuestStatus::Completed
+				? RequireQuestToClear
+				: CurrentQuestToClear)));
 
 	// View 관련 최대 퀘스트 행동 갯수 가져오는 코드
 	QuestItemWidget->GetMaxFinishQuestCount()->SetText(
-		FText::FromString(
-			FString::FromInt(
-				UQuestStoryManager::GetRequireQuestDataById(QuestId).Num())));
+		FText::FromString(FString::FromInt(RequireQuestToClear)));
 
-	QuestItemWidget->GetQuestItemButton()->OnClicked.AddDynamic(
+	QuestItemWidget->GetQuestItemButton()->OnClicked.AddUniqueDynamic(
 		this, &ThisClass::OnClickQuestItemWidget);
+}
 
-	// 현재 보여지는 위젯의 QuestId가 현재 진행중인 퀘스트인 경우에 대한 대응
-	if (QuestManageComponent->GetCurrentPlayingQuestId() == QuestId)
-	{
-		QuestItemWidget->GetQuestPlayingNotify()->SetVisibility(
-			ESlateVisibility::Visible);
-		QuestItemWidget->GetQuestStatus()->SetVisibility(
-			ESlateVisibility::Hidden);
-	}
-	else
-	{
-		QuestItemWidget->GetQuestPlayingNotify()->SetVisibility(
-			ESlateVisibility::Hidden);
-		QuestItemWidget->GetQuestStatus()->SetVisibility(
-			ESlateVisibility::Visible);
+void UUIC_QuestItemWidget::SetQuestRewardList(const FString& QuestId) const
+{
+	const UUIV_QuestItemWidget* QuestItemWidget = Cast<UUIV_QuestItemWidget>(
+		GetView());
 
-		// 현재 진행중이지 않은 퀘스트에 대해 완료인지, 아직 수행하지 않았는지는
-		// QuestManageComponent에 있는 완료된 Set 정보에 값이 들어있는지
-		// 확인하고 수행해준다.
-		if (QuestManageComponent->GetEndQuestIdList().Contains(QuestId))
-		{
-			QuestItemWidget->GetQuestStatus()->SetText(
-				FText::FromString(TEXT("완료")));
-		}
-		else
-		{
-			QuestItemWidget->GetQuestStatus()->SetText(
-				FText::FromString(TEXT("미완")));
-		}
+	// 보상 미리보기 UI를 위한 로직
+	QuestItemWidget->GetRewardPreviewList()->ClearChildren();
+
+	for (FQuestRewardData& RewardItem :
+	     UQuestStoryManager::GetRewardQuestDataById(QuestId))
+	{
+		UUIV_QuestShowItemInfoWidget* RewardChild = CreateWidget<
+			UUIV_QuestShowItemInfoWidget>(GetView()
+			                              , QuestItemWidget->
+			                              GetQuestRewardItemClass());
+
+		RewardChild->SetPadding({0, 0, 4, 0});
+		RewardChild->InitializeMVC();
+
+		QuestItemWidget->GetRewardPreviewList()->AddChild(RewardChild);
+
+		Cast<UUIC_QuestShowItemInfoWidget>(RewardChild->GetController())->
+			SetShowItemInfo(RewardItem);
 	}
 }
 
-void UUIC_QuestItemWidget::OnClickQuestItemWidget()
+void UUIC_QuestItemWidget::SetQuestStatus(const FString& QuestId) const
 {
-	UUIC_QuestListUI* QuestListUIController = Cast<UUIC_QuestListUI>(
-		GetView()->GetOwningPlayer<AMainPlayerController>()->
-		           GetUIManageComponent()
-		           ->ControllerInstances[EUIName::Popup_QuestListUI]);
+	const UUIV_QuestItemWidget* QuestItemWidget = Cast<UUIV_QuestItemWidget>(
+		GetView());
+	// 현재 퀘스트의 상태 보여주는 로직
+	const AMainPlayerController* PC = Cast<AMainPlayerController>(
+		GetView()->GetOwningPlayer());
 
-	QuestListUIController->SetQuestInfo(
-		Cast<UUIM_QuestItemWidget>(GetModel())->GetCurrentQuestId());
+	switch (PC->GetQuestManageComponent()->GetQuestStatusById(QuestId))
+	{
+	case EQuestStatus::InProgress:
+	case EQuestStatus::CanComplete:
+		{
+			QuestItemWidget->GetQuestPlayingNotify()->SetVisibility(
+				ESlateVisibility::Visible);
+			QuestItemWidget->GetQuestStatus()->SetVisibility(
+				ESlateVisibility::Hidden);
+			break;
+		}
+	case EQuestStatus::Completed:
+		{
+			QuestItemWidget->GetQuestPlayingNotify()->SetVisibility(
+				ESlateVisibility::Hidden);
+			QuestItemWidget->GetQuestStatus()->SetVisibility(
+				ESlateVisibility::Visible);
+			QuestItemWidget->GetQuestStatus()->SetText(
+				FText::FromString(TEXT("완료")));
+			break;
+		}
+	case EQuestStatus::Available:
+		{
+			QuestItemWidget->GetQuestPlayingNotify()->SetVisibility(
+				ESlateVisibility::Hidden);
+			QuestItemWidget->GetQuestStatus()->SetVisibility(
+				ESlateVisibility::Visible);
+			QuestItemWidget->GetQuestStatus()->SetText(
+				FText::FromString(TEXT("진행 가능")));
+			break;
+		}
+	case EQuestStatus::Unavailable:
+		{
+			QuestItemWidget->GetQuestPlayingNotify()->SetVisibility(
+				ESlateVisibility::Hidden);
+			QuestItemWidget->GetQuestStatus()->SetVisibility(
+				ESlateVisibility::Visible);
+			QuestItemWidget->GetQuestStatus()->SetText(
+				FText::FromString(TEXT("미완")));
+			break;
+		}
+	default: { break; }
+	}
 }

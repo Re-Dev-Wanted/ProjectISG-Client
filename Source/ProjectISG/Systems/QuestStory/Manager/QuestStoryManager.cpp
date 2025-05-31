@@ -7,6 +7,7 @@
 TArray<FQuestStoryData> UQuestStoryManager::QuestArrayList;
 TMap<FString, FQuestStoryData> UQuestStoryManager::QuestData;
 TMap<FString, TArray<FQuestRequireData>> UQuestStoryManager::QuestRequireData;
+TMap<FString, TArray<FQuestRewardData>> UQuestStoryManager::QuestRewardData;
 TMap<FString, TArray<FQuestStoryDialogue>>
 UQuestStoryManager::QuestDialogueData;
 TMap<FString, FQuestSceneCutData> UQuestStoryManager::QuestSceneCutData;
@@ -22,6 +23,7 @@ void UQuestStoryManager::Initialize()
 		InitializeQuestData();
 		InitializeQuestDialogue();
 		InitializeQuestRequireData();
+		InitializeQuestRewardData();
 		InitializeQuestSceneCut();
 	}
 }
@@ -34,21 +36,30 @@ FQuestStoryData& UQuestStoryManager::GetQuestDataById(const FString& QuestId)
 TArray<FQuestStoryDialogue>& UQuestStoryManager::GetQuestDialogueById(
 	const FString& QuestId)
 {
+	if (!QuestDialogueData.Contains(QuestId))
+	{
+		QuestDialogueData.Add(QuestId, TArray<FQuestStoryDialogue>());
+	}
+
 	return *QuestDialogueData.Find(QuestId);
 }
 
 FQuestSceneCutData& UQuestStoryManager::GetQuestSceneCutById(
 	const FString& SceneId)
 {
+	if (!QuestSceneCutData.Contains(SceneId))
+	{
+		QuestSceneCutData.Add(SceneId, FQuestSceneCutData());
+	}
+
 	return *QuestSceneCutData.Find(SceneId);
 }
 
 void UQuestStoryManager::InitializeQuestData()
 {
 	const static ConstructorHelpers::FObjectFinder<UDataTable>
-		QuestStoryDataTable(
-			TEXT(
-				"'/Game/Systems/QuestStory/Data/DT_QuestStoryData.DT_QuestStoryData'"));
+		QuestStoryDataTable(TEXT(
+			"'/Game/Systems/QuestStory/Data/DT_QuestStoryData.DT_QuestStoryData'"));
 
 	if (!QuestStoryDataTable.Succeeded())
 	{
@@ -75,9 +86,8 @@ void UQuestStoryManager::InitializeQuestData()
 void UQuestStoryManager::InitializeQuestRequireData()
 {
 	const static ConstructorHelpers::FObjectFinder<UDataTable>
-		QuestRequireDataTable(
-			TEXT(
-				"'/Game/Systems/QuestStory/Data/DT_QuestRequireData.DT_QuestRequireData'"));
+		QuestRequireDataTable(TEXT(
+			"'/Game/Systems/QuestStory/Data/DT_QuestRequireData.DT_QuestRequireData'"));
 
 	if (!QuestRequireDataTable.Succeeded())
 	{
@@ -104,12 +114,42 @@ void UQuestStoryManager::InitializeQuestRequireData()
 	}
 }
 
+void UQuestStoryManager::InitializeQuestRewardData()
+{
+	const static ConstructorHelpers::FObjectFinder<UDataTable>
+		QuestRewardDataTable(TEXT(
+			"'/Game/Systems/QuestStory/Data/DT_QuestRewardData.DT_QuestRewardData'"));
+
+	if (!QuestRewardDataTable.Succeeded())
+	{
+		return;
+	}
+
+	TArray<FQuestRewardData*> TempQuestRewardData;
+	QuestRewardDataTable.Object->GetAllRows<FQuestRewardData>(
+		TEXT(""), TempQuestRewardData);
+
+	for (const FQuestRewardData* QuestReward : TempQuestRewardData)
+	{
+		if (QuestRewardData.Contains(QuestReward->GetQuestId()))
+		{
+			QuestRewardData[QuestReward->GetQuestId()].Add(*QuestReward);
+		}
+		else
+		{
+			TArray<FQuestRewardData> NewRewardData;
+			NewRewardData.Add(*QuestReward);
+
+			QuestRewardData.Add(QuestReward->GetQuestId(), NewRewardData);
+		}
+	}
+}
+
 void UQuestStoryManager::InitializeQuestDialogue()
 {
 	const static ConstructorHelpers::FObjectFinder<UDataTable>
-		QuestStoryDialogueTable(
-			TEXT(
-				"'/Game/Systems/QuestStory/Data/DT_QuestStoryDialogue.DT_QuestStoryDialogue'"));
+		QuestStoryDialogueTable(TEXT(
+			"'/Game/Systems/QuestStory/Data/DT_QuestStoryDialogue.DT_QuestStoryDialogue'"));
 
 	if (!QuestStoryDialogueTable.Succeeded())
 	{
@@ -134,8 +174,7 @@ void UQuestStoryManager::InitializeQuestDialogue()
 			TArray<FQuestStoryDialogue> NewTempData;
 			NewTempData.Add(*StoryDialogueData);
 
-			QuestDialogueData.Add(StoryDialogueData->GetQuestId(),
-			                      NewTempData);
+			QuestDialogueData.Add(StoryDialogueData->GetQuestId(), NewTempData);
 		}
 	}
 
@@ -153,9 +192,8 @@ void UQuestStoryManager::InitializeQuestDialogue()
 void UQuestStoryManager::InitializeQuestSceneCut()
 {
 	const static ConstructorHelpers::FObjectFinder<UDataTable>
-		QuestSceneCutDataTable(
-			TEXT(
-				"'/Game/Systems/QuestStory/Data/DT_QuestSceneCutData.DT_QuestSceneCutData'"));
+		QuestSceneCutDataTable(TEXT(
+			"'/Game/Systems/QuestStory/Data/DT_QuestSceneCutData.DT_QuestSceneCutData'"));
 
 	if (!QuestSceneCutDataTable.Succeeded())
 	{
@@ -169,102 +207,130 @@ void UQuestStoryManager::InitializeQuestSceneCut()
 	for (const FQuestSceneCutData* TempQuestSceneCutData :
 	     TempQuestSceneCutList)
 	{
-		QuestSceneCutData.Add(TempQuestSceneCutData->GetQuestSceneId(),
-		                      *TempQuestSceneCutData);
+		QuestSceneCutData.Add(TempQuestSceneCutData->GetQuestSceneId()
+		                      , *TempQuestSceneCutData);
 	}
 }
 
-bool UQuestStoryManager::CheckAndCompleteQuest(AMainPlayerController* PC,
-                                               const FString& QuestId)
+bool UQuestStoryManager::IsHiddenInQuestBook(const FString& QuestId)
+{
+	if (!QuestData[QuestId].GetQuestMetaData().Contains(
+		EQuestStoryMetaDataKey::IsHideInQuestBook))
+	{
+		return false;
+	}
+
+	return QuestData[QuestId].GetQuestMetaData()[
+		EQuestStoryMetaDataKey::IsHideInQuestBook] == TEXT("true");
+}
+
+bool UQuestStoryManager::CheckCompleteQuest(AMainPlayerController* PC
+                                            , const FString& QuestId)
 {
 	if (!PC->HasAuthority())
 	{
 		return false;
 	}
 
-	FQuestStoryData CurrentQuestStoryData = QuestData[QuestId];
-	bool IsSuccess = false;
-
-	switch (CurrentQuestStoryData.GetQuestObjective())
+	if (QuestData[QuestId].GetQuestObjective() ==
+		EQuestStoryObjective::Dialogue)
 	{
-	case EQuestStoryObjective::Dialogue:
-		{
-			IsSuccess = true;
-			break;
-		}
-	case EQuestStoryObjective::CollectItem:
-		{
-			UInventoryComponent* PlayerInventory = PC->GetPlayerState<
-				AMainPlayerState>()->GetInventoryComponent();
+		return true;
+	}
 
-			TArray<FString> RequireItemTable = GetQuestRequiredItemTableById(
-				QuestId);
+	const AMainPlayerState* PS = PC->GetPlayerState<AMainPlayerState>();
 
-			bool TempSuccess = true;
-			// 정상적으로 아이템이 존재하는 지 검증한다.
-			for (FString ItemTable : RequireItemTable)
+	for (FQuestRequireData& RequireData : GetRequireQuestDataById(QuestId))
+	{
+		switch (RequireData.GetRequireType())
+		{
+		case EQuestRequireType::HasItem:
 			{
-				TArray<FString> RequireItemData;
-				ItemTable.ParseIntoArray(RequireItemData, TEXT(","), true);
+				FItemMetaInfo RequireItem;
+				FormattingRequireItem(RequireData, RequireItem);
 
-				const uint32 ItemRequireId = FCString::Atoi(
-					*RequireItemData[0]);
-				const uint32 ItemRequireCount = FCString::Atoi(
-					*RequireItemData[1]);
-
-				if (PlayerInventory->GetCurrentRemainItemValue()[ItemRequireId]
-					< ItemRequireCount)
+				// 아이템 비교 로직에 실패한 경우 false를 반환해준다.
+				if (!IsExactRequireItemOption(PC, RequireData))
 				{
-					TempSuccess = false;
-					break;
+					return false;
 				}
-			}
 
-			// 여기서 이미 실패 판정이 되었으면 뒤로 나간다.
-			if (!TempSuccess)
+				break;
+			}
+		case EQuestRequireType::HasGold:
+			{
+				if (PS->GetGold() < RequireData.GetRequireGoldOptions().
+				                                GetGoldAmount())
+				{
+					return false;
+				}
+
+				break;
+			}
+		case EQuestRequireType::Custom:
+			{
+				return PC->GetCustomQuestComplete();
+			}
+		case EQuestRequireType::None:
+			{
+				return false;
+			}
+		default:
 			{
 				break;
 			}
-
-			// 아이템이 정상적으로 존재하는 경우 RemoveItemToClear 가
-			// true 인 상태라면 제거해준다.
-			if (CurrentQuestStoryData.GetQuestMetaData().Contains(
-					EQuestStoryMetaDataKey::RemoveItemToClear) &&
-				CurrentQuestStoryData.
-				GetQuestMetaData()[EQuestStoryMetaDataKey::RemoveItemToClear] ==
-				"true")
-			{
-				for (FString ItemTable : RequireItemTable)
-				{
-					TArray<FString> RequireItemData;
-					ItemTable.ParseIntoArray(
-						RequireItemData, TEXT(","), true);
-
-					const uint32 ItemRequireId = FCString::Atoi(
-						*RequireItemData[0]);
-					const uint32 ItemRequireCount = FCString::Atoi(
-						*RequireItemData[1]);
-
-					PlayerInventory->
-						RemoveItem(ItemRequireId, ItemRequireCount);
-				}
-			}
-
-			IsSuccess = true;
-			break;
-		}
-	default:
-		{
-			break;
 		}
 	}
 
-	if (IsSuccess)
+	return true;
+}
+
+bool UQuestStoryManager::CheckAndCompleteCustomQuest(
+	AMainPlayerController* PC, const FString& QuestId)
+{
+	if (!PC->HasAuthority())
+	{
+		return false;
+	}
+
+	if (QuestData[QuestId].GetQuestObjective() == EQuestStoryObjective::Custom)
 	{
 		CompleteQuest_Internal(PC, QuestId);
+		return true;
 	}
 
-	return IsSuccess;
+	return false;
+}
+
+bool UQuestStoryManager::CheckAndCompleteDialogueQuest(AMainPlayerController* PC
+	, const FString& QuestId)
+{
+	if (!PC->HasAuthority())
+	{
+		return false;
+	}
+
+	if (QuestData[QuestId].GetQuestObjective() ==
+		EQuestStoryObjective::Dialogue)
+	{
+		CompleteQuest_Internal(PC, QuestId);
+		return true;
+	}
+
+	return false;
+}
+
+bool UQuestStoryManager::CheckAndCompleteQuest(AMainPlayerController* PC
+                                               , const FString& QuestId)
+{
+	if (CheckCompleteQuest(PC, QuestId))
+	{
+		CompleteQuest_Internal(PC, QuestId);
+
+		return true;
+	}
+
+	return false;
 }
 
 TArray<FQuestRequireData> UQuestStoryManager::GetRequireQuestDataById(
@@ -278,6 +344,17 @@ TArray<FQuestRequireData> UQuestStoryManager::GetRequireQuestDataById(
 	return QuestRequireData[QuestId];
 }
 
+TArray<FQuestRewardData> UQuestStoryManager::GetRewardQuestDataById(
+	const FString& QuestId)
+{
+	if (!QuestRewardData.Contains(QuestId))
+	{
+		QuestRewardData.Add(QuestId, TArray<FQuestRewardData>());
+	}
+
+	return QuestRewardData[QuestId];
+}
+
 uint32 UQuestStoryManager::GetRequireQuestDateToAbleFinish(
 	const AMainPlayerController* PC, const FString& QuestId)
 {
@@ -288,21 +365,39 @@ uint32 UQuestStoryManager::GetRequireQuestDateToAbleFinish(
 		return 0;
 	}
 
+	const AMainPlayerState* PS = PC->GetPlayerState<AMainPlayerState>();
+
 	for (FQuestRequireData RequireData : QuestRequireData[QuestId])
 	{
 		switch (RequireData.GetRequireType())
 		{
 		case EQuestRequireType::HasItem:
 			{
-				const AMainPlayerState* PS = PC->GetPlayerState<
-					AMainPlayerState>();
-				if (PS->GetInventoryComponent()->HasItemInInventory(
-					RequireData.GetRequireItemOptions().GetRequireItemId(),
-					RequireData.GetRequireItemOptions().GetRequireItemCount()))
+				FItemMetaInfo RequireItem;
+				FormattingRequireItem(RequireData, RequireItem);
+
+				if (PS->GetInventoryComponent()->HasExactItemInInventory(
+					RequireItem))
 				{
 					Result += 1;
 				}
+
 				break;
+			}
+		case EQuestRequireType::HasGold:
+			{
+				if (PS->GetGold() >= RequireData.GetRequireGoldOptions().
+				                                 GetGoldAmount())
+				{
+					Result += 1;
+				}
+
+				break;
+			}
+		case EQuestRequireType::Custom:
+			{
+				// GetCustomQuestComplete 는 bool이라 참이면 1 더해준다.
+				Result += PC->GetCustomQuestComplete();
 			}
 		default:
 			{
@@ -314,61 +409,48 @@ uint32 UQuestStoryManager::GetRequireQuestDateToAbleFinish(
 	return Result;
 }
 
-TArray<FString> UQuestStoryManager::GetQuestRequiredItemTableById(
-	const FString& QuestId)
+void UQuestStoryManager::CompleteQuest_Internal(AMainPlayerController* PC
+                                                , const FString& QuestId)
 {
-	FQuestStoryData CurrentQuestStoryData = QuestData[QuestId];
-	TArray<FString> RequireItemTable;
-
-	// RequireItem Table이 있는 경우에 대해서 Parsing을 진행한다.
-	if (CurrentQuestStoryData.GetQuestMetaData().Contains(
-		EQuestStoryMetaDataKey::RequireItem))
-	{
-		// "/"를 기준으로 아이템 Key와 Value 테이블을 가져온다.
-		CurrentQuestStoryData.GetQuestMetaData()[
-				EQuestStoryMetaDataKey::RequireItem].
-			ParseIntoArray(RequireItemTable, TEXT("/"), true);
-	}
-
-	return RequireItemTable;
-}
-
-void UQuestStoryManager::CompleteQuest_Internal(AMainPlayerController* PC,
-                                                const FString& QuestId)
-{
-	FQuestStoryData CurrentQuestStoryData = QuestData[QuestId];
-
-	if (CurrentQuestStoryData.GetQuestMetaData().Contains(
-		EQuestStoryMetaDataKey::NextQuest))
-	{
-		PC->StartQuest(
-			CurrentQuestStoryData.GetQuestMetaData()[
-				EQuestStoryMetaDataKey::NextQuest]);
-	}
-
-	GiveRewardQuest_Internal(PC, QuestId);
-}
-
-void UQuestStoryManager::GiveRewardQuest_Internal(AMainPlayerController* PC,
-                                                  const FString& QuestId)
-{
-	FQuestStoryData CurrentQuestStoryData = QuestData[QuestId];
 	AMainPlayerState* PS = PC->GetPlayerState<AMainPlayerState>();
 
-	for (const FQuestRewardData RewardData : CurrentQuestStoryData.
-	     GetQuestRewardData())
+	FQuestStoryData CurrentQuestStoryData = QuestData[QuestId];
+
+	// 퀘스트에 필요한 조건 회수 조치 수행
+	for (FQuestRequireData& RequireData : GetRequireQuestDataById(QuestId))
 	{
-		switch (RewardData.GetRewardType())
+		switch (RequireData.GetRequireType())
 		{
-		case EQuestStoryRewardType::Gold:
+		case EQuestRequireType::HasItem:
 			{
-				// 기존 골드에 값을 추가해준다.
-				// 골드는 Id 자체가 Value로 취급된다.
-				PS->SetGold(
-					PS->GetGold() + FCString::Atoi(*RewardData.GetRewardId()));
+				if (CurrentQuestStoryData.GetQuestMetaData().
+				                          Contains(
+					                          EQuestStoryMetaDataKey::RemoveItemToClear)
+					&& CurrentQuestStoryData.GetQuestMetaData()[
+						EQuestStoryMetaDataKey::RemoveItemToClear] == TEXT(
+						"false"))
+				{
+					break;
+				}
+
+				FItemMetaInfo RequireItem;
+				FormattingRequireItem(RequireData, RequireItem);
+
+				PS->GetInventoryComponent()->RemoveExactItem(RequireItem);
+
+				break;
 			}
-		case EQuestStoryRewardType::Item:
+		case EQuestRequireType::HasGold:
 			{
+				PS->SetGold(
+					PS->GetGold() - RequireData.GetRequireGoldOptions().
+					                            GetGoldAmount());
+				break;
+			}
+		case EQuestRequireType::Custom:
+			{
+				PC->SetCustomQuestComplete(false);
+				break;
 			}
 		default:
 			{
@@ -376,4 +458,117 @@ void UQuestStoryManager::GiveRewardQuest_Internal(AMainPlayerController* PC,
 			}
 		}
 	}
+
+	// 보상 제공
+	GiveRewardQuest_Internal(PC, QuestId);
+}
+
+void UQuestStoryManager::GiveRewardQuest_Internal(
+	AMainPlayerController* PC, const FString& QuestId)
+{
+	if (!QuestRewardData.Contains(QuestId))
+	{
+		return;
+	}
+
+	AMainPlayerState* PS = PC->GetPlayerState<AMainPlayerState>();
+
+	for (FQuestRewardData& RewardData : QuestRewardData[QuestId])
+	{
+		switch (RewardData.GetRewardType())
+		{
+		case EQuestRewardType::Gold:
+			{
+				PS->SetGold(
+					PS->GetGold() + RewardData.GetRewardGoldOptions().
+					                           GetGoldAmount());
+
+				break;
+			}
+		case EQuestRewardType::Item:
+			{
+				FItemMetaInfo NewItem;
+				NewItem.SetId(RewardData.GetRewardItemOptions().GetItemId());
+				NewItem.SetCurrentCount(
+					RewardData.GetRewardItemOptions().GetItemCount());
+				NewItem.SetMetaData(
+					RewardData.GetRewardItemOptions().GetItemMetaData());
+
+				PS->GetInventoryComponent()->AddItem(NewItem);
+
+				break;
+			}
+		default:
+			{
+				break;
+			}
+		}
+	}
+}
+
+void UQuestStoryManager::FormattingRequireItem(
+	FQuestRequireData& RequireData, FItemMetaInfo& ItemMetaInfo)
+{
+	// 기본 MetaData 세팅
+	ItemMetaInfo.SetId(
+		RequireData.GetRequireItemOptions().GetItemId());
+	ItemMetaInfo.SetCurrentCount(
+		RequireData.GetRequireItemOptions().GetItemCount());
+	ItemMetaInfo.SetMetaData(
+		RequireData.GetRequireItemOptions().GetItemMetaData());
+}
+
+bool UQuestStoryManager::IsExactRequireItemOption(AMainPlayerController* PC,
+                                                  FQuestRequireData&
+                                                  RequireData)
+{
+	// Require 타입이 Item 요구가 아니면 굳이 계산할 필요 없다.
+	if (RequireData.GetRequireType() != EQuestRequireType::HasItem)
+	{
+		return false;
+	}
+
+	// Require Item Meta Info에 대해 Formatting하고 시작한다.
+	FItemMetaInfo RequireItemMetaInfo;
+	FormattingRequireItem(RequireData, RequireItemMetaInfo);
+
+	// 부가 데이터를 가져와 해당 데이터 기반으로 분석 기준을 재정립 한다.
+	const TMap<EQuestAdditiveItemMetaData, FString> AdditiveData = RequireData.
+		GetRequireItemOptions().GetItemAdditiveMetaData();
+
+	const AMainPlayerState* PS = PC->GetPlayerState<AMainPlayerState>();
+	const UInventoryComponent* InventoryComponent = PS->GetInventoryComponent();
+
+	// 랭크 무시 관련 태그를 보유한 경우에 대해 처리한다.
+	if (AdditiveData.Contains(EQuestAdditiveItemMetaData::IgnoreItemRank))
+	{
+		// 랭크 무시 시 단순 Id를 기반으로 값이 존재하는지 확인한다.
+		if (InventoryComponent->GetCurrentRemainItemValue().Contains(
+			RequireItemMetaInfo.GetId()))
+		{
+			// RequireItemMetaInfo의 요구하는 갯수만큼 Inventory에 보유하고 있는 지 검증한다.
+			return InventoryComponent->GetCurrentRemainItemValue()[
+				RequireItemMetaInfo.
+				GetId()] >= RequireItemMetaInfo.GetCurrentCount();
+		}
+
+		// Inventory에 비교할 아이템의 ID 값이 존재하지 않으면 애초부터 비교가 불가능하기에
+		// false를 반환한다.
+		return false;
+	}
+
+	// 위에 조건들을 전부 무시하고 나면, 단순히 아이템을 포함하고 있는지 비교한다..
+	if (!InventoryComponent->GetCurrentRemainItemMetaValue().
+	                         Contains(RequireItemMetaInfo))
+	{
+		return false;
+	}
+
+	if (InventoryComponent->GetCurrentRemainItemMetaValue()[
+		RequireItemMetaInfo] < RequireItemMetaInfo.GetCurrentCount())
+	{
+		return false;
+	}
+
+	return true;
 }

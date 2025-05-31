@@ -65,6 +65,8 @@ void ATradingNPC::OnInteractive(AActor* Causer)
 {
 	IInteractionInterface::OnInteractive(Causer);
 
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFX_Open, GetActorLocation());
+
 	Causer->SetActorLocation(InteractionPos->GetComponentLocation());
 	Causer->SetActorRotation(InteractionPos->GetComponentRotation());
 

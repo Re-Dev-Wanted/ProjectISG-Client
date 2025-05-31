@@ -53,6 +53,7 @@ void AWaterVolume::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 	{
 		FloatingActors.Add(Actor);
 		Actor->EnterWater();
+		Actor->SetDamping(10.f, 3.0f);
 	}
 }
 
@@ -62,6 +63,7 @@ void AWaterVolume::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	if (AFloatingActor* Actor = Cast<AFloatingActor>(OtherActor))
 	{
 		Actor->GetBuoyancyComponent()->SetIsInWater(false);
+		Actor->SetDamping(0.01f, .0f);
 		FloatingActors.Remove(Actor);
 	}
 }

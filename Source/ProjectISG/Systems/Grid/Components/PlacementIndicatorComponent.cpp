@@ -11,11 +11,11 @@
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Manager/GridManager.h"
-#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/Logging/LoggingEnum.h"
 #include "ProjectISG/Systems/Logging/LoggingStruct.h"
 #include "ProjectISG/Systems/Logging/LoggingSubSystem.h"
+#include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 
 class AMainPlayerCharacter;
 
@@ -152,7 +152,7 @@ void UPlacementIndicatorComponent::Execute()
 		               IndicateActor->GetClass(), PlacementItemId);
 	}
 
-	if (!bIsInfiniteItem)
+	if (!bCanGeneratedOtherItem)
 	{
 		if (PlayerInventoryComponent->RemoveItemCurrentSlotIndex(1))
 		{
@@ -198,6 +198,16 @@ void UPlacementIndicatorComponent::ExecuteInternal(
 				GetWorld()->GetGameInstance()->GetSubsystem<ULoggingSubSystem>()
 				          ->
 				          LoggingDataWithScreenshot(LogParams);
+			}
+
+			// 제단 설치 퀘스트 코드
+			AMainPlayerController* PC = Cast<AMainPlayerController>(PlayerController);
+			if (PC)
+			{
+				if (PC->GetQuestManageComponent()->GetCurrentPlayingQuestId() == FString::Printf(TEXT("Story_005")))
+				{
+					PC->SetCustomQuestComplete(true);
+				}
 			}
 		}
 		else
@@ -327,24 +337,26 @@ void UPlacementIndicatorComponent::OnChange(
 		&& ActorClass
 		&& ActorClass->IsChildOf(APlacement::StaticClass());
 
+	// 하우징이 가능한 상태
 	if (bIsIndicatorActive)
 	{
+		const uint16 GeneratedOtherItemId =
+			UItemManager::GetGeneratedOtherItemIdById(ItemId);
 		// 다른 아이템을 생성하는 도구인지 판단
-		bIsInfiniteItem = UItemManager::IsInfiniteDurability(ItemId);
+
+		// 다른 아이템을 생성한다 -> 특정 아이템을 건축한다
+		// Item Type이 Housing이고, 생성되는 아이템이 공기가 아니다.
+		bCanGeneratedOtherItem = GeneratedOtherItemId > 0;
+
 		uint16 OtherItemId = 0;
 		TSubclassOf<APlacement> PlacementClass;
 
-		if (bIsInfiniteItem)
+		if (bCanGeneratedOtherItem)
 		{
-			// 다른 아이템Id가 존재하는지 판단
-			// 없다면 해당 도구 Data에 문제가 있는것이므로 DataTable 확인
-			uint16 Id = UItemManager::GetGeneratedOtherItemIdById(ItemId);
+			const FItemInfoData OtherInfoData = UItemManager::GetItemInfoById(
+				GeneratedOtherItemId);
 
-			const FItemInfoData OtherInfoData =
-				UItemManager::GetItemInfoById(Id);
-			const bool bIsHousing = UItemManager::IsItemCanHousing(ItemId);
-
-			if (bIsHousing)
+			if (UItemManager::IsItemCanHousing(ItemId))
 			{
 				const TSubclassOf<AActor> OtherActorClass = OtherInfoData.
 					GetPlaceItemActor();
@@ -352,18 +364,19 @@ void UPlacementIndicatorComponent::OnChange(
 					APlacement::StaticClass()))
 				{
 					PlacementClass = OtherActorClass;
-					OtherItemId = Id;
+					OtherItemId = GeneratedOtherItemId;
 				}
 			}
 		}
 
-		PlacementItemId = bIsInfiniteItem && OtherItemId > 0
+		PlacementItemId = bCanGeneratedOtherItem && OtherItemId > 0
 			                  ? OtherItemId
 			                  : ItemId;
 		if (!PlacementClass)
 		{
 			PlacementClass = ActorClass;
 		}
+
 		OnActivate(PlacementClass);
 	}
 	else
@@ -381,7 +394,7 @@ void UPlacementIndicatorComponent::OnActivate(
 		return;
 	}
 
-	AMainPlayerState* PlayerState = Cast<AMainPlayerState>(
+	const AMainPlayerState* PlayerState = Cast<AMainPlayerState>(
 		PlayerController->PlayerState);
 
 	if (!PlayerState)

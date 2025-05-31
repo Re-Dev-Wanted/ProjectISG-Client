@@ -18,6 +18,11 @@ void UUIC_SceneDialogueWidget::StartSceneDialogue(
 	SceneDialogueWidgetView->GetDialogueText()->SetText(
 		SceneCutData.GetSceneCutList()[SceneIndex].GetSceneComment());
 
+	if (SceneIndex <= SceneCutData.GetSceneCommentTTS().Num())
+	{
+		SceneDialogueWidgetView->PlaySound(SceneCutData.GetSceneCommentTTS()[SceneIndex]);
+	}
+
 	SceneDialogueWidgetView->PlayAnimation(
 		SceneDialogueWidgetView->GetDialogueAnimation());
 }

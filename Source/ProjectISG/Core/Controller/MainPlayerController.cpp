@@ -6,9 +6,13 @@
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Loading/UIC_Loading.h"
+#include "ProjectISG/Core/UI/Loading/UIV_Loading.h"
 #include "ProjectISG/Core/UI/Popup/Inventory/UI/UIC_InventoryUI.h"
+#include "ProjectISG/Core/UI/Popup/SceneList/UI/CutSceneList/UIC_SceneListUI.h"
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 
+class UUIC_Loading;
 class UISGGameInstance;
 
 AMainPlayerController::AMainPlayerController()
@@ -33,6 +37,11 @@ void AMainPlayerController::BeginPlay()
 	{
 		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
 		StartScene(FString::Printf(TEXT("Scene_7")));
+		UUIC_SceneListUI* SceneListUIController = Cast<UUIC_SceneListUI>(
+			GetUIManageComponent()->ControllerInstances[
+				EUIName::Popup_SceneListUI]);
+		SceneListUIController->OnSceneListEndNotified.BindUObject(
+			this, &ThisClass::MainSceneEnd);
 	}
 }
 
@@ -44,7 +53,17 @@ void AMainPlayerController::OnRep_PlayerState()
 	{
 		UIManageComponent->PushWidget(EUIName::Gameplay_MainHUD);
 		StartScene(FString::Printf(TEXT("Scene_7")));
+		UUIC_SceneListUI* SceneListUIController = Cast<UUIC_SceneListUI>(
+			GetUIManageComponent()->ControllerInstances[
+				EUIName::Popup_SceneListUI]);
+		SceneListUIController->OnSceneListEndNotified.BindUObject(
+			this, &ThisClass::MainSceneEnd);
 	}
+}
+
+void AMainPlayerController::MainSceneEnd()
+{
+	StartQuest(FString::Printf(TEXT("Story_000")));
 }
 
 void AMainPlayerController::StartQuest(const FString& QuestId)
@@ -61,6 +80,16 @@ void AMainPlayerController::StartQuest(const FString& QuestId)
 	}
 }
 
+void AMainPlayerController::EndQuest()
+{
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	GetWorld()->GetGameState<AMainGameState>()->EndWorldQuest();
+}
+
 void AMainPlayerController::StartQuestToPlayer(const FString& QuestId)
 {
 	if (!IsLocalController())
@@ -68,6 +97,7 @@ void AMainPlayerController::StartQuestToPlayer(const FString& QuestId)
 		return;
 	}
 
+	GetUIManageComponent()->ResetWidget();
 	QuestManageComponent->StartQuest(QuestId);
 }
 
@@ -81,6 +111,12 @@ void AMainPlayerController::ShowLoadingUIAndCreateSession(bool bIsServerTravel)
 {
 	PopUI();
 	PushUI(EUIName::Loading_LoadingUI);
+
+	const UUIC_Loading* LoadingController = Cast<UUIC_Loading>(
+		UIManageComponent->ControllerInstances[EUIName::Loading_LoadingUI]);
+	UUIV_Loading* LoadingView = Cast<
+		UUIV_Loading>(LoadingController->GetView());
+	LoadingView->SetCreateSession(true);
 
 	UISGGameInstance* GameInstance = Cast<UISGGameInstance>(
 		GetWorld()->GetGameInstance());
@@ -130,8 +166,8 @@ void AMainPlayerController::PopUI()
 	UIManageComponent->PopWidget();
 }
 
-void AMainPlayerController::Alert(const EAlertType AlertType,
-                                  const FString& Message, const float Time)
+void AMainPlayerController::Alert(const EAlertType AlertType
+                                  , const FString& Message, const float Time)
 {
 	if (UIManageComponent->GetTopStackUI() != EUIName::Gameplay_MainHUD)
 	{
@@ -163,10 +199,22 @@ void AMainPlayerController::Client_StartQuestToPlayer_Implementation(
 	StartQuestToPlayer(QuestId);
 }
 
-void AMainPlayerController::Client_ResetWidgetAndPushTimeAlert_Implementation()
+void AMainPlayerController::Client_EndQuestToPlayer_Implementation()
+{
+	QuestManageComponent->EndQuest(false);
+}
+
+void
+AMainPlayerController::Client_ResetWidgetAndPushContentsTimeAlert_Implementation()
 {
 	UIManageComponent->ResetWidget();
-	UIManageComponent->PushWidget(EUIName::Modal_TimeAlert);
+	Alert(EAlertType::Error, TEXT("밤 8시 이후에는 컨텐츠가 제한됩니다!!!"), 4.0f);
+}
+
+void AMainPlayerController::Client_PushForceSleepTimeAlert_Implementation()
+{
+	UIManageComponent->ResetWidget();
+	Alert(EAlertType::Error, TEXT("저녁 11시에 강제로 수면에 들어갑니다!!!"), 4.0f);
 }
 
 void AMainPlayerController::Server_SetOwnerActor_Implementation(

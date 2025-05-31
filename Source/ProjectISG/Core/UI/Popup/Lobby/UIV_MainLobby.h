@@ -18,10 +18,10 @@ protected:
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()
-	void OnClickedOpenChooseCharacterUIButton();
+	void OnClickedGameStartButton();
 
 	UFUNCTION()
-	void OnClickedFindSessionUIButton();
+	void OnClickedMultiplayButton();
 
 	UFUNCTION()
 	void OnClickedExitButton();
@@ -29,12 +29,12 @@ protected:
 private:
 #pragma region Widget
 	UPROPERTY(meta = (BindWidget))
-	class UButton* OpenChooseCharacterUIButton;
+	class UButton* GameStart;
 
 	UPROPERTY(meta = (BindWidget))
-	class UButton* OpenFindSessionUIButton;
+	class UButton* Multiplay;
 
 	UPROPERTY(meta = (BindWidget))
-	class UButton* ExitButton;
+	class UButton* Exit;
 #pragma endregion
 };

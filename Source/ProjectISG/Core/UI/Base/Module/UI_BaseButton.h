@@ -5,6 +5,7 @@
 #include "ProjectISG/Core/ISGGameInstance.h"
 #include "UI_BaseButton.generated.h"
 
+class UHorizontalBox;
 enum class EColorPalette : uint8;
 class UTextBlock;
 class UButton;
@@ -16,6 +17,7 @@ class PROJECTISG_API UUI_BaseButton : public UUserWidget
 
 public:
 	FORCEINLINE TObjectPtr<UButton> Get() { return ParentButton; }
+	GETTER(TObjectPtr<UTextBlock>, Text)
 
 protected:
 	virtual void NativePreConstruct() override;
@@ -24,7 +26,7 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> ParentButton;
 
-	UPROPERTY(meta=(BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> Text;
 
 	UPROPERTY(EditAnywhere, Category = "Options"

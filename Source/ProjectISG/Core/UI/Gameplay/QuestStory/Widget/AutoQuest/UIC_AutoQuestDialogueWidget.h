@@ -12,6 +12,8 @@ class PROJECTISG_API UUIC_AutoQuestDialogueWidget : public UBaseUIController
 public:
 	void StartQuestDialogue();
 
+	void SkipQuestDialogue();
+
 protected:
 	virtual void InitializeController(UBaseUIView* NewView,
 	                                  UBaseUIModel* NewModel) override;
@@ -21,4 +23,6 @@ private:
 
 	UFUNCTION()
 	void OnFinishDialogue();
+
+	FTimerHandle QuestDialogueChangeTimerHandle;
 };
