@@ -6,6 +6,8 @@
 #include "ProjectISG/Systems/Water/Actors/FloatingActor.h"
 #include "Bobber.generated.h"
 
+class UNiagaraSystem;
+
 UCLASS()
 class PROJECTISG_API ABobber : public AFloatingActor
 {
@@ -43,4 +45,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	UChildActorComponent* Ripples;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UNiagaraSystem> Effect_Bite;
 };

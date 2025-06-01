@@ -2,7 +2,7 @@
 
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "ProjectISG/Systems/Water/Components/BuoyancyComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 ABobber::ABobber()
 {
@@ -59,6 +59,8 @@ void ABobber::OnBite(UStaticMesh* Fish)
 	FVector Impulse = FVector::DownVector * ImpulseStrength;
 	Root->AddImpulse(Impulse);
 
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), Effect_Bite, GetActorLocation());
+	
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), SFX_Bite, GetActorLocation());
 
 	// FishMeshComp->SetStaticMesh(Fish);
