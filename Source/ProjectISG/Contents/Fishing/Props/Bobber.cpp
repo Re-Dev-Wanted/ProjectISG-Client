@@ -2,15 +2,21 @@
 
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "ProjectISG/Systems/Water/Components/BuoyancyComponent.h"
 
 ABobber::ABobber()
 {
+	PrimaryActorTick.bCanEverTick = true;
+	
 	LineAttachPoint = CreateDefaultSubobject<USceneComponent>(TEXT("LineAttachPoint"));
 	LineAttachPoint->SetupAttachment(MeshComponent);
 
 	FishMeshComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FishMesh"));
 	FishMeshComp->SetupAttachment(RootComponent);
 	FishMeshComp->SetRelativeScale3D(FVector::OneVector * 0.5f);
+
+	Ripples = CreateDefaultSubobject<UChildActorComponent>(TEXT("Ripple"));
+	Ripples->SetupAttachment(RootComponent);
 
 	Root->SetSimulatePhysics(false);
 }
@@ -68,7 +74,29 @@ void ABobber::RemoveFish()
 	// }
 }
 
+void ABobber::AppearRipple(FVector Location, FRotator Rotation)
+{
+	Ripples->SetHiddenInGame(false);
+}
+
+void ABobber::DisappearRipple()
+{
+	Ripples->SetHiddenInGame(true);
+}
+
 float ABobber::GetBuoyancyScale() const
 {
 	return 0.5f;
+}
+
+void ABobber::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (!Ripples)
+	{
+		return;
+	}
+	
+	Ripples->SetWorldRotation(FRotator::ZeroRotator);
 }

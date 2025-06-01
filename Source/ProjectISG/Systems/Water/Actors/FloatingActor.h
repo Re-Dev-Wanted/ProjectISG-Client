@@ -34,8 +34,14 @@ public:
 
 	virtual void EnterWater();
 
+	virtual void ExitWater();
+
 	void SetDamping(float Linear, float Angular);
 
+	virtual void AppearRipple(FVector Location, FRotator Rotation) {}
+
+	virtual void DisappearRipple() {}
+	
 protected:
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* Root;

@@ -20,8 +20,14 @@ public:
 
 	void RemoveFish();
 
+	virtual void AppearRipple(FVector Location, FRotator Rotation) override;
+
+	virtual void DisappearRipple() override;
+
 protected:
 	virtual float GetBuoyancyScale() const override;
+
+	virtual void Tick(float DeltaSeconds) override;
 	
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* LineAttachPoint;
@@ -34,4 +40,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USoundBase> SFX_Bite;
+
+	UPROPERTY(EditAnywhere)
+	UChildActorComponent* Ripples;
 };

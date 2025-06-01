@@ -27,7 +27,7 @@ void UUIC_FishingUI::AppearUI()
 	Super::AppearUI();
 
 	ATimeManager* TimeManager = Cast<ATimeManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ATimeManager::StaticClass()));
-	TimeManager->OnForceSleepTimeAlmostReached.AddDynamic(this, &ThisClass::OnAction);
+	TimeManager->OnForceSleepTimeAlmostReached.AddUniqueDynamic(this, &ThisClass::OnAction);
 }
 
 void UUIC_FishingUI::BindInputAction(UEnhancedInputComponent* InputComponent)
