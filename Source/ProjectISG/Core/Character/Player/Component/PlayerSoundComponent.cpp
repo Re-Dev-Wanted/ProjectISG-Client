@@ -32,3 +32,8 @@ void UPlayerSoundComponent::PlayTTSSound(USoundWave* TargetTTS)
 		TTSAudioComponent->Play();
 	}
 }
+
+void UPlayerSoundComponent::StopTTSSound()
+{
+	TTSAudioComponent->Stop();
+}
