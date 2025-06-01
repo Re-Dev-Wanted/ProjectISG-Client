@@ -319,6 +319,7 @@ void AHoedField::OnTouchResponse(AActor* Causer)
 			PC->SetCustomQuestComplete(true);
 		}
 		SetWet(true);
+		PlantedCrop.Crop->SetOverlayInteractMaterial(false);
 	}
 }
 

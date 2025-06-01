@@ -39,6 +39,12 @@ ABaseCrop::ABaseCrop()
 	InteractionPos = CreateDefaultSubobject<USceneComponent>(
 		TEXT("InteractionPos"));
 	InteractionPos->SetupAttachment(Root);
+
+	ConstructorHelpers::FObjectFinder<UMaterial> tempMat (TEXT("'/Game/Contents/Farming/Props/M_CropCanInteract.M_CropCanInteract'"));
+	if (tempMat.Succeeded())
+	{
+		OverlayMaterial = tempMat.Object;
+	}
 }
 
 void ABaseCrop::BeginPlay()
@@ -58,8 +64,17 @@ void ABaseCrop::BeginPlay()
 	CropBecomeSprout = CropTotalGrowTime / 4;
 	CropBecomeStem = CropTotalGrowTime / 2;
 
+	SetOverlayInteractMaterial(true);
+
 	TimeManager->AddSleepTimeToCrop.AddDynamic(
 		this, &ThisClass::UpdateGrowTimeBySleep);
+	OnDryField.AddLambda
+	(
+		[this]()
+		{
+			this->SetOverlayInteractMaterial(true);
+		}
+	);
 }
 
 void ABaseCrop::GetLifetimeReplicatedProps(
@@ -381,5 +396,18 @@ void ABaseCrop::NetMulticast_ChangeCurrentCropState_Implementation(
 				GetMeshMaterial());
 			break;
 		}
+	}
+}
+
+void ABaseCrop::SetOverlayInteractMaterial(bool value)
+{
+	UE_LOG(LogTemp, Warning, TEXT("test"));
+	if (value)
+	{
+		Mesh->SetOverlayMaterial(OverlayMaterial);
+	}
+	else
+	{
+		Mesh->SetOverlayMaterial(nullptr);
 	}
 }
