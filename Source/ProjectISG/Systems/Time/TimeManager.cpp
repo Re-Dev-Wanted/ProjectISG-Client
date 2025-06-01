@@ -1,9 +1,14 @@
 ﻿#include "TimeManager.h"
 
+#include "LevelSequenceActor.h"
+#include "LevelSequencePlayer.h"
 #include "SleepManager.h"
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/PlayerState.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
@@ -74,9 +79,17 @@ void ATimeManager::BeginPlay()
 	}
 
 	OnContentRestrictionTimeReached.AddDynamic(
+		this, &ATimeManager::StopLevelSequence);
+	OnContentRestrictionTimeReached.AddDynamic(
 		this, &ATimeManager::ResetAllPlayerWidget);
+	
 	OnForceSleepTimeAlmostReached.AddDynamic(
 		this, &ATimeManager::PushSleepAlertWidget);
+	
+	OnContentRestrictionCancelTimeReached.AddDynamic(
+		this, &ATimeManager::SetIsInteractiveTrue);
+
+	SleepManager->ForceSleepDelegate.AddDynamic(this, &ATimeManager::StopLevelSequence);
 }
 
 void ATimeManager::Tick(float DeltaTime)
@@ -261,7 +274,6 @@ void ATimeManager::UpdateTimeOfDay(ETimeOfDay TOD)
 			}
 		case ETimeOfDay::Night:
 			{
-				OnContentRestrictionTimeReached.Broadcast();
 				LoggingToNight();
 				TimeController->UpdateTimeImage(TimeModel->GetNightIcon());
 				break;
@@ -361,7 +373,25 @@ void ATimeManager::ResetAllPlayerWidget()
 		if (PC)
 		{
 			PC->Client_ResetWidgetAndPushContentsTimeAlert();
+			PlayerState->GetPawn<AMainPlayerCharacter>()->GetInteractionComponent()->SetIsRestrictionTime(true);
 		}
+	}
+}
+
+void ATimeManager::StopLevelSequence()
+{
+	if (HasAuthority() == false)
+	{
+		return;
+	}
+
+	ALevelSequenceActor* CurrentLevelSequenceActor = Cast<ALevelSequenceActor>(
+		UGameplayStatics::GetActorOfClass(GetWorld(),
+		                                  ALevelSequenceActor::StaticClass()));
+	if (CurrentLevelSequenceActor)
+	{
+		CurrentLevelSequenceActor->GetSequencePlayer()->Stop();
+		CurrentLevelSequenceActor->Destroy();
 	}
 }
 
@@ -372,7 +402,6 @@ void ATimeManager::PushSleepAlertWidget()
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("test"));
 	AGameStateBase* GameState = GetWorld()->GetGameState();
 	for (APlayerState* PlayerState : GameState->PlayerArray)
 	{
@@ -382,6 +411,23 @@ void ATimeManager::PushSleepAlertWidget()
 		{
 			PC->Client_PushForceSleepTimeAlert();
 		}
+	}
+}
+
+void ATimeManager::SetIsInteractiveTrue()
+{
+	if (HasAuthority() == false)
+	{
+		return;
+	}
+
+	AGameStateBase* GameState = GetWorld()->GetGameState();
+	for (APlayerState* PlayerState : GameState->PlayerArray)
+	{
+		PlayerState->GetPawn<AMainPlayerCharacter>()->GetInteractionComponent()
+				   ->SetIsRestrictionTime(false);
+		PlayerState->GetPawn<AMainPlayerCharacter>()->GetInteractionComponent()
+		           ->SetIsInteractive(true);
 	}
 }
 

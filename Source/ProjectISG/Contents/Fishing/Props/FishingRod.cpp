@@ -194,12 +194,16 @@ Bobber->SetActorHiddenInGame(!bLoop);
 
 	if (Player->IsLocallyControlled())
 	{
-		UUIC_FishingUI* ModalUIController =
-			Cast<UUIC_FishingUI>(
-				PC->GetUIManageComponent()->ControllerInstances[
-					EUIName::Modal_FishingUI]);
+		if (PC->GetUIManageComponent()->HasViewUI(EUIName::Modal_FishingUI))
+		{
+			UUIC_FishingUI* ModalUIController =
+				Cast<UUIC_FishingUI>(
+					PC->GetUIManageComponent()->ControllerInstances[
+						EUIName::Modal_FishingUI]);
 
-		ModalUIController->SetUI(false, TEXT("RM"), TEXT("회수하기"));
+			ModalUIController->SetUI(false, TEXT("RM"), TEXT("회수하기"));
+		}
+			
 	}
 
 	IsInWater = false;

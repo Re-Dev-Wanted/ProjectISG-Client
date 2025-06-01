@@ -25,4 +25,13 @@ public:
 	virtual FString GetInteractiveDisplayText() const override;
 
 	virtual void OnClosed() override;
+
+	UFUNCTION()
+	void UnlockPlayer();
+
+	UFUNCTION(Client, Reliable)
+	void Client_UnlockPlayer();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void NetMulticast_SetInteractingPlayerPosition(class AMainPlayerCharacter* Player);
 };

@@ -62,7 +62,10 @@ void UGA_EndCookingMode::UnlockPlayer()
 	KitchenFurniture->UnlockPlayer();
 
 	Player->bUseControllerRotationYaw = true;
-	Player->GetInteractionComponent()->SetIsInteractive(true);
+	if (Player->GetInteractionComponent()->GetIsRestrictionTime() == false)
+	{
+		Player->GetInteractionComponent()->SetIsInteractive(true);
+	}
 	Player->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	Player->GetCameraComponent()->Activate();
 

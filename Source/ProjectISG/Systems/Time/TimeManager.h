@@ -49,7 +49,13 @@ protected:
 	void ResetAllPlayerWidget();
 
 	UFUNCTION()
+	void StopLevelSequence();
+
+	UFUNCTION()
 	void PushSleepAlertWidget();
+
+	UFUNCTION()
+	void SetIsInteractiveTrue();
 
 private:
 	void UpdateCycleTime(float DeltaTime);
