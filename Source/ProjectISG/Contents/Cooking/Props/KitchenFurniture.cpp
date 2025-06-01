@@ -201,25 +201,11 @@ void AKitchenFurniture::Client_UnlockPlayer_Implementation()
 	{
 		return;
 	}
-	// FGameplayEventData EventData;
-	// EventData.EventTag = ISGGameplayTags::Cooking_Active_EndCooking;
-	// EventData.Instigator = GetInteractingPlayer();
-	// EventData.Target = this;
-	// 	
-	// GetInteractingPlayer()->GetAbilitySystemComponent()->HandleGameplayEvent(EventData.EventTag, &EventData);
 	
-	
-	AMainPlayerController* PC = Cast<AMainPlayerController>(
-		GetInteractingPlayer()->GetController());
-	if (PC)
-	{
-		PC->SetIgnoreLookInput(false);
-		PC->SetViewTargetWithBlend(GetInteractingPlayer());
-		GetInteractingPlayer()->bUseControllerRotationYaw = true;
-		GetInteractingPlayer()->GetCharacterMovement()->SetMovementMode(
-			MOVE_Walking);
-		GetInteractingPlayer()->GetCameraComponent()->Activate();
-	}
+	FGameplayTagContainer ActivateTag;
+	ActivateTag.AddTag(ISGGameplayTags::Cooking_Active_EndCooking);
+	GetInteractingPlayer()->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
+		ActivateTag);
 }
 
 void AKitchenFurniture::Server_SetInteractingPlayer_Implementation(

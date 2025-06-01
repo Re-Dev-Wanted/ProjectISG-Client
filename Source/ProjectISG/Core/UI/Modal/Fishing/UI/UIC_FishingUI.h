@@ -19,6 +19,8 @@ private:
 		meta = (AllowPrivateAccess = true, EditCondition = "IsInputAccess"))
 	TObjectPtr<UInputAction> CatchAction;
 
+	virtual void AppearUI() override;
+
 	virtual void BindInputAction(UEnhancedInputComponent* InputComponent) override;
 
 	UFUNCTION()
