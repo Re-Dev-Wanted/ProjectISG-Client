@@ -1,5 +1,6 @@
 #include "HoedField.h"
 
+#include "NiagaraFunctionLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
 #include "Net/UnrealNetwork.h"
@@ -15,7 +16,6 @@
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
-#include "ProjectISG/Systems/QuestStory/Manager/QuestStoryManager.h"
 
 AHoedField::AHoedField()
 {
@@ -26,6 +26,8 @@ AHoedField::AHoedField()
 
 void AHoedField::OnSpawned()
 {
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), Effect, GetActorLocation());
+	
 	const float Percent = FMath::RandRange(1.f, 100.f);
 
 	if (Percent > ChanceBasedPercent)
@@ -299,14 +301,6 @@ void AHoedField::OnTouchResponse(AActor* Causer)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("씨앗심기 (서버)"));
 		PlantCrop(ItemData, ItemId);
-
-		// 사운드 관련 Cue 강제 진행
-		FGameplayCueParameters Param;
-		Param.AbilityLevel = 1;
-		Param.EffectCauser = Player;
-
-		Player->GetAbilitySystemComponent()->ExecuteGameplayCue(
-			ISGGameplayTags::GameplayCue_Actor_Farming, Param);
 	}
 
 	if (UsingType == "Watering" && PlantedCrop.IsValid())

@@ -181,7 +181,7 @@ void AFishingRod::OnEventFinish(bool bLoop)
 		Handle.Invalidate();
 	}
 
-Bobber->SetActorHiddenInGame(!bLoop);
+	Bobber->SetActorHiddenInGame(!bLoop);
 
 	IsBiteFish = false;
 	FishData = FFishData();
@@ -272,7 +272,8 @@ void AFishingRod::ReelInLine()
 		GetWorld()->GetTimerManager().ClearTimer(Handle);
 		Handle.Invalidate();
 	}
-
+	
+	Bobber->DisappearRipple();
 	Bobber->SetCollisionAndPhysicsEnabled(false);
 	Bobber->AttachToComponent(PocketSocketComp,
 	                          FAttachmentTransformRules::SnapToTargetNotIncludingScale);

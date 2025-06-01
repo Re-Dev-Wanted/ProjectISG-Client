@@ -5,6 +5,7 @@
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "HoedField.generated.h"
 
+class UNiagaraSystem;
 struct FItemMetaInfo;
 struct FItemInfoData;
 class ABaseCrop;
@@ -87,6 +88,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
 	meta = (AllowPrivateAccess = true, ClampMin = 0, ClampMax = 100))
 	float ChanceBasedPercent = 20.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings)
+	TObjectPtr<UNiagaraSystem> Effect;
+	
 
 	void UpdateState();
 };
