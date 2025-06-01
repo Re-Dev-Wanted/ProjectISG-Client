@@ -9,6 +9,7 @@
 #include "InventoryComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryUpdateNotified);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventoryAddNotified, uint16, ItemId);
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECTISG_API UInventoryComponent : public UActorComponent, public IItemHandler
@@ -55,6 +56,8 @@ public:
 	}
 
 	FOnInventoryUpdateNotified OnInventoryUpdateNotified;
+
+	FOnInventoryAddNotified OnInventoryAddNotified;
 
 	void InitializeItemData();
 	
