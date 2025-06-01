@@ -65,6 +65,13 @@ void AFloatingActor::EnterWater()
 	}
 }
 
+void AFloatingActor::ExitWater()
+{
+	GetBuoyancyComponent()->SetIsInWater(false);
+	SetDamping(0.01f, .0f);
+	DisappearRipple();
+}
+
 void AFloatingActor::SetDamping(float Linear, float Angular)
 {
 	Root->SetLinearDamping(Linear);

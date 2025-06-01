@@ -54,6 +54,7 @@ void AWaterVolume::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 		FloatingActors.Add(Actor);
 		Actor->EnterWater();
 		Actor->SetDamping(10.f, 3.0f);
+		Actor->AppearRipple(FVector::ZeroVector, FRotator::ZeroRotator);
 	}
 }
 
