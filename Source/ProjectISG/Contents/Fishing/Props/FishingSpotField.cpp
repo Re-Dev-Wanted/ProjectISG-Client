@@ -4,6 +4,7 @@
 #include "Abilities/GameplayAbilityTypes.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
 #include "ProjectISG/Systems/Time/TimeManager.h"
@@ -57,17 +58,20 @@ void AFishingSpotField::OnTouch(AActor* Causer)
 
 	if (AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(Causer))
 	{
-		CurrentPlayer = Player;
-		FString HandItemUsingType = Player->GetHandSlotComponent()->GetItemUsingType();
-
-		if (HandItemUsingType == "Fishing")
+		if (Player->GetInteractionComponent()->GetIsRestrictionTime() == false)
 		{
-			FGameplayEventData EventData;
-			EventData.EventTag = ISGGameplayTags::Fishing_Active_CastBobber;
-			EventData.Instigator = Player;
-			EventData.Target = this;
-			
-			Player->GetAbilitySystemComponent()->HandleGameplayEvent(ISGGameplayTags::Fishing_Active_CastBobber, &EventData);
+			CurrentPlayer = Player;
+			FString HandItemUsingType = Player->GetHandSlotComponent()->GetItemUsingType();
+
+			if (HandItemUsingType == "Fishing")
+			{
+				FGameplayEventData EventData;
+				EventData.EventTag = ISGGameplayTags::Fishing_Active_CastBobber;
+				EventData.Instigator = Player;
+				EventData.Target = this;
+				
+				Player->GetAbilitySystemComponent()->HandleGameplayEvent(ISGGameplayTags::Fishing_Active_CastBobber, &EventData);
+			}
 		}
 	}
 }
