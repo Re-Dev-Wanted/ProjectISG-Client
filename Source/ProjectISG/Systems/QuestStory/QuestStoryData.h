@@ -178,7 +178,7 @@ struct PROJECTISG_API FQuestStoryDialogue : public FTableRowBase
 	GETTER(uint32, DialogueIndex)
 	GETTER(FText, DialogueText)
 	GETTER(FString, DialogueOwner)
-	GETTER(USoundWave*, DialogueTTS)
+	GETTER(TObjectPtr<USoundWave>, DialogueTTS)
 	GETTER(float, DialogueTime)
 
 private:
@@ -206,7 +206,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly,
 		meta = (AllowPrivateAccess = true))
-	USoundWave* DialogueTTS;
+	TObjectPtr<USoundWave> DialogueTTS;
 
 
 	// 특정 대사 이후에 특정 예외 동작을 위한 처리로, 각 대사별 특수 모션에 대한 처리 담당
@@ -223,6 +223,7 @@ struct PROJECTISG_API FQuestSceneImageData
 	GETTER_REF(FText, SceneComment)
 	GETTER_REF(FString, DialogueOwner)
 	GETTER(float, SceneTime)
+	GETTER(TObjectPtr<USoundWave>, SceneTTS)
 
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -236,6 +237,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
 	float SceneTime = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
+	TObjectPtr<USoundWave> SceneTTS;
 };
 
 USTRUCT(BlueprintType)
@@ -269,7 +273,6 @@ struct PROJECTISG_API FQuestSceneCutData : public FTableRowBase
 	GETTER(EQuestSceneType, QuestSceneType)
 	GETTER_REF(TArray<FQuestSceneImageData>, SceneCutList)
 	GETTER_REF(FQuestSceneMediaData, SceneMedia)
-	GETTER(TArray<USoundWave*>, SceneCommentTTS)
 
 private:
 	UPROPERTY(EditDefaultsOnly, meta = (AllowPrivateAccess = true))
@@ -282,11 +285,6 @@ private:
 		meta = (AllowPrivateAccess = true, EditCondition =
 			"QuestSceneType == EQuestSceneType::Image"))
 	TArray<FQuestSceneImageData> SceneCutList;
-
-	UPROPERTY(EditDefaultsOnly,
-		meta = (AllowPrivateAccess = true, EditCondition =
-			"QuestSceneType == EQuestSceneType::Image"))
-	TArray<USoundWave*> SceneCommentTTS;
 
 	UPROPERTY(EditDefaultsOnly,
 		meta = (AllowPrivateAccess = true, EditCondition =

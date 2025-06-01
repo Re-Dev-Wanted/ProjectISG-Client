@@ -14,8 +14,6 @@ public:
 
 	void PlayTTSSound(USoundWave* TargetTTS);
 
-	void PlayBGMSound(USoundWave* TargetBGM);
-
 protected:
 	virtual void BeginPlay() override;
 

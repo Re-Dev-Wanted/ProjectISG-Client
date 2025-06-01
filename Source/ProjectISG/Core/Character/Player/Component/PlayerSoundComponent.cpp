@@ -20,16 +20,15 @@ void UPlayerSoundComponent::PlayTTSSound(USoundWave* TargetTTS)
 		TTSAudioComponent->bAutoActivate = false;
 		TTSAudioComponent->bAutoDestroy = false;
 		TTSAudioComponent->RegisterComponent();
-
-		TTSAudioComponent->SetSound(TargetTTS);
 		TTSAudioComponent->AttachToComponent(GetOwner()->GetRootComponent(),
 		                                     FAttachmentTransformRules::KeepRelativeTransform);
 	}
 
 	TTSAudioComponent->Stop();
-	TTSAudioComponent->Play();
-}
 
-void UPlayerSoundComponent::PlayBGMSound(USoundWave* TargetBGM)
-{
+	if (TargetTTS)
+	{
+		TTSAudioComponent->SetSound(TargetTTS);
+		TTSAudioComponent->Play();
+	}
 }

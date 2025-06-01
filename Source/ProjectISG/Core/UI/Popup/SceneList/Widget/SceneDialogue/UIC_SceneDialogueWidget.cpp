@@ -20,12 +20,9 @@ void UUIC_SceneDialogueWidget::StartSceneDialogue(
 	SceneDialogueWidgetView->GetDialogueText()->SetText(
 		SceneCutData.GetSceneCutList()[SceneIndex].GetSceneComment());
 
-	if (SceneIndex <= SceneCutData.GetSceneCommentTTS().Num())
-	{
-		Cast<AMainPlayerCharacter>(GetView()->GetOwningPlayerPawn())->
-			GetPlayerSoundComponent()->PlayTTSSound(
-				SceneCutData.GetSceneCommentTTS()[SceneIndex]);
-	}
+	Cast<AMainPlayerCharacter>(GetView()->GetOwningPlayerPawn())->
+		GetPlayerSoundComponent()->PlayTTSSound(
+			SceneCutData.GetSceneCutList()[SceneIndex].GetSceneTTS());
 
 	SceneDialogueWidgetView->PlayAnimation(
 		SceneDialogueWidgetView->GetDialogueAnimation());
