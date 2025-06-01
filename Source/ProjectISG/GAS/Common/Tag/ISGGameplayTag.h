@@ -70,4 +70,6 @@ namespace ISGGameplayTags
 		GameplayCue_Actor_FarmPlow)
 	PROJECTISG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(
 		GameplayCue_Actor_FarmRemove)
+	PROJECTISG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(
+		GameplayCue_Actor_Seeding)
 }

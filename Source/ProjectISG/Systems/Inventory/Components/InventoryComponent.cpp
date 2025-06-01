@@ -18,30 +18,13 @@ void UInventoryComponent::InitializeComponent()
 
 void UInventoryComponent::InitializeItemData()
 {
-	FItemMetaInfo HoeItemMetaInfo;
-	HoeItemMetaInfo.SetId(10);
-	HoeItemMetaInfo.SetCurrentCount(1);
-	AddItem(HoeItemMetaInfo);
-
-	FItemMetaInfo WateringCanItemMetaInfo;
-	WateringCanItemMetaInfo.SetId(13);
-	WateringCanItemMetaInfo.SetCurrentCount(1);
-	AddItem(WateringCanItemMetaInfo);
-
-	FItemMetaInfo AlterItemMetaInfo;
-	AlterItemMetaInfo.SetId(53);
-	AlterItemMetaInfo.SetCurrentCount(1);
-	AddItem(AlterItemMetaInfo);
-
-	FItemMetaInfo SoupItemMetaInfo;
-	SoupItemMetaInfo.SetId(4);
-	SoupItemMetaInfo.SetCurrentCount(1);
-	AddItem(SoupItemMetaInfo);
-
-	FItemMetaInfo FishingItemMetaInfo;
-	FishingItemMetaInfo.SetId(14);
-	FishingItemMetaInfo.SetCurrentCount(1);
-	AddItem(FishingItemMetaInfo);
+	for (const uint32 ItemId : InitialItemIdList)
+	{
+		FItemMetaInfo InitItemInfo;
+		InitItemInfo.SetId(ItemId);
+		InitItemInfo.SetCurrentCount(1);
+		AddItem(InitItemInfo);
+	}
 
 	UpdateInventory_Internal();
 }
@@ -52,8 +35,8 @@ FItemMetaInfo UInventoryComponent::GetItemMetaInfo(const uint16 Index)
 }
 
 bool UInventoryComponent::ChangeItem(AActor* Causer
-                                     , const FItemMetaInfo& ItemInfo
-                                     , const uint16 Index)
+									, const FItemMetaInfo& ItemInfo
+									, const uint16 Index)
 {
 	InventoryList[Index] = ItemInfo;
 	UpdateInventory_Internal();
@@ -62,7 +45,7 @@ bool UInventoryComponent::ChangeItem(AActor* Causer
 }
 
 void UInventoryComponent::SwapItem(AActor* Causer, const uint16 Prev
-                                   , const uint16 Next)
+									, const uint16 Next)
 {
 	SwapItemInInventory(Prev, Next);
 	UpdateInventory_Internal();
@@ -74,7 +57,7 @@ void UInventoryComponent::BeginPlay()
 }
 
 bool UInventoryComponent::HasItemInInventory(const uint32 Id
-                                             , const uint32 Count)
+											, const uint32 Count)
 {
 	if (CurrentRemainItemValue.Find(Id))
 	{
@@ -112,7 +95,7 @@ void UInventoryComponent::UpdateCurrentRemainItemValue()
 		else
 		{
 			CurrentRemainItemValue.Add(InventoryList[i].GetId()
-			                           , InventoryList[i].GetCurrentCount());
+										, InventoryList[i].GetCurrentCount());
 		}
 
 		// 아이템 메타 데이터 별 처리
@@ -124,14 +107,14 @@ void UInventoryComponent::UpdateCurrentRemainItemValue()
 		else
 		{
 			CurrentRemainItemMetaValue.Add(InventoryList[i]
-			                               , InventoryList[i].
-			                               GetCurrentCount());
+											, InventoryList[i].
+											GetCurrentCount());
 		}
 	}
 }
 
 void UInventoryComponent::SwapItemInInventory(const uint16 Prev
-                                              , const uint16 Next)
+											, const uint16 Next)
 {
 	const FItemMetaInfo Temp = InventoryList[Prev];
 	InventoryList[Prev] = InventoryList[Next];
@@ -140,7 +123,7 @@ void UInventoryComponent::SwapItemInInventory(const uint16 Prev
 
 // 특정 Index에 특정 아이템을 넣어둔다.
 uint32 UInventoryComponent::AddItemToInventory(const uint16 Index
-                                               , const FItemMetaInfo& ItemInfo)
+												, const FItemMetaInfo& ItemInfo)
 {
 	const FItemInfoData& ItemInfoById = UItemManager::GetItemInfoById(
 		ItemInfo.GetId());

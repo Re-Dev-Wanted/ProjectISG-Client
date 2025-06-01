@@ -6,6 +6,8 @@
 #include "ProjectISG/Systems/Water/Actors/FloatingActor.h"
 #include "Bobber.generated.h"
 
+class UNiagaraSystem;
+
 UCLASS()
 class PROJECTISG_API ABobber : public AFloatingActor
 {
@@ -20,8 +22,14 @@ public:
 
 	void RemoveFish();
 
+	virtual void AppearRipple(FVector Location, FRotator Rotation) override;
+
+	virtual void DisappearRipple() override;
+
 protected:
 	virtual float GetBuoyancyScale() const override;
+
+	virtual void Tick(float DeltaSeconds) override;
 	
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* LineAttachPoint;
@@ -34,4 +42,10 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USoundBase> SFX_Bite;
+
+	UPROPERTY(EditAnywhere)
+	UChildActorComponent* Ripples;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UNiagaraSystem> Effect_Bite;
 };

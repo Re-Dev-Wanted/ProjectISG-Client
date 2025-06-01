@@ -1,5 +1,6 @@
 ﻿#include "GA_Seeding.h"
 
+#include "AbilitySystemComponent.h"
 #include "ProjectISG/Contents/Building/Props/HoedField.h"
 #include "ProjectISG/Contents/Farming/BaseCrop.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
@@ -38,8 +39,11 @@ void UGA_Seeding::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	{
 		if (Player)
 		{
+			FGameplayCueParameters Param;
+			Param.AbilityLevel = 1;
+			Param.EffectCauser = ActorInfo->AvatarActor;
 			
-
+			Player->GetAbilitySystemComponent()->ExecuteGameplayCue(CueTag, Param);
 			LoggingToSeeding();
 		}
 

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "ProjectISG/GAS/Common/Ability/Utility/GA_BaseInputAbility.h"
+#include "GameplayTagContainer.h"
 #include "GA_Seeding.generated.h"
 
 UCLASS()
@@ -18,12 +19,17 @@ protected:
 	                             TriggerEventData) override;
 	
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
-private:
+
 	UFUNCTION()
 	void CreateSeed(FGameplayTag EventTag, FGameplayEventData EventData);
 
 	void LoggingToSeeding();
-private:
+
 	UPROPERTY()
 	class UPlayMontageWithEvent* AT_SeedingAnim = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "Options",
+		meta = (AllowPrivateAccess = true))
+	FGameplayTag CueTag;
+	
 };
