@@ -201,7 +201,14 @@ void AKitchenFurniture::Client_UnlockPlayer_Implementation()
 	{
 		return;
 	}
-
+	// FGameplayEventData EventData;
+	// EventData.EventTag = ISGGameplayTags::Cooking_Active_EndCooking;
+	// EventData.Instigator = GetInteractingPlayer();
+	// EventData.Target = this;
+	// 	
+	// GetInteractingPlayer()->GetAbilitySystemComponent()->HandleGameplayEvent(EventData.EventTag, &EventData);
+	
+	
 	AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetInteractingPlayer()->GetController());
 	if (PC)
@@ -209,8 +216,6 @@ void AKitchenFurniture::Client_UnlockPlayer_Implementation()
 		PC->SetIgnoreLookInput(false);
 		PC->SetViewTargetWithBlend(GetInteractingPlayer());
 		GetInteractingPlayer()->bUseControllerRotationYaw = true;
-		GetInteractingPlayer()->GetInteractionComponent()->
-		                        SetIsInteractive(true);
 		GetInteractingPlayer()->GetCharacterMovement()->SetMovementMode(
 			MOVE_Walking);
 		GetInteractingPlayer()->GetCameraComponent()->Activate();

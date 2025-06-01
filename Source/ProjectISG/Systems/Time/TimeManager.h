@@ -50,6 +50,9 @@ protected:
 
 	UFUNCTION()
 	void PushSleepAlertWidget();
+	
+	UFUNCTION()
+	void SetIsInteractiveTrue();
 
 private:
 	void UpdateCycleTime(float DeltaTime);
