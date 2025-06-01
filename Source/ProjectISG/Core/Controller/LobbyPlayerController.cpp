@@ -35,6 +35,7 @@ void ALobbyPlayerController::PopUI()
 
 void ALobbyPlayerController::ShowMBTIAskUI()
 {
+	UE_LOG(LogTemp, Warning, TEXT("성향분석 시작"));
 	PopUI();
 	PushUI(EUIName::Popup_MbtiAsk);
 }

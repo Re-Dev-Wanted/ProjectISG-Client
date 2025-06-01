@@ -17,6 +17,7 @@ void UUIC_MainLobby::PlayLobbyLS()
 
 	ALobbyPlayerController* LobbyPlayerController = Cast<ALobbyPlayerController>(GetPlayerController());
 	LobbyPlayerController->PopUI();
+	LobbyPlayerController->bLobbyLSIsPlayed = true;
 	FMovieSceneSequencePlaybackSettings PlaybackSettings;
 	PlaybackSettings.bAutoPlay = true;
 	ULevelSequencePlayer* LevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(GetWorld(), MainLobbyModel->LobbyLS, PlaybackSettings, MainLobbyModel->LevelSequenceActor);
@@ -26,6 +27,7 @@ void UUIC_MainLobby::PlayLobbyLS()
 
 void UUIC_MainLobby::OnFinishLS()
 {
+	UE_LOG(LogTemp, Warning, TEXT("LS 끝"));
 	UISGGameInstance* ISGGameInstance = Cast<UISGGameInstance>(GetView()->GetGameInstance());
 	if (ISGGameInstance)
 	{

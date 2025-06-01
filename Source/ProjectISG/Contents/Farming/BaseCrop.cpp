@@ -64,8 +64,6 @@ void ABaseCrop::BeginPlay()
 	CropBecomeSprout = CropTotalGrowTime / 4;
 	CropBecomeStem = CropTotalGrowTime / 2;
 
-	SetOverlayInteractMaterial(true);
-
 	TimeManager->AddSleepTimeToCrop.AddDynamic(
 		this, &ThisClass::UpdateGrowTimeBySleep);
 	OnDryField.AddLambda
@@ -354,6 +352,7 @@ void ABaseCrop::NetMulticast_ChangeCurrentCropState_Implementation(
 				UFarmingManager::GetDataByCropId(1).GetStaticMesh());
 			Mesh->SetMaterial(
 				0, UFarmingManager::GetDataByCropId(1).GetMeshMaterial());
+			SetOverlayInteractMaterial(true);
 			break;
 		}
 	case ECropState::Sprout:
