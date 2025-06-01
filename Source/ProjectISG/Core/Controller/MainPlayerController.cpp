@@ -209,13 +209,13 @@ void
 AMainPlayerController::Client_ResetWidgetAndPushContentsTimeAlert_Implementation()
 {
 	UIManageComponent->ResetWidget();
-	Alert(EAlertType::Error, TEXT("밤 8시 이후에는 컨텐츠가 제한됩니다!!!"), 4.0f);
+	Alert(EAlertType::Error, TEXT("저녁 8시 이후에는 컨텐츠가 제한됩니다!!!"), 6.0f);
 }
 
 void AMainPlayerController::Client_PushForceSleepTimeAlert_Implementation()
 {
 	UIManageComponent->ResetWidget();
-	Alert(EAlertType::Error, TEXT("저녁 11시에 강제로 수면에 들어갑니다!!!"), 4.0f);
+	Alert(EAlertType::Error, TEXT("저녁 11시에 강제로 수면에 들어갑니다!!!"), 6.0f);
 }
 
 void AMainPlayerController::Server_SetOwnerActor_Implementation(

@@ -17,6 +17,8 @@ class PROJECTISG_API AFishingSpotField : public AActor, public IInteractionInter
 public:
 	AFishingSpotField();
 
+	virtual void BeginPlay() override;
+
 	virtual bool GetCanTouch() const override;
 
 	virtual FString GetTouchDisplayText(AActor* Causer) const override;
@@ -25,11 +27,17 @@ public:
 
 	virtual void OnTouchResponse(AActor* Causer) override;
 
+	UFUNCTION()
+	void ContentRestrictionResponse();
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* Root = nullptr;
 
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* BlockCollision = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	class AMainPlayerCharacter* CurrentPlayer = nullptr;
 	
 };

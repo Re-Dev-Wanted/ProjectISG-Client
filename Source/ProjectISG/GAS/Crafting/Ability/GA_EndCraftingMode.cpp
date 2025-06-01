@@ -67,7 +67,10 @@ void UGA_EndCraftingMode::OnEndCinematic()
 		PC->SetIgnoreMoveInput(false);
 		PC->SetIgnoreLookInput(false);
 
-		Player->GetInteractionComponent()->SetIsInteractive(true);
+		if (Player->GetInteractionComponent()->GetIsRestrictionTime() == false)
+		{
+			Player->GetInteractionComponent()->SetIsInteractive(true);
+		}
 		Player->GetPlacementIndicatorComponent()->SetIsActive(true);
 	}
 
