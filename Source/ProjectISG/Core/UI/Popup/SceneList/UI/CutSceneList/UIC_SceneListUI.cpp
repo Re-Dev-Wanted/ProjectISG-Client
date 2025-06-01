@@ -8,6 +8,8 @@
 #include "Components/Overlay.h"
 #include "Components/TextBlock.h"
 #include "GameFramework/PlayerState.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerSoundComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
 #include "ProjectISG/Core/UI/Popup/SceneList/Widget/SceneDialogue/UIC_SceneDialogueWidget.h"
@@ -40,6 +42,14 @@ void UUIC_SceneListUI::AppearUI()
 	SceneListModel->SetMaxSceneIndex(CutData.GetSceneCutList().Num());
 
 	MoveToNextScene();
+}
+
+void UUIC_SceneListUI::DisappearUI()
+{
+	Super::DisappearUI();
+
+	Cast<AMainPlayerCharacter>(GetView()->GetOwningPlayerPawn())->
+		GetPlayerSoundComponent()->StopTTSSound();
 }
 
 void UUIC_SceneListUI::BindInputAction(UEnhancedInputComponent* InputComponent)

@@ -19,6 +19,8 @@ public:
 protected:
 	virtual void AppearUI() override;
 
+	virtual void DisappearUI() override;
+	
 	virtual void InitializeController(UBaseUIView* NewView,
 	                                  UBaseUIModel* NewModel) override;
 

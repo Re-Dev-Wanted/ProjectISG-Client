@@ -7,6 +7,7 @@
 #include "Component/InteractionComponent.h"
 #include "Component/PlayerHandSlotComponent.h"
 #include "Component/PlayerInventoryComponent.h"
+#include "Component/PlayerSoundComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Contents/Diary/Component/DiaryComponent.h"
@@ -67,6 +68,9 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	MediaSoundComponent = CreateDefaultSubobject<UMediaSoundComponent>(
 		"Media Sound Component");
 	MediaSoundComponent->SetupAttachment(GetRootComponent());
+
+	PlayerSoundComponent = CreateDefaultSubobject<UPlayerSoundComponent>(
+		"Player Sound Component");
 }
 
 void AMainPlayerCharacter::BeginPlay()
@@ -148,11 +152,11 @@ void AMainPlayerCharacter::SetupPlayerInputComponent(
 		UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(MoveInputAction
-											, ETriggerEvent::Triggered, this
-											, &ThisClass::MoveTo);
+		                                   , ETriggerEvent::Triggered, this
+		                                   , &ThisClass::MoveTo);
 		EnhancedInputComponent->BindAction(LookInputAction
-											, ETriggerEvent::Triggered, this
-											, &ThisClass::Look);
+		                                   , ETriggerEvent::Triggered, this
+		                                   , &ThisClass::Look);
 
 		OnInputBindingNotified.Broadcast(EnhancedInputComponent);
 	}

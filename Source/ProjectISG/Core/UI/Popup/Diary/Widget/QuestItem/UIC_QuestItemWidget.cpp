@@ -3,6 +3,7 @@
 #include "UIM_QuestItemWidget.h"
 #include "UIV_QuestItemWidget.h"
 #include "Components/Border.h"
+#include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Components/Button.h"
 #include "Components/ScrollBox.h"
@@ -33,8 +34,44 @@ void UUIC_QuestItemWidget::OnClickQuestItemWidget()
 		           GetUIManageComponent()->ControllerInstances[
 			EUIName::Popup_QuestListUI]);
 
+	if (QuestListUIController->GetSelectedQuestWidget())
+	{
+		UUIC_QuestItemWidget* PrevWidget = Cast<UUIC_QuestItemWidget>(
+			QuestListUIController->GetSelectedQuestWidget()->GetController());
+		PrevWidget->SetDefaultWidget();
+	}
+
 	QuestListUIController->SetQuestInfo(
 		Cast<UUIM_QuestItemWidget>(GetModel())->GetCurrentQuestId());
+	QuestListUIController->SetSelectedQuestWidget(
+		Cast<UUIV_QuestItemWidget>(GetView()));
+
+	SetSelectedWidget();
+}
+
+void UUIC_QuestItemWidget::SetDefaultWidget()
+{
+	UUIV_QuestItemWidget* QuestItemWidgetView = Cast<
+		UUIV_QuestItemWidget>(
+		GetView());
+
+	QuestItemWidgetView->GetQuestItemButton()->SetRenderScale({1, 1});
+	QuestItemWidgetView->GetQuestBorder()->SetBrushTintColor(
+		QuestItemWidgetView->GetDefaultColor());
+}
+
+void UUIC_QuestItemWidget::SetSelectedWidget()
+{
+	UUIV_QuestItemWidget* QuestItemWidgetView = Cast<
+		UUIV_QuestItemWidget>(
+		GetView());
+
+	QuestItemWidgetView->GetQuestItemButton()->SetRenderScale({
+		QuestItemWidgetView->GetSelectedScale(),
+		QuestItemWidgetView->GetSelectedScale()
+	});
+	QuestItemWidgetView->GetQuestBorder()->SetBrushTintColor(
+		QuestItemWidgetView->GetSelectedColor());
 }
 
 void UUIC_QuestItemWidget::SetQuestDefaultInformation(const FString& QuestId)
@@ -150,7 +187,7 @@ void UUIC_QuestItemWidget::SetQuestStatus(const FString& QuestId) const
 			QuestItemWidget->GetQuestStatus()->SetVisibility(
 				ESlateVisibility::Visible);
 			QuestItemWidget->GetQuestStatus()->SetText(
-				FText::FromString(TEXT("미완")));
+				FText::FromString(TEXT("진행 불가")));
 			break;
 		}
 	default: { break; }
