@@ -11,7 +11,7 @@ struct FCraftingMaterialUIModel
 	GENERATED_BODY()
 
 	UPROPERTY()
-	uint16 Id;
+	uint16 Id = 0;
 
 	UPROPERTY()
 	FString Name;
@@ -20,7 +20,7 @@ struct FCraftingMaterialUIModel
 	TSoftObjectPtr<UTexture2D> Thumbnail;
 
 	UPROPERTY()
-	uint16 RequiredCount;
+	uint16 RequiredCount = 0;
 };
 
 USTRUCT(BlueprintType)
@@ -29,10 +29,10 @@ struct FCraftingRecipeUIModel
 	GENERATED_BODY()
 
 	UPROPERTY()
-	uint16 Id;
+	uint16 Id = 0;
 
 	UPROPERTY()
-	uint16 ItemId;
+	uint16 ItemId = 0;
 
 	UPROPERTY()
 	FString ItemName;
