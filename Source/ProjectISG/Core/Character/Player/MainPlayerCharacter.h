@@ -5,6 +5,7 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "MainPlayerCharacter.generated.h"
 
+class UPlayerSoundComponent;
 class UInputActionComponent;
 class UDiaryComponent;
 class UInteractionComponent;
@@ -23,8 +24,8 @@ class UInputMappingContext;
 class UMediaSoundComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInputBindingNotified
-											, UEnhancedInputComponent*
-											, EnhancedInputComponent);
+                                            , UEnhancedInputComponent*
+                                            , EnhancedInputComponent);
 
 UCLASS()
 class PROJECTISG_API AMainPlayerCharacter : public ABaseCharacter
@@ -41,6 +42,8 @@ public:
 	GETTER(TObjectPtr<UInputMappingContext>, DefaultMappingContext)
 
 	GETTER(TObjectPtr<UScreenShotComponent>, ScreenShotComponent)
+
+	GETTER(TObjectPtr<UPlayerSoundComponent>, PlayerSoundComponent)
 
 protected:
 	virtual void BeginPlay() override;
@@ -63,7 +66,7 @@ public:
 	GETTER_SETTER(bool, bIsSleep)
 	GETTER_SETTER(bool, bLieInBed)
 	GETTER(TObjectPtr<UPlacementIndicatorComponent>
-			, PlacementIndicatorComponent)
+	       , PlacementIndicatorComponent)
 	GETTER(TObjectPtr<UDiaryComponent>, DiaryComponent)
 	GETTER(TObjectPtr<UPlayerInventoryComponent>, PlayerInventoryComponent)
 	GETTER(TObjectPtr<UInteractionComponent>, InteractionComponent)
@@ -114,6 +117,9 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UMediaSoundComponent> MediaSoundComponent;
+
+	UPROPERTY()
+	TObjectPtr<UPlayerSoundComponent> PlayerSoundComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Input"
 		, meta = (AllowPrivateAccess = true))
