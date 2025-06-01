@@ -24,8 +24,6 @@ public:
 
 	GETTER(int, CurrentSlotIndex);
 
-	void UpdateInventorySlotItemData();
-
 protected:
 	virtual void BeginPlay() override;
 

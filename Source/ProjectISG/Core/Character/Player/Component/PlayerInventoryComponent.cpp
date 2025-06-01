@@ -106,10 +106,6 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 	const FItemMetaInfo ItemMetaInfo = PS->GetInventoryComponent()->
 	                                       GetInventoryList()[NewIndex];
 
-	const uint16 ItemId = ItemMetaInfo.GetId();
-
-	Player->OnUpdateSelectedItem.Broadcast(ItemId);
-
 	const AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetOwner()->GetInstigatorController());
 
@@ -127,6 +123,8 @@ void UPlayerInventoryComponent::ChangeCurrentSlotIndex(const uint8 NewIndex)
 
 	CurrentSlotIndex = NewIndex;
 	Server_ChangeCurrentSlotIndex(NewIndex);
+
+	PS->GetInventoryComponent()->OnInventoryUpdateNotified.Broadcast();
 }
 
 bool UPlayerInventoryComponent::RemoveItemCurrentSlotIndex(const int32 Count)
@@ -166,29 +164,6 @@ void UPlayerInventoryComponent::UpdatePlayerInventoryUI()
 		    UpdateMainSlotItemData();
 		OwnerPlayer->GetController<AMainPlayerController>()->GetInventoryUI()->
 		             UpdateInventorySlotItemData();
-	}
-}
-
-void UPlayerInventoryComponent::UpdateInventorySlotItemData()
-{
-	const AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(
-		GetOwner());
-
-	const AMainPlayerController* PC = OwnerPlayer->GetController<
-		AMainPlayerController>();
-
-	UUIC_TradingUI* TradingUIController = Cast<UUIC_TradingUI>(
-		PC->GetUIManageComponent()->ControllerInstances[
-			EUIName::Popup_TradingUI]);
-
-	if (TradingUIController)
-	{
-		UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(
-			TradingUIController->GetView());
-		if (TradingUIView)
-		{
-			// TradingUIView->GetInventoryList()->UpdateItemData();
-		}
 	}
 }
 

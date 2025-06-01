@@ -23,18 +23,18 @@ void UUIC_CookingRecipeUI::AppearUI()
 
 	const UUIV_CookingRecipeUI* CookingRecipeUI = Cast<UUIV_CookingRecipeUI>(
 		GetView());
-	const bool IsShowSelectedRecipe = Cast<UUIM_CookingRecipeUI>(GetModel())->
-		GetSelectedRecipe() != INDEX_NONE;
+	const UUIM_CookingRecipeUI* CookingRecipeUIModel = Cast<UUIM_CookingRecipeUI>(GetModel());
+	const bool IsShowSelectedRecipe = CookingRecipeUIModel->GetSelectedRecipe() != INDEX_NONE;
 
 	if (!CookingRecipeUI->GetCookingButton()->Get()->OnClicked.IsBound())
 	{
-		CookingRecipeUI->GetCookingButton()->Get()->OnClicked.AddDynamic(
+		CookingRecipeUI->GetCookingButton()->Get()->OnClicked.AddUniqueDynamic(
 			this, &ThisClass::StartCooking);
 	}
 
 	if (!CookingRecipeUI->GetCloseButton()->GetButton()->OnClicked.IsBound())
 	{
-		CookingRecipeUI->GetCloseButton()->GetButton()->OnClicked.AddDynamic
+		CookingRecipeUI->GetCloseButton()->GetButton()->OnClicked.AddUniqueDynamic
 		(this, &ThisClass::OnCloseCookingRecipeUI);
 	}
 
@@ -44,6 +44,11 @@ void UUIC_CookingRecipeUI::AppearUI()
 			: ESlateVisibility::Hidden);
 
 	CanCookByRecipeId();
+
+	if (IsShowSelectedRecipe)
+	{
+		SetSelectedCookingRecipe(CookingRecipeUIModel->GetSelectedRecipe());
+	}
 }
 
 void UUIC_CookingRecipeUI::SetSelectedCookingRecipe(const uint32 RecipeId)
