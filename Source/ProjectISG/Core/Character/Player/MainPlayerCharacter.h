@@ -26,9 +26,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInputBindingNotified
 											, UEnhancedInputComponent*
 											, EnhancedInputComponent);
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpdateSelectedItem, uint16
-											, ItemId);
-
 UCLASS()
 class PROJECTISG_API AMainPlayerCharacter : public ABaseCharacter
 {
@@ -38,11 +35,6 @@ public:
 	AMainPlayerCharacter();
 
 	FOnInputBindingNotified OnInputBindingNotified;
-
-	UE_DEPRECATED(
-		"5.5", "Player State에 있는 On Update Inventory에 바인딩 걸어두면,"
-		" 인벤토리 변경 시 마다 호출되는 로직이 있으므로, 제거하기를 권장함") FOnUpdateSelectedItem
-	OnUpdateSelectedItem;
 
 	GETTER(TObjectPtr<UCameraComponent>, CameraComponent);
 
@@ -57,6 +49,7 @@ protected:
 		UInputComponent* PlayerInputComponent) override;
 
 	virtual void OnRep_PlayerState() override;
+	void InitializeInternal();
 
 	virtual void PossessedBy(AController* NewController) override;
 

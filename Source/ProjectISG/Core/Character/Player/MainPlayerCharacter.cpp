@@ -88,25 +88,23 @@ void AMainPlayerCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
-	InitializeAbilitySystem();
-
-	PlayerInventoryComponent->InitializePlayerInventory();
-	HandSlotComponent->InitializePlayerHandSlot();
-
-	if (IsLocallyControlled())
-	{
-		GetPlayerState<AMainPlayerState>()->InitializeData();
-	}
+	InitializeInternal();
 }
 
 void AMainPlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
+	InitializeInternal();
+}
+
+void AMainPlayerCharacter::InitializeInternal()
+{
 	InitializeAbilitySystem();
 
 	PlayerInventoryComponent->InitializePlayerInventory();
 	HandSlotComponent->InitializePlayerHandSlot();
+	PlacementIndicatorComponent->InitializePlaceIndicator();
 
 	if (IsLocallyControlled())
 	{

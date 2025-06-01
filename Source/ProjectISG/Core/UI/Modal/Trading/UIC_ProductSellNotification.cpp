@@ -79,9 +79,9 @@ int32 UUIC_ProductSellNotification::FindItemPrice(
 		AMainPlayerState>();
 	// PS->GetInventoryComponent()->DropItem(
 	// 	TradingUIModel->GetClickedInventorySlotIndex(), 1);
-	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
-		GetPlayerController()->GetPawn());
-	Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
+	// AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+	// 	GetPlayerController()->GetPawn());
+	// Player->GetPlayerInventoryComponent()->UpdateInventorySlotItemData();
 
 	return ProductPrice;
 }

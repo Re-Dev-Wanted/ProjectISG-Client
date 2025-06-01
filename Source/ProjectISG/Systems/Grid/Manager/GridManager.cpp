@@ -24,8 +24,6 @@ void AGridManager::BeginPlay()
 	{
 		Destroy();
 	}
-
-	SetVisibleGrid(false);
 }
 
 void AGridManager::OnConstruction(const FTransform& Transform)

@@ -21,7 +21,7 @@ public:
 	void SetIsInteractive(const bool NewIsInteractive);
 
 	UFUNCTION()
-	void OnChange(uint16 ItemId);
+	void OnInventoryUpdated();
 
 	UFUNCTION(Reliable, Server)
 	void Server_Interact(class ABaseInteractiveActor* InteractActor, AActor*
