@@ -301,14 +301,6 @@ void AHoedField::OnTouchResponse(AActor* Causer)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("씨앗심기 (서버)"));
 		PlantCrop(ItemData, ItemId);
-
-		// 사운드 관련 Cue 강제 진행
-		FGameplayCueParameters Param;
-		Param.AbilityLevel = 1;
-		Param.EffectCauser = Player;
-
-		Player->GetAbilitySystemComponent()->ExecuteGameplayCue(
-			ISGGameplayTags::GameplayCue_Actor_Farming, Param);
 	}
 
 	if (UsingType == "Watering" && PlantedCrop.IsValid())

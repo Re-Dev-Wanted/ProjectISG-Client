@@ -158,7 +158,7 @@ namespace ISGGameplayTags
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayCue_Actor_Farming
 	                               , "GameplayCue.Actor.Farming"
-	                               , "농작물 심기 Notify Cue");
+	                               , "농작물 수확 Notify Cue");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayCue_Actor_FarmPlow
 	                               , "GameplayCue.Actor.FarmPlow"
@@ -167,4 +167,8 @@ namespace ISGGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayCue_Actor_FarmRemove
 	                               , "GameplayCue.Actor.FarmRemove"
 	                               , "땅 제거하기 Notify Cue");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayCue_Actor_Seeding
+								   , "GameplayCue.Actor.Seeding"
+								   , "농작물 심기 Notify Cue");
 }
