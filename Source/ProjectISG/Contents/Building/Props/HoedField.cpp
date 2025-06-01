@@ -68,7 +68,7 @@ void AHoedField::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MeshComp->SetRenderCustomDepth(true);
+	MeshComp->SetRenderCustomDepth(false);
 }
 
 void AHoedField::GetLifetimeReplicatedProps(
@@ -363,7 +363,9 @@ void AHoedField::UpdateState()
 {
 	UMaterialInstanceDynamic* MatDynamic = MeshComp->
 		CreateAndSetMaterialInstanceDynamic(0);
-	MatDynamic->SetScalarParameterValue("Contrast", IsWet ? 2.f : 1.f);
+	MatDynamic->SetScalarParameterValue("Multiply", IsWet ? 0.f : 1.f);
+	MatDynamic->SetScalarParameterValue("RandomHue Shift", IsWet ? 0.08f : 0.f);
+	MatDynamic->SetScalarParameterValue("Metal", IsWet ? 1.f : 0.f);
 
 	if (PlantedCrop.IsValid() && IsWet)
 	{
