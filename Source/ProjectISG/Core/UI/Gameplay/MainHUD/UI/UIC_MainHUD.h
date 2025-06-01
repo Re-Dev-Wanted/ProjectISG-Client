@@ -36,4 +36,7 @@ protected:
 	virtual void AppearUI() override;
 
 	virtual void DisappearUI() override;
+
+	UFUNCTION()
+	void NotifyFromInventory(const uint16 ItemId);
 };

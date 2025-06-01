@@ -190,6 +190,8 @@ uint32 UInventoryComponent::AddItemToInventory(const uint16 Index
 		}
 	}
 
+	OnInventoryAddNotified.Broadcast(ItemInfo.GetId());
+
 	UpdateInventory_Internal();
 	return RemainCount > 0 ? RemainCount : 0;
 }
