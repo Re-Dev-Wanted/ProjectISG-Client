@@ -2,10 +2,12 @@
 
 #include "UIV_MainHUD.h"
 #include "Components/TextBlock.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerInventoryComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Gameplay/QuestStory/Widget/AutoQuest/UIC_AutoQuestDialogueWidget.h"
 #include "ProjectISG/Core/UI/Gameplay/QuestStory/Widget/AutoQuest/UIV_AutoQuestDialogueWidget.h"
 #include "ProjectISG/Core/UI/Gameplay/QuestStory/Widget/CurrentQuest/UIC_CurrentQuestWidget.h"
@@ -14,6 +16,9 @@
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/Widget/AlertModal/UIV_HUDAlertModalWidget.h"
 #include "ProjectISG/Core/UI/HUD/Inventory/InventoryList.h"
 #include "ProjectISG/Core/UI/HUD/Interactive/InteractiveUI.h"
+#include "ProjectISG/Core/UI/HUD/Notify/InventoryNoticeWidget.h"
+#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
+#include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
 #include "ProjectISG/Systems/QuestStory/Manager/QuestStoryManager.h"
 
@@ -29,6 +34,14 @@ void UUIC_MainHUD::AppearUI()
 	const uint8 CurrentSlot = Player->GetPlayerInventoryComponent()->
 	                                  GetCurrentSlotIndex();
 	MainHUDView->GetMainSlotList()->SelectSlot(CurrentSlot, CurrentSlot);
+
+	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
+
+	if (PS->GetInventoryComponent()->OnInventoryAddNotified.IsAlreadyBound(this, &ThisClass::NotifyFromInventory))
+	{
+		return;
+	}
+	PS->GetInventoryComponent()->OnInventoryAddNotified.AddDynamic(this, &ThisClass::NotifyFromInventory);
 }
 
 void UUIC_MainHUD::DisappearUI()
@@ -152,4 +165,14 @@ void UUIC_MainHUD::AlertToMainHUD(const EAlertType AlertType
 		MainHUDView->GetAlertModalWidget()->GetController());
 
 	AlertModalWidgetController->Alert(AlertType, Message, Time);
+}
+
+void UUIC_MainHUD::NotifyFromInventory(const uint16 ItemId)
+{
+	const UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(GetView());
+	UInventoryNoticeWidget* NoticeWidget = MainHUDView->GetInventoryNoticeWidget();
+
+	FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
+	
+	NoticeWidget->OnNotify(ItemInfoData.GetThumbnail(), ItemInfoData.GetDisplayName());
 }
