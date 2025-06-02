@@ -7,6 +7,7 @@
 #include "InteractiveItemUI.generated.h"
 
 class UTextBlock;
+class UImage;
 
 UCLASS()
 class PROJECTISG_API UInteractiveItemUI : public UUserWidget
@@ -18,8 +19,11 @@ public:
 	
 private:
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> DisplayKey;
+	TObjectPtr<UImage> KeyIcon;
 	
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> DisplayText;
+
+	UPROPERTY(EditAnywhere)
+	TMap<FString, TSoftObjectPtr<UTexture2D>> IconMap;
 };
