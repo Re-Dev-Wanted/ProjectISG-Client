@@ -66,11 +66,16 @@ void ABaseCrop::BeginPlay()
 
 	TimeManager->AddSleepTimeToCrop.AddDynamic(
 		this, &ThisClass::UpdateGrowTimeBySleep);
+
+	TWeakObjectPtr<ThisClass> WeakThis = this;
 	OnDryField.AddLambda
 	(
-		[this]()
+		[WeakThis]()
 		{
-			this->SetOverlayInteractMaterial(true);
+			if (WeakThis.IsValid())
+			{
+				WeakThis.Get()->SetOverlayInteractMaterial(true);
+			}
 		}
 	);
 }

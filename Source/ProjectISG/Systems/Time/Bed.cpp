@@ -87,7 +87,7 @@ void ABed::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (TimeManager->GetHour() < 9)
+	if (TimeManager->GetHour() < TimeManager->GetSleepManager()->GetCanSleepTime())
 	{
 		CanInteractive = false;
 	}
@@ -233,8 +233,6 @@ void ABed::SetCollisionEnabled(bool bEnable) const
 
 void ABed::NetMulticast_InteractiveValue_Implementation(bool bEnable)
 {
-	CanInteractive = bEnable;
-
 	MainPlayer->GetInteractionComponent()->SetIsInteractive(bEnable);
 	MainPlayer->GetPlacementIndicatorComponent()->SetIsActive(bEnable);
 }

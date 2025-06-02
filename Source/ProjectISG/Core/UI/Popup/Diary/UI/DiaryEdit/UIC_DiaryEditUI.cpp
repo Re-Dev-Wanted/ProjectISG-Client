@@ -23,7 +23,7 @@ void UUIC_DiaryEditUI::AppearUI()
 	Super::AppearUI();
 
 	const UUIV_DiaryEditUI* DiaryEditUIView = Cast<UUIV_DiaryEditUI>(GetView());
-	DiaryEditUIView->GetSaveButton()->OnClicked.AddDynamic(
+	DiaryEditUIView->GetSaveButton()->OnClicked.AddUniqueDynamic(
 		this, &ThisClass::OnClickToSaveDiary);
 }
 

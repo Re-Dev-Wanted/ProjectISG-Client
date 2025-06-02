@@ -82,14 +82,15 @@ void ATimeManager::BeginPlay()
 		this, &ATimeManager::StopLevelSequence);
 	OnContentRestrictionTimeReached.AddDynamic(
 		this, &ATimeManager::ResetAllPlayerWidget);
-	
+
 	OnForceSleepTimeAlmostReached.AddDynamic(
 		this, &ATimeManager::PushSleepAlertWidget);
-	
+
 	OnContentRestrictionCancelTimeReached.AddDynamic(
 		this, &ATimeManager::SetIsInteractiveTrue);
 
-	SleepManager->ForceSleepDelegate.AddDynamic(this, &ATimeManager::StopLevelSequence);
+	SleepManager->ForceSleepDelegate.AddDynamic(
+		this, &ATimeManager::StopLevelSequence);
 }
 
 void ATimeManager::Tick(float DeltaTime)
@@ -373,7 +374,8 @@ void ATimeManager::ResetAllPlayerWidget()
 		if (PC)
 		{
 			PC->Client_ResetWidgetAndPushContentsTimeAlert();
-			PlayerState->GetPawn<AMainPlayerCharacter>()->GetInteractionComponent()->SetIsRestrictionTime(true);
+			PlayerState->GetPawn<AMainPlayerCharacter>()->
+			             GetInteractionComponent()->SetIsRestrictionTime(true);
 		}
 	}
 }
@@ -425,7 +427,7 @@ void ATimeManager::SetIsInteractiveTrue()
 	for (APlayerState* PlayerState : GameState->PlayerArray)
 	{
 		PlayerState->GetPawn<AMainPlayerCharacter>()->GetInteractionComponent()
-				   ->SetIsRestrictionTime(false);
+		           ->SetIsRestrictionTime(false);
 		PlayerState->GetPawn<AMainPlayerCharacter>()->GetInteractionComponent()
 		           ->SetIsInteractive(true);
 	}

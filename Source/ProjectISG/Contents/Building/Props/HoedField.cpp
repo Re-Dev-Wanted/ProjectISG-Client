@@ -360,19 +360,26 @@ bool AHoedField::PlantCrop(FItemInfoData CropData, uint16 CropId)
 	PlantedCrop.Crop = Crop;
 	PlantedCrop.CropId = CropId;
 
+	TWeakObjectPtr<ThisClass> WeakThis = this;
 	Crop->OnDryField.AddLambda
 	(
-		[&]()
+		[WeakThis]()
 		{
-			SetWet(false);
+			if (WeakThis.IsValid())
+			{
+				WeakThis.Get()->SetWet(false);
+			}
 		}
 	);
 
 	Crop->HarvestCrop.AddLambda
 	(
-		[this]()
+		[WeakThis]()
 		{
-			PlantedCrop.Clear(true);
+			if (WeakThis.IsValid())
+			{
+				WeakThis.Get()->PlantedCrop.Clear(true);
+			}
 		}
 	);
 

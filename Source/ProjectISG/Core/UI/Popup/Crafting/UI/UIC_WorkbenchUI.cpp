@@ -34,9 +34,9 @@ void UUIC_WorkbenchUI::AppearUI()
 
 	UUIV_WorkbenchUI* WorkbenchView = Cast<UUIV_WorkbenchUI>(GetView());
 
-	WorkbenchView->GetCloseButton()->OnClicked.AddDynamic(
+	WorkbenchView->GetCloseButton()->OnClicked.AddUniqueDynamic(
 		this, &ThisClass::CloseUI);
-	WorkbenchView->GetCraftingButton()->Get()->OnClicked.AddDynamic(
+	WorkbenchView->GetCraftingButton()->Get()->OnClicked.AddUniqueDynamic(
 		this, &ThisClass::StartCrafting);
 	WorkbenchView->GetCraftingButton()->SetVisibility(ESlateVisibility::Hidden);
 
