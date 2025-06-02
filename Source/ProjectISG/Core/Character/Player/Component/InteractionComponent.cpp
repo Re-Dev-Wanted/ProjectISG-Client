@@ -40,14 +40,15 @@ void UInteractionComponent::InitializeComponent()
 
 	OwnerPlayer->OnInputBindingNotified.AddDynamic(
 		this, &ThisClass::BindingInputActions);
-	
-	const AMainPlayerState* PS = OwnerPlayer->GetPlayerState<AMainPlayerState>();
+
+	const AMainPlayerState* PS = OwnerPlayer->GetPlayerState<
+		AMainPlayerState>();
 
 	if (PS)
 	{
 		PS->GetInventoryComponent()
-				   ->OnInventoryUpdateNotified.AddDynamic(
-					   this, &ThisClass::OnInventoryUpdated);
+		  ->OnInventoryUpdateNotified.AddDynamic(
+			  this, &ThisClass::OnInventoryUpdated);
 	}
 }
 
@@ -70,17 +71,17 @@ void UInteractionComponent::OnInventoryUpdated()
 	{
 		return;
 	}
-	
+
 	const uint32 CurrentIndex = Player->GetPlayerInventoryComponent()->
-											 GetCurrentSlotIndex();
+	                                    GetCurrentSlotIndex();
 
 	const FItemMetaInfo ItemMetaInfo = Player->
-									   GetPlayerState<AMainPlayerState>()->
-									   GetInventoryComponent()->
-									   GetInventoryList()[CurrentIndex];
+	                                   GetPlayerState<AMainPlayerState>()->
+	                                   GetInventoryComponent()->
+	                                   GetInventoryList()[CurrentIndex];
 
 	const uint16 ItemId = ItemMetaInfo.GetId();
-	
+
 	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
 
 	const bool bIsStructure = ItemInfoData.GetItemType() !=
@@ -226,7 +227,9 @@ void UInteractionComponent::ToggleInteractiveUI()
 
 void UInteractionComponent::LineTraceToFindTarget()
 {
-	const TArray<AActor*> IgnoreActors;
+	TArray<AActor*> IgnoreActors;
+	IgnoreActors.Add(PlayerCharacter);
+
 	const FVector OwnerStartLocation = PlayerCharacter->GetActorLocation();
 	const FVector OwnerEndLocation = OwnerStartLocation + PlayerCharacter->
 		GetCameraComponent()->GetForwardVector() * TargetRange;
@@ -236,7 +239,7 @@ void UInteractionComponent::LineTraceToFindTarget()
 		OwnerEndLocation, TargetRadius,
 		TargetRadius, TraceTypeQuery1,
 		false, IgnoreActors,
-		EDrawDebugTrace::None,
+		EDrawDebugTrace::ForDuration,
 		TargetTraceResult, true);
 
 	const AMainPlayerController* PC = PlayerCharacter->GetController<
