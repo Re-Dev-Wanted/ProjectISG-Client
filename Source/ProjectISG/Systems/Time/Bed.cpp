@@ -174,7 +174,7 @@ void ABed::ActivateWakeUp()
 		MainPlayer->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
 			ActivateTag);
 
-		NetMulticast_InteractiveValue(true);
+		//NetMulticast_InteractiveValue(true);
 		SetCollisionEnabled(true);
 		MainPlayer = nullptr;
 	}
@@ -213,7 +213,10 @@ void ABed::ActivateSleepAbility()
 		ActivateTag.AddTag(ISGGameplayTags::Sleeping_Active_LieInBed);
 		MainPlayer->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
 			ActivateTag);
-		NetMulticast_InteractiveValue(false);
+		//NetMulticast_InteractiveValue(false);
+		MainPlayer->GetPlacementIndicatorComponent()->SetIsActive(false);
+		MainPlayer->GetInteractionComponent()->SetIsInteractive(false);
+		SetCollisionEnabled(false);
 	}
 }
 
