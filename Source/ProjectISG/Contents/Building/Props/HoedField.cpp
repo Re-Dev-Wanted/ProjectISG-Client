@@ -388,11 +388,25 @@ bool AHoedField::PlantCrop(FItemInfoData CropData, uint16 CropId)
 
 void AHoedField::UpdateState()
 {
+	Server_SetMaterialInstanceParam();
+}
+
+void AHoedField::Server_SetMaterialInstanceParam_Implementation()
+{
+	float Multiply = IsWet ? 0.f : 1.f;
+	float Hue = IsWet ? 0.08f : 0.f;
+	float Metal = IsWet ? 1.f : 0.f;
+	Multicast_SetMaterialInstanceParam(Multiply, Hue, Metal);
+}
+
+void AHoedField::Multicast_SetMaterialInstanceParam_Implementation(
+	float Multiply, float Hue, float Metal)
+{
 	UMaterialInstanceDynamic* MatDynamic = MeshComp->
-		CreateAndSetMaterialInstanceDynamic(0);
-	MatDynamic->SetScalarParameterValue("Multiply", IsWet ? 0.f : 1.f);
-	MatDynamic->SetScalarParameterValue("RandomHue Shift", IsWet ? 0.08f : 0.f);
-	MatDynamic->SetScalarParameterValue("Metal", IsWet ? 1.f : 0.f);
+	CreateAndSetMaterialInstanceDynamic(0);
+	MatDynamic->SetScalarParameterValue("Multiply", Multiply);
+	MatDynamic->SetScalarParameterValue("RandomHue Shift", Hue);
+	MatDynamic->SetScalarParameterValue("Metal", Metal);
 
 	if (PlantedCrop.IsValid() && IsWet)
 	{

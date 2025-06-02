@@ -9,6 +9,7 @@ class UNiagaraSystem;
 struct FItemMetaInfo;
 struct FItemInfoData;
 class ABaseCrop;
+class UMaterialInstanceDynamic;
 
 USTRUCT(BlueprintType)
 struct FPlantedCrop
@@ -95,6 +96,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings)
 	TObjectPtr<UNiagaraSystem> Effect;
 	
-
 	void UpdateState();
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetMaterialInstanceParam();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_SetMaterialInstanceParam(float Multiply, float Hue, float 
+	Metal);
 };
