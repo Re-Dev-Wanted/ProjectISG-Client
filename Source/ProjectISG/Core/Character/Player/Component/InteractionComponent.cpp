@@ -239,7 +239,7 @@ void UInteractionComponent::LineTraceToFindTarget()
 		OwnerEndLocation, TargetRadius,
 		TargetRadius, TraceTypeQuery1,
 		false, IgnoreActors,
-		EDrawDebugTrace::ForDuration,
+		EDrawDebugTrace::None,
 		TargetTraceResult, true);
 
 	const AMainPlayerController* PC = PlayerCharacter->GetController<
