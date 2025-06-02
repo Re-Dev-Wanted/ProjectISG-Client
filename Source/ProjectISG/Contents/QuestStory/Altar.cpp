@@ -48,11 +48,8 @@ void AAltar::OnInteractive(AActor* Causer)
 			PS->GetInventoryComponent()->RemoveItem(OfferingFoodId, 1);
 			// 퀘스트 완료
 			PC->SetCustomQuestComplete(true);
-			// 엔딩처리
-			//
 
 			PC->PushUI(EUIName::Popup_EndingChoice);
-
 		}
 	}
 }
