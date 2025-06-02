@@ -25,6 +25,7 @@ public:
 
 	void StartQuest(const FString& NewQuestId);
 
+	UFUNCTION(BlueprintCallable)
 	void StartScene(const FString& NewSceneId);
 
 	UFUNCTION(BlueprintCallable)
