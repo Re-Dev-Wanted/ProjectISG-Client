@@ -29,11 +29,15 @@ void UInventoryNoticeWidgetItem::NativeConstruct()
 
 void UInventoryNoticeWidgetItem::AppearAnimationFinished(UUMGSequencePlayer& AnimationPlayer)
 {
+	TWeakObjectPtr<ThisClass> WeakThis = this;
 	GetWorld()->GetTimerManager()
 	.SetTimerForNextTick(
-		[this]()
+		[WeakThis]()
 	   {
-		   RemoveFromParent();
+			if (WeakThis.IsValid())
+			{
+				WeakThis.Get()->RemoveFromParent();
+			}
 	   }
 	);
 }

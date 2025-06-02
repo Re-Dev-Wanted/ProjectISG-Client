@@ -160,9 +160,13 @@ void USleepManager::LoadHouseLevel()
 		HouseLevel, true, false, LatentActionInfo);
 
 	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]()
+	TWeakObjectPtr<ThisClass> WeakThis = this;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [WeakThis]()
 	{
-		AssignBedEachPlayer();
+		if (WeakThis.IsValid())
+		{
+			WeakThis.Get()->AssignBedEachPlayer();
+		}
 	}, 0.25, false);
 }
 

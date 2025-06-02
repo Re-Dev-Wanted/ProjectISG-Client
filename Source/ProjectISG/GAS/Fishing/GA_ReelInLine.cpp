@@ -70,22 +70,23 @@ void UGA_ReelInLine::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 			TWeakObjectPtr<AMainPlayerCharacter> WeakPlayer = Player;
 			TWeakObjectPtr<AFishingRod> WeakFishingRod = FishingRod;
+			TWeakObjectPtr<ThisClass> WeakThis = this;
 
 			GetWorld()->GetTimerManager().SetTimer
 			(
 				TimerHandle,
-				[this, WeakPlayer, WeakFishingRod]()
+				[WeakThis, WeakPlayer, WeakFishingRod]()
 				{
-					if (WeakPlayer.IsValid() && WeakFishingRod.IsValid())
+					if (WeakThis.IsValid() && WeakPlayer.IsValid() && WeakFishingRod.IsValid())
 					{
-						FishActor = GetWorld()
-						->SpawnActor<AFishActor>(FishActorFactory);
+						WeakThis.Get()->FishActor = WeakThis.Get()->GetWorld()
+						->SpawnActor<AFishActor>(WeakThis.Get()->FishActorFactory);
 
 						FFishData FishData = WeakFishingRod.Get()->GetFishData();
 
-						FishActor->SetMesh(FishData.GetMesh());
+						WeakThis.Get()->FishActor->SetMesh(FishData.GetMesh());
 
-						FishActor->AttachToComponent(WeakPlayer.Get()->GetMesh(), 
+						WeakThis.Get()->FishActor->AttachToComponent(WeakPlayer.Get()->GetMesh(), 
 						FAttachmentTransformRules
 						::SnapToTargetNotIncludingScale, *FishData.GetSocketName());
 					}
@@ -113,7 +114,7 @@ void UGA_ReelInLine::EndAbility(const FGameplayAbilitySpecHandle Handle,
                                 ActivationInfo, bool bReplicateEndAbility,
                                 bool bWasCancelled)
 {
-	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		ActorInfo->AvatarActor.Get());
 
 	if (!Player)
@@ -123,13 +124,17 @@ void UGA_ReelInLine::EndAbility(const FGameplayAbilitySpecHandle Handle,
 		return;
 	}
 
+	TWeakObjectPtr<AMainPlayerCharacter> WeakPlayer = Player;
 	GetWorld()->
 		GetTimerManager()
 		.SetTimerForNextTick
 		(
-			[Player]()
+			[WeakPlayer]()
 			{
-				Player->GetInteractionComponent()->SetIsInteractive(true);
+				if (WeakPlayer.IsValid())
+				{
+					WeakPlayer.Get()->GetInteractionComponent()->SetIsInteractive(true);
+				}
 			}
 		);
 
