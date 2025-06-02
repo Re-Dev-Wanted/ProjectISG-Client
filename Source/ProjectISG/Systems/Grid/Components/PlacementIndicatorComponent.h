@@ -86,6 +86,8 @@ protected:
 
 	bool IsActive = true;
 
+	bool bIsTraced = false;
+
 	uint16 PlacementItemId = 0;
 
 	UFUNCTION()

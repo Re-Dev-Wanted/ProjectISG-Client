@@ -109,6 +109,11 @@ void UPlacementIndicatorComponent::TickComponent(
 
 void UPlacementIndicatorComponent::Execute()
 {
+	if (!bIsTraced)
+	{
+		return;
+	}
+	
 	if (!IsActive)
 	{
 		return;
@@ -264,7 +269,7 @@ void UPlacementIndicatorComponent::LineTrace()
 		return;
 	}
 
-	const bool IsSuccess = UKismetSystemLibrary::CapsuleTraceSingle(GetWorld(),
+	bIsTraced = UKismetSystemLibrary::CapsuleTraceSingle(GetWorld(),
 		OwnerStartLocation,
 		OwnerEndLocation, TargetRadius,
 		TargetRadius, TraceTypeQuery1,
@@ -272,7 +277,12 @@ void UPlacementIndicatorComponent::LineTrace()
 		EDrawDebugTrace::None,
 		TargetTraceResult, true);
 
-	if (IsSuccess)
+	if (IndicateActor)
+	{
+		IndicateActor->SetActorHiddenInGame(!bIsTraced);
+	}
+
+	if (bIsTraced)
 	{
 		if (PlayerController->GetCharacter()->IsLocallyControlled())
 		{
@@ -320,6 +330,11 @@ void UPlacementIndicatorComponent::LineTrace()
 void UPlacementIndicatorComponent::OnRotate(
 	const FInputActionValue& InputActionValue)
 {
+	if (!bIsTraced)
+	{
+		return;
+	}
+	
 	if (!IsActive)
 	{
 		return;
