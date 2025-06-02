@@ -13,4 +13,11 @@ UCLASS()
 class PROJECTISG_API UUIM_MainLobby : public UBaseUIModel
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere)
+	class ULevelSequence* LobbyLS;
+
+	UPROPERTY(EditAnywhere)
+	class ALevelSequenceActor* LevelSequenceActor;
 };

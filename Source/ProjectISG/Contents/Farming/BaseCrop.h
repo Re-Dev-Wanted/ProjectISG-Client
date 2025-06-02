@@ -66,6 +66,9 @@ public:
 
 	FHarvestCrop HarvestCrop;
 
+	void SetOverlayInteractMaterial(bool value);
+
+
 private:
 	void CheckGrowTime();
 
@@ -92,6 +95,7 @@ private:
 
 	EItemGrade SetItemGrade();
 
+
 #pragma region Settings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings,
 		meta = (AllowPrivateAccess = true))
@@ -115,6 +119,10 @@ private:
 
 	UPROPERTY()
 	class ATimeManager* TimeManager = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Settings,
+		meta = (AllowPrivateAccess = true))
+	class UMaterial* OverlayMaterial = nullptr;
 #pragma endregion
 
 #pragma region Grow
