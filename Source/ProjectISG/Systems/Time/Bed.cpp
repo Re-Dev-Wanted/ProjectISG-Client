@@ -86,6 +86,15 @@ void ABed::GetLifetimeReplicatedProps(
 void ABed::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (TimeManager->GetHour() < 9)
+	{
+		CanInteractive = false;
+	}
+	else
+	{
+		CanInteractive = true;
+	}
 }
 
 void ABed::OnInteractive(AActor* Causer)
