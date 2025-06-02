@@ -12,6 +12,7 @@ class PROJECTISG_API UUIM_MbtiAskUI : public UBaseUIModel
 
 public:
 	GETTER_SETTER(FString, Question)
+	GETTER_SETTER(FString, Judged)
 	GETTER_SETTER(FText, Answer)
 	GETTER_SETTER(bool, Completed)
 	GETTER_SETTER(uint8, MaxQuestionNum)
@@ -23,6 +24,7 @@ private:
 	FText Answer;
 	bool Completed;
 	FString Question;
+	FString Judged;
 	uint8 MaxQuestionNum = 7;
 	uint8 CurrentQuestNum;
 	float CurrentPercentValue;

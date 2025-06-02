@@ -154,4 +154,7 @@ struct PROJECTISG_API FPostMbtiAnswerResponse
 
 	UPROPERTY()
 	bool completed = false;
+
+	UPROPERTY()
+	FString judged;
 };
