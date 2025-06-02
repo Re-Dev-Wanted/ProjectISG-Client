@@ -17,10 +17,14 @@ void UUIC_HUDAlertModalWidget::Alert(const EAlertType AlertType,
 	AlertModalWidget->GetAlertMessage()->SetColorAndOpacity(
 		AlertModalWidget->GetColorMap()[AlertType]);
 
+	TWeakObjectPtr<ThisClass> WeakThis = this;
 	GetWorld()->GetTimerManager().ClearTimer(AlertTimerHandle);
 	GetWorld()->GetTimerManager().SetTimer(AlertTimerHandle,
-	                                       [this]()
+	                                       [WeakThis]()
 	                                       {
-		                                       EndShowUI(true);
+	                                       		if (WeakThis.IsValid())
+	                                       		{
+													WeakThis.Get()->EndShowUI(true);	
+	                                       		}
 	                                       }, Time, false);
 }
