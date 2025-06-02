@@ -39,11 +39,10 @@ void AAltar::OnInteractive(AActor* Causer)
 
 	AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 	AMainPlayerController* PC = Player->GetController<AMainPlayerController>();
-	//PC->GetQuestManageComponent()->GetCurrentPlayingQuestId() == FString::Printf(TEXT("Story_006"))
 	if (Player && PS && PC)
 	{
-		if (PS->GetInventoryComponent()->HasItemInInventory(OfferingFoodId, 1)
-			)
+		if (PS->GetInventoryComponent()->HasItemInInventory(OfferingFoodId, 1) &&
+			PC->GetQuestManageComponent()->GetCurrentPlayingQuestId() == FString::Printf(TEXT("Story_006")))
 		{
 			// 공물 음식 삭제
 			PS->GetInventoryComponent()->RemoveItem(OfferingFoodId, 1);
