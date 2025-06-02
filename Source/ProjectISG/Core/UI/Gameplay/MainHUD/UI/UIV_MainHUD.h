@@ -4,6 +4,7 @@
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
 #include "UIV_MainHUD.generated.h"
 
+class UQuestCompleteNotification;
 class UInventoryNoticeWidget;
 class UInventoryNoticeWidgetItem;
 class UUIV_HUDAlertModalWidget;
@@ -26,6 +27,7 @@ public:
 	GETTER(TObjectPtr<UUIV_CurrentQuestWidget>, CurrentQuestWidget)
 	GETTER(TObjectPtr<UUIV_HUDAlertModalWidget>, AlertModalWidget)
 	GETTER(TObjectPtr<UInventoryNoticeWidget>, InventoryNoticeWidget)
+	GETTER(TObjectPtr<UQuestCompleteNotification>, QuestCompleteNotification)
 
 private:
 	UPROPERTY(meta = (BindWidget))
@@ -48,4 +50,7 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UInventoryNoticeWidget> InventoryNoticeWidget;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UQuestCompleteNotification> QuestCompleteNotification;
 };

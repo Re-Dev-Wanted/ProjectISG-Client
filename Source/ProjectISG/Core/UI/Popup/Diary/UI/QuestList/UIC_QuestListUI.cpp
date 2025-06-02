@@ -12,6 +12,9 @@
 #include "Components/VerticalBox.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
+#include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIV_MainHUD.h"
+#include "ProjectISG/Core/UI/Gameplay/MainHUD/Widget/QuestCompleteNotification.h"
 #include "ProjectISG/Core/UI/Popup/Diary/Widget/QuestItem/QuestItemWidgetObject.h"
 #include "ProjectISG/Core/UI/Popup/Diary/Widget/QuestRequiredText/UIV_QuestRequiredTextWidget.h"
 #include "ProjectISG/Core/UI/Popup/Diary/Widget/QuestShowItemInfo/UIC_QuestShowItemInfoWidget.h"
@@ -370,6 +373,9 @@ void UUIC_QuestListUI::OnClickQuestButton()
 			PopUIFromPlayerController();
 			PC->EndQuest();
 
+			UUIV_MainHUD* MainHUD = Cast<UUIV_MainHUD>(PC->GetMainHUD()->GetView());
+			MainHUD->GetQuestCompleteNotification()->OnNotify();
+			
 			break;
 		}
 	default:
