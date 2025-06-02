@@ -63,6 +63,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void SetWet(bool Watering);
+
+	UFUNCTION(Server, Reliable)
+	void DestroyCropAndClearData();
 	
 protected:
 	virtual void BeginPlay() override;

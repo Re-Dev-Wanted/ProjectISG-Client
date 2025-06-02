@@ -253,6 +253,8 @@ void AHoedField::OnTouch(AActor* Causer)
 			{
 				if (PlantedCrop.IsValid())
 				{
+					Player->GetInteractionComponent()->Server_OnTouchResponse(Causer);
+
 					ABaseCrop* Crop = PlantedCrop.Crop;
 
 					if (Crop->GetCurrentState() == ECropState::Mature)
@@ -267,8 +269,8 @@ void AHoedField::OnTouch(AActor* Causer)
 								PlantedCrop.CropId);
 						PS->GetInventoryComponent()->AddItem(SeedMetaInfo);
 					}
-
-					PlantedCrop.Clear(true);
+					
+					// PlantedCrop.Clear(true);
 				}
 				else
 				{
@@ -315,6 +317,30 @@ void AHoedField::OnTouchResponse(AActor* Causer)
 		SetWet(true);
 		PlantedCrop.Crop->SetOverlayInteractMaterial(false);
 	}
+
+	const uint16 OtherId = UItemManager::GetGeneratedOtherItemIdById(
+			ItemId);
+
+	if (OtherId > 0)
+	{
+		const FItemInfoData OtherData = UItemManager::GetItemInfoById(
+			OtherId);
+
+		if (OtherData.GetPlaceItemActor() == GetClass())
+		{
+			if (PlantedCrop.IsValid())
+			{
+				ABaseCrop* Crop = PlantedCrop.Crop;
+				if (Crop->GetCurrentState() == ECropState::Mature)
+				{
+					return;
+				}
+
+				DestroyCropAndClearData();
+			}
+		}
+	}
+	
 }
 
 bool AHoedField::PlantCrop(FItemInfoData CropData, uint16 CropId)
@@ -386,3 +412,11 @@ void AHoedField::SetWet_Implementation(bool Watering)
 
 	UpdateState();
 }
+
+void AHoedField::DestroyCropAndClearData_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("ㅌㅅㅌ"));
+	PlantedCrop.Crop->Destroy();
+	PlantedCrop.Clear(true);
+}
+
