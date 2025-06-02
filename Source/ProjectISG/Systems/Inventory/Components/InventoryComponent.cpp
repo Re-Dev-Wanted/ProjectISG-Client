@@ -26,16 +26,6 @@ void UInventoryComponent::InitializeItemData()
 		AddItem(InitItemInfo);
 	}
 
-	FItemMetaInfo AlterItemInfo;
-	AlterItemInfo.SetId(53);
-	AlterItemInfo.SetCurrentCount(1);
-	AddItem(AlterItemInfo);
-
-	FItemMetaInfo SoupItemInfo;
-	SoupItemInfo.SetId(4);
-	SoupItemInfo.SetCurrentCount(1);
-	AddItem(SoupItemInfo);
-
 	UpdateInventory_Internal();
 }
 
