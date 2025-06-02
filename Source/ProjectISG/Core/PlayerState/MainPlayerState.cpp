@@ -54,10 +54,7 @@ void AMainPlayerState::BeginPlay()
 
 	if (!GridManager)
 	{
-		UKismetSystemLibrary::PrintString(GetWorld()
-										, TEXT(
-											"World에 GridManager가 없습니다. Grid를 사용하는 맵이라면 반드시 World에 배치하세요.")
-										, true, true, FLinearColor::Red);
+		UE_LOG(LogTemp, Warning, TEXT("World에 GridManager가 없습니다. Grid를 사용하는 맵이라면 반드시 World에 배치하세요."));
 	}
 
 	TimeManager = Cast<ATimeManager>(
@@ -65,10 +62,7 @@ void AMainPlayerState::BeginPlay()
 										, ATimeManager::StaticClass()));
 	if (!TimeManager)
 	{
-		UKismetSystemLibrary::PrintString(GetWorld()
-										, TEXT(
-											"World에 TimeManager가 없습니다. 시간을 사용하는 맵이라면 반드시 World에 배치하세요.")
-										, true, true, FLinearColor::Red);
+		UE_LOG(LogTemp, Warning, TEXT("World에 TimeManager가 없습니다. 시간을 사용하는 맵이라면 반드시 World에 배치하세요."));
 	}
 }
 
