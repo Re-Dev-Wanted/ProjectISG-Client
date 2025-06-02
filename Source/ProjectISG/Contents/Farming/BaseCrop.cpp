@@ -400,7 +400,6 @@ void ABaseCrop::NetMulticast_ChangeCurrentCropState_Implementation(
 
 void ABaseCrop::SetOverlayInteractMaterial(bool value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("test"));
 	if (value)
 	{
 		Mesh->SetOverlayMaterial(OverlayMaterial);
