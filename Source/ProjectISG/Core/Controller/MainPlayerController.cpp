@@ -41,7 +41,6 @@ void AMainPlayerController::BeginPlay()
 			GetUIManageComponent()->ControllerInstances[
 				EUIName::Popup_SceneListUI]);
 		SceneListUIController->OnSceneListEndNotified.BindUObject(
-			
 			this, &ThisClass::MainSceneEnd);
 	}
 }
@@ -64,7 +63,10 @@ void AMainPlayerController::OnRep_PlayerState()
 
 void AMainPlayerController::MainSceneEnd()
 {
-	StartQuest(FString::Printf(TEXT("Story_000")));
+	if (HasAuthority())
+	{
+		StartQuest(FString::Printf(TEXT("Story_000")));
+	}
 }
 
 void AMainPlayerController::StartQuest(const FString& QuestId)
@@ -98,7 +100,6 @@ void AMainPlayerController::StartQuestToPlayer(const FString& QuestId)
 		return;
 	}
 
-	GetUIManageComponent()->ResetWidget();
 	QuestManageComponent->StartQuest(QuestId);
 }
 
@@ -168,7 +169,7 @@ void AMainPlayerController::PopUI()
 }
 
 void AMainPlayerController::Alert(const EAlertType AlertType
-                                  , const FString& Message, const float Time)
+								, const FString& Message, const float Time)
 {
 	if (UIManageComponent->GetTopStackUI() != EUIName::Gameplay_MainHUD)
 	{
