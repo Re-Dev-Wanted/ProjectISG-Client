@@ -42,6 +42,7 @@ void UPlayerHandSlotComponent::GetLifetimeReplicatedProps(
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UPlayerHandSlotComponent, HeldItem);
+	DOREPLIFETIME(UPlayerHandSlotComponent, ItemId);
 }
 
 void UPlayerHandSlotComponent::InitializePlayerHandSlot()
@@ -63,27 +64,6 @@ void UPlayerHandSlotComponent::InitializePlayerHandSlot()
 	}
 
 	OnInventoryUpdated();
-}
-
-uint16 UPlayerHandSlotComponent::GetItemId() const
-{
-	if (!HeldItem)
-	{
-		return 0;
-	}
-
-	const AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(
-		GetOwner());
-
-	const uint32 CurrentIndex = OwnerPlayer->GetPlayerInventoryComponent()->
-											 GetCurrentSlotIndex();
-
-	const FItemMetaInfo ItemMetaInfo = OwnerPlayer->
-									   GetPlayerState<AMainPlayerState>()->
-									   GetInventoryComponent()->
-									   GetInventoryList()[CurrentIndex];
-
-	return ItemMetaInfo.GetId();
 }
 
 FString UPlayerHandSlotComponent::GetItemUsingType()
@@ -110,6 +90,7 @@ void UPlayerHandSlotComponent::ClearHand()
 {
 	if (HeldItem)
 	{
+		ItemId = 0;
 		ABaseActor* DestroyActor = HeldItem.Get();
 		HeldItem = nullptr;
 		DestroyActor->Destroy();
@@ -150,6 +131,7 @@ void UPlayerHandSlotComponent::Server_ChangeItem_Implementation(uint16 ChangeIte
 
 	if (Player->HasAuthority())
 	{
+		ItemId = ChangeItemId;
 		const FName SocketName = UItemManager::GetSocketNameById(ChangeItemId);
 
 		if (!SocketName.IsNone() && Player && Player->GetMesh())

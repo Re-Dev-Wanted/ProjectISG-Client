@@ -17,13 +17,12 @@ public:
 	UPlayerHandSlotComponent();
 
 	GETTER(TObjectPtr<class ABaseActor>, HeldItem)
+	GETTER(uint16, ItemId)
 
 	virtual void GetLifetimeReplicatedProps(
 		TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void InitializePlayerHandSlot();
-
-	uint16 GetItemId() const;
 
 	FString GetItemUsingType();
 
@@ -44,6 +43,9 @@ protected:
 
 	UPROPERTY(Replicated)
 	TObjectPtr<ABaseActor> HeldItem = nullptr;
+
+	UPROPERTY(Replicated, EditAnywhere)
+	uint16 ItemId = 0;
 
 private:
 	UFUNCTION()
