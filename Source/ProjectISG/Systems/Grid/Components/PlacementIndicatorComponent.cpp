@@ -548,6 +548,7 @@ void UPlacementIndicatorComponent::SetVisibilityInternal(uint16 ItemId)
 	// 하우징이 가능한 상태
 	if (bIsIndicatorActive)
 	{
+		bIsTraced = true;
 		const uint16 GeneratedOtherItemId =
 			UItemManager::GetGeneratedOtherItemIdById(ItemId);
 		// 다른 아이템을 생성하는 도구인지 판단
