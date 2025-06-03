@@ -37,6 +37,7 @@ void UUIC_EndingChoice::OnLeaveButtonClicked()
 	Player->GetPlayerBGMSoundComponent()->StopBGMSound();
 	
 	UUIM_EndingChoice* EndingChoiceModel = Cast<UUIM_EndingChoice>(GetModel());
+	Player->GetPlayerBGMSoundComponent()->PlayBGMSound(EndingChoiceModel->GetEndingBGM());
 
 	UEndingMoviePlayer* MoviePlayer = Cast<UEndingMoviePlayer>(CreateWidget(
 		GetWorld(),
@@ -64,6 +65,7 @@ void UUIC_EndingChoice::OnRemainButtonClicked()
 	Player->GetPlayerBGMSoundComponent()->StopBGMSound();
 
 	UUIM_EndingChoice* EndingChoiceModel = Cast<UUIM_EndingChoice>(GetModel());
+	Player->GetPlayerBGMSoundComponent()->PlayBGMSound(EndingChoiceModel->GetEndingBGM());
 
 	UEndingMoviePlayer* MoviePlayer = Cast<UEndingMoviePlayer>(CreateWidget(
 		GetWorld(),

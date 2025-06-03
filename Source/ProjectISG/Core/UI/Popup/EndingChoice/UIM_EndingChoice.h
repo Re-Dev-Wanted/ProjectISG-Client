@@ -22,7 +22,7 @@ public:
 	GETTER(TSoftObjectPtr<UWorld>, LobbyLevel)
 	GETTER(FString, EndingVideoScene)
 	GETTER(TSubclassOf<UEndingMoviePlayer>, MoviePlayer)
-
+	GETTER(USoundWave*, EndingBGM)
 private:
 	UPROPERTY(EditAnywhere)
 	FString LeaveScene;
@@ -38,4 +38,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UEndingMoviePlayer> MoviePlayer;
+
+	UPROPERTY(EditAnywhere)
+	USoundWave* EndingBGM;
 };
