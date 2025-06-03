@@ -254,9 +254,6 @@ void AHoedField::OnTouch(AActor* Causer)
 			{
 				if (PlantedCrop.IsValid())
 				{
-					Player->GetInteractionComponent()->Server_OnTouchResponse(
-						Causer);
-
 					ABaseCrop* Crop = PlantedCrop.Crop;
 
 					if (!Crop)
@@ -268,6 +265,7 @@ void AHoedField::OnTouch(AActor* Causer)
 					{
 						return;
 					}
+					
 					if (Player->IsLocallyControlled())
 					{
 						// 작물 제거, 해당 작물에 해당하는 씨앗 뱉기, 인벤토리에 넣기
@@ -276,6 +274,9 @@ void AHoedField::OnTouch(AActor* Causer)
 								PlantedCrop.CropId);
 						PS->GetInventoryComponent()->AddItem(SeedMetaInfo);
 					}
+
+					Player->GetInteractionComponent()->Server_OnTouchResponse(
+						Causer);
 
 					// PlantedCrop.Clear(true);
 				}
