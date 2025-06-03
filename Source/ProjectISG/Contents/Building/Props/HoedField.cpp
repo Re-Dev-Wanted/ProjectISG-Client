@@ -26,8 +26,9 @@ AHoedField::AHoedField()
 
 void AHoedField::OnSpawned()
 {
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), Effect, GetActorLocation());
-	
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+		GetWorld(), Effect, GetActorLocation());
+
 	const float Percent = FMath::RandRange(1.f, 100.f);
 
 	if (Percent > ChanceBasedPercent)
@@ -253,9 +254,15 @@ void AHoedField::OnTouch(AActor* Causer)
 			{
 				if (PlantedCrop.IsValid())
 				{
-					Player->GetInteractionComponent()->Server_OnTouchResponse(Causer);
+					Player->GetInteractionComponent()->Server_OnTouchResponse(
+						Causer);
 
 					ABaseCrop* Crop = PlantedCrop.Crop;
+
+					if (!Crop)
+					{
+						return;
+					}
 
 					if (Crop->GetCurrentState() == ECropState::Mature)
 					{
@@ -269,7 +276,7 @@ void AHoedField::OnTouch(AActor* Causer)
 								PlantedCrop.CropId);
 						PS->GetInventoryComponent()->AddItem(SeedMetaInfo);
 					}
-					
+
 					// PlantedCrop.Clear(true);
 				}
 				else
@@ -319,7 +326,7 @@ void AHoedField::OnTouchResponse(AActor* Causer)
 	}
 
 	const uint16 OtherId = UItemManager::GetGeneratedOtherItemIdById(
-			ItemId);
+		ItemId);
 
 	if (OtherId > 0)
 	{
@@ -331,6 +338,7 @@ void AHoedField::OnTouchResponse(AActor* Causer)
 			if (PlantedCrop.IsValid())
 			{
 				ABaseCrop* Crop = PlantedCrop.Crop;
+
 				if (Crop->GetCurrentState() == ECropState::Mature)
 				{
 					return;
@@ -340,7 +348,6 @@ void AHoedField::OnTouchResponse(AActor* Causer)
 			}
 		}
 	}
-	
 }
 
 bool AHoedField::PlantCrop(FItemInfoData CropData, uint16 CropId)
@@ -410,7 +417,7 @@ void AHoedField::Multicast_SetMaterialInstanceParam_Implementation(
 	float Multiply, float Hue, float Metal)
 {
 	UMaterialInstanceDynamic* MatDynamic = MeshComp->
-	CreateAndSetMaterialInstanceDynamic(0);
+		CreateAndSetMaterialInstanceDynamic(0);
 	MatDynamic->SetScalarParameterValue("Multiply", Multiply);
 	MatDynamic->SetScalarParameterValue("RandomHue Shift", Hue);
 	MatDynamic->SetScalarParameterValue("Metal", Metal);
@@ -436,8 +443,6 @@ void AHoedField::SetWet_Implementation(bool Watering)
 
 void AHoedField::DestroyCropAndClearData_Implementation()
 {
-	UE_LOG(LogTemp, Warning, TEXT("ㅌㅅㅌ"));
 	PlantedCrop.Crop->Destroy();
 	PlantedCrop.Clear(true);
 }
-
