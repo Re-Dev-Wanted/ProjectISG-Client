@@ -72,6 +72,7 @@ public:
 	GETTER(TObjectPtr<UInteractionComponent>, InteractionComponent)
 	GETTER(TObjectPtr<UPlayerHandSlotComponent>, HandSlotComponent)
 	GETTER(TObjectPtr<UCameraComponent>, ScreenShotCameraComponent)
+	GETTER(TObjectPtr<UPlayerSoundComponent>, PlayerBGMSoundComponent);
 
 	UFUNCTION(Server, Reliable, BlueprintCallable)
 	void Server_SetActorTransformReplicated(const FTransform& Transform);
@@ -121,6 +122,9 @@ private:
 	UPROPERTY()
 	TObjectPtr<UPlayerSoundComponent> PlayerSoundComponent;
 
+	UPROPERTY()
+	TObjectPtr<UPlayerSoundComponent> PlayerBGMSoundComponent;
+
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Input"
 		, meta = (AllowPrivateAccess = true))
 	TObjectPtr<UInputMappingContext> DefaultMappingContext;
@@ -148,5 +152,9 @@ private:
 	UPROPERTY(Replicated, EditAnywhere, Category = "Sleep"
 		, meta = (AllowPrivateAccess = true))
 	bool bLieInBed = false;
+	
+	UPROPERTY(EditAnywhere, Category = "Options|BGM"
+	, meta = (AllowPrivateAccess = true))
+	USoundWave* MainBGM;
 #pragma endregion
 };

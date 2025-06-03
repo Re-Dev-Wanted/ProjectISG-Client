@@ -37,3 +37,28 @@ void UPlayerSoundComponent::StopTTSSound()
 {
 	TTSAudioComponent->Stop();
 }
+
+void UPlayerSoundComponent::PlayBGMSound(USoundWave* TargetBGM)
+{
+	if (!BGMAudioComponent)
+	{
+		BGMAudioComponent = NewObject<UAudioComponent>(this);
+		BGMAudioComponent->bAutoActivate = false;
+		BGMAudioComponent->bAutoDestroy = false;
+		BGMAudioComponent->RegisterComponent();
+		BGMAudioComponent->AttachToComponent(GetOwner()->GetRootComponent(),
+			FAttachmentTransformRules::KeepRelativeTransform);
+	}
+
+	BGMAudioComponent->Stop();
+	if (TargetBGM)
+	{
+		BGMAudioComponent->SetSound(TargetBGM);
+		BGMAudioComponent->Play();
+	}
+}
+
+void UPlayerSoundComponent::StopBGMSound()
+{
+	BGMAudioComponent->Stop();
+}

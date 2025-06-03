@@ -6,6 +6,8 @@
 #include "UIM_EndingChoice.h"
 #include "UIV_EndingChoice.h"
 #include "ProjectISG/Core/ISGGameInstance.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerSoundComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Gameplay/QuestStory/EndingMoviePlayer.h"
@@ -31,7 +33,9 @@ void UUIC_EndingChoice::OnLeaveButtonClicked()
 	AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetPlayerController());
 	PC->PopUI();
-
+	AMainPlayerCharacter* Player = PC->GetPawn<AMainPlayerCharacter>();
+	Player->GetPlayerBGMSoundComponent()->StopBGMSound();
+	
 	UUIM_EndingChoice* EndingChoiceModel = Cast<UUIM_EndingChoice>(GetModel());
 
 	UEndingMoviePlayer* MoviePlayer = Cast<UEndingMoviePlayer>(CreateWidget(
@@ -56,6 +60,8 @@ void UUIC_EndingChoice::OnRemainButtonClicked()
 	AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetPlayerController());
 	PC->PopUI();
+	AMainPlayerCharacter* Player = PC->GetPawn<AMainPlayerCharacter>();
+	Player->GetPlayerBGMSoundComponent()->StopBGMSound();
 
 	UUIM_EndingChoice* EndingChoiceModel = Cast<UUIM_EndingChoice>(GetModel());
 

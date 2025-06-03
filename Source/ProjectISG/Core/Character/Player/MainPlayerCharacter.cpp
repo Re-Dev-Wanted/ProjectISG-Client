@@ -71,6 +71,9 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 
 	PlayerSoundComponent = CreateDefaultSubobject<UPlayerSoundComponent>(
 		"Player Sound Component");
+
+	PlayerBGMSoundComponent = CreateDefaultSubobject<UPlayerSoundComponent>(
+		"Player BGM Sound Component");
 }
 
 void AMainPlayerCharacter::BeginPlay()
@@ -85,6 +88,12 @@ void AMainPlayerCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
+	}
+
+	if (IsLocallyControlled())
+	{
+		if (MainBGM != nullptr)
+		PlayerBGMSoundComponent->PlayBGMSound(MainBGM);
 	}
 }
 

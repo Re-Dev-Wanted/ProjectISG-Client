@@ -15,6 +15,10 @@ public:
 	void PlayTTSSound(USoundWave* TargetTTS);
 
 	void StopTTSSound();
+	
+	void PlayBGMSound(USoundWave* TargetBGM);
+	
+	void StopBGMSound();
 
 protected:
 	virtual void BeginPlay() override;
@@ -22,4 +26,7 @@ protected:
 private:
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> TTSAudioComponent;
+
+	UPROPERTY()
+	TObjectPtr<UAudioComponent> BGMAudioComponent;
 };
