@@ -67,6 +67,15 @@ void UUIC_AutoQuestDialogueWidget::InitializeDialogue()
 
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		GetView()->GetOwningPlayerPawn());
+
+	// 다른 UI를 열거나 닫을 때 혹은 Skip 한 후에는 재귀를 돌리지 말고 바로 퀘스트를 끊도록 함
+	if (AutoQuestDialogueWidgetView->GetVisibility() == ESlateVisibility::Hidden)
+	{
+		AutoQuestDialogueWidgetModel->SetCurrentQuestDialogueIndex(0);
+		Player->GetPlayerSoundComponent()->StopTTSSound();
+		return;
+	}
+	
 	// 대사를 말하는 주체에 대한 이름 설정
 	const FString OwnerText = Dialogues[CurrentQuestDialogueIndex].
 	                          GetDialogueOwner() == TEXT("{Player}")
@@ -134,6 +143,17 @@ void UUIC_AutoQuestDialogueWidget::OnFinishDialogue()
 		GetView()->GetOwningPlayer());
 	UQuestManageComponent* PlayerQuestManager = PC->
 		GetQuestManageComponent();
+
+	UUIV_AutoQuestDialogueWidget* AutoQuestDialogueWidgetView = Cast<
+		UUIV_AutoQuestDialogueWidget>(GetView());
+
+	// 다른 UI를 열거나 닫을 때 혹은 Skip 한 후에는 재귀를 돌리지 말고 바로 퀘스트를 끊도록 함
+	if (AutoQuestDialogueWidgetView->GetVisibility() == ESlateVisibility::Hidden)
+	{
+		AutoQuestDialogueWidgetModel->SetCurrentQuestDialogueIndex(0);
+		PC->GetPawn<AMainPlayerCharacter>()->GetPlayerSoundComponent()->StopTTSSound();
+		return;
+	}
 
 	// 현재 총 퀘스트의 대화 배열 수
 	const uint8 DialogueCount = UQuestStoryManager::GetQuestDialogueById(

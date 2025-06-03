@@ -2,9 +2,14 @@
 
 #include "ProjectISG/Core/ISGGameInstance.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerSoundComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
+#include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIV_MainHUD.h"
+#include "ProjectISG/Core/UI/Gameplay/QuestStory/Widget/AutoQuest/UIC_AutoQuestDialogueWidget.h"
+#include "ProjectISG/Core/UI/Gameplay/QuestStory/Widget/AutoQuest/UIV_AutoQuestDialogueWidget.h"
 #include "ProjectISG/Core/UI/Popup/SceneList/UI/CutSceneList/UIC_SceneListUI.h"
 #include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
@@ -44,6 +49,12 @@ void AAltar::OnInteractive(AActor* Causer)
 		if (PS->GetInventoryComponent()->HasItemInInventory(OfferingFoodId, 1) &&
 			PC->GetQuestManageComponent()->GetCurrentPlayingQuestId() == FString::Printf(TEXT("Story_006")))
 		{
+			Player->GetPlayerSoundComponent()->StopTTSSound();
+			UUIC_MainHUD* MainHUDController = Cast<UUIC_MainHUD>(PC->GetUIManageComponent()->ControllerInstances[EUIName::Gameplay_MainHUD]);
+			UUIV_MainHUD* MainHUDView = Cast<UUIV_MainHUD>(MainHUDController->GetView());
+			UUIC_AutoQuestDialogueWidget* AutoQuestDialogueWidgetController = Cast<UUIC_AutoQuestDialogueWidget>(MainHUDView->GetAutoQuestDialogueWidget()->GetController());
+			AutoQuestDialogueWidgetController->SkipQuestDialogue();
+			
 			// 공물 음식 삭제
 			PS->GetInventoryComponent()->RemoveItem(OfferingFoodId, 1);
 			// 퀘스트 완료
