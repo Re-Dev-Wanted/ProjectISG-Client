@@ -39,7 +39,6 @@ void UGA_EndCookingMode::OnEndCinematic()
 	AMainPlayerController* PC = Player->GetController<
 		AMainPlayerController>();
 
-	PC->PushUI(EUIName::Gameplay_MainHUD);
 	PC->SetIgnoreLookInput(false);
 	PC->SetViewTargetWithBlend(Player, 0.5f);
 
