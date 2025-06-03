@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "ProjectISG/Core/UI/UIEnum.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIController.h"
 #include "UIC_TradingUI.generated.h"
 
@@ -28,9 +29,12 @@ protected:
 	void OnTrade();
 
 	void RefreshList();
+	
 public:
 	void OnUpdateSelectedProduct(uint16 ProductId);
 	
+	void UpdateStateButton(ETradingState State);
+
 	void UpdateGoldText();
 
 protected:

@@ -129,6 +129,8 @@ void UUIC_TradingUI::RefreshList()
 	
 	TradingUIView->GetItemListView()->SetUpdateUI(
 		TradingUIModel->GetCurrentState());
+	
+	UpdateStateButton(TradingUIModel->GetCurrentState());
 }
 
 void UUIC_TradingUI::UpdateGoldText()
@@ -189,17 +191,7 @@ void UUIC_TradingUI::ChangeBuyState()
 	}
 
 	TradingUIModel->SetCurrentState(ETradingState::BUY);
-
-	UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
-
-	TradingUIView->GetItemListView()->SetUpdateUI(
-		TradingUIModel->GetCurrentState());
-
-	TradingUIView->GetProductDetailView()->OnHide();
-
-	TradingUIView->GetTradeButton()->Get()->SetIsEnabled(false);
-	TradingUIView->GetTradeButton()->GetText()->SetText(FText::FromString(TEXT
-		("구매하기")));
+	UpdateStateButton(ETradingState::BUY);
 }
 
 void UUIC_TradingUI::ChangeSellState()
@@ -212,15 +204,20 @@ void UUIC_TradingUI::ChangeSellState()
 	}
 
 	TradingUIModel->SetCurrentState(ETradingState::SELL);
+	UpdateStateButton(ETradingState::SELL);
+}
 
+void UUIC_TradingUI::UpdateStateButton(ETradingState State)
+{
 	UUIV_TradingUI* TradingUIView = Cast<UUIV_TradingUI>(GetView());
-
-	TradingUIView->GetItemListView()->SetUpdateUI(
-		TradingUIModel->GetCurrentState());
-
+	
+	TradingUIView->GetItemListView()->SetUpdateUI(State);
+	
 	TradingUIView->GetProductDetailView()->OnHide();
 
+	FString ButtonText = State == ETradingState::BUY? TEXT("구매하기") : TEXT
+		("판매하기");
+	
 	TradingUIView->GetTradeButton()->Get()->SetIsEnabled(false);
-	TradingUIView->GetTradeButton()->GetText()->SetText(FText::FromString(TEXT
-		("판매하기")));
+	TradingUIView->GetTradeButton()->GetText()->SetText(FText::FromString(ButtonText));
 }
