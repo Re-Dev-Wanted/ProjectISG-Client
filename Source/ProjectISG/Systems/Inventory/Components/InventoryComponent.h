@@ -10,8 +10,12 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryUpdateNotified);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventoryAddNotified, uint16
+											, ItemId);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class PROJECTISG_API UInventoryComponent : public UActorComponent, public IItemHandler
+class PROJECTISG_API UInventoryComponent
+	: public UActorComponent, public IItemHandler
 {
 	GENERATED_BODY()
 
@@ -22,7 +26,7 @@ public:
 	GETTER(TArray<FItemMetaInfo>, InventoryList)
 
 	virtual FItemMetaInfo GetFirstMetaInfo(const uint16 ItemId);
-	
+
 	uint32 GetCurrentCount(const uint16 Id);
 
 	uint32 AddItem(const FItemMetaInfo& ItemInfo);
@@ -39,8 +43,8 @@ public:
 	// ItemMetaInfo 기반의 아이템 제거
 	bool RemoveExactItem(const FItemMetaInfo& ItemInfo);
 
-	uint32 AddItemToInventory(const uint16 Index,
-	                          const FItemMetaInfo& ItemInfo);
+	uint32 AddItemToInventory(const uint16 Index
+							, const FItemMetaInfo& ItemInfo);
 
 	void SwapItemInInventory(const uint16 Prev, const uint16 Next);
 
@@ -49,20 +53,25 @@ public:
 		return CurrentRemainItemValue;
 	}
 
-	FORCEINLINE TMap<FItemMetaInfo, uint32> GetCurrentRemainItemMetaValue() const
+	FORCEINLINE TMap<FItemMetaInfo, uint32>
+	GetCurrentRemainItemMetaValue() const
 	{
 		return CurrentRemainItemMetaValue;
 	}
 
 	FOnInventoryUpdateNotified OnInventoryUpdateNotified;
 
-	void InitializeItemData();
-	
-	virtual FItemMetaInfo GetItemMetaInfo(const uint16 Index) override;
-	
-	virtual bool ChangeItem(AActor* Causer, const FItemMetaInfo& ItemInfo, const uint16 Index) override;
+	FOnInventoryAddNotified OnInventoryAddNotified;
 
-	virtual void SwapItem(AActor* Causer, const uint16 Prev, const uint16 Next) override;
+	void InitializeItemData();
+
+	virtual FItemMetaInfo GetItemMetaInfo(const uint16 Index) override;
+
+	virtual bool ChangeItem(AActor* Causer, const FItemMetaInfo& ItemInfo
+							, const uint16 Index) override;
+
+	virtual void
+	SwapItem(AActor* Causer, const uint16 Prev, const uint16 Next) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -71,18 +80,22 @@ protected:
 
 private:
 	void UpdateInventory_Internal();
-	
+
 	void UpdateCurrentRemainItemValue();
-	
+
 	// Id 기반의 간단한 아이템 갯수 데이터
 	TMap<uint32, uint32> CurrentRemainItemValue;
 
 	// 정확한 아이템 데이터
 	TMap<FItemMetaInfo, uint32> CurrentRemainItemMetaValue;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Options",
-		meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditDefaultsOnly, Category = "Options"
+		, meta = (AllowPrivateAccess = true))
 	uint8 InventorySlotCount = 54;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Option|Test"
+		, meta = (AllowPrivateAccess = true))
+	TArray<uint32> InitialItemIdList;
 
 	UPROPERTY()
 	TArray<FItemMetaInfo> InventoryList;

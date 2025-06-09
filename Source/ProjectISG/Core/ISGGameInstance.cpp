@@ -102,7 +102,7 @@ void UISGGameInstance::CreateSession()
 {
 	UE_LOG(LogTemp, Warning, TEXT("세션을 생성합니다."));
 	FSessionCreateData CreateData;
-	CreateData.MaxPlayer = 4;
+	CreateData.MaxPlayer = 2;
 	FString RoomName = FString::Printf(
 		TEXT("%s 님의 농장"),
 		*GetWorld()->GetFirstPlayerController()->GetPlayerState<APlayerState>()

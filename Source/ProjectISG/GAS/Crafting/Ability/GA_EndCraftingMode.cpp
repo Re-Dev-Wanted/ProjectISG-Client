@@ -6,6 +6,7 @@
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/PlayerState/MainPlayerState.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Systems/Animation/Manager/LevelSequenceManager.h"
 #include "ProjectISG/Systems/Grid/Components/PlacementIndicatorComponent.h"
 #include "Task/AT_EndCraftingMode.h"
@@ -21,6 +22,9 @@ void UGA_EndCraftingMode::ActivateAbility(
 	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
 		ActorInfo->AvatarActor.Get());
 
+	AMainPlayerController* PC = Cast<AMainPlayerController>(
+		Player->GetController());
+
 	if (!Player)
 	{
 		OnEndCinematic();
@@ -28,6 +32,7 @@ void UGA_EndCraftingMode::ActivateAbility(
 	}
 
 	AActor* TargetActor = const_cast<AActor*>(TriggerEventData->Target.Get());
+	PC->PopUI();
 
 	if (!TargetActor)
 	{
@@ -66,8 +71,12 @@ void UGA_EndCraftingMode::OnEndCinematic()
 	{
 		PC->SetIgnoreMoveInput(false);
 		PC->SetIgnoreLookInput(false);
+		PC->GetUIManageComponent()->ResetWidget();
 
-		Player->GetInteractionComponent()->SetIsInteractive(true);
+		if (Player->GetInteractionComponent()->GetIsRestrictionTime() == false)
+		{
+			Player->GetInteractionComponent()->SetIsInteractive(true);
+		}
 		Player->GetPlacementIndicatorComponent()->SetIsActive(true);
 	}
 

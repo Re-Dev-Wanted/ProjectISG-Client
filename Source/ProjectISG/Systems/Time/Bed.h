@@ -54,7 +54,6 @@ public:
 	SETTER(class AMainPlayerCharacter*, MainPlayer);
 
 	void SetCollisionEnabled(bool bEnable) const;
-	
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Setting,

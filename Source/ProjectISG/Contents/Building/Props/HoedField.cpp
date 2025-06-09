@@ -1,5 +1,6 @@
 #include "HoedField.h"
 
+#include "NiagaraFunctionLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
 #include "Net/UnrealNetwork.h"
@@ -15,7 +16,6 @@
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/Inventory/ItemData.h"
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
-#include "ProjectISG/Systems/QuestStory/Manager/QuestStoryManager.h"
 
 AHoedField::AHoedField()
 {
@@ -26,6 +26,9 @@ AHoedField::AHoedField()
 
 void AHoedField::OnSpawned()
 {
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(
+		GetWorld(), Effect, GetActorLocation());
+
 	const float Percent = FMath::RandRange(1.f, 100.f);
 
 	if (Percent > ChanceBasedPercent)
@@ -66,7 +69,7 @@ void AHoedField::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MeshComp->SetRenderCustomDepth(true);
+	MeshComp->SetRenderCustomDepth(false);
 }
 
 void AHoedField::GetLifetimeReplicatedProps(
@@ -253,10 +256,16 @@ void AHoedField::OnTouch(AActor* Causer)
 				{
 					ABaseCrop* Crop = PlantedCrop.Crop;
 
+					if (!Crop)
+					{
+						return;
+					}
+
 					if (Crop->GetCurrentState() == ECropState::Mature)
 					{
 						return;
 					}
+					
 					if (Player->IsLocallyControlled())
 					{
 						// 작물 제거, 해당 작물에 해당하는 씨앗 뱉기, 인벤토리에 넣기
@@ -266,7 +275,10 @@ void AHoedField::OnTouch(AActor* Causer)
 						PS->GetInventoryComponent()->AddItem(SeedMetaInfo);
 					}
 
-					PlantedCrop.Clear(true);
+					Player->GetInteractionComponent()->Server_OnTouchResponse(
+						Causer);
+
+					// PlantedCrop.Clear(true);
 				}
 				else
 				{
@@ -299,14 +311,6 @@ void AHoedField::OnTouchResponse(AActor* Causer)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("씨앗심기 (서버)"));
 		PlantCrop(ItemData, ItemId);
-
-		// 사운드 관련 Cue 강제 진행
-		FGameplayCueParameters Param;
-		Param.AbilityLevel = 1;
-		Param.EffectCauser = Player;
-
-		Player->GetAbilitySystemComponent()->ExecuteGameplayCue(
-			ISGGameplayTags::GameplayCue_Actor_Farming, Param);
 	}
 
 	if (UsingType == "Watering" && PlantedCrop.IsValid())
@@ -319,6 +323,31 @@ void AHoedField::OnTouchResponse(AActor* Causer)
 			PC->SetCustomQuestComplete(true);
 		}
 		SetWet(true);
+		PlantedCrop.Crop->SetOverlayInteractMaterial(false);
+	}
+
+	const uint16 OtherId = UItemManager::GetGeneratedOtherItemIdById(
+		ItemId);
+
+	if (OtherId > 0)
+	{
+		const FItemInfoData OtherData = UItemManager::GetItemInfoById(
+			OtherId);
+
+		if (OtherData.GetPlaceItemActor() == GetClass())
+		{
+			if (PlantedCrop.IsValid())
+			{
+				ABaseCrop* Crop = PlantedCrop.Crop;
+
+				if (Crop->GetCurrentState() == ECropState::Mature)
+				{
+					return;
+				}
+
+				DestroyCropAndClearData();
+			}
+		}
 	}
 }
 
@@ -339,19 +368,26 @@ bool AHoedField::PlantCrop(FItemInfoData CropData, uint16 CropId)
 	PlantedCrop.Crop = Crop;
 	PlantedCrop.CropId = CropId;
 
+	TWeakObjectPtr<ThisClass> WeakThis = this;
 	Crop->OnDryField.AddLambda
 	(
-		[&]()
+		[WeakThis]()
 		{
-			SetWet(false);
+			if (WeakThis.IsValid())
+			{
+				WeakThis.Get()->SetWet(false);
+			}
 		}
 	);
 
 	Crop->HarvestCrop.AddLambda
 	(
-		[this]()
+		[WeakThis]()
 		{
-			PlantedCrop.Clear(true);
+			if (WeakThis.IsValid())
+			{
+				WeakThis.Get()->PlantedCrop.Clear(true);
+			}
 		}
 	);
 
@@ -367,9 +403,25 @@ bool AHoedField::PlantCrop(FItemInfoData CropData, uint16 CropId)
 
 void AHoedField::UpdateState()
 {
+	Server_SetMaterialInstanceParam();
+}
+
+void AHoedField::Server_SetMaterialInstanceParam_Implementation()
+{
+	float Multiply = IsWet ? 0.f : 1.f;
+	float Hue = IsWet ? 0.08f : 0.f;
+	float Metal = IsWet ? 1.f : 0.f;
+	Multicast_SetMaterialInstanceParam(Multiply, Hue, Metal);
+}
+
+void AHoedField::Multicast_SetMaterialInstanceParam_Implementation(
+	float Multiply, float Hue, float Metal)
+{
 	UMaterialInstanceDynamic* MatDynamic = MeshComp->
 		CreateAndSetMaterialInstanceDynamic(0);
-	MatDynamic->SetScalarParameterValue("Contrast", IsWet ? 2.f : 1.f);
+	MatDynamic->SetScalarParameterValue("Multiply", Multiply);
+	MatDynamic->SetScalarParameterValue("RandomHue Shift", Hue);
+	MatDynamic->SetScalarParameterValue("Metal", Metal);
 
 	if (PlantedCrop.IsValid() && IsWet)
 	{
@@ -388,4 +440,10 @@ void AHoedField::SetWet_Implementation(bool Watering)
 	IsWet = Watering;
 
 	UpdateState();
+}
+
+void AHoedField::DestroyCropAndClearData_Implementation()
+{
+	PlantedCrop.Crop->Destroy();
+	PlantedCrop.Clear(true);
 }

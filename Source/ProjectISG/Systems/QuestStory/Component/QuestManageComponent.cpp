@@ -2,6 +2,7 @@
 
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Systems/QuestStory/QuestStoryEnum.h"
 #include "ProjectISG/Systems/QuestStory/Manager/QuestStoryManager.h"
 
@@ -32,8 +33,13 @@ void UQuestManageComponent::StartQuest(const FString& NewQuestId)
 		return;
 	}
 
-	PC->GetMainHUD()->ToggleCurrentQuestUI(true);
-	PC->GetMainHUD()->ToggleAutoQuestUI(true);
+	// MainHud 환경에서만 MainHUD 관련 퀘스트 진행을 수행하도록 설정
+	if (PC->GetUIManageComponent()->GetTopStackUI() ==
+		EUIName::Gameplay_MainHUD)
+	{
+		PC->GetMainHUD()->ToggleCurrentQuestUI(true);
+		PC->GetMainHUD()->ToggleAutoQuestUI(true);
+	}
 }
 
 void UQuestManageComponent::StartScene(const FString& NewSceneId)
@@ -120,7 +126,7 @@ EQuestStatus UQuestManageComponent::GetQuestStatusById(
 
 	// 마지막으로 해당 퀘스트를 진행 가능, 불가능 여부를 판단
 	for (const FString& RequireQuestIdList :
-	     UQuestStoryManager::GetQuestDataById(QuestId).GetRequireQuestIdList())
+		UQuestStoryManager::GetQuestDataById(QuestId).GetRequireQuestIdList())
 	{
 		// 요구 완료 퀘스트 중 하나라도 만족 못하는 경우는 진행 불가능
 		if (!CompletedQuestIdList.Contains(RequireQuestIdList))

@@ -71,8 +71,8 @@ void UGA_WakeUp::OnCompleteWakeUpMontage(FGameplayTag EventTag,
 
 	if (Player->IsLocallyControlled())
 	{
-		Player->GetInteractionComponent()->SetIsInteractive(false);
-		Player->GetPlacementIndicatorComponent()->SetIsActive(false);
+		Player->GetInteractionComponent()->SetIsInteractive(true);
+		Player->GetPlacementIndicatorComponent()->SetIsActive(true);
 	}
 
 	Player->GetHandSlotComponent()->ToggleShowItem(true);

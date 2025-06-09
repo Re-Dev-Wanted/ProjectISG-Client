@@ -7,6 +7,7 @@
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "UIM_EndingChoice.generated.h"
 
+class UEndingMoviePlayer;
 /**
  * 
  */
@@ -20,17 +21,24 @@ public:
 	GETTER(FString, RemainScene)
 	GETTER(TSoftObjectPtr<UWorld>, LobbyLevel)
 	GETTER(FString, EndingVideoScene)
-
+	GETTER(TSubclassOf<UEndingMoviePlayer>, MoviePlayer)
+	GETTER(USoundWave*, EndingBGM)
 private:
 	UPROPERTY(EditAnywhere)
 	FString LeaveScene;
-	
+
 	UPROPERTY(EditAnywhere)
 	FString RemainScene;
 
 	UPROPERTY(EditAnywhere)
 	FString EndingVideoScene;
-	
+
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UWorld> LobbyLevel;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UEndingMoviePlayer> MoviePlayer;
+
+	UPROPERTY(EditAnywhere)
+	USoundWave* EndingBGM;
 };

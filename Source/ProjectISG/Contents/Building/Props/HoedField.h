@@ -5,9 +5,11 @@
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "HoedField.generated.h"
 
+class UNiagaraSystem;
 struct FItemMetaInfo;
 struct FItemInfoData;
 class ABaseCrop;
+class UMaterialInstanceDynamic;
 
 USTRUCT(BlueprintType)
 struct FPlantedCrop
@@ -62,6 +64,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void SetWet(bool Watering);
+
+	UFUNCTION(Server, Reliable)
+	void DestroyCropAndClearData();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -88,5 +93,15 @@ protected:
 	meta = (AllowPrivateAccess = true, ClampMin = 0, ClampMax = 100))
 	float ChanceBasedPercent = 20.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Settings)
+	TObjectPtr<UNiagaraSystem> Effect;
+	
 	void UpdateState();
+
+	UFUNCTION(Server, Reliable)
+	void Server_SetMaterialInstanceParam();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_SetMaterialInstanceParam(float Multiply, float Hue, float 
+	Metal);
 };

@@ -17,16 +17,12 @@ public:
 	UPlayerHandSlotComponent();
 
 	GETTER(TObjectPtr<class ABaseActor>, HeldItem)
-	UE_DEPRECATED("5.5", "캐싱으로 인한 위험한 코드로, 가능하면 사용하지 않는 것을 권장")
 	GETTER(uint16, ItemId)
 
 	virtual void GetLifetimeReplicatedProps(
 		TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void InitializePlayerHandSlot();
-
-	UFUNCTION()
-	void OnChange(uint16 ItemId);
 
 	FString GetItemUsingType();
 
@@ -45,20 +41,20 @@ protected:
 	UPROPERTY()
 	TObjectPtr<AMainPlayerCharacter> Player;
 
-	UPROPERTY(Replicated, EditAnywhere)
-	uint16 ItemId = 0;
-
 	UPROPERTY(Replicated)
 	TObjectPtr<ABaseActor> HeldItem = nullptr;
 
+	UPROPERTY(Replicated, EditAnywhere)
+	uint16 ItemId = 0;
+
 private:
 	UFUNCTION()
-	void OnChangeHandItemSlot();
+	void OnInventoryUpdated();
 
 	UFUNCTION(Server, Reliable)
-	void Server_ChangeItemId(uint16 ChangeItemId);
+	void Server_ChangeItem(uint16 ChangeItemId);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_ChangeItemId(uint16 ChangeItemId,
+	void Multicast_ChangeItem(uint16 ChangeItemId,
 	                            ABaseActor* ChangeHeldItem);
 };

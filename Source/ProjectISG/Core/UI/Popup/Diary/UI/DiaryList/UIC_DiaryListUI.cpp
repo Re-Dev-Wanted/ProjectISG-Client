@@ -4,12 +4,12 @@
 #include "UIM_DiaryListUI.h"
 #include "UIV_DiaryListUI.h"
 #include "Components/Button.h"
-#include "EnhancedInputComponent.h"
 #include "Components/MultiLineEditableTextBox.h"
 #include "Components/TextBlock.h"
+#include "EnhancedInputComponent.h"
+#include "GameFramework/PlayerState.h"
 #include "Interfaces/IHttpResponse.h"
 #include "ProjectISG/Contents/Diary/DiaryStruct.h"
-#include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/GameMode/MainGameState.h"
 #include "ProjectISG/Utils/ApiUtil.h"
 #include "ProjectISG/Utils/SessionUtil.h"
@@ -117,7 +117,7 @@ void UUIC_DiaryListUI::UpdateDiaryPerPage(const int Page)
 
 	DiaryListView->GetDiaryDayText()->SetText(FText::FromString(InGameDate));
 	DiaryListView->GetUserId()->SetText(
-		FText::FromString(FSessionUtil::GetCurrentId(GetWorld())));
+		FText::FromString(GetView()->GetOwningPlayerState()->GetPlayerName()));
 	DiaryListView->GetDiaryDescription()->SetText(FText::FromString(Content));
 	DiaryListView->GetDiaryImage()->SetImagePath(BestScreenShot);
 

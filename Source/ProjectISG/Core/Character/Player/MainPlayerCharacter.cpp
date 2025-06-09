@@ -7,6 +7,7 @@
 #include "Component/InteractionComponent.h"
 #include "Component/PlayerHandSlotComponent.h"
 #include "Component/PlayerInventoryComponent.h"
+#include "Component/PlayerSoundComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectISG/Contents/Diary/Component/DiaryComponent.h"
@@ -67,6 +68,12 @@ AMainPlayerCharacter::AMainPlayerCharacter()
 	MediaSoundComponent = CreateDefaultSubobject<UMediaSoundComponent>(
 		"Media Sound Component");
 	MediaSoundComponent->SetupAttachment(GetRootComponent());
+
+	PlayerSoundComponent = CreateDefaultSubobject<UPlayerSoundComponent>(
+		"Player Sound Component");
+
+	PlayerBGMSoundComponent = CreateDefaultSubobject<UPlayerSoundComponent>(
+		"Player BGM Sound Component");
 }
 
 void AMainPlayerCharacter::BeginPlay()
@@ -82,31 +89,35 @@ void AMainPlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	if (IsLocallyControlled())
+	{
+		if (MainBGM != nullptr)
+		PlayerBGMSoundComponent->PlayBGMSound(MainBGM);
+	}
 }
 
 void AMainPlayerCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
-	InitializeAbilitySystem();
-
-	PlayerInventoryComponent->InitializePlayerInventory();
-	HandSlotComponent->InitializePlayerHandSlot();
-
-	if (IsLocallyControlled())
-	{
-		GetPlayerState<AMainPlayerState>()->InitializeData();
-	}
+	InitializeInternal();
 }
 
 void AMainPlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
+	InitializeInternal();
+}
+
+void AMainPlayerCharacter::InitializeInternal()
+{
 	InitializeAbilitySystem();
 
 	PlayerInventoryComponent->InitializePlayerInventory();
 	HandSlotComponent->InitializePlayerHandSlot();
+	PlacementIndicatorComponent->InitializePlaceIndicator();
 
 	if (IsLocallyControlled())
 	{
@@ -150,11 +161,11 @@ void AMainPlayerCharacter::SetupPlayerInputComponent(
 		UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(MoveInputAction
-											, ETriggerEvent::Triggered, this
-											, &ThisClass::MoveTo);
+		                                   , ETriggerEvent::Triggered, this
+		                                   , &ThisClass::MoveTo);
 		EnhancedInputComponent->BindAction(LookInputAction
-											, ETriggerEvent::Triggered, this
-											, &ThisClass::Look);
+		                                   , ETriggerEvent::Triggered, this
+		                                   , &ThisClass::Look);
 
 		OnInputBindingNotified.Broadcast(EnhancedInputComponent);
 	}

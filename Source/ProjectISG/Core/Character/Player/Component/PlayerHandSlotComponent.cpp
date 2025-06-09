@@ -12,6 +12,8 @@ UPlayerHandSlotComponent::UPlayerHandSlotComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	bWantsInitializeComponent = true;
+
+	SetIsReplicatedByDefault(true);
 }
 
 void UPlayerHandSlotComponent::InitializeComponent()
@@ -19,13 +21,6 @@ void UPlayerHandSlotComponent::InitializeComponent()
 	Super::InitializeComponent();
 
 	SetIsReplicated(true);
-
-	Player = Cast<AMainPlayerCharacter>(GetOwner());
-	Player->OnUpdateSelectedItem.AddDynamic(
-		this, &UPlayerHandSlotComponent::OnChange);
-
-	const AMainPlayerState* PS = Cast<AMainPlayerState>(
-		Player->GetPlayerState());
 }
 
 void UPlayerHandSlotComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -52,22 +47,23 @@ void UPlayerHandSlotComponent::GetLifetimeReplicatedProps(
 
 void UPlayerHandSlotComponent::InitializePlayerHandSlot()
 {
-	const AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(
+	Player = Cast<AMainPlayerCharacter>(
 		GetOwner());
 
-	OwnerPlayer->GetPlayerState<AMainPlayerState>()->GetInventoryComponent()
-	           ->OnInventoryUpdateNotified.AddDynamic(
-		           this, &ThisClass::OnChangeHandItemSlot);
-}
-
-void UPlayerHandSlotComponent::OnChange(uint16 _ItemId)
-{
 	if (!Player)
 	{
 		return;
 	}
 
-	Server_ChangeItemId(_ItemId);
+	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
+	if (PS)
+	{
+		PS->GetInventoryComponent()
+				   ->OnInventoryUpdateNotified.AddDynamic(
+					   this, &ThisClass::OnInventoryUpdated);
+	}
+
+	OnInventoryUpdated();
 }
 
 FString UPlayerHandSlotComponent::GetItemUsingType()
@@ -77,7 +73,7 @@ FString UPlayerHandSlotComponent::GetItemUsingType()
 		return FString();
 	}
 
-	return UItemManager::GetItemUsingType(ItemId);
+	return UItemManager::GetItemUsingType(GetItemId());
 }
 
 bool UPlayerHandSlotComponent::IsHousingHandItem()
@@ -87,7 +83,7 @@ bool UPlayerHandSlotComponent::IsHousingHandItem()
 		return false;
 	}
 
-	return UItemManager::IsItemCanHousing(ItemId);
+	return UItemManager::IsItemCanHousing(GetItemId());
 }
 
 void UPlayerHandSlotComponent::ClearHand()
@@ -111,8 +107,7 @@ void UPlayerHandSlotComponent::ToggleShowItem(const bool IsShow)
 	HeldItem->SetActorHiddenInGame(!IsShow);
 }
 
-void UPlayerHandSlotComponent::Server_ChangeItemId_Implementation(
-	uint16 ChangeItemId)
+void UPlayerHandSlotComponent::Server_ChangeItem_Implementation(uint16 ChangeItemId)
 {
 	ClearHand();
 
@@ -134,35 +129,30 @@ void UPlayerHandSlotComponent::Server_ChangeItemId_Implementation(
 	Actor->SetReplicateMovement(true);
 	HeldItem = Cast<ABaseActor>(Actor);
 
-	if (GetOwner()->HasAuthority())
+	if (Player->HasAuthority())
 	{
 		ItemId = ChangeItemId;
+		const FName SocketName = UItemManager::GetSocketNameById(ChangeItemId);
 
-		if (HeldItem)
+		if (!SocketName.IsNone() && Player && Player->GetMesh())
 		{
-			const FName SocketName = UItemManager::GetSocketNameById(ItemId);
-
-			if (!SocketName.IsNone() && Player && Player->GetMesh())
-			{
-				HeldItem->AttachToComponent(Player->GetMesh(),
-				                            FAttachmentTransformRules::SnapToTargetNotIncludingScale,
-				                            SocketName);
-			}
+			HeldItem->AttachToComponent(Player->GetMesh(),
+										FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+										SocketName);
 		}
 	}
+	else
 	{
-		Multicast_ChangeItemId(ChangeItemId, HeldItem);
+		Multicast_ChangeItem(ChangeItemId, HeldItem);
 	}
 }
 
-void UPlayerHandSlotComponent::Multicast_ChangeItemId_Implementation(uint16
-	ChangeItemId, class ABaseActor* ChangeHeldItem)
+void UPlayerHandSlotComponent::Multicast_ChangeItem_Implementation(uint16
+	ChangeItemId, ABaseActor* ChangeHeldItem)
 {
-	ItemId = ChangeItemId;
-
 	if (ChangeHeldItem)
 	{
-		const FName SocketName = UItemManager::GetSocketNameById(ItemId);
+		const FName SocketName = UItemManager::GetSocketNameById(ChangeItemId);
 
 		if (!SocketName.IsNone() && Player && Player->GetMesh())
 		{
@@ -173,7 +163,7 @@ void UPlayerHandSlotComponent::Multicast_ChangeItemId_Implementation(uint16
 	}
 }
 
-void UPlayerHandSlotComponent::OnChangeHandItemSlot()
+void UPlayerHandSlotComponent::OnInventoryUpdated()
 {
 	const AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(
 		GetOwner());
@@ -188,8 +178,5 @@ void UPlayerHandSlotComponent::OnChangeHandItemSlot()
 	                                   GetInventoryComponent()->
 	                                   GetInventoryList()[CurrentIndex];
 
-	if (ItemMetaInfo.GetId() != ItemId)
-	{
-		OnChange(ItemMetaInfo.GetId());
-	}
+	Server_ChangeItem(ItemMetaInfo.GetId());
 }

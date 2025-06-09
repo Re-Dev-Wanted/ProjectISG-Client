@@ -13,6 +13,7 @@
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/Module/UI_HttpImage.h"
 #include "ProjectISG/Core/GameMode/MainGameState.h"
+#include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Systems/Time/TimeManager.h"
 #include "ProjectISG/Utils/ApiUtil.h"
 #include "ProjectISG/Utils/SessionUtil.h"
@@ -22,7 +23,7 @@ void UUIC_DiaryEditUI::AppearUI()
 	Super::AppearUI();
 
 	const UUIV_DiaryEditUI* DiaryEditUIView = Cast<UUIV_DiaryEditUI>(GetView());
-	DiaryEditUIView->GetSaveButton()->OnClicked.AddDynamic(
+	DiaryEditUIView->GetSaveButton()->OnClicked.AddUniqueDynamic(
 		this, &ThisClass::OnClickToSaveDiary);
 }
 

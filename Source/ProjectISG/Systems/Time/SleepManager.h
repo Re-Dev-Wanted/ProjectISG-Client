@@ -67,6 +67,7 @@ private:
 
 public:
 	GETTER(bool, bSleepCinematicStart)
+	GETTER(int32, CanSleepTime)
 
 private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess), Category = Setting)

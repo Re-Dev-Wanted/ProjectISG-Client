@@ -86,6 +86,15 @@ void ABed::GetLifetimeReplicatedProps(
 void ABed::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (TimeManager->GetHour() < TimeManager->GetSleepManager()->GetCanSleepTime())
+	{
+		CanInteractive = false;
+	}
+	else
+	{
+		CanInteractive = true;
+	}
 }
 
 void ABed::OnInteractive(AActor* Causer)
@@ -165,7 +174,7 @@ void ABed::ActivateWakeUp()
 		MainPlayer->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
 			ActivateTag);
 
-		NetMulticast_InteractiveValue(true);
+		//NetMulticast_InteractiveValue(true);
 		SetCollisionEnabled(true);
 		MainPlayer = nullptr;
 	}
@@ -204,7 +213,10 @@ void ABed::ActivateSleepAbility()
 		ActivateTag.AddTag(ISGGameplayTags::Sleeping_Active_LieInBed);
 		MainPlayer->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
 			ActivateTag);
-		NetMulticast_InteractiveValue(false);
+		//NetMulticast_InteractiveValue(false);
+		MainPlayer->GetPlacementIndicatorComponent()->SetIsActive(false);
+		MainPlayer->GetInteractionComponent()->SetIsInteractive(false);
+		SetCollisionEnabled(false);
 	}
 }
 
@@ -224,8 +236,6 @@ void ABed::SetCollisionEnabled(bool bEnable) const
 
 void ABed::NetMulticast_InteractiveValue_Implementation(bool bEnable)
 {
-	CanInteractive = bEnable;
-
 	MainPlayer->GetInteractionComponent()->SetIsInteractive(bEnable);
 	MainPlayer->GetPlacementIndicatorComponent()->SetIsActive(bEnable);
 }

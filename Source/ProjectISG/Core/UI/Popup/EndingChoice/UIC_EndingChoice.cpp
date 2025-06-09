@@ -6,8 +6,11 @@
 #include "UIM_EndingChoice.h"
 #include "UIV_EndingChoice.h"
 #include "ProjectISG/Core/ISGGameInstance.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerSoundComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
+#include "ProjectISG/Core/UI/Gameplay/QuestStory/EndingMoviePlayer.h"
 #include "ProjectISG/Core/UI/Popup/SceneList/UI/CutSceneList/UIC_SceneListUI.h"
 #include "ProjectISG/Core/UI/Popup/SceneList/UI/MediaSceneList/UIC_MediaSceneListUI.h"
 #include "ProjectISG/Systems/QuestStory/Component/QuestManageComponent.h"
@@ -30,20 +33,19 @@ void UUIC_EndingChoice::OnLeaveButtonClicked()
 	AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetPlayerController());
 	PC->PopUI();
+	AMainPlayerCharacter* Player = PC->GetPawn<AMainPlayerCharacter>();
+	Player->GetPlayerBGMSoundComponent()->StopBGMSound();
 	
 	UUIM_EndingChoice* EndingChoiceModel = Cast<UUIM_EndingChoice>(GetModel());
-	
-	// PC->GetQuestManageComponent()->StartScene(
-	// 	EndingChoiceModel->GetEndingVideoScene());
-	// UUIC_MediaSceneListUI* MediaSceneListUIController = Cast<UUIC_MediaSceneListUI>(
-	// 	PC->GetUIManageComponent()->ControllerInstances[
-	// 		EUIName::Popup_MediaSceneListUI]);
-	// if (MediaSceneListUIController)
-	// {
-	// 	MediaSceneListUIController->OnEndMediaSceneNotified.BindDynamic(this, &ThisClass::EndingLeaveSceneStart);
-	// }
+	Player->GetPlayerBGMSoundComponent()->PlayBGMSound(EndingChoiceModel->GetEndingBGM());
 
-	PC->GetQuestManageComponent()->StartScene(EndingChoiceModel->GetLeaveScene());
+	UEndingMoviePlayer* MoviePlayer = Cast<UEndingMoviePlayer>(CreateWidget(
+		GetWorld(),
+		EndingChoiceModel->
+		GetMoviePlayer()));
+	MoviePlayer->AddToViewport();
+	MoviePlayer->EndingNum = 2;
+
 	UUIC_SceneListUI* SceneListUIController = Cast<UUIC_SceneListUI>(
 		PC->GetUIManageComponent()->ControllerInstances[
 			EUIName::Popup_SceneListUI]);
@@ -59,20 +61,19 @@ void UUIC_EndingChoice::OnRemainButtonClicked()
 	AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetPlayerController());
 	PC->PopUI();
-	
-	UUIM_EndingChoice* EndingChoiceModel = Cast<UUIM_EndingChoice>(GetModel());
-	
-	// PC->GetQuestManageComponent()->StartScene(
-	// 	EndingChoiceModel->GetEndingVideoScene());
-	// UUIC_MediaSceneListUI* MediaSceneListUIController = Cast<UUIC_MediaSceneListUI>(
-	// 	PC->GetUIManageComponent()->ControllerInstances[
-	// 		EUIName::Popup_MediaSceneListUI]);
-	// if (MediaSceneListUIController)
-	// {
-	// 	MediaSceneListUIController->OnEndMediaSceneNotified.BindDynamic(this, &ThisClass::EndingRemainSceneStart);
-	// }
+	AMainPlayerCharacter* Player = PC->GetPawn<AMainPlayerCharacter>();
+	Player->GetPlayerBGMSoundComponent()->StopBGMSound();
 
-	PC->GetQuestManageComponent()->StartScene(EndingChoiceModel->GetRemainScene());
+	UUIM_EndingChoice* EndingChoiceModel = Cast<UUIM_EndingChoice>(GetModel());
+	Player->GetPlayerBGMSoundComponent()->PlayBGMSound(EndingChoiceModel->GetEndingBGM());
+
+	UEndingMoviePlayer* MoviePlayer = Cast<UEndingMoviePlayer>(CreateWidget(
+		GetWorld(),
+		EndingChoiceModel->
+		GetMoviePlayer()));
+	MoviePlayer->AddToViewport();
+	MoviePlayer->EndingNum = 1;
+
 	UUIC_SceneListUI* SceneListUIController = Cast<UUIC_SceneListUI>(
 		PC->GetUIManageComponent()->ControllerInstances[
 			EUIName::Popup_SceneListUI]);
@@ -101,9 +102,10 @@ void UUIC_EndingChoice::EndingLeaveSceneStart()
 
 	AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetPlayerController());
-	
+
 	UUIM_EndingChoice* EndingChoiceModel = Cast<UUIM_EndingChoice>(GetModel());
-	PC->GetQuestManageComponent()->StartScene(EndingChoiceModel->GetLeaveScene());
+	PC->GetQuestManageComponent()->StartScene(
+		EndingChoiceModel->GetLeaveScene());
 	UUIC_SceneListUI* SceneListUIController = Cast<UUIC_SceneListUI>(
 		PC->GetUIManageComponent()->ControllerInstances[
 			EUIName::Popup_SceneListUI]);
@@ -118,9 +120,10 @@ void UUIC_EndingChoice::EndingRemainSceneStart()
 {
 	AMainPlayerController* PC = Cast<AMainPlayerController>(
 		GetPlayerController());
-	
+
 	UUIM_EndingChoice* EndingChoiceModel = Cast<UUIM_EndingChoice>(GetModel());
-	PC->GetQuestManageComponent()->StartScene(EndingChoiceModel->GetRemainScene());
+	PC->GetQuestManageComponent()->StartScene(
+		EndingChoiceModel->GetRemainScene());
 	UUIC_SceneListUI* SceneListUIController = Cast<UUIC_SceneListUI>(
 		PC->GetUIManageComponent()->ControllerInstances[
 			EUIName::Popup_SceneListUI]);

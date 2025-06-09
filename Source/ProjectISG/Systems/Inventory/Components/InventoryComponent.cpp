@@ -12,11 +12,20 @@ UInventoryComponent::UInventoryComponent()
 void UInventoryComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
+
 	InventoryList.SetNum(InventorySlotCount);
 }
 
 void UInventoryComponent::InitializeItemData()
 {
+	for (const uint32 ItemId : InitialItemIdList)
+	{
+		FItemMetaInfo InitItemInfo;
+		InitItemInfo.SetId(ItemId);
+		InitItemInfo.SetCurrentCount(1);
+		AddItem(InitItemInfo);
+	}
+
 	UpdateInventory_Internal();
 }
 
@@ -25,9 +34,9 @@ FItemMetaInfo UInventoryComponent::GetItemMetaInfo(const uint16 Index)
 	return InventoryList[Index];
 }
 
-bool UInventoryComponent::ChangeItem(AActor* Causer,
-                                     const FItemMetaInfo& ItemInfo,
-                                     const uint16 Index)
+bool UInventoryComponent::ChangeItem(AActor* Causer
+                                     , const FItemMetaInfo& ItemInfo
+                                     , const uint16 Index)
 {
 	InventoryList[Index] = ItemInfo;
 	UpdateInventory_Internal();
@@ -35,8 +44,8 @@ bool UInventoryComponent::ChangeItem(AActor* Causer,
 	return true;
 }
 
-void UInventoryComponent::SwapItem(AActor* Causer, const uint16 Prev,
-                                   const uint16 Next)
+void UInventoryComponent::SwapItem(AActor* Causer, const uint16 Prev
+                                   , const uint16 Next)
 {
 	SwapItemInInventory(Prev, Next);
 	UpdateInventory_Internal();
@@ -47,8 +56,8 @@ void UInventoryComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-bool UInventoryComponent::HasItemInInventory(const uint32 Id,
-                                             const uint32 Count)
+bool UInventoryComponent::HasItemInInventory(const uint32 Id
+                                             , const uint32 Count)
 {
 	if (CurrentRemainItemValue.Find(Id))
 	{
@@ -63,7 +72,8 @@ bool UInventoryComponent::HasExactItemInInventory(
 {
 	if (CurrentRemainItemMetaValue.Find(ItemMetaInfo))
 	{
-		return CurrentRemainItemMetaValue[ItemMetaInfo] >= ItemMetaInfo.GetCurrentCount();
+		return CurrentRemainItemMetaValue[ItemMetaInfo] >= ItemMetaInfo.
+			GetCurrentCount();
 	}
 
 	return false;
@@ -79,28 +89,32 @@ void UInventoryComponent::UpdateCurrentRemainItemValue()
 		// 아이템 아이디 별에 대한 처리
 		if (CurrentRemainItemValue.Find(InventoryList[i].GetId()))
 		{
-			CurrentRemainItemValue[InventoryList[i].GetId()] += InventoryList[i].
-				GetCurrentCount();
+			CurrentRemainItemValue[InventoryList[i].GetId()] += InventoryList[i]
+				.GetCurrentCount();
 		}
 		else
 		{
-			CurrentRemainItemValue.Add(InventoryList[i].GetId(),
-			           InventoryList[i].GetCurrentCount());
+			CurrentRemainItemValue.Add(InventoryList[i].GetId()
+			                           , InventoryList[i].GetCurrentCount());
 		}
 
 		// 아이템 메타 데이터 별 처리
 		if (CurrentRemainItemMetaValue.Find(InventoryList[i]))
 		{
-			CurrentRemainItemMetaValue[InventoryList[i]] += InventoryList[i].GetCurrentCount();
-		} else
+			CurrentRemainItemMetaValue[InventoryList[i]] += InventoryList[i].
+				GetCurrentCount();
+		}
+		else
 		{
-			CurrentRemainItemMetaValue.Add(InventoryList[i], InventoryList[i].GetCurrentCount());
+			CurrentRemainItemMetaValue.Add(InventoryList[i]
+			                               , InventoryList[i].
+			                               GetCurrentCount());
 		}
 	}
 }
 
-void UInventoryComponent::SwapItemInInventory(const uint16 Prev,
-                                              const uint16 Next)
+void UInventoryComponent::SwapItemInInventory(const uint16 Prev
+                                              , const uint16 Next)
 {
 	const FItemMetaInfo Temp = InventoryList[Prev];
 	InventoryList[Prev] = InventoryList[Next];
@@ -108,20 +122,18 @@ void UInventoryComponent::SwapItemInInventory(const uint16 Prev,
 }
 
 // 특정 Index에 특정 아이템을 넣어둔다.
-uint32 UInventoryComponent::AddItemToInventory(const uint16 Index,
-                                               const FItemMetaInfo& ItemInfo)
+uint32 UInventoryComponent::AddItemToInventory(const uint16 Index
+                                               , const FItemMetaInfo& ItemInfo)
 {
 	const FItemInfoData& ItemInfoById = UItemManager::GetItemInfoById(
 		ItemInfo.GetId());
 
 	// CurrentItemCount는 우선은 총 합으로 가지고 있는 아이템 수를 의미한다.
-	const uint16 CurrentItemCount = InventoryList[Index].GetCurrentCount()
-		+
+	const uint16 CurrentItemCount = InventoryList[Index].GetCurrentCount() +
 		ItemInfo.GetCurrentCount();
 
 	const uint16 NextSetMainItemCount = UKismetMathLibrary::Min(
-		CurrentItemCount
-		, ItemInfoById.GetMaxItemCount());
+		CurrentItemCount, ItemInfoById.GetMaxItemCount());
 
 	// 우선 최대 갯수를 차지하면 최대 갯수를 넣고, 그게 아니면 그냥 더한 갯수를 넣어줌
 	if (InventoryList[Index].GetId() == 0)
@@ -160,6 +172,8 @@ uint32 UInventoryComponent::AddItemToInventory(const uint16 Index,
 			}
 		}
 	}
+
+	OnInventoryAddNotified.Broadcast(ItemInfo.GetId());
 
 	UpdateInventory_Internal();
 	return RemainCount > 0 ? RemainCount : 0;
@@ -245,9 +259,8 @@ uint32 UInventoryComponent::AddItem(const FItemMetaInfo& ItemInfo)
 
 	for (int i = 0; i < GetInventorySlotCount(); i++)
 	{
-		if (InventoryList[i] == ItemInfo
-			&& InventoryList[i].GetCurrentCount() < ItemInfoById.
-			GetMaxItemCount())
+		if (InventoryList[i] == ItemInfo && InventoryList[i].GetCurrentCount() <
+			ItemInfoById.GetMaxItemCount())
 		{
 			bHasInventory = true;
 			RemainResult = AddItemToInventory(i, ItemInfo);

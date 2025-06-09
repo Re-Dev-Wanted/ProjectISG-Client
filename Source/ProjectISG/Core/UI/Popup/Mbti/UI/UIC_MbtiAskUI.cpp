@@ -44,7 +44,7 @@ void UUIC_MbtiAskUI::OnPushUI()
 
 void UUIC_MbtiAskUI::AskNewMbti()
 {
-	UUIM_MbtiAskUI* MbtiAskUIModel = Cast<UUIM_MbtiAskUI>(GetModel());
+	const UUIM_MbtiAskUI* MbtiAskUIModel = Cast<UUIM_MbtiAskUI>(GetModel());
 	ALobbyPlayerController* LobbyPlayerController = Cast<
 		ALobbyPlayerController>(GetView()->GetOwningPlayer());
 
@@ -54,10 +54,12 @@ void UUIC_MbtiAskUI::AskNewMbti()
 	// 이미 종료된 상태에서 재질문을 던지게 되면 UI 종료 후 다음 Flow로 가는 로직이 수행된다.
 	if (MbtiAskUIModel->GetCompleted())
 	{
-		LobbyPlayerController->PushUI(EUIName::Loading_LoadingUI);
-		UGameplayStatics::OpenLevelBySoftObjectPtr(
-			GetWorld(), MbtiAskUIModel->GetTrainLevel());
-
+		Cast<UUIV_MbtiAskUI>(GetView())->GetAskTextBox()->SetText(
+			FText::FromString(MbtiAskUIModel->GetJudged()));
+		Cast<UUIV_MbtiAskUI>(GetView())->GetAnswerTextArea()->SetText(
+			FText::FromString(TEXT("")));
+		Cast<UUIV_MbtiAskUI>(GetView())->GetAnswerTextArea()->
+		                                 SetIsReadOnly(true);
 		return;
 	}
 
@@ -118,10 +120,18 @@ void UUIC_MbtiAskUI::AskNewMbti()
 
 void UUIC_MbtiAskUI::AnswerMbti()
 {
-	UUIM_MbtiAskUI* MbtiAskUIModel = Cast<UUIM_MbtiAskUI>(GetModel());
+	const UUIM_MbtiAskUI* MbtiAskUIModel = Cast<UUIM_MbtiAskUI>(GetModel());
 
 	ALobbyPlayerController* LobbyPlayerController = Cast<
 		ALobbyPlayerController>(GetView()->GetOwningPlayer());
+
+	if (MbtiAskUIModel->GetCompleted())
+	{
+		LobbyPlayerController->PushUI(EUIName::Loading_LoadingUI);
+		UGameplayStatics::OpenLevelBySoftObjectPtr(
+			GetWorld(), MbtiAskUIModel->GetTrainLevel());
+	}
+
 	LobbyPlayerController->PushUI(EUIName::Modal_TempLoadingUI);
 
 	FApiRequest Request;
@@ -148,6 +158,7 @@ void UUIC_MbtiAskUI::AnswerMbti()
 
 		Cast<UUIM_MbtiAskUI>(GetModel())->SetCompleted(
 			MbtiAnswerResponse.completed);
+		Cast<UUIM_MbtiAskUI>(GetModel())->SetJudged(MbtiAnswerResponse.judged);
 
 		AskNewMbti();
 	});

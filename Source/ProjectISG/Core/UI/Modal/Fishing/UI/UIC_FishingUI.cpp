@@ -6,9 +6,11 @@
 #include "UIV_FishingUI.h"
 #include "Abilities/GameplayAbilityTypes.h"
 #include "Components/Image.h"
+#include "Kismet/GameplayStatics.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/UI/HUD/Interactive/InteractiveItemUI.h"
 #include "ProjectISG/GAS/Common/Tag/ISGGameplayTag.h"
+#include "ProjectISG/Systems/Time/TimeManager.h"
 
 void UUIC_FishingUI::SetUI(bool bIsActive, const FString& Key, const FString& Text)
 {
@@ -18,6 +20,14 @@ void UUIC_FishingUI::SetUI(bool bIsActive, const FString& Key, const FString& Te
 
 	UUIM_FishingUI* FishingUIModel = Cast<UUIM_FishingUI>(GetModel());
 	FishingUIModel->SetIsActive(bIsActive);
+}
+
+void UUIC_FishingUI::AppearUI()
+{
+	Super::AppearUI();
+
+	ATimeManager* TimeManager = Cast<ATimeManager>(UGameplayStatics::GetActorOfClass(GetWorld(), ATimeManager::StaticClass()));
+	TimeManager->OnForceSleepTimeAlmostReached.AddUniqueDynamic(this, &ThisClass::OnAction);
 }
 
 void UUIC_FishingUI::BindInputAction(UEnhancedInputComponent* InputComponent)

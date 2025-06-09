@@ -5,10 +5,8 @@
 #include "ProjectISG/Core/Character/Player/Component/InteractionComponent.h"
 #include "ProjectISG/Core/Character/Player/Component/PlayerHandSlotComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
-#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Base/Components/UIManageComponent.h"
 #include "ProjectISG/Core/UI/Popup/Crafting/UI/UIC_WorkbenchUI.h"
-#include "ProjectISG/Systems/Animation/Manager/LevelSequenceManager.h"
 #include "ProjectISG/Systems/Grid/Components/PlacementIndicatorComponent.h"
 #include "Task/AT_StartCraftingMode.h"
 
@@ -41,6 +39,8 @@ void UGA_StartCraftingMode::ActivateAbility(
 	{
 		PC->SetIgnoreMoveInput(true);
 		PC->SetIgnoreLookInput(true);
+
+		PC->PopUI();
 
 		Player->GetInteractionComponent()->SetIsInteractive(false);
 		Player->GetPlacementIndicatorComponent()->SetIsActive(false);

@@ -5,6 +5,7 @@
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
 #include "UIV_QuestItemWidget.generated.h"
 
+class UImage;
 class UScrollBox;
 class UBorder;
 class UButton;
@@ -21,6 +22,7 @@ class PROJECTISG_API UUIV_QuestItemWidget
 public:
 	GETTER(TObjectPtr<UButton>, QuestItemButton)
 	GETTER(TObjectPtr<UTextBlock>, QuestTitle)
+	GETTER(TObjectPtr<UImage>, QuestBorder)
 	GETTER(TObjectPtr<UTextBlock>, QuestStatus)
 	GETTER(TObjectPtr<UBorder>, QuestPlayingNotify)
 	GETTER(TObjectPtr<UTextBlock>, MaxFinishQuestCount)
@@ -28,12 +30,31 @@ public:
 	GETTER(TObjectPtr<UScrollBox>, RewardPreviewList)
 	GETTER(TSubclassOf<UUIV_QuestShowItemInfoWidget>, QuestRewardItemClass)
 
+	GETTER_REF(FLinearColor, DefaultColor)
+	GETTER_REF(FLinearColor, SelectedColor)
+	GETTER(float, SelectedScale)
+
 protected:
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
 private:
+	UPROPERTY(EditDefaultsOnly, Category = "Options",
+		meta = (AllowPrivateAccess = true))
+	FLinearColor DefaultColor;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Options",
+		meta = (AllowPrivateAccess = true))
+	FLinearColor SelectedColor;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Options",
+		meta = (AllowPrivateAccess = true))
+	float SelectedScale;
+
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> QuestItemButton;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UImage> QuestBorder;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> QuestTitle;

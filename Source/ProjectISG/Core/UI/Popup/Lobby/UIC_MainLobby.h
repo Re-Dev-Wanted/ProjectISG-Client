@@ -13,5 +13,10 @@ UCLASS()
 class PROJECTISG_API UUIC_MainLobby : public UBaseUIController
 {
 	GENERATED_BODY()
-	
+
+public:
+	void PlayLobbyLS();
+
+	UFUNCTION()
+	void OnFinishLS();
 };

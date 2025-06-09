@@ -33,6 +33,7 @@ public:
 	GETTER(TObjectPtr<UTextBlock>, UserId)
 	GETTER(TObjectPtr<UButton>, QuestButton)
 	GETTER(TObjectPtr<UTextBlock>, QuestText)
+	GETTER(TObjectPtr<UTextBlock>, RewardTitle)
 
 	GETTER(FSlateColor, RequiredQuestHasDoneColor)
 	GETTER(FSlateColor, RequiredQuestDefaultColor)
@@ -89,6 +90,9 @@ private:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> QuestText;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UTextBlock> RewardTitle;
 
 #pragma region ColorOption
 	UPROPERTY(EditDefaultsOnly, Category = "Options|Color"

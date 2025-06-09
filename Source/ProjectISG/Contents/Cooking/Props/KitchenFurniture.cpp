@@ -201,20 +201,11 @@ void AKitchenFurniture::Client_UnlockPlayer_Implementation()
 	{
 		return;
 	}
-
-	AMainPlayerController* PC = Cast<AMainPlayerController>(
-		GetInteractingPlayer()->GetController());
-	if (PC)
-	{
-		PC->SetIgnoreLookInput(false);
-		PC->SetViewTargetWithBlend(GetInteractingPlayer());
-		GetInteractingPlayer()->bUseControllerRotationYaw = true;
-		GetInteractingPlayer()->GetInteractionComponent()->
-		                        SetIsInteractive(true);
-		GetInteractingPlayer()->GetCharacterMovement()->SetMovementMode(
-			MOVE_Walking);
-		GetInteractingPlayer()->GetCameraComponent()->Activate();
-	}
+	
+	FGameplayTagContainer ActivateTag;
+	ActivateTag.AddTag(ISGGameplayTags::Cooking_Active_EndCooking);
+	GetInteractingPlayer()->GetAbilitySystemComponent()->TryActivateAbilitiesByTag(
+		ActivateTag);
 }
 
 void AKitchenFurniture::Server_SetInteractingPlayer_Implementation(

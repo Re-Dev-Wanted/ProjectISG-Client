@@ -29,6 +29,9 @@ public:
 
 	FOnlineSessionSearchResult SessionSearchResult;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bLobbyLSIsPlayed = false;
+
 protected:
 	virtual void BeginPlay() override;
 

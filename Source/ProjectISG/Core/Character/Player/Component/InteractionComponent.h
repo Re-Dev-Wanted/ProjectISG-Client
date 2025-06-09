@@ -20,8 +20,10 @@ public:
 
 	void SetIsInteractive(const bool NewIsInteractive);
 
+	GETTER_SETTER(bool, IsRestrictionTime)
+
 	UFUNCTION()
-	void OnChange(uint16 ItemId);
+	void OnInventoryUpdated();
 
 	UFUNCTION(Reliable, Server)
 	void Server_Interact(class ABaseInteractiveActor* InteractActor, AActor*
@@ -90,5 +92,8 @@ protected:
 	// 해당 flag가 비활성화 상태인 경우는 Trace가 되지 않는 상태가 된다.
 	UPROPERTY(EditAnywhere)
 	bool IsInteractive;
+
+	UPROPERTY(EditAnywhere)
+	bool IsRestrictionTime = false;
 #pragma endregion
 };

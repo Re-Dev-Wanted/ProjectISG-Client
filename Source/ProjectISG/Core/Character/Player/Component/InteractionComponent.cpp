@@ -2,12 +2,15 @@
 
 #include "Kismet/KismetSystemLibrary.h"
 #include "EnhancedInputComponent.h"
+#include "PlayerInventoryComponent.h"
 #include "Camera/CameraComponent.h"
 #include "ProjectISG/Contents/Trading/TradingNPC.h"
 #include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
+#include "ProjectISG/Core/PlayerState/MainPlayerState.h"
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
 #include "ProjectISG/Systems/Input/Interface/InteractionInterface.h"
+#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 
 UInteractionComponent::UInteractionComponent()
@@ -30,10 +33,23 @@ void UInteractionComponent::InitializeComponent()
 
 	AMainPlayerCharacter* OwnerPlayer = Cast<AMainPlayerCharacter>(GetOwner());
 
+	if (!OwnerPlayer)
+	{
+		return;
+	}
+
 	OwnerPlayer->OnInputBindingNotified.AddDynamic(
 		this, &ThisClass::BindingInputActions);
 
-	OwnerPlayer->OnUpdateSelectedItem.AddDynamic(this, &ThisClass::OnChange);
+	const AMainPlayerState* PS = OwnerPlayer->GetPlayerState<
+		AMainPlayerState>();
+
+	if (PS)
+	{
+		PS->GetInventoryComponent()
+		  ->OnInventoryUpdateNotified.AddDynamic(
+			  this, &ThisClass::OnInventoryUpdated);
+	}
 }
 
 void UInteractionComponent::BindingInputActions(
@@ -47,8 +63,25 @@ void UInteractionComponent::BindingInputActions(
 	                                   &ThisClass::OnTouch);
 }
 
-void UInteractionComponent::OnChange(uint16 ItemId)
+void UInteractionComponent::OnInventoryUpdated()
 {
+	AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(GetOwner());
+
+	if (!Player)
+	{
+		return;
+	}
+
+	const uint32 CurrentIndex = Player->GetPlayerInventoryComponent()->
+	                                    GetCurrentSlotIndex();
+
+	const FItemMetaInfo ItemMetaInfo = Player->
+	                                   GetPlayerState<AMainPlayerState>()->
+	                                   GetInventoryComponent()->
+	                                   GetInventoryList()[CurrentIndex];
+
+	const uint16 ItemId = ItemMetaInfo.GetId();
+
 	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
 
 	const bool bIsStructure = ItemInfoData.GetItemType() !=
@@ -194,7 +227,9 @@ void UInteractionComponent::ToggleInteractiveUI()
 
 void UInteractionComponent::LineTraceToFindTarget()
 {
-	const TArray<AActor*> IgnoreActors;
+	TArray<AActor*> IgnoreActors;
+	IgnoreActors.Add(PlayerCharacter);
+
 	const FVector OwnerStartLocation = PlayerCharacter->GetActorLocation();
 	const FVector OwnerEndLocation = OwnerStartLocation + PlayerCharacter->
 		GetCameraComponent()->GetForwardVector() * TargetRange;

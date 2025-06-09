@@ -26,11 +26,8 @@ void UUIV_MainLobby::NativeConstruct()
 
 void UUIV_MainLobby::OnClickedGameStartButton()
 {
-	UISGGameInstance* ISGGameInstance = Cast<UISGGameInstance>(GetGameInstance());
-	if (ISGGameInstance)
-	{
-		ISGGameInstance->CreateGameSessionId();
-	}
+	UUIC_MainLobby* MainLobbyController = Cast<UUIC_MainLobby>(GetController());
+	MainLobbyController->PlayLobbyLS();
 }
 
 void UUIV_MainLobby::OnClickedMultiplayButton()

@@ -1,5 +1,6 @@
 #include "PlacementIndicatorComponent.h"
 
+#include "EngineUtils.h"
 #include "EnhancedInputComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -11,6 +12,7 @@
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
 #include "ProjectISG/Systems/Grid/Actors/Placement.h"
 #include "ProjectISG/Systems/Grid/Manager/GridManager.h"
+#include "ProjectISG/Systems/Inventory/Components/InventoryComponent.h"
 #include "ProjectISG/Systems/Inventory/Managers/ItemManager.h"
 #include "ProjectISG/Systems/Logging/LoggingEnum.h"
 #include "ProjectISG/Systems/Logging/LoggingStruct.h"
@@ -22,7 +24,6 @@ class AMainPlayerCharacter;
 UPlacementIndicatorComponent::UPlacementIndicatorComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-	bWantsInitializeComponent = true;
 
 	ConstructorHelpers::FObjectFinder<UInputAction> InputAction(
 		TEXT(
@@ -43,18 +44,33 @@ UPlacementIndicatorComponent::UPlacementIndicatorComponent()
 	}
 }
 
-void UPlacementIndicatorComponent::InitializeComponent()
+void UPlacementIndicatorComponent::InitializePlaceIndicator()
 {
-	Super::InitializeComponent();
-
 	PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 
 	Player = Cast<AMainPlayerCharacter>(GetOwner());
+	
+	if (!Player)
+	{
+		return;
+	}
+
+	const AMainPlayerState* PS = Player->GetPlayerState<AMainPlayerState>();
 
 	Player->OnInputBindingNotified.AddDynamic(
 		this, &ThisClass::BindingInputActions);
 
-	Player->OnUpdateSelectedItem.AddDynamic(this, &ThisClass::OnChange);
+	if (PS)
+	{
+		PS->GetInventoryComponent()
+				   ->OnInventoryUpdateNotified.AddDynamic(
+					   this, &ThisClass::OnInventoryUpdated);
+		const FItemMetaInfo ItemMetaInfo = PS->GetInventoryComponent()
+					->GetInventoryList()[0];
+		
+		SetVisibilityInternal(ItemMetaInfo.GetId());
+	}
+
 }
 
 void UPlacementIndicatorComponent::BindingInputActions(
@@ -93,6 +109,11 @@ void UPlacementIndicatorComponent::TickComponent(
 
 void UPlacementIndicatorComponent::Execute()
 {
+	if (!bIsTraced)
+	{
+		return;
+	}
+	
 	if (!IsActive)
 	{
 		return;
@@ -248,7 +269,7 @@ void UPlacementIndicatorComponent::LineTrace()
 		return;
 	}
 
-	const bool IsSuccess = UKismetSystemLibrary::CapsuleTraceSingle(GetWorld(),
+	bIsTraced = UKismetSystemLibrary::CapsuleTraceSingle(GetWorld(),
 		OwnerStartLocation,
 		OwnerEndLocation, TargetRadius,
 		TargetRadius, TraceTypeQuery1,
@@ -256,7 +277,12 @@ void UPlacementIndicatorComponent::LineTrace()
 		EDrawDebugTrace::None,
 		TargetTraceResult, true);
 
-	if (IsSuccess)
+	if (IndicateActor)
+	{
+		IndicateActor->SetActorHiddenInGame(!bIsTraced);
+	}
+
+	if (bIsTraced)
 	{
 		if (PlayerController->GetCharacter()->IsLocallyControlled())
 		{
@@ -264,6 +290,11 @@ void UPlacementIndicatorComponent::LineTrace()
 				TargetTraceResult.ImpactPoint);
 			FRotator SnappedRotation = GridManager->GetSnappedRotation
 				(GetDegrees(RotateDirection));
+
+			if (!IndicateActor)
+			{
+				return;
+			}
 
 			IndicateActor->SetActorLocation(FMath::VInterpTo(
 				IndicateActor->GetActorLocation(), SnappedLocation,
@@ -299,6 +330,11 @@ void UPlacementIndicatorComponent::LineTrace()
 void UPlacementIndicatorComponent::OnRotate(
 	const FInputActionValue& InputActionValue)
 {
+	if (!bIsTraced)
+	{
+		return;
+	}
+	
 	if (!IsActive)
 	{
 		return;
@@ -327,62 +363,19 @@ void UPlacementIndicatorComponent::OnChange(
 {
 	RotateDirection = North;
 
-	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
+	SetVisibilityInternal(ItemId);
+}
 
-	const bool bIsStructure = UItemManager::IsItemCanHousing(ItemId);
-
-	const TSubclassOf<AActor> ActorClass = ItemInfoData.GetPlaceItemActor();
-
-	bIsIndicatorActive = bIsStructure
-		&& ActorClass
-		&& ActorClass->IsChildOf(APlacement::StaticClass());
-
-	// 하우징이 가능한 상태
-	if (bIsIndicatorActive)
+void UPlacementIndicatorComponent::FindGridManagerInternal(AGridManager*& GridManager)
+{
+	for (TActorIterator<AGridManager> It(GetWorld()); It; ++It)
 	{
-		const uint16 GeneratedOtherItemId =
-			UItemManager::GetGeneratedOtherItemIdById(ItemId);
-		// 다른 아이템을 생성하는 도구인지 판단
-
-		// 다른 아이템을 생성한다 -> 특정 아이템을 건축한다
-		// Item Type이 Housing이고, 생성되는 아이템이 공기가 아니다.
-		bCanGeneratedOtherItem = GeneratedOtherItemId > 0;
-
-		uint16 OtherItemId = 0;
-		TSubclassOf<APlacement> PlacementClass;
-
-		if (bCanGeneratedOtherItem)
+		AGridManager* Found = *It;
+		if (Found)
 		{
-			const FItemInfoData OtherInfoData = UItemManager::GetItemInfoById(
-				GeneratedOtherItemId);
-
-			if (UItemManager::IsItemCanHousing(ItemId))
-			{
-				const TSubclassOf<AActor> OtherActorClass = OtherInfoData.
-					GetPlaceItemActor();
-				if (OtherActorClass && OtherActorClass->IsChildOf(
-					APlacement::StaticClass()))
-				{
-					PlacementClass = OtherActorClass;
-					OtherItemId = GeneratedOtherItemId;
-				}
-			}
+			GridManager = Found;
+			break;
 		}
-
-		PlacementItemId = bCanGeneratedOtherItem && OtherItemId > 0
-			                  ? OtherItemId
-			                  : ItemId;
-		if (!PlacementClass)
-		{
-			PlacementClass = ActorClass;
-		}
-
-		OnActivate(PlacementClass);
-	}
-	else
-	{
-		PlacementItemId = 0;
-		OnDeactivate();
 	}
 }
 
@@ -408,7 +401,12 @@ void UPlacementIndicatorComponent::OnActivate(
 
 		if (!GridManager)
 		{
-			return;
+			FindGridManagerInternal(GridManager);
+
+			if (!GridManager)
+			{
+				return;
+			}
 		}
 
 		GridManager->SetVisibleGrid(true);
@@ -468,6 +466,11 @@ void UPlacementIndicatorComponent::OnDeactivate()
 
 			AGridManager* GridManager = PlayerState->GetGridManager();
 
+			if (!GridManager)
+			{
+				FindGridManagerInternal(GridManager);
+			}
+
 			if (GridManager)
 			{
 				GridManager->SetVisibleGrid(false);
@@ -510,4 +513,85 @@ void UPlacementIndicatorComponent::Server_Execute_Implementation(FVector Pivot,
 	uint16 ItemId)
 {
 	ExecuteInternal(Pivot, Location, Rotation, PlacementClass, ItemId);
+}
+
+void UPlacementIndicatorComponent::OnInventoryUpdated()
+{
+	if (!Player)
+	{
+		return;
+	}
+	
+	const uint32 CurrentIndex = Player->GetPlayerInventoryComponent()->
+											 GetCurrentSlotIndex();
+
+	const FItemMetaInfo ItemMetaInfo = Player->
+									   GetPlayerState<AMainPlayerState>()->
+									   GetInventoryComponent()->
+									   GetInventoryList()[CurrentIndex];
+	
+	SetVisibilityInternal(ItemMetaInfo.GetId());
+}
+
+void UPlacementIndicatorComponent::SetVisibilityInternal(uint16 ItemId)
+{
+	const FItemInfoData ItemInfoData = UItemManager::GetItemInfoById(ItemId);
+
+	const bool bIsStructure = UItemManager::IsItemCanHousing(ItemId);
+
+	const TSubclassOf<AActor> ActorClass = ItemInfoData.GetPlaceItemActor();
+
+	bIsIndicatorActive = bIsStructure
+		&& ActorClass
+		&& ActorClass->IsChildOf(APlacement::StaticClass());
+
+	// 하우징이 가능한 상태
+	if (bIsIndicatorActive)
+	{
+		bIsTraced = true;
+		const uint16 GeneratedOtherItemId =
+			UItemManager::GetGeneratedOtherItemIdById(ItemId);
+		// 다른 아이템을 생성하는 도구인지 판단
+
+		// 다른 아이템을 생성한다 -> 특정 아이템을 건축한다
+		// Item Type이 Housing이고, 생성되는 아이템이 공기가 아니다.
+		bCanGeneratedOtherItem = GeneratedOtherItemId > 0;
+
+		uint16 OtherItemId = 0;
+		TSubclassOf<APlacement> PlacementClass;
+
+		if (bCanGeneratedOtherItem)
+		{
+			const FItemInfoData OtherInfoData = UItemManager::GetItemInfoById(
+				GeneratedOtherItemId);
+
+			if (UItemManager::IsItemCanHousing(ItemId))
+			{
+				const TSubclassOf<AActor> OtherActorClass = OtherInfoData.
+					GetPlaceItemActor();
+				if (OtherActorClass && OtherActorClass->IsChildOf(
+					APlacement::StaticClass()))
+				{
+					PlacementClass = OtherActorClass;
+					OtherItemId = GeneratedOtherItemId;
+				}
+			}
+		}
+
+		PlacementItemId = bCanGeneratedOtherItem && OtherItemId > 0
+							  ? OtherItemId
+							  : ItemId;
+		
+		if (!PlacementClass)
+		{
+			PlacementClass = ActorClass;
+		}
+
+		OnActivate(PlacementClass);
+	}
+	else
+	{
+		PlacementItemId = 0;
+		OnDeactivate();
+	}
 }

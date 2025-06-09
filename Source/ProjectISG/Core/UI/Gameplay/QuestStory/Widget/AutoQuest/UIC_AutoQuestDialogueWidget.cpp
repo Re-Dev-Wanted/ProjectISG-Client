@@ -5,6 +5,8 @@
 #include "Components/MultiLineEditableTextBox.h"
 #include "Components/TextBlock.h"
 #include "GameFramework/PlayerState.h"
+#include "ProjectISG/Core/Character/Player/MainPlayerCharacter.h"
+#include "ProjectISG/Core/Character/Player/Component/PlayerSoundComponent.h"
 #include "ProjectISG/Core/Controller/MainPlayerController.h"
 #include "ProjectISG/Core/UI/Base/MVC/BaseUIView.h"
 #include "ProjectISG/Core/UI/Gameplay/MainHUD/UI/UIC_MainHUD.h"
@@ -54,14 +56,26 @@ void UUIC_AutoQuestDialogueWidget::InitializeDialogue()
 		OnFinishDialogue();
 		return;
 	}
-	
+
 	// 대사가 없으면 대사를 종료시킨다.
-	if (AutoQuestDialogueWidgetModel->GetCurrentQuestDialogueIndex() >= Dialogues.Num())
+	if (AutoQuestDialogueWidgetModel->GetCurrentQuestDialogueIndex() >=
+		Dialogues.Num())
 	{
 		OnFinishDialogue();
 		return;
 	}
 
+	const AMainPlayerCharacter* Player = Cast<AMainPlayerCharacter>(
+		GetView()->GetOwningPlayerPawn());
+
+	// 다른 UI를 열거나 닫을 때 혹은 Skip 한 후에는 재귀를 돌리지 말고 바로 퀘스트를 끊도록 함
+	if (AutoQuestDialogueWidgetView->GetVisibility() == ESlateVisibility::Hidden)
+	{
+		AutoQuestDialogueWidgetModel->SetCurrentQuestDialogueIndex(0);
+		Player->GetPlayerSoundComponent()->StopTTSSound();
+		return;
+	}
+	
 	// 대사를 말하는 주체에 대한 이름 설정
 	const FString OwnerText = Dialogues[CurrentQuestDialogueIndex].
 	                          GetDialogueOwner() == TEXT("{Player}")
@@ -74,21 +88,23 @@ void UUIC_AutoQuestDialogueWidget::InitializeDialogue()
 		FText::FromString(OwnerText));
 	AutoQuestDialogueWidgetView->GetDialogueText()->SetText(
 		Dialogues[CurrentQuestDialogueIndex].GetDialogueText());
-	AutoQuestDialogueWidgetView->PlaySound(
+	Player->GetPlayerSoundComponent()->PlayTTSSound(
 		Dialogues[CurrentQuestDialogueIndex].GetDialogueTTS());
-	AutoQuestDialogueWidgetView->PlayAnimation(AutoQuestDialogueWidgetView->GetDialogueAnimation());
+	AutoQuestDialogueWidgetView->PlayAnimation(
+		AutoQuestDialogueWidgetView->GetDialogueAnimation());
 
 	TWeakObjectPtr<ThisClass> WeakThis = this;
-	GetWorld()->GetTimerManager().SetTimer(QuestDialogueChangeTimerHandle, 
-										   [WeakThis]()
-										   {
-												   if (WeakThis.IsValid())
-												   {
-													   WeakThis.Get()->InitializeDialogue();
-												   }
-										   },
-										   Dialogues[CurrentQuestDialogueIndex].
-										   GetDialogueTime(), false);
+	GetWorld()->GetTimerManager().SetTimer(QuestDialogueChangeTimerHandle,
+	                                       [WeakThis]()
+	                                       {
+		                                       if (WeakThis.IsValid())
+		                                       {
+			                                       WeakThis.Get()->
+				                                       InitializeDialogue();
+		                                       }
+	                                       },
+	                                       Dialogues[CurrentQuestDialogueIndex].
+	                                       GetDialogueTime(), false);
 
 	// 모든 일련의 과정이 완료되면 1을 더해 다음 대사를 준비한다.
 	AutoQuestDialogueWidgetModel->SetCurrentQuestDialogueIndex(
@@ -100,7 +116,8 @@ void UUIC_AutoQuestDialogueWidget::StartQuestDialogue()
 	UUIM_AutoQuestDialogueWidget* AutoQuestDialogueWidgetModel = Cast<
 		UUIM_AutoQuestDialogueWidget>(GetModel());
 
-	UUIV_AutoQuestDialogueWidget* AutoQuestDialogueWidgetView = Cast<UUIV_AutoQuestDialogueWidget>(GetView());
+	UUIV_AutoQuestDialogueWidget* AutoQuestDialogueWidgetView = Cast<
+		UUIV_AutoQuestDialogueWidget>(GetView());
 
 	AutoQuestDialogueWidgetModel->SetCurrentQuestDialogueIndex(0);
 	InitializeDialogue();
@@ -127,6 +144,17 @@ void UUIC_AutoQuestDialogueWidget::OnFinishDialogue()
 	UQuestManageComponent* PlayerQuestManager = PC->
 		GetQuestManageComponent();
 
+	UUIV_AutoQuestDialogueWidget* AutoQuestDialogueWidgetView = Cast<
+		UUIV_AutoQuestDialogueWidget>(GetView());
+
+	// 다른 UI를 열거나 닫을 때 혹은 Skip 한 후에는 재귀를 돌리지 말고 바로 퀘스트를 끊도록 함
+	if (AutoQuestDialogueWidgetView->GetVisibility() == ESlateVisibility::Hidden)
+	{
+		AutoQuestDialogueWidgetModel->SetCurrentQuestDialogueIndex(0);
+		PC->GetPawn<AMainPlayerCharacter>()->GetPlayerSoundComponent()->StopTTSSound();
+		return;
+	}
+
 	// 현재 총 퀘스트의 대화 배열 수
 	const uint8 DialogueCount = UQuestStoryManager::GetQuestDialogueById(
 		PlayerQuestManager->GetCurrentPlayingQuestId()).Num();
@@ -144,6 +172,5 @@ void UUIC_AutoQuestDialogueWidget::OnFinishDialogue()
 		DialogueCount)
 	{
 		PC->GetMainHUD()->ToggleAutoQuestUI(false);
-		return;
 	}
 }

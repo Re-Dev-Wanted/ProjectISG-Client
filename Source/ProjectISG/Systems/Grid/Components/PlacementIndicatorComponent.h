@@ -4,6 +4,7 @@
 #include "InputActionValue.h"
 #include "Components/ActorComponent.h"
 #include "ProjectISG/Systems/Grid/PlacementData.h"
+#include "ProjectISG/Systems/Grid/Manager/GridManager.h"
 #include "ProjectISG/Utils/MacroUtil.h"
 #include "PlacementIndicatorComponent.generated.h"
 
@@ -18,12 +19,16 @@ class PROJECTISG_API UPlacementIndicatorComponent : public UActorComponent
 public:
 	UPlacementIndicatorComponent();
 
-	virtual void InitializeComponent() override;
+	void InitializePlaceIndicator();
 
 	void Execute();
 
 	UFUNCTION()
+	void OnInventoryUpdated();
+
+	UFUNCTION()
 	void OnChange(const uint16 ItemId);
+	void FindGridManagerInternal(AGridManager*& GridManager);
 
 	UFUNCTION()
 	void OnActivate(const TSubclassOf<class APlacement>& Factory);
@@ -32,6 +37,7 @@ public:
 	void OnDeactivate();
 
 	void SetIsActive(bool NewActive);
+	
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = IndicatorProperties)
 	float InterpSpeed = 5.f;
@@ -80,6 +86,8 @@ protected:
 
 	bool IsActive = true;
 
+	bool bIsTraced = false;
+
 	uint16 PlacementItemId = 0;
 
 	UFUNCTION()
@@ -88,6 +96,7 @@ protected:
 
 	UFUNCTION()
 	void OnRotate(const FInputActionValue& InputActionValue);
+	void SetVisibilityInternal(uint16 ItemId);
 
 	UFUNCTION(Server, Reliable)
 	void Server_Execute(FVector Pivot, FVector Location, FRotator Rotation,
